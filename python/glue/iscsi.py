@@ -423,6 +423,7 @@ def deleteTarget(args):
                     return createReturn(code=200, val='iscsi service '+args.action+' control success')
                 else:
                     return createReturn(code=500, val=json.dumps(response.json(), indent=2))
+            return createReturn(code=200, val='iscsi service '+args.action+' control success')
         elif response.status_code == 202:   
             task = json.loads(taskList()).get('val')
             task_json = json.loads(task).get('executing_tasks')
@@ -453,6 +454,7 @@ def deleteTarget(args):
                     return createReturn(code=200, val='iscsi service '+args.action+' control success')
                 else:
                     return createReturn(code=500, val=json.dumps(response.json(), indent=2))
+            return createReturn(code=200, val='iscsi service '+args.action+' control success')
         else:
             return createReturn(code=500, val=json.dumps(response.json(), indent=2))    
     except Exception as e:
