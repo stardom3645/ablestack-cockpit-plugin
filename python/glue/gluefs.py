@@ -65,7 +65,7 @@ def createArgumentParser():
 # glue 대시보드 url 조회
 def glueUrl(): 
     try:
-        cmd = ssh('-o', 'StrictHostKeyChecking=no', 'ablecube', 'python3', pluginpath+ '/python/url/create_address.py', 'storageCenter').stdout.decode().splitlines()
+        cmd = ssh('-o', 'StrictHostKeyChecking=no', 'ablecube', 'python3', pluginpath+ '/python/url/create_address.py', 'storageCenter')
         dashboard = json.loads(cmd[0])
         if dashboard["code"] != 200:
             return createReturn(code=500, val='gluefs.py url error :'+dashboard["val"])
@@ -101,7 +101,7 @@ def createToken():
 def openClusterJson():
     try:
         host_list=[]
-        cmd = ssh('-o', 'StrictHostKeyChecking=no', 'ablecube', 'cat', cluster_file_path, '|', 'grep', '-w', 'hostname', '|', 'awk', "'{print $2}'").stdout.decode().splitlines()
+        cmd = ssh('-o', 'StrictHostKeyChecking=no', 'ablecube', 'cat', cluster_file_path, '|', 'grep', '-w', 'hostname', '|', 'awk', "'{print $2}'")
         for line in cmd:
             host = str(line).strip(',''""')
             host_list.append(host)
@@ -169,36 +169,36 @@ def configFs(args):
             # 초기 구성 - gluefs 구성
             if args.type == 'gluefs':
                 # 호스트 ceph 마운트하여 /gluefs 디폴트 경로 생성한후 마운트 해제
-                ssh('-o', 'StrictHostKeyChecking=no', 'ablecube', 'mkdir', '-p', args.mount_path).stdout.decode().splitlines()
-                ssh('-o', 'StrictHostKeyChecking=no', 'ablecube', 'mount', '-t', 'ceph', 'admin@.fs=/', args.mount_path).stdout.decode().splitlines()
-                ssh('-o', 'StrictHostKeyChecking=no', 'ablecube', 'mkdir', '-p', args.mount_path+'/gluefs').stdout.decode().splitlines()
-                ssh('-o', 'StrictHostKeyChecking=no', 'ablecube', 'umount', '-f', '-l',args.mount_path).stdout.decode().splitlines()
-                ssh('-o', 'StrictHostKeyChecking=no', 'ablecube', 'rm', '-rf', args.mount_path).stdout.decode().splitlines()
-                secret = ssh('-o', 'StrictHostKeyChecking=no', 'ablecube', 'cat', '/etc/ceph/ceph.client.admin.keyring', '|', 'awk', "'{print $3}'").stdout.decode().splitlines()
+                ssh('-o', 'StrictHostKeyChecking=no', 'ablecube', 'mkdir', '-p', args.mount_path)
+                ssh('-o', 'StrictHostKeyChecking=no', 'ablecube', 'mount', '-t', 'ceph', 'admin@.fs=/', args.mount_path)
+                ssh('-o', 'StrictHostKeyChecking=no', 'ablecube', 'mkdir', '-p', args.mount_path+'/gluefs')
+                ssh('-o', 'StrictHostKeyChecking=no', 'ablecube', 'umount', '-f', '-l',args.mount_path)
+                ssh('-o', 'StrictHostKeyChecking=no', 'ablecube', 'rm', '-rf', args.mount_path)
+                secret = ssh('-o', 'StrictHostKeyChecking=no', 'ablecube', 'cat', '/etc/ceph/ceph.client.admin.keyring', '|', 'awk', "'{print $3}'")
                 cmd = socket.gethostbyname('scvm1')+':6789,'+socket.gethostbyname('scvm2')+':6789,'+socket.gethostbyname('scvm3')+':6789:/gluefs\t'+args.mount_path+'\tceph\tname=admin,secret='+secret[1]+',noatime,_netdev\t0 0'
                 # gluefs의 경우 모든 호스트에 마운트 경로 생성, ceph 마운트, /etc/fstab 추가
                 for host in json_data:
-                    ssh('-o', 'StrictHostKeyChecking=no', host, 'mkdir', '-p', args.mount_path).stdout.decode().splitlines()
-                    ssh('-o', 'StrictHostKeyChecking=no', host, 'mount', '-t', 'ceph', 'admin@.fs=/gluefs', args.mount_path).stdout.decode().splitlines()
-                    ssh('-o', 'StrictHostKeyChecking=no', host, 'sed', '-i', "'$ a "+cmd+"'", '/etc/fstab').stdout.decode().splitlines()
+                    ssh('-o', 'StrictHostKeyChecking=no', host, 'mkdir', '-p', args.mount_path)
+                    ssh('-o', 'StrictHostKeyChecking=no', host, 'mount', '-t', 'ceph', 'admin@.fs=/gluefs', args.mount_path)
+                    ssh('-o', 'StrictHostKeyChecking=no', host, 'sed', '-i', "'$ a "+cmd+"'", '/etc/fstab')
             # 초기 구성 - nfs, smb 구성
             else:
                 # gwvm ceph 마운트
-                ssh('-o', 'StrictHostKeyChecking=no', 'gwvm-mngt', 'mkdir', '-p', '/fs').stdout.decode().splitlines()
-                ssh('-o', 'StrictHostKeyChecking=no', 'gwvm-mngt', 'mount', '-t', 'ceph', 'admin@.fs=/', '/fs').stdout.decode().splitlines()
+                ssh('-o', 'StrictHostKeyChecking=no', 'gwvm-mngt', 'mkdir', '-p', '/fs')
+                ssh('-o', 'StrictHostKeyChecking=no', 'gwvm-mngt', 'mount', '-t', 'ceph', 'admin@.fs=/', '/fs')
                 # 마운트 상태 체크
                 while True:
-                    status = ssh('-o', 'StrictHostKeyChecking=no', 'gwvm-mngt', '/usr/bin/df', '-Th', '|', 'grep', 'ceph','|', 'awk', "'{print $7}'").stdout.decode().splitlines()
+                    status = ssh('-o', 'StrictHostKeyChecking=no', 'gwvm-mngt', '/usr/bin/df', '-Th', '|', 'grep', 'ceph','|', 'awk', "'{print $7}'")
                     if len(status) != 0:
                         break
                 # 디렉토리 생성
-                ssh('-o', 'StrictHostKeyChecking=no', 'gwvm-mngt', 'mkdir', '-p', '/fs/gluefs').stdout.decode().splitlines()
-                ssh('-o', 'StrictHostKeyChecking=no', 'gwvm-mngt', 'mkdir', '-p', '/fs/nfs').stdout.decode().splitlines()
-                ssh('-o', 'StrictHostKeyChecking=no', 'gwvm-mngt', 'mkdir', '-p', '/fs/smb').stdout.decode().splitlines()
+                ssh('-o', 'StrictHostKeyChecking=no', 'gwvm-mngt', 'mkdir', '-p', '/fs/gluefs')
+                ssh('-o', 'StrictHostKeyChecking=no', 'gwvm-mngt', 'mkdir', '-p', '/fs/nfs')
+                ssh('-o', 'StrictHostKeyChecking=no', 'gwvm-mngt', 'mkdir', '-p', '/fs/smb')
                 # /etc/fstab 추가
-                secret = ssh('-o', 'StrictHostKeyChecking=no', 'gwvm-mngt', 'cat', '/etc/ceph/ceph.client.admin.keyring', '|', 'awk', "'{print $3}'").stdout.decode().splitlines()
+                secret = ssh('-o', 'StrictHostKeyChecking=no', 'gwvm-mngt', 'cat', '/etc/ceph/ceph.client.admin.keyring', '|', 'awk', "'{print $3}'")
                 cmd = socket.gethostbyname('scvm1')+':6789,'+socket.gethostbyname('scvm2')+':6789,'+socket.gethostbyname('scvm3')+':6789:/gluefs\t/fs\tceph\tname=admin,secret='+secret[1]+',noatime,_netdev\t0 0'
-                ssh('-o', 'StrictHostKeyChecking=no', 'gwvm-mngt', 'sed', '-i', "'$ a "+cmd+"'", '/etc/fstab').stdout.decode().splitlines()
+                ssh('-o', 'StrictHostKeyChecking=no', 'gwvm-mngt', 'sed', '-i', "'$ a "+cmd+"'", '/etc/fstab')
             # quota 지정
             if args.quota is not None:
                 args.path = '/'+args.type
@@ -211,32 +211,32 @@ def configFs(args):
         ########### fs가 생성되어 있는 경우  ###########
         if fs_cnt == 1 and mds_cnt >= 1: 
             if args.type == 'gluefs':
-                secret = ssh('-o', 'StrictHostKeyChecking=no', 'ablecube', 'cat', '/etc/ceph/ceph.client.admin.keyring', '|', 'awk', "'{print $3}'").stdout.decode().splitlines()
+                secret = ssh('-o', 'StrictHostKeyChecking=no', 'ablecube', 'cat', '/etc/ceph/ceph.client.admin.keyring', '|', 'awk', "'{print $3}'")
                 cmd = socket.gethostbyname('scvm1')+':6789,'+socket.gethostbyname('scvm2')+':6789,'+socket.gethostbyname('scvm3')+':6789:/gluefs\t'+args.mount_path+'\tceph\tname=admin,secret='+secret[1]+',noatime,_netdev\t0 0'
                 # gluefs의 경우 모든 호스트에 마운트 경로 생성, ceph 마운트, /etc/fstab 추가
                 for host in json_data:
-                    ssh('-o', 'StrictHostKeyChecking=no', host, 'mkdir', '-p', args.mount_path).stdout.decode().splitlines()
-                    ssh('-o', 'StrictHostKeyChecking=no', host, 'mount', '-t', 'ceph', 'admin@.fs=/gluefs', args.mount_path).stdout.decode().splitlines()
-                    ssh('-o', 'StrictHostKeyChecking=no', host, 'sed', '-i', "'$ a "+cmd+"'", '/etc/fstab').stdout.decode().splitlines()           
+                    ssh('-o', 'StrictHostKeyChecking=no', host, 'mkdir', '-p', args.mount_path)
+                    ssh('-o', 'StrictHostKeyChecking=no', host, 'mount', '-t', 'ceph', 'admin@.fs=/gluefs', args.mount_path)
+                    ssh('-o', 'StrictHostKeyChecking=no', host, 'sed', '-i', "'$ a "+cmd+"'", '/etc/fstab')         
             else:
                 # gwvm 마운트 상태 조회
-                mount = ssh('-o', 'StrictHostKeyChecking=no', 'gwvm-mngt', '/usr/bin/df', '-Th', '|', 'grep', 'ceph','|', 'awk', "'{print $7}'").stdout.decode().splitlines()
+                mount = ssh('-o', 'StrictHostKeyChecking=no', 'gwvm-mngt', '/usr/bin/df', '-Th', '|', 'grep', 'ceph','|', 'awk', "'{print $7}'")
                 if len(mount) == 0:
                     ### nfs, smb의 경우 gwvm ceph 마운트
-                    ssh('-o', 'StrictHostKeyChecking=no', 'gwvm-mngt', 'mkdir', '-p', '/fs').stdout.decode().splitlines()
-                    ssh('-o', 'StrictHostKeyChecking=no', 'gwvm-mngt', 'mount', '-t', 'ceph', 'admin@.fs=/', '/fs').stdout.decode().splitlines()
+                    ssh('-o', 'StrictHostKeyChecking=no', 'gwvm-mngt', 'mkdir', '-p', '/fs')
+                    ssh('-o', 'StrictHostKeyChecking=no', 'gwvm-mngt', 'mount', '-t', 'ceph', 'admin@.fs=/', '/fs')
                     # 마운트 상태 체크
                     while True:
-                        status = ssh('-o', 'StrictHostKeyChecking=no', 'gwvm-mngt', '/usr/bin/df', '-Th', '|', 'grep', 'ceph','|', 'awk', "'{print $7}'").stdout.decode().splitlines()
+                        status = ssh('-o', 'StrictHostKeyChecking=no', 'gwvm-mngt', '/usr/bin/df', '-Th', '|', 'grep', 'ceph','|', 'awk', "'{print $7}'")
                         if len(status) != 0:
                             break
                     # 디렉토리 생성
-                    ssh('-o', 'StrictHostKeyChecking=no', 'gwvm-mngt', 'mkdir', '-p', '/fs/nfs').stdout.decode().splitlines()
-                    ssh('-o', 'StrictHostKeyChecking=no', 'gwvm-mngt', 'mkdir', '-p', '/fs/smb').stdout.decode().splitlines()
+                    ssh('-o', 'StrictHostKeyChecking=no', 'gwvm-mngt', 'mkdir', '-p', '/fs/nfs')
+                    ssh('-o', 'StrictHostKeyChecking=no', 'gwvm-mngt', 'mkdir', '-p', '/fs/smb')
                     # /etc/fstab 추가
-                    secret = ssh('-o', 'StrictHostKeyChecking=no', 'gwvm-mngt', 'cat', '/etc/ceph/ceph.client.admin.keyring', '|', 'awk', "'{print $3}'").stdout.decode().splitlines()
+                    secret = ssh('-o', 'StrictHostKeyChecking=no', 'gwvm-mngt', 'cat', '/etc/ceph/ceph.client.admin.keyring', '|', 'awk', "'{print $3}'")
                     cmd = socket.gethostbyname('scvm1')+':6789,'+socket.gethostbyname('scvm2')+':6789,'+socket.gethostbyname('scvm3')+':6789:/gluefs\t/fs\tceph\tname=admin,secret='+secret[1]+',noatime,_netdev\t0 0'
-                    ssh('-o', 'StrictHostKeyChecking=no', 'gwvm-mngt', 'sed', '-i', "'$ a "+cmd+"'", '/etc/fstab').stdout.decode().splitlines()
+                    ssh('-o', 'StrictHostKeyChecking=no', 'gwvm-mngt', 'sed', '-i', "'$ a "+cmd+"'", '/etc/fstab')
             # quota 지정
             if args.quota is not None:
                 args.path = '/'+args.type
@@ -355,11 +355,11 @@ def quotaFs(args):
         # quota 편집
         else:
             if args.path != '/gluefs':
-                ssh('-o', 'StrictHostKeyChecking=no', 'gwvm-mngt', 'setfattr -n ceph.quota.max_bytes -v '+args.quota+ ' /fs/'+args.path).stdout.decode().splitlines()  
+                ssh('-o', 'StrictHostKeyChecking=no', 'gwvm-mngt', 'setfattr -n ceph.quota.max_bytes -v '+args.quota+ ' /fs/'+args.path)
             else:
                 path = mouontGlueFs(args)
                 if path != '':
-                    ssh('-o', 'StrictHostKeyChecking=no', 'ablecube', 'setfattr -n ceph.quota.max_bytes -v '+args.quota+' '+path).stdout.decode().splitlines()
+                    ssh('-o', 'StrictHostKeyChecking=no', 'ablecube', 'setfattr -n ceph.quota.max_bytes -v '+args.quota+' '+path)
                 else:
                     return createReturn(code=500, val='gluefs.py quotaFs error : ceph is not mounted on the host.')
             return createReturn(code=200, val='gluefs service '+args.action+' control success')
@@ -369,7 +369,7 @@ def quotaFs(args):
 # glueFS 마운트 경로 조회
 def mouontGlueFs(args):
     try:
-        path = ssh('-o', 'StrictHostKeyChecking=no', 'ablecube', '/usr/bin/df', '-Th', '|', 'grep', 'ceph','|', 'awk', "'{print $7}'").stdout.decode().splitlines()
+        path = ssh('-o', 'StrictHostKeyChecking=no', 'ablecube', '/usr/bin/df', '-Th', '|', 'grep', 'ceph','|', 'awk', "'{print $7}'")
         if len(path) != 0:
             return path[0]
         else:
@@ -385,10 +385,10 @@ def editGlueFs(args):
         if args.mount_path is not None:
             path = mouontGlueFs(args)
             for host in json_data:
-                ssh('-o', 'StrictHostKeyChecking=no', host, 'umount', '-f', '-l', path).stdout.decode().splitlines()
-                ssh('-o', 'StrictHostKeyChecking=no', host, 'mkdir', '-p', args.mount_path).stdout.decode().splitlines()
-                ssh('-o', 'StrictHostKeyChecking=no', host, 'mount', '-t', 'ceph', 'admin@.fs=/gluefs', args.mount_path).stdout.decode().splitlines()
-                ssh('-o', 'StrictHostKeyChecking=no', host, 'sed', '-i', "'s|"+path+"|"+args.mount_path+"|g'", '/etc/fstab').stdout.decode().splitlines()
+                ssh('-o', 'StrictHostKeyChecking=no', host, 'umount', '-f', '-l', path)
+                ssh('-o', 'StrictHostKeyChecking=no', host, 'mkdir', '-p', args.mount_path)
+                ssh('-o', 'StrictHostKeyChecking=no', host, 'mount', '-t', 'ceph', 'admin@.fs=/gluefs', args.mount_path)
+                ssh('-o', 'StrictHostKeyChecking=no', host, 'sed', '-i', "'s|"+path+"|"+args.mount_path+"|g'", '/etc/fstab')
         # quota 변경
         if args.quota is not None:
             args.path = '/gluefs'
@@ -408,9 +408,9 @@ def deleteGlueFs(args):
         # 디렉토리 비우는 작업, 모든 호스트 마운트 해제 및 /etc/fstab 삭제
         path = mouontGlueFs(args)
         for host in json_data:
-            ssh('-o', 'StrictHostKeyChecking=no', host, 'rm', '-rf', path+'/*').stdout.decode().splitlines()
-            ssh('-o', 'StrictHostKeyChecking=no', host, 'umount', '-f', '-l', path).stdout.decode().splitlines()
-            ssh('-o', 'StrictHostKeyChecking=no', host, 'sed', '-i', '/ceph/d', '/etc/fstab').stdout.decode().splitlines()
+            ssh('-o', 'StrictHostKeyChecking=no', host, 'rm', '-rf', path+'/*')
+            ssh('-o', 'StrictHostKeyChecking=no', host, 'umount', '-f', '-l', path)
+            ssh('-o', 'StrictHostKeyChecking=no', host, 'sed', '-i', '/ceph/d', '/etc/fstab')
         return createReturn(code=200, val='gluefs service '+args.action+' control success')
     except Exception as e:
         return createReturn(code=500, val='gluefs.py deleteGlueFs error :'+e)

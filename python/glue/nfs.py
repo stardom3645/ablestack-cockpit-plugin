@@ -62,7 +62,7 @@ def createArgumentParser():
 # glue 대시보드 url 조회
 def glueUrl(): 
     try:
-        cmd = ssh('-o', 'StrictHostKeyChecking=no', 'ablecube', 'python3', pluginpath+ '/python/url/create_address.py', 'storageCenter').stdout.decode().splitlines()
+        cmd = ssh('-o', 'StrictHostKeyChecking=no', 'ablecube', 'python3', pluginpath+ '/python/url/create_address.py', 'storageCenter')
         dashboard = json.loads(cmd[0])
         if dashboard["code"] != 200:
             return createReturn(code=500, val='nfs.py url error :'+dashboard["val"])
@@ -294,7 +294,7 @@ def createNfsExport(args):
         if response.status_code == 201:
             if args.quota is not None:
                 #fs = check_output(['python3 gluefs.py quota --path /nfs --quota '+args.quota], universal_newlines=True, shell=True, env=env)
-                fs = sh.python3(pluginpath + '/python/ceph/gluefs.py','quota', '--path', '/nfs', '--quota', args.quota).stdout.decode()
+                fs = sh.python3(pluginpath + '/python/ceph/gluefs.py','quota', '--path', '/nfs', '--quota', args.quota)
             return createReturn(code=200, val='nfs service '+args.action+' control success')
         elif response.status_code == 202:
             global cnt
@@ -310,7 +310,7 @@ def createNfsExport(args):
                         break
             if args.quota is not None:
                 #fs = check_output(['python3 gluefs.py quota --path /nfs --quota '+args.quota], universal_newlines=True, shell=True, env=env)
-                fs = sh.python3(pluginpath + '/python/ceph/gluefs.py','quota', '--path', '/nfs', '--quota', args.quota).stdout.decode()
+                fs = sh.python3(pluginpath + '/python/ceph/gluefs.py','quota', '--path', '/nfs', '--quota', args.quota)
             return createReturn(code=200, val='nfs service '+args.action+' control success')
         else:
             return createReturn(code=500, val=json.dumps(response.json(), indent=2))    
@@ -398,7 +398,7 @@ def editNfsExport(args):
         if response.status_code == 200:
             if args.quota is not None:
                 #fs = check_output(['python3 gluefs.py quota --path /nfs --quota '+args.quota], universal_newlines=True, shell=True, env=env)
-                fs = sh.python3(pluginpath + '/python/ceph/gluefs.py','quota', '--path', '/nfs', '--quota', args.quota).stdout.decode()
+                fs = sh.python3(pluginpath + '/python/ceph/gluefs.py','quota', '--path', '/nfs', '--quota', args.quota)
             return createReturn(code=200, val='nfs service '+args.action+' control success')
         elif response.status_code == 202:
             global cnt
@@ -414,7 +414,7 @@ def editNfsExport(args):
                         break
             if args.quota is not None:
                 #fs = check_output(['python3 gluefs.py quota --path /nfs --quota '+args.quota], universal_newlines=True, shell=True, env=env)
-                fs = sh.python3(pluginpath + '/python/ceph/gluefs.py','quota', '--path', '/nfs', '--quota', args.quota).stdout.decode()
+                fs = sh.python3(pluginpath + '/python/ceph/gluefs.py','quota', '--path', '/nfs', '--quota', args.quota)
             return createReturn(code=200, val='nfs service '+args.action+' control success')
         else:
             return createReturn(code=500, val=json.dumps(response.json(), indent=2))    

@@ -62,14 +62,14 @@ def createArgumentParser():
 # glue 대시보드 url 조회
 def glueUrl(): 
     try:
-        cmd = ssh('-o', 'StrictHostKeyChecking=no', 'ablecube', 'python3', pluginpath+ '/python/url/create_address.py', 'storageCenter').stdout.decode().splitlines()
+        cmd = ssh('-o', 'StrictHostKeyChecking=no', 'ablecube', 'python3', pluginpath+ '/python/url/create_address.py', 'storageCenter')
         dashboard = json.loads(cmd[0])
         if dashboard['code'] != 200:
-            return createReturn(code=500, val='nfs.py url error :'+dashboard['val'])
+            return createReturn(code=500, val='iscsi.py url error :'+dashboard['val'])
         else:
             return dashboard['val']
     except Exception as e:
-        return createReturn(code=500, val='nfs.py url error :'+e)
+        return createReturn(code=500, val='iscsi.py url error :'+e)
 
 # token 생성
 def createToken():
