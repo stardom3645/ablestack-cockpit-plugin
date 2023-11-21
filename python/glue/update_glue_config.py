@@ -35,10 +35,10 @@ def createArgumentParser():
 
     # output 민감도 추가(v갯수에 따라 output및 log가 많아짐):
     parser.add_argument('-v', '--verbose', action='count', default=0, help='increase output verbosity')
-    
+
     # flag 추가(샘플임, 테스트용으로 json이 아닌 plain text로 출력하는 플래그 역할)
     parser.add_argument('-H', '--Human', action='store_const', dest='flag_readerble', const=True, help='Human readable')
-    
+
     # Version 추가
     parser.add_argument('-V', '--Version', action='version', version='%(prog)s 1.0')
 
@@ -68,7 +68,7 @@ def updateAllHostGlueConfig(args):
         return_val = "ceph config generate-minimal-conf command failed. Check cube host /etc/ceph/ceph.client.admin.keyring or ceph.conf"
         ret_num = os.system("ceph config generate-minimal-conf > /etc/ceph/ceph_temp.conf")
         ret_num += os.system("mv -f /etc/ceph/ceph_temp.conf /etc/ceph/ceph.conf")
-    
+
         if ret_num == 0:
             # ping test로 네트워크가 연결되어 있는지 상태 체크하는 부분
             return_val = "The ping test failed. Check ablecube cube hosts and scvms network IPs. Please check the config.json file."
@@ -91,7 +91,7 @@ def updateAllHostGlueConfig(args):
                     ret = ssh('-o', 'StrictHostKeyChecking=no', '-o', 'ConnectTimeout=5', f_val2["scvmMngt"], "echo ok").strip()
                     if ret != "ok":
                         return createReturn(code=500, val=return_val + " : " + f_val2["scvmMngt"])
-                
+
                 # cube 호스트 및 scvm에 keyring, ceph.conf 파일 전송
                 return_val = "cube host and scvm scp keyring, ceph.conf Failed"
 

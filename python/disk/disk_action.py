@@ -107,7 +107,7 @@ def listDiskInterface(H=False, classify=None):
         line_sp = line.split()
         if len(line_sp) == 2:
             disk_path.append(line_sp)
-   
+
     # output = nmcli_cmd('-c', 'no', '-f', 'TYPE,ACTIVE,DEVICE,STATE,SLAVE', 'con', 'show')
     # output = nmcli_cmd('-c', 'no', '-f', 'ALL', 'con', 'show')
     # outputs = output.splitlines()
@@ -123,7 +123,7 @@ def listDiskInterface(H=False, classify=None):
                 if dev["name"] == dp[0]:
                     dev["path"] = dp[1]
             newbd.append(dev)
-            
+
     item['blockdevices'] = newbd
     # print(output)
 

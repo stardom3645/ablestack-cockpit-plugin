@@ -39,10 +39,10 @@ def createArgumentParser():
 
     # output 민감도 추가(v갯수에 따라 output및 log가 많아짐):
     parser.add_argument('-v', '--verbose', action='count', default=0, help='increase output verbosity')
-    
+
     # flag 추가(샘플임, 테스트용으로 json이 아닌 plain text로 출력하는 플래그 역할)
     parser.add_argument('-H', '--Human', action='store_const', dest='flag_readerble', const=True, help='Human readable')
-    
+
     # Version 추가
     parser.add_argument('-V', '--Version', action='version', version='%(prog)s 1.0')
 
@@ -68,7 +68,7 @@ def remove(args):
     try:
         current_hostname = socket.gethostname()
         json_data = openClusterJson()
-        
+
         # 다른 cube host에 삭제되는 호스트 정보 삭제
         for f_val in json_data["clusterConfig"]["hosts"]:
             if current_hostname != f_val["hostname"]:

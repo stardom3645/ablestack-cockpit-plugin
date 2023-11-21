@@ -52,19 +52,19 @@ def createArgumentParser():
 
     # output 민감도 추가(v갯수에 따라 output및 log가 많아짐):
     parser.add_argument('-v', '--verbose', action='count', default=0, help='increase output verbosity')
-    
+
     # flag 추가(샘플임, 테스트용으로 json이 아닌 plain text로 출력하는 플래그 역할)
     parser.add_argument('-H', '--Human', action='store_const', dest='flag_readerble', const=True, help='Human readable')
-    
+
     # Version 추가
     parser.add_argument('-V', '--Version', action='version', version='%(prog)s 1.0')
 
     return parser
 
 def createCcvmCloudinit(args):
-    
+
     success_bool = True
-    
+
     # cloudinit iso에 사용할 hosts 파일 생성
     cmd = "cat > "+args.file1+"<< EOF\n"
     cmd += args.text1
@@ -83,7 +83,7 @@ def createCcvmCloudinit(args):
     cmd += "\nEOF"
     os.system(cmd)
 
-    # cloudinit iso 생성 (/usr/share/cockpit/ablestack/tools/vmconfig/ccvm/ccvm-cloudinit.iso)   
+    # cloudinit iso 생성 (/usr/share/cockpit/ablestack/tools/vmconfig/ccvm/ccvm-cloudinit.iso)
     result = ""
     if args.sn_nic == None: #서비스 네트워크가 없을 경우
         if args.mgmt_gw == None:
@@ -121,13 +121,13 @@ def createCcvmCloudinit(args):
 
             if ret_num != 0:
                 return createReturn(code=500, val=host_name + " : pcs 클러스터 호스트에 /vmconfig/ccvm 폴더생성 명령 실패")
-            
+
             # /ccvm/ccvm-cloudinit.iso 복사 실패
             for i in [1,2,3]:
                 ret_num = os.system("scp -q "+"/var/lib/libvirt/images/ccvm-cloudinit.iso root@"+host_name+":"+"/var/lib/libvirt/images/ccvm-cloudinit.iso")
                 if ret_num == 0:
                     break
-                    
+
             if ret_num != 0:
                 return createReturn(code=500, val=host_name + " : pcs 클러스터 호스트에 /ccvm/ccvm-cloudinit.iso 복사 실패")
 
