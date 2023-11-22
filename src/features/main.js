@@ -17,7 +17,7 @@ $(document).ready(function(){
     $('#dropdown-menu-storage-cluster-status').hide();
     $('#dropdown-menu-cloud-cluster-status').hide();
     $('#dropdown-menu-storage-vm-status').hide();
-    $('#dropdown-menu-cloud-vm-status').hide();
+    // $('#dropdown-menu-cloud-vm-status').hide();
 
     $('#button-open-modal-wizard-storage-cluster').hide();
     $('#button-open-modal-wizard-storage-vm').hide();
@@ -63,6 +63,9 @@ $(document).ready(function(){
     // 전체 시스템 종료 페이지 로드
     $('#div-modal-auto-shutdown').load("./src/features/auto-shutdown.html");
     $('#div-modal-auto-shutdown').hide();
+    // ccvm db 백업 페이지 로드
+    $('#div-modal-db-backup-cloud-vm-first').load("./src/features/cloud-vm-dbbackup.html");
+    $('#div-modal-db-backup-cloud-vm-first').hide();
 
     cockpit.spawn(['python3', pluginpath + '/python/pcs/pcsExehost.py'])
     .then(function (data) {
@@ -107,27 +110,6 @@ var cpu=0;
 var memory=0;
 $('#card-action-cloud-vm-change').on('click', function(){
     ccvm_instance.createChangeModal();
-});
-
-/** cloud vm DB backup modal 관련 action start */
-$('#card-action-cloud-vm-db-dump').on('click', function(){
-    $('#div-modal-db-backup-cloud-vm').show();
-});
-$('#button-close-modal-cloud-vm-db-dump').on('click', function(){
-    $('#dbdump-prepare-status').html("")
-    $('#div-modal-db-backup-cloud-vm').hide();
-    $('#div-modal-wizard-cluster-config-finish-db-dump-file-download').hide();
-    $('#button-execution-modal-cloud-vm-db-dump').show();
-    $('#button-cancel-modal-cloud-vm-db-dump').show();
-    $('#div-db-backup').text("클라우드센터 가상머신의 데이터베이스를 백업하시겠습니까?");
-});
-$('#button-cancel-modal-cloud-vm-db-dump').on('click', function(){
-    $('#dbdump-prepare-status').html("")
-    $('#div-modal-db-backup-cloud-vm').hide();
-    $('#div-modal-wizard-cluster-config-finish-db-dump-file-download').hide();
-    $('#button-execution-modal-cloud-vm-db-dump').show();
-    $('#button-cancel-modal-cloud-vm-db-dump').show();
-    $('#div-db-backup').text("클라우드센터 가상머신의 데이터베이스를 백업하시겠습니까?");
 });
 
 $('#card-action-cloud-vm-connect').on('click', function(){
@@ -271,6 +253,11 @@ $('#menu-item-set-auto-shutdown-step-two').on('click',function(){
     $('#modal-div-auto-shutdown-mount').show();
 });
 
+// 클라우드센터 VM DB 백업 드롭다운 버튼 클릭시
+$('#card-action-cloud-vm-db-dump').on('click', function(){
+    $('#div-modal-db-backup-cloud-vm-first').show();
+    $('#div-modal-wizard-cluster-config-finish-db-dump-file-download-empty-state').hide();
+});
 
 //div-modal-status-alert modal 닫기
 $('#modal-status-alert-button-close1, #modal-status-alert-button-close2').on('click', function(){
