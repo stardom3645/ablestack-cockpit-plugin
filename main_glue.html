@@ -37,7 +37,7 @@
                                             <button class="pf-c-dropdown__toggle pf-m-plain" id="card-action-storage-cluster-status" aria-expanded="false" type="button" aria-label="Actions">
                                                 <i class="fas fa-ellipsis-v" aria-hidden="true"></i>
                                             </button>
-                                            <ul class="pf-c-dropdown__menu pf-m-align-right" aria-labelledby="card-action-storage-cluster-status" id="dropdown-menu-storage-cluster-status">
+                                            <!-- <ul class="pf-c-dropdown__menu pf-m-align-right" aria-labelledby="card-action-storage-cluster-status" id="dropdown-menu-storage-cluster-status">
                                                 <li>
                                                     <button class="pf-c-dropdown__menu-item pf-m-disabled" type="button" id="menu-item-set-maintenance-mode" >GlueFS 구성</button>
                                                 </li>
@@ -59,7 +59,7 @@
                                                 <li>
                                                     <button class="pf-c-dropdown__menu-item pf-m-disabled" type="button" id="menu-item-set-maintenance-mode" >파일 시스템 제어</button>
                                                 </li>
-                                            </ul>
+                                            </ul> -->
                                         </div>
                                     </div>
                                 </div>
@@ -144,29 +144,29 @@
                     <div class="pf-l-grid pf-m-gutter">
                         <!-- 파일 시스템 카드 영역 시작-->
                         <div class="pf-l-grid__item pf-m-12-col">
-                            <div class="pf-c-card pf-m-hoverable pf-m-compact" id="card-storage-cluster-status">
+                            <div class="pf-c-card pf-m-hoverable pf-m-compact" id="card-iscsi">
                                 <div class="pf-c-card__header">
-                                    <div class="pf-c-card__title" id="card-storage-cluster-status-title">iSCSI</div>
+                                    <div class="pf-c-card__title" id="card-iscsi-title">iSCSI</div>
                                     <div class="pf-c-card__actions">
                                         <div class="pf-c-dropdown">
-                                            <button class="pf-c-dropdown__toggle pf-m-plain" id="card-action-storage-cluster-status" aria-expanded="false" type="button" aria-label="Actions">
+                                            <button class="pf-c-dropdown__toggle pf-m-plain" id="card-action-iscsi" aria-expanded="false" type="button" aria-label="Actions">
                                                 <i class="fas fa-ellipsis-v" aria-hidden="true"></i>
                                             </button>
-                                            <ul class="pf-c-dropdown__menu pf-m-align-right" aria-labelledby="card-action-storage-cluster-status" id="dropdown-menu-storage-cluster-status">
+                                            <ul class="pf-c-dropdown__menu pf-m-align-right" aria-labelledby="card-action-iscsi" id="dropdown-menu-iscsi">
                                                 <li>
-                                                    <button class="pf-c-dropdown__menu-item pf-m-disabled" type="button" id="menu-item-set-maintenance-mode" >iSCSI 구성</button>
+                                                    <button class="pf-c-dropdown__menu-item pf-m-disabled" type="button" id="menu-item-iscsi-config">iSCSI 구성</button>
                                                 </li>
                                                 <li>
-                                                    <button class="pf-c-dropdown__menu-item pf-m-disabled" type="button" id="menu-item-set-maintenance-mode" >iSCSI 삭제</button>
+                                                    <button class="pf-c-dropdown__menu-item pf-m-disabled" type="button" id="menu-item-iscsi-destroy">iSCSI 삭제</button>
                                                 </li>
                                                 <li>
-                                                    <button class="pf-c-dropdown__menu-item pf-m-disabled" type="button" id="menu-item-set-maintenance-mode" >서비스 제어</button>
+                                                    <button class="pf-c-dropdown__menu-item pf-m-disabled" type="button" id="menu-item-iscsi-control">서비스 제어</button>
                                                 </li>
                                                 <li>
-                                                    <button class="pf-c-dropdown__menu-item pf-m-disabled" type="button" id="menu-item-set-maintenance-mode" >타겟 생성</button>
+                                                    <button class="pf-c-dropdown__menu-item pf-m-disabled" type="button" id="menu-item-iscsi-target-create">타겟 생성</button>
                                                 </li>
                                                 <li>
-                                                    <button class="pf-c-dropdown__menu-item pf-m-disabled" type="button" id="menu-item-set-maintenance-mode" >ACL 설정 연결</button>
+                                                    <button class="pf-c-dropdown__menu-item pf-m-disabled" type="button" id="menu-item-iscsi-acl">ACL 설정 연결</button>
                                                 </li>
                                             </ul>
                                         </div>
@@ -174,7 +174,7 @@
                                 </div>
                                 <div class="pf-c-card__body">
                                     <dl class="pf-c-description-list pf-m-horizontal" style="--pf-c-description-list--RowGap: 10px;">
-                                        <table class="pf-c-table pf-m-compact pf-m-grid-lg" role="grid" aria-label="This is a compact table example" id="compact-demo-table">
+                                        <table class="pf-c-table pf-m-compact pf-m-grid-lg" role="grid" aria-label="This is a compact table example" id="iscsi-target">
                                             <thead>
                                                 <tr role="row">
                                                     <th role="columnheader" scope="col" class="pf-m-width-20">대상</th>
@@ -185,26 +185,24 @@
                                                     <th class="pf-c-table__icon" role="columnheader" scope="col">삭제</th>
                                                 </tr>
                                             </thead>
-
                                             <tbody role="rowgroup">
-                                                <tr role="row">
-                                                    <td role="cell" data-label="대상">iqn.2023.05-com.ceph:01312</td>
-                                                    <td role="cell" data-label="포털">10.10.2.14</td>
-                                                    <td role="cell" data-label="이미지">rbd/iscsi-test1</td>
-                                                    <td role="cell" data-label="크기">10GiB</td>
-                                                    <td class="pf-c-table__icon" role="cell" data-label="편집"><i class="fas fa-edit"></i></td>
-                                                    <td class="pf-c-table__icon" role="cell" data-label="삭제"><i class="fas fa-trash"></i></td>
-                                                </tr>
-                                                <tr role="row">
-                                                    <td role="cell" data-label="대상">iqn.2023.05-com.ceph:01211</td>
-                                                    <td role="cell" data-label="포털">10.10.2.14</td>
-                                                    <td role="cell" data-label="이미지">rbd/iscsi-test1</td>
-                                                    <td role="cell" data-label="크기">50GiB</td>
-                                                    <td class="pf-c-table__icon" role="cell" data-label="편집"><i class="fas fa-edit"></i></td>
-                                                    <td class="pf-c-table__icon" role="cell" data-label="삭제"><i class="fas fa-trash"></i></td>
+                                                <tr role="row" id="iscsi-target-list">
+                                                    <td role="cell" data-label="대상" id="iscsi-target-iqn"></td>
+                                                    <td role="cell" data-label="포털" id="iscsi-target-ip"></td>
+                                                    <td role="cell" data-label="이미지" id="iscsi-target-image"></td>
+                                                    <td role="cell" data-label="크기" id="iscsi-target-size"></td>
+                                                    <td class="pf-c-table__icon" role="cell" data-label="편집" id="iscsi-target-edit"><i class="fas fa-edit"></i></td>
+                                                    <td class="pf-c-table__icon" role="cell" data-label="삭제" id="iscsi-target-delete"><i class="fas fa-trash"></i></td>
                                                 </tr>
                                             </tbody>
                                         </table>
+                                        <div class="pf-c-empty-state" id="iscsi-non">
+                                            <div class="pf-c-empty-state__content">
+                                                <div class="pf-c-empty-state__body">
+                                                    <div>iSCSI 서비스가 구성되어있지 않습니다.</div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </dl>
                                 </div>
                             </div>
@@ -467,6 +465,234 @@
     </div>
 </div>
 <!-- 게이트웨이 가상머신 배포 마법사 진행: Modal 영역 끝 -->
+
+<!-- iSCSI 구성 : Modal 영역 시작 -->
+<div id="div-modal-config-iscsi" class="pf-c-backdrop" style="display:none">
+    <div class="pf-l-bullseye">
+        <div class="pf-c-modal-box pf-m-sm" role="dialog" aria-modal="true" aria-label="iSCSI config">
+            <button id="button-close-modal-config-iscsi" aria-disabled="false" aria-label="Close" class="pf-c-button pf-m-plain" type="button">
+                <i class="fas fa-times" aria-hidden="true"></i>
+            </button>
+            <header class="pf-c-modal-box__header"><h1 class="pf-c-modal-box__title"><span class="pf-c-modal-box__title-text">iSCSI 구성</span></h1></header>
+            <div class="pf-c-modal-box__body">
+                <div>iSCSI를 구성하시겠습니까?</div>
+            </div>
+            <footer class="pf-c-modal-box__footer">
+                <button id="button-execution-modal-config-iscsi" aria-disabled="false" class="pf-c-button pf-m-primary" type="button" data-ouia-safe="true">실행</button>
+                <button id="button-cancel-modal-config-iscsi" aria-disabled="false" class="pf-c-button pf-m-link" type="button" data-ouia-safe="true">취소</button>
+            </footer>
+        </div>
+    </div>
+</div>
+<!-- iSCSI 구성 : Modal 영역 끝 -->
+
+<!-- iSCSI 삭제 : Modal 영역 시작 -->
+<div id="div-modal-destroy-iscsi" class="pf-c-backdrop" style="display:none">
+    <div class="pf-l-bullseye">
+        <div class="pf-c-modal-box pf-m-sm" role="dialog" aria-modal="true" aria-label="iSCSI destroy">
+            <button id="button-close-modal-destroy-iscsi" aria-disabled="false" aria-label="Close" class="pf-c-button pf-m-plain" type="button">
+                <i class="fas fa-times" aria-hidden="true"></i>
+            </button>
+            <header class="pf-c-modal-box__header"><h1 class="pf-c-modal-box__title"><span class="pf-c-modal-box__title-text">iSCSI 삭제</span></h1></header>
+            <div class="pf-c-modal-box__body">
+                <div>iSCSI를 삭제하시겠습니까?</div>
+            </div>
+            <footer class="pf-c-modal-box__footer">
+                <button id="button-execution-modal-destroy-iscsi" aria-disabled="false" class="pf-c-button pf-m-primary" type="button" data-ouia-safe="true">실행</button>
+                <button id="button-cancel-modal-destroy-iscsi" aria-disabled="false" class="pf-c-button pf-m-link" type="button" data-ouia-safe="true">취소</button>
+            </footer>
+        </div>
+    </div>
+</div>
+<!-- iSCSI 삭제 : Modal 영역 끝 -->
+
+<!-- iSCSI 서비스 제어 : Modal 영역 시작 -->
+<div id="div-modal-iscsi-service-control" class="pf-c-backdrop" style="display:none">
+    <div class="pf-l-bullseye">
+        <div class="pf-c-modal-box pf-m-sm" role="dialog" aria-modal="true" aria-label="iSCSI Service Control">
+            <button id="button-close-iscsi-service-control" aria-disabled="false" aria-label="Close" class="pf-c-button pf-m-plain" type="button">
+                <i class="fas fa-times" aria-hidden="true"></i>
+            </button>
+            <header class="pf-c-modal-box__header"><h1 class="pf-c-modal-box__title"><span class="pf-c-modal-box__title-text">iSCSI 서비스 제어</span></h1></header>
+            <div class="pf-c-modal-box__body">
+                <div>iSCSI 서비스 제어 명령을 선택해주세요</div>
+                <div id="div-modal-iscsi-service-control" style="color: var(--pf-global--danger-color--100);"></div>
+                <div>
+                    <div class="pf-c-dropdown">
+                        <select class="pf-c-form-control" id="form-select-iscsi-service-control" name="form-select-iscsi-service-control" style="width:100%">
+                            <option value="" selected>선택하십시오</option>
+                            <option value="start">시작</option>
+                            <option value="restart">재시작</option>
+                            <option value="stop">정지</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <footer class="pf-c-modal-box__footer">
+                <button id="button-execution-modal-iscsi-service-control" aria-disabled="false" class="pf-c-button pf-m-primary" type="button" data-ouia-safe="true">실행</button>
+                <button id="button-cancel-modal-iscsi-service-control" aria-disabled="false" class="pf-c-button pf-m-link" type="button" data-ouia-safe="true">취소</button>
+            </footer>
+        </div>
+    </div>
+</div>
+<!-- iSCSI 서비스 제어 : Modal 영역 끝 -->
+
+<!-- iSCSI 타겟 생성 : Modal 영역 시작 -->
+<div id="div-modal-create-iscsi-target" class="pf-c-backdrop" style="display:none">
+    <div class="pf-l-bullseye">
+        <div class="pf-c-modal-box pf-m-align-top pf-m-md" aria-modal="true" aria-label="iSCSI config">
+            <button id="button-close-modal-create-iscsi-target" aria-disabled="false" aria-label="Close" class="pf-c-button pf-m-plain" type="button">
+                <i class="fas fa-times" aria-hidden="true"></i>
+            </button>
+            <header class="pf-c-modal-box__header">
+                <h1 class="pf-c-modal-box__title">
+                    <span class="pf-c-modal-box__title-text">iSCSI 타겟 생성</span>
+                </h1>
+            </header>
+            <div class="pf-c-modal-box__body">
+                <form novalidate class="pf-c-form pf-m-horizontal" style="margin-left:30px;margin-top:30px;margin-bottom:30px">
+                    <div class="pf-c-form__group">
+                        <div class="pf-c-form__group-label">
+                            <label class="pf-c-form__label">
+                                <span class="pf-c-form__label-text">타겟 IQN</span>
+                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                            </label>
+                        </div>
+                        <div class="pf-c-form__group-control">
+                            <input class="pf-c-form-control" type="text" value="" id="input-target-iqn" name="input-target-iqn" style="width:60%;" required>
+                        </div>
+                    </div>
+                    <div class="pf-c-form__group">
+                        <div class="pf-c-form__group-label">
+                            <label class="pf-c-form__label">
+                                <span class="pf-c-form__label-text">이미지</span>
+                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                            </label>
+                        </div>
+                        <div class="pf-c-form__group-control" style="margin-top:10px;">
+                            <div class="pf-c-radio">
+                                <input class="pf-c-radio__input" type="radio" id="form-radio-image-new" name="radio-image" value="new" checked/>
+                                <label class="pf-c-radio__label" for="form-radio-image-new">신규 생성</label>
+                            </div>
+                            <div class="pf-c-radio">
+                                <input class="pf-c-radio__input" type="radio" id="form-radio-image-exist" name="radio-image" value="existing" />
+                                <label class="pf-c-radio__label" for="form-radio-image-exist">기존 이미지 사용</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pf-c-form__group" id="form-label-image-name">
+                        <div class="pf-c-form__group-label">
+                            <label class="pf-c-form__label">
+                                <span class="pf-c-form__label-text">이름</span>
+                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                            </label>
+                        </div>
+                        <div class="pf-c-form__group-control">
+                            <input class="pf-c-form-control" type="text" id="image-name" name="image-name" style="width:60%;">
+                        </div>
+                    </div>
+                    <div class="pf-c-form__group" id="form-label-image-size">
+                        <div class="pf-c-form__group-label">
+                            <label class="pf-c-form__label" for="form-modal-select-image-size">
+                                <span class="pf-c-form__label-text">크기</span>
+                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                            </label>
+                        </div>
+                        <div class="pf-c-form__group-control" id="form-text-image-size">
+                            <input class="pf-c-form-control" type="text" id="image-size" name="image-size" style="width:50%;">
+                            <select class="pf-c-form-control" id="form-modal-select-image-size" name="form-modal-select-image-size" style="width:10%;">
+                                <option value="g" selected>GB</option>
+                                <option value="t">TB</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="pf-c-form__group" id="form-label-image-list">
+                        <div class="pf-c-form__group-label">
+                            <label class="pf-c-form__label" for="form-select-target-image">
+                                <span class="pf-c-form__label-text">경로</span>
+                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                            </label>
+                        </div>
+                        <div class="pf-c-form__group-control" id="form-target-image" name="form-target-image" style="width:60%;">
+                            <select class="pf-c-form-control" id="form-select-target-image" name="form-select-target-image">  
+                            </select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <footer class="pf-c-modal-box__footer">
+                <button id="button-execution-modal-create-iscsi-target" aria-disabled="false" class="pf-c-button pf-m-primary" type="button" data-ouia-safe="true">실행</button>
+                <button id="button-cancel-modal-create-iscsi-target" aria-disabled="false" class="pf-c-button pf-m-link" type="button" data-ouia-safe="true">취소</button>
+            </footer>
+        </div>
+    </div>
+</div>
+<!-- iSCSI 타겟 생성 : Modal 영역 끝 -->
+
+<!-- iSCSI 타겟 편집 : Modal 영역 시작 -->
+<div id="div-modal-edit-iscsi-target" class="pf-c-backdrop" style="display:none">
+    <div class="pf-l-bullseye">
+        <div class="pf-c-modal-box pf-m-sm" role="dialog" aria-modal="true" aria-label="iSCSI target edit">
+            <button id="button-close-modal-edit-iscsi-target" aria-disabled="false" aria-label="Close" class="pf-c-button pf-m-plain" type="button">
+                <i class="fas fa-times" aria-hidden="true"></i>
+            </button>
+            <header class="pf-c-modal-box__header"><h1 class="pf-c-modal-box__title"><span class="pf-c-modal-box__title-text">iSCSI 타겟 편집</span></h1></header>
+            <div class="pf-c-modal-box__body">
+                <div style="margin-left:30px;">타겟에 연결된 <span id="image"></span> 이미지 크기를 변경합니다.</div>
+                <form novalidate class="pf-c-form pf-m-horizontal" style="margin-top:20px;margin-bottom:20px">
+                    <div class="pf-c-form__group" id="form-label-image-size">
+                        <div class="pf-c-form__group-label" style="margin-left:40px; text-align:right">
+                            <label class="pf-c-form__label" for="form-modal-select-image-size">
+                                <span class="pf-c-form__label-text">크기</span>
+                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                            </label>
+                        </div>
+                        <div class="pf-c-form__group-control">
+                            <input class="pf-c-form-control" type="text" id="imageSize" style="width:50%;">
+                            <select class="pf-c-form-control" id="form-modal-select-image-size" name="form-modal-select-image-size" style="width:20%;">
+                                <option value="g" selected>GB</option>
+                                <option value="t">TB</option>
+                            </select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <footer class="pf-c-modal-box__footer">
+                <button id="button-execution-modal-edit-iscsi-target" aria-disabled="false" class="pf-c-button pf-m-primary" type="button" data-ouia-safe="true">실행</button>
+                <button id="button-cancel-modal-edit-iscsi-target" aria-disabled="false" class="pf-c-button pf-m-link" type="button" data-ouia-safe="true">취소</button>
+            </footer>
+        </div>
+    </div>
+</div>
+<!-- iSCSI 타겟 편집 : Modal 영역 끝 -->
+
+<!-- iSCSI 타겟 삭제 : Modal 영역 시작 -->
+<div id="div-modal-delete-iscsi-target" class="pf-c-backdrop" style="display:none">
+    <div class="pf-l-bullseye">
+        <div class="pf-c-modal-box pf-m-sm" role="dialog" aria-modal="true" aria-label="iSCSI target delete">
+            <button id="button-close-modal-delete-iscsi-target" aria-disabled="false" aria-label="Close" class="pf-c-button pf-m-plain" type="button">
+                <i class="fas fa-times" aria-hidden="true"></i>
+            </button>
+            <header class="pf-c-modal-box__header"><h1 class="pf-c-modal-box__title"><span class="pf-c-modal-box__title-text">iSCSI 타겟 삭제</span></h1></header>
+            <div class="pf-c-modal-box__body">
+                <div><span id="iqn"></span> 타겟을 삭제하시겠습니까?</div>
+                <div class="pf-c-form__group" id='delete-iscsi-target-disable' style="margin-left: 20px;margin-top: 20px; display:none">
+                    <div class="pf-c-form__group-label">
+                        <div class="pf-c-check">
+                            <input class="pf-c-check__input" type="checkbox" id="check-delete-iscsi-target" name="check-delete-iscsi-target" />
+                            <label class="pf-c-check__label" for="check-delete-iscsi-target"><span id="image"></span> 이미지 삭제</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <footer class="pf-c-modal-box__footer">
+                <button id="button-execution-modal-delete-iscsi-target" aria-disabled="false" class="pf-c-button pf-m-primary" type="button" data-ouia-safe="true">실행</button>
+                <button id="button-cancel-modal-delete-iscsi-target" aria-disabled="false" class="pf-c-button pf-m-link" type="button" data-ouia-safe="true">취소</button>
+            </footer>
+        </div>
+    </div>
+</div>
+<!-- iSCSI 타겟 삭제 : Modal 영역 끝 -->
 
 <!-- 실행중 : Modal 영역 시작 -->
 <div id="div-modal-spinner" class="pf-c-backdrop" style="display:none">
