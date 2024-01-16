@@ -77,6 +77,8 @@ def create(args):
 
     if hypervisor == "cell":
         # 호스트의 cluster.json 파일 scvm에 복사
+
+        os.system("rm -f "+json_file_path)
         os.system("scp -q -o StrictHostKeyChecking=no root@"+ablecube_host+":" + json_file_path + " " + json_file_path)
 
         # cluster.json 파일 읽어오기
@@ -111,7 +113,7 @@ def create(args):
         # hosts 파일 세팅
         hosts = check_output(["cat /etc/hosts"], universal_newlines=True, shell=True, env=env)
 
-        os.system("mkdir " + pluginpath+"/tools/vmconfig/gwvm/")
+        os.system("mkdir -p " + pluginpath+"/tools/vmconfig/gwvm/")
         os.system("cp -f /etc/hosts " + pluginpath+"/tools/vmconfig/gwvm/hosts")
         os.system("cp -f /root/.ssh/id_rsa " + pluginpath+"/tools/vmconfig/gwvm/id_rsa")
         os.system("cp -f /root/.ssh/id_rsa.pub " + pluginpath+"/tools/vmconfig/gwvm/id_rsa.pub")
@@ -130,22 +132,22 @@ def create(args):
 
 
         if json_data["clusterConfig"]["pcsCluster"]["hostname1"] is not None:
-            # pcs_cluster_list.append(json_data["clusterConfig"]["pcsCluster"]["hostname1"])
-            # create_gwvm_cloudinit_cmd.append(json_data["clusterConfig"]["pcsCluster"]["hostname1"])
-            pcs_cluster_list.append("10.10.2.1")
-            create_gwvm_cloudinit_cmd.append("10.10.2.1")
+            pcs_cluster_list.append(json_data["clusterConfig"]["pcsCluster"]["hostname1"])
+            create_gwvm_cloudinit_cmd.append(json_data["clusterConfig"]["pcsCluster"]["hostname1"])
+            # pcs_cluster_list.append("10.10.2.1")
+            # create_gwvm_cloudinit_cmd.append("10.10.2.1")
 
         if json_data["clusterConfig"]["pcsCluster"]["hostname2"] is not None:
-            # pcs_cluster_list.append(json_data["clusterConfig"]["pcsCluster"]["hostname2"])
-            # create_gwvm_cloudinit_cmd.append(json_data["clusterConfig"]["pcsCluster"]["hostname2"])
-            pcs_cluster_list.append("10.10.2.2")
-            create_gwvm_cloudinit_cmd.append("10.10.2.2")
+            pcs_cluster_list.append(json_data["clusterConfig"]["pcsCluster"]["hostname2"])
+            create_gwvm_cloudinit_cmd.append(json_data["clusterConfig"]["pcsCluster"]["hostname2"])
+            # pcs_cluster_list.append("10.10.2.2")
+            # create_gwvm_cloudinit_cmd.append("10.10.2.2")
 
         if json_data["clusterConfig"]["pcsCluster"]["hostname3"] is not None:
-            # pcs_cluster_list.append(json_data["clusterConfig"]["pcsCluster"]["hostname3"])
-            # create_gwvm_cloudinit_cmd.append(json_data["clusterConfig"]["pcsCluster"]["hostname3"])
-            pcs_cluster_list.append("10.10.2.3")
-            create_gwvm_cloudinit_cmd.append("10.10.2.3")
+            pcs_cluster_list.append(json_data["clusterConfig"]["pcsCluster"]["hostname3"])
+            create_gwvm_cloudinit_cmd.append(json_data["clusterConfig"]["pcsCluster"]["hostname3"])
+            # pcs_cluster_list.append("10.10.2.3")
+            # create_gwvm_cloudinit_cmd.append("10.10.2.3")
 
         create_gwvm_cloudinit_cmd.append('--mgmt-nic')
         create_gwvm_cloudinit_cmd.append('enp0s20')
@@ -166,18 +168,16 @@ def create(args):
         create_gwvm_cloudinit_cmd.append('--sn-ip')
         create_gwvm_cloudinit_cmd.append(pn_ip)
         create_gwvm_cloudinit_cmd.append('--sn-prefix')
-        create_gwvm_cloudinit_cmd.append(pn_cidr)
-
+        create_gwvm_cloudinit_cmd.append(str(pn_cidr))
         result = json.loads(python3(create_gwvm_cloudinit_cmd))
-
         # gwvm xml 생성
         result = json.loads(python3(pluginpath + '/python/gwvm/create_gwvm_xml.py', '-c', cpu_core, '-m', memory_gb, '-mnb', mngt_nic, '-snb', pn_nic, '-hns', pcs_cluster_list ))
         # result로 에러 체크
 
         # gwvm pcs 클러스터 배포
-        # result = json.loads(python3(pluginpath + 'python/pcs/pcsExehost.py' ))
-        # pcs_exe_ip = result.val
-        pcs_exe_ip = '10.10.2.1'
+        result = json.loads(python3(pluginpath + '/python/pcs/pcsExehost.py' ))
+        pcs_exe_ip = result["val"]
+        # pcs_exe_ip = '10.10.2.1'
         ret = ssh('-o', 'StrictHostKeyChecking=no', '-o', 'ConnectTimeout=5', pcs_exe_ip, "python3 " + pluginpath + "/python/gwvm/create_gwvm_setup_pcs_cluster.py").strip()
 
         # gwvm 부팅 완료 대기
@@ -195,15 +195,16 @@ def create(args):
         if gwvm_boot_check != 0:
             return createReturn(code=500, val="gwvm did not boot. : "+e)
 
-        # gwvm 재부팅 시, 마운트 재설정
-        ssh('-o', 'StrictHostKeyChecking=no', '-o', 'ConnectTimeout=5', mngt_ip, 'echo "/usr/bin/mount -t ceph admin@.fs=/ /fs" >>/etc/rc.d/rc.local').strip()
-        ssh('-o', 'StrictHostKeyChecking=no', '-o', 'ConnectTimeout=5', mngt_ip, 'echo -e "\n[Install]\nWantedBy=multi-user.target" >> /usr/lib/systemd/system/rc-local.service').strip()
-        ssh('-o', 'StrictHostKeyChecking=no', '-o', 'ConnectTimeout=5', mngt_ip, 'chmod +x /etc/rc.d/rc.local').strip()
-        ssh('-o', 'StrictHostKeyChecking=no', '-o', 'ConnectTimeout=5', mngt_ip, 'systemctl start rc-local.service').strip()
-        ssh('-o', 'StrictHostKeyChecking=no', '-o', 'ConnectTimeout=5', mngt_ip, 'systemctl enable rc-local.service').strip()
         # bootstrap.sh 실행
-        ret = ssh('-o', 'StrictHostKeyChecking=no', '-o', 'ConnectTimeout=5', mngt_ip, "sh /root/bootstrap.sh").strip()
+        # ret = ssh('-o', 'StrictHostKeyChecking=no', '-o', 'ConnectTimeout=5', mngt_ip, "sh /root/bootstrap.sh").strip()
 
+        # gwvm 재부팅 시, 마운트 재설정
+        # ssh('-o', 'StrictHostKeyChecking=no', '-o', 'ConnectTimeout=5', mngt_ip, 'echo "/usr/bin/mount -t ceph admin@.fs=/ /fs" >>/etc/rc.d/rc.local').strip()
+        # ssh('-o', 'StrictHostKeyChecking=no', '-o', 'ConnectTimeout=5', mngt_ip, 'echo -e "\n[Install]\nWantedBy=multi-user.target" >> /usr/lib/systemd/system/rc-local.service').strip()
+        # ssh('-o', 'StrictHostKeyChecking=no', '-o', 'ConnectTimeout=5', mngt_ip, 'chmod +x /etc/rc.d/rc.local').strip()
+        # ssh('-o', 'StrictHostKeyChecking=no', '-o', 'ConnectTimeout=5', mngt_ip, 'systemctl daemon-reload').strip()
+        # ssh('-o', 'StrictHostKeyChecking=no', '-o', 'ConnectTimeout=5', mngt_ip, 'systemctl enable --now rc-local.service').strip()
+        
         return createReturn(code=200, val="Gateway VM Create Success")
 
 # Press the green button in the gutter to run the script.

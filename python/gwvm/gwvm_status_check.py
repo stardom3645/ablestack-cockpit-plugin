@@ -72,15 +72,16 @@ def check(args):
 
     if hypervisor == "cell":
         # gwvm pcs 클러스터 배포
-        # result = json.loads(python3(pluginpath + 'python/pcs/pcsExehost.py' ))
-        # pcs_exe_ip = result.val
-        pcs_exe_ip = '10.10.2.1'
+        result = json.loads(python3(pluginpath + '/python/pcs/pcsExehost.py' ))
+        pcs_exe_ip = result["val"]
+        # pcs_exe_ip = '10.10.2.1'
 
         ret = json.loads(ssh('-o', 'StrictHostKeyChecking=no', '-o', 'ConnectTimeout=1', pcs_exe_ip, "python3 " + pluginpath + "/python/pcs/main.py", "status", "--resource", "gateway_res").strip())
         if ret["code"] == 200:
             # 가상머신 상태
             gwvm_info['role'] = ret["val"]["role"]
             # 실행 노드
+            pcs_exe_gwvm_ip = ret["val"]["started"]
             gwvm_info['started'] = ret["val"]["started"]
 
             if ret["val"]["role"] == "Started":
@@ -89,13 +90,13 @@ def check(args):
                 gwvm_info['nictype'] = "Unknown"
                 gwvm_info['nicbridge'] = "Unknown"
 
-                ret = ssh('-o', 'StrictHostKeyChecking=no', '-o', 'ConnectTimeout=1', pcs_exe_ip, "virsh dominfo --domain gwvm").strip().splitlines()
+                ret = ssh('-o', 'StrictHostKeyChecking=no', '-o', 'ConnectTimeout=1', pcs_exe_gwvm_ip, "virsh dominfo --domain gwvm").strip().splitlines()
                 for line in ret[:-1]:
                     items = line.split(":", maxsplit=1)
                     k = items[0].strip()
                     v = items[1].strip()
                     gwvm_info[k] = v
-                ret = ssh('-o', 'StrictHostKeyChecking=no', '-o', 'ConnectTimeout=1', pcs_exe_ip, "virsh domifaddr --domain gwvm --source agent --interface enp0s20").strip().splitlines()
+                ret = ssh('-o', 'StrictHostKeyChecking=no', '-o', 'ConnectTimeout=1', pcs_exe_gwvm_ip, "virsh domifaddr --domain gwvm --source agent --interface enp0s20").strip().splitlines()
                 for line in ret[:-1]:
                     if 'ipv4' in line and 'enp0s20' in line:
                         items = line.split(maxsplit=4)
@@ -104,7 +105,7 @@ def check(args):
                         gwvm_info['ip'] = ipSplit[0]
                         gwvm_info['prefix'] = ipSplit[1]
                         gwvm_info['mac'] = items[1]
-                ret = ssh('-o', 'StrictHostKeyChecking=no', '-o', 'ConnectTimeout=1', pcs_exe_ip, "virsh domiflist --domain gwvm").strip().splitlines()
+                ret = ssh('-o', 'StrictHostKeyChecking=no', '-o', 'ConnectTimeout=1', pcs_exe_gwvm_ip, "virsh domiflist --domain gwvm").strip().splitlines()
                 for line in ret[:-1]:
                     if gwvm_info['mac'] in line:
                         items = line.split()

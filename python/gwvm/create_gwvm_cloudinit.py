@@ -92,7 +92,7 @@ def createGwvmCloudinit(args):
 
             # /gwvm/gwvm-cloudinit.iso 복사 실패
             for i in [1,2,3]:
-                ret_num = os.system("scp -q "+pluginpath+"/tools/vmconfig/gwvm/gwvm-cloudinit.iso root@"+host_name+":"+pluginpath+"/tools/vmconfig/gwvm/gwvm-cloudinit.iso")
+                ret_num = os.system("scp -q "+pluginpath+"/tools/vmconfig/gwvm/gwvm-cloudinit.iso root@"+host_name+":/var/lib/libvirt/images/gwvm-cloudinit.iso")
                 if ret_num == 0:
                     break
 
