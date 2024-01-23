@@ -19,5 +19,5 @@
         }
     },
 
-    "content-security-policy": "img-src * data: 'unsafe-inline'; default-src 'self' 'unsafe-inline' 'unsafe-eval'; script-src 'self' 'unsafe-inline' 'unsafe-eval'"
+    "content-security-policy": "img-src * data: 'unsafe-inline'; default-src 'self' 'unsafe-inline' 'unsafe-eval'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; connect-src 'self' *"
 }

@@ -82,6 +82,45 @@ $('#card-action-storage-cluster-iscsi-status').on('click', function(){
 $('#button-gateway-vm-setup').on('click', function(){
     $('#div-modal-gateway-vm-setup').show();
 });
+/** 스토리지 서비스 구성 관련 action start */
+$('#button-gateway-vm-action').on('click', function(){
+    
+
+
+    // var request = new XMLHttpRequest();
+    // request.open('GET', 'https://10.10.5.11:8080/api/v1/gwvm/cell');
+    // request.send();
+    // request.onload = function() {
+    //     console.log(JSON.parse(request.response));
+    // }
+
+    console.log(3)
+    // fetch('https://10.10.5.11:8080/api/v1/gwvm/cell')
+ 	// .then(res => res.json())
+    // .then(data => console.log(data));
+
+    fetch('https://10.10.5.11:8080/api/v1/gwvm/cell',{
+        method: 'GET'
+    }).then(res => res.json())
+    .then(data => console.log(data));
+    
+    // http://10.10.5.11:8080/api/v1/gwvm/cell
+    // fetch('http://10.10.5.11:8080/api/v1/gwvm/cell')
+
+    // fetch("http://10.10.5.11:8080/api/v1/gwvm/cell")
+    // .then((response) => response.json())
+    // .then((data) => console.log(data));
+
+    // alert('ajax');
+    // $.ajax({ 
+    //     type: "GET",
+    //     dataType: "json",
+    //     url: "http://10.10.5.11:8080/api/v1/gwvm/cell",
+    //     success: function(data){        
+    //     alert(data);
+    //     }
+    // });
+});
 // iscsi 구성 화면 닫기
 $('#div-modal-iscsi-close, #button-cancel-iscsi').on('click', function(){
     $('#div-modal-iscsi').hide();
@@ -535,6 +574,7 @@ function iscsiCheckInfo(type){
     cockpit.spawn(['python3', pluginpath + '/python/glue/iscsi.py', 'status']).then(function(data){
         var retVal = JSON.parse(data);
         var retVal_val = JSON.parse(retVal.val);
+        return
         if(retVal_val[0].status.running == "1"){
             cockpit.spawn(['python3', pluginpath + '/python/glue/iscsi.py', 'list']).then(function(data){
                 var retVal = JSON.parse(data);
@@ -983,23 +1023,22 @@ function gwvmInfoSet(){
     $("#gwvm-back-color").attr('class','pf-c-label pf-m-orange');
     $("#gwvm-cluster-icon").attr('class','fas fa-fw fa-exclamation-triangle');
 
-    var cmd = ['python3', pluginpath + '/python/gwvm/gwvm_status_check.py',"check"];
+    fetch('https://10.10.5.11:8080/api/v1/gwvm/cell',{
+        method: 'GET'
+    }).then(res => res.json()).then(data => {
+        var retVal = JSON.parse(data.Message);
 
-    if(console_log){console.log(cmd);}
-    cockpit.spawn(cmd).then(function(data){
-        var retVal = JSON.parse(data);
-        console.log(retVal)
         if(retVal.code == "200"){
             if(retVal.val["role"] == "Started"){
-                var started_host = retVal.val["started"];
-                var core = retVal.val['CPU(s)'];
-                var mem = toBytes(retVal.val['Max memory'])
-                var ip = retVal.val["ip"];
-                var prefix = retVal.val["prefix"];
-                var gw = retVal.val["gw"];
-                var disk_cap = retVal.val["disk_cap"];
-                var disk_phy = retVal.val["disk_phy"];
-                var disk_usage_rate = retVal.val["disk_usage_rate"];
+                // var started_host = retVal.val["started"];
+                // var core = retVal.val['CPU(s)'];
+                // var mem = toBytes(retVal.val['Max memory'])
+                // var ip = retVal.val["ip"];
+                // var prefix = retVal.val["prefix"];
+                // var gw = retVal.val["gw"];
+                // var disk_cap = retVal.val["disk_cap"];
+                // var disk_phy = retVal.val["disk_phy"];
+                // var disk_usage_rate = retVal.val["disk_usage_rate"];
 
                 $("#gwvm-status").text("Running");
                 $("#gwvm-back-color").attr('class','pf-c-label pf-m-green');
@@ -1023,8 +1062,7 @@ function gwvmInfoSet(){
             cleanGwvmInfo();
             $("#gwvm-status").text("Health Err");
         }
-    })
-    .catch(function(data){
+    }).catch(function(data){
         cleanGwvmInfo()
         $("#gwvm-status").text("Health Err");
         createLoggerInfo("게이트웨이 가상머신 정보 조회 실패");
