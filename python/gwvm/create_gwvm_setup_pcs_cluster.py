@@ -47,7 +47,7 @@ def setupPcsCluster(args):
 
     #=========== pcs cluster 구성 ===========
     # ceph 이미지 등록
-    # os.system("qemu-img convert -f qcow2 -O rbd /var/lib/libvirt/images/ablestack-template-back.qcow2 rbd:rbd/gwvm")
+    os.system("qemu-img convert -f qcow2 -O rbd /var/lib/libvirt/images/ablestack-template-back.qcow2 rbd:rbd/gwvm")
     # 클러스터 구성
     #result = json.loads(python3(pluginpath + '/python/pcs/main.py', 'config', '--cluster', 'gateway_cluster', '--hosts', args.host_names[0], args.host_names[1], args.host_names[2] ))
     # if result['code'] not in [200]:

@@ -45,6 +45,10 @@ $(document).ready(function(){
 // document.ready 영역 끝
 
 // 이벤트 처리 함수
+$('#card-action-gateway-vm-status').on('click', function(){
+    $('#dropdown-menu-gateway-vm-status').toggle();
+});
+
 $('#button-open-modal-wizard-gateway-vm').on('click', function(){
     $('#div-modal-wizard-gateway-vm').show();
 });
@@ -84,42 +88,17 @@ $('#button-gateway-vm-setup').on('click', function(){
 });
 /** 스토리지 서비스 구성 관련 action start */
 $('#button-gateway-vm-action').on('click', function(){
-    
+    var request = new XMLHttpRequest();
+    request.open('PATCH', 'https://10.10.2.12:8080/api/v1/gwvm/start');
+    request.send();
+    request.onload = function() {
+        console.log(JSON.parse(request.response));
+    }
 
-
-    // var request = new XMLHttpRequest();
-    // request.open('GET', 'https://10.10.5.11:8080/api/v1/gwvm/cell');
-    // request.send();
-    // request.onload = function() {
-    //     console.log(JSON.parse(request.response));
-    // }
-
-    console.log(3)
-    // fetch('https://10.10.5.11:8080/api/v1/gwvm/cell')
- 	// .then(res => res.json())
+    // fetch('https://10.10.2.12:8080/api/v1/gwvm/cell',{
+    //     method: 'GET'
+    // }).then(res => res.json())
     // .then(data => console.log(data));
-
-    fetch('https://10.10.5.11:8080/api/v1/gwvm/cell',{
-        method: 'GET'
-    }).then(res => res.json())
-    .then(data => console.log(data));
-    
-    // http://10.10.5.11:8080/api/v1/gwvm/cell
-    // fetch('http://10.10.5.11:8080/api/v1/gwvm/cell')
-
-    // fetch("http://10.10.5.11:8080/api/v1/gwvm/cell")
-    // .then((response) => response.json())
-    // .then((data) => console.log(data));
-
-    // alert('ajax');
-    // $.ajax({ 
-    //     type: "GET",
-    //     dataType: "json",
-    //     url: "http://10.10.5.11:8080/api/v1/gwvm/cell",
-    //     success: function(data){        
-    //     alert(data);
-    //     }
-    // });
 });
 // iscsi 구성 화면 닫기
 $('#div-modal-iscsi-close, #button-cancel-iscsi').on('click', function(){
@@ -1023,11 +1002,11 @@ function gwvmInfoSet(){
     $("#gwvm-back-color").attr('class','pf-c-label pf-m-orange');
     $("#gwvm-cluster-icon").attr('class','fas fa-fw fa-exclamation-triangle');
 
-    fetch('https://10.10.5.11:8080/api/v1/gwvm/cell',{
+    fetch('https://10.10.2.12:8080/api/v1/gwvm/cell',{
         method: 'GET'
     }).then(res => res.json()).then(data => {
         var retVal = JSON.parse(data.Message);
-
+        // console.log(retVal)
         if(retVal.code == "200"){
             if(retVal.val["role"] == "Started"){
                 // var started_host = retVal.val["started"];
@@ -1049,24 +1028,61 @@ function gwvmInfoSet(){
                 $('#td_gwvm_ip_prefix').text(retVal.val["ip"] + "/" + retVal.val["prefix"]);
                 $('#td_gwvm_gw').text(retVal.val["gw"]);
                 $('#td_gwvm_root_disk').text(retVal.val["disk_cap"] + " (사용가능 " + retVal.val["disk_phy"] + " / 사용률 " + retVal.val["disk_usage_rate"] + ")");
-            }else{
+
+                //게이트웨이 버튼 디스플레이 액션
+                $("#button-gateway-vm-setup").hide();
+                $("#menu-item-gateway-vm-setup").hide();
+                $("#menu-item-gateway-vm-setup").removeClass('pf-m-disabled');
+                $("#menu-item-gateway-vm-start").removeClass('pf-m-disabled');
+                $("#menu-item-gateway-vm-stop").removeClass('pf-m-disabled');
+                $("#menu-item-gateway-vm-destroy").removeClass('pf-m-disabled');
+                $("#menu-item-gateway-vm-cleanup").removeClass('pf-m-disabled');
+                $("#menu-item-gateway-vm-migrate").removeClass('pf-m-disabled');
+            }else{                
                 $("#gwvm-status").text("Stopped");
                 cleanGwvmInfo();
+                //게이트웨이 버튼 디스플레이 액션
+                $("#button-gateway-vm-setup").hide();
+                $("#menu-item-gateway-vm-setup").hide();
+                $("#menu-item-gateway-vm-start").removeClass('pf-m-disabled');
+                $("#menu-item-gateway-vm-stop").addClass('pf-m-disabled');
+                $("#menu-item-gateway-vm-destroy").removeClass('pf-m-disabled');
+                $("#menu-item-gateway-vm-cleanup").addClass('pf-m-disabled');
+                $("#menu-item-gateway-vm-migrate").addClass('pf-m-disabled');
             }
         } else if (retVal.code == "400"){
             cleanGwvmInfo();
             $("#gwvm-back-color").attr('class','pf-c-label pf-m-orange');
             $("#gwvm-cluster-icon").attr('class','fas fa-fw fa-exclamation-triangle');
             $("#gwvm-status").text("N/A");
+            //게이트웨이 버튼 디스플레이 액션
+            stateBeforeConfig()
+           
         } else {
             cleanGwvmInfo();
             $("#gwvm-status").text("Health Err");
+            //게이트웨이 버튼 디스플레이 액션
+            stateBeforeConfig()
         }
     }).catch(function(data){
         cleanGwvmInfo()
         $("#gwvm-status").text("Health Err");
-        createLoggerInfo("게이트웨이 가상머신 정보 조회 실패");
+        createLoggerInfo("게이트웨이 가상머신 정보 조회 실패 "+data);
+        //게이트웨이 버튼 디스플레이 액션
+        stateBeforeConfig()
     });
+}
+
+// Gwvm 구성 전 상태
+function stateBeforeConfig(){
+    $("#button-gateway-vm-setup").show();
+    $("#menu-item-gateway-vm-setup").show();
+    $("#menu-item-gateway-vm-setup").removeClass('pf-m-disabled');
+    $("#menu-item-gateway-vm-start").addClass('pf-m-disabled');
+    $("#menu-item-gateway-vm-stop").addClass('pf-m-disabled');
+    $("#menu-item-gateway-vm-destroy").addClass('pf-m-disabled');
+    $("#menu-item-gateway-vm-cleanup").addClass('pf-m-disabled');
+    $("#menu-item-gateway-vm-migrate").addClass('pf-m-disabled');
 }
 
 function cleanGwvmInfo(){

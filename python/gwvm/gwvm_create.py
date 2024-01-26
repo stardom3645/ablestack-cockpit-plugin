@@ -196,7 +196,7 @@ def create(args):
             return createReturn(code=500, val="gwvm did not boot. : "+e)
 
         # bootstrap.sh 실행
-        # ret = ssh('-o', 'StrictHostKeyChecking=no', '-o', 'ConnectTimeout=5', mngt_ip, "sh /root/bootstrap.sh").strip()
+        ret = ssh('-o', 'StrictHostKeyChecking=no', '-o', 'ConnectTimeout=5', mngt_ip, "sh /root/bootstrap.sh").strip()
 
         # gwvm 재부팅 시, 마운트 재설정
         # ssh('-o', 'StrictHostKeyChecking=no', '-o', 'ConnectTimeout=5', mngt_ip, 'echo "/usr/bin/mount -t ceph admin@.fs=/ /fs" >>/etc/rc.d/rc.local').strip()

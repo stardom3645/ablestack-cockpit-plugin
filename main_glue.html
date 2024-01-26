@@ -16,9 +16,8 @@
                 </div>
                 <div class="pf-c-alert__action-group">
                     <!-- <button class="pf-c-button pf-m-link pf-m-inline" type="button" id="button-open-modal-wizard-gateway-vm">게이트웨이 가상머신 배포</button> -->
-                    <button class="pf-c-button pf-m-link pf-m-inline" type="button" id="button-gateway-vm-setup">스토리지 서비스 구성</button>
-                    <button class="pf-c-button pf-m-link pf-m-inline" type="button" id="button-gateway-vm-action">api 호출</button>
-
+                    <button style="display:none;font-size: 0.83rem;" class="pf-c-button pf-m-primary pf-m-inline" id="button-gateway-vm-setup" aria-disabled="false" type="button" data-ouia-safe="true" >게이트웨이 가상머신 구성</button>
+                    <!-- <button style="font-size: 0.83rem;" class="pf-c-button pf-m-primary pf-m-inline" id="button-gateway-vm-action" aria-disabled="false" type="button" data-ouia-safe="true" >게이트웨이 가상머신 구성2</button> -->
                 </div>
             </div>
         </section>
@@ -228,32 +227,32 @@
                     <div class="pf-l-grid pf-m-gutter">
                         <!-- 파일 시스템 카드 영역 시작-->
                         <div class="pf-l-grid__item pf-m-12-col">
-                            <div class="pf-c-card pf-m-hoverable pf-m-compact" id="card-storage-cluster-status">
+                            <div class="pf-c-card pf-m-hoverable pf-m-compact" id="card-sgateway-vm-status">
                                 <div class="pf-c-card__header">
-                                    <div class="pf-c-card__title" id="card-storage-cluster-status-title">게이트웨이 가상머신</div>
+                                    <div class="pf-c-card__title" id="card-gateway-vm-status-title">게이트웨이 가상머신</div>
                                     <div class="pf-c-card__actions">
                                         <div class="pf-c-dropdown">
-                                            <button class="pf-c-dropdown__toggle pf-m-plain" id="card-action-storage-cluster-status" aria-expanded="false" type="button" aria-label="Actions">
+                                            <button class="pf-c-dropdown__toggle pf-m-plain" id="card-action-gateway-vm-status" aria-expanded="false" type="button" aria-label="Actions">
                                                 <i class="fas fa-ellipsis-v" aria-hidden="true"></i>
                                             </button>
-                                            <ul class="pf-c-dropdown__menu pf-m-align-right" aria-labelledby="card-action-storage-cluster-vm-status" id="dropdown-menu-storage-cluster-status" hidden>
+                                            <ul class="pf-c-dropdown__menu pf-m-align-right" aria-labelledby="card-action-gateway-vm-status" id="dropdown-menu-gateway-vm-status" hidden>
                                                 <li>
-                                                    <button class="pf-c-dropdown__menu-item pf-m-disabled" type="button" id="menu-item-set-maintenance-mode" >게이트웨이 VM 구성</button>
+                                                    <button class="pf-c-dropdown__menu-item pf-m-disabled" type="button" id="menu-item-gateway-vm-setup" >게이트웨이 VM 구성</button>
                                                 </li>
                                                 <li>
-                                                    <button class="pf-c-dropdown__menu-item pf-m-disabled" type="button" id="menu-item-set-maintenance-mode" >게이트웨이 VM 삭제</button>
+                                                    <button class="pf-c-dropdown__menu-item pf-m-disabled" type="button" id="menu-item-gateway-vm-start" >게이트웨이 VM 시작</button>
                                                 </li>
                                                 <li>
-                                                    <button class="pf-c-dropdown__menu-item pf-m-disabled" type="button" id="menu-item-set-maintenance-mode" >게이트웨이 VM 시작</button>
+                                                    <button class="pf-c-dropdown__menu-item pf-m-disabled" type="button" id="menu-item-gateway-vm-stop" >게이트웨이 VM 정지</button>
                                                 </li>
                                                 <li>
-                                                    <button class="pf-c-dropdown__menu-item pf-m-disabled" type="button" id="menu-item-set-maintenance-mode" >게이트웨이 VM 정지</button>
+                                                    <button class="pf-c-dropdown__menu-item pf-m-disabled" type="button" id="menu-item-gateway-vm-destroy" >게이트웨이 VM 삭제</button>
                                                 </li>
                                                 <li>
-                                                    <button class="pf-c-dropdown__menu-item pf-m-disabled" type="button" id="menu-item-set-maintenance-mode" >게이트웨이 VM 클린업</button>
+                                                    <button class="pf-c-dropdown__menu-item pf-m-disabled" type="button" id="menu-item-gateway-vm-cleanup" >게이트웨이 VM 클린업</button>
                                                 </li>
                                                 <li>
-                                                    <button class="pf-c-dropdown__menu-item pf-m-disabled" type="button" id="menu-item-set-maintenance-mode" >마이그레이션</button>
+                                                    <button class="pf-c-dropdown__menu-item pf-m-disabled" type="button" id="menu-item-gateway-vm-migrate" >마이그레이션</button>
                                                 </li>
                                             </ul>
                                         </div>
@@ -654,9 +653,117 @@
 <!-- <div class="pf-c-backdrop" id="div-modal-wizard-cluster-config-prepare"></div> -->
 
 
+<!-- 게이트웨이 VM 시작 : Modal 영역 시작 -->
+<div id="div-modal-start-gateway-vm" class="pf-c-backdrop" style="display:none">
+    <div class="pf-l-bullseye">
+        <div class="pf-c-modal-box pf-m-sm" role="dialog" aria-modal="true" aria-label="Gateway VM start">
+            <button id="button-close-modal-gateway-vm-start" aria-disabled="false" aria-label="Close" class="pf-c-button pf-m-plain" type="button">
+                <i class="fas fa-times" aria-hidden="true"></i>
+            </button>
+            <header class="pf-c-modal-box__header"><h1 class="pf-c-modal-box__title"><span class="pf-c-modal-box__title-text">게이트웨이 VM 시작</span></h1></header>
+            <div class="pf-c-modal-box__body">
+                <div>게이트웨이 VM을 시작하시겠습니까?</div>
+            </div>
+            <footer class="pf-c-modal-box__footer">
+                <button id="button-execution-modal-gateway-vm-start" aria-disabled="false" class="pf-c-button pf-m-primary" type="button" data-ouia-safe="true">실행</button>
+                <button id="button-cancel-modal-gateway-vm-start" aria-disabled="false" class="pf-c-button pf-m-link" type="button" data-ouia-safe="true">취소</button>
+            </footer>
+        </div>
+    </div>
+</div>
+<!-- 게이트웨이 VM 시작 : Modal 영역 끝 -->
+
+<!-- 게이트웨이 VM 정지 : Modal 영역 시작 -->
+<div id="div-modal-stop-gateway-vm" class="pf-c-backdrop" style="display:none">
+    <div class="pf-l-bullseye">
+        <div class="pf-c-modal-box pf-m-sm" role="dialog" aria-modal="true" aria-label="Gateway VM stop">
+            <button id="button-close-modal-gateway-vm-stop" aria-disabled="false" aria-label="Close" class="pf-c-button pf-m-plain" type="button">
+                <i class="fas fa-times" aria-hidden="true"></i>
+            </button>
+            <header class="pf-c-modal-box__header"><h1 class="pf-c-modal-box__title"><span class="pf-c-modal-box__title-text">게이트웨이 VM 정지</span></h1></header>
+            <div class="pf-c-modal-box__body">
+                <div>게이트웨이 VM을 정지하시겠습니까?</div>
+            </div>
+            <footer class="pf-c-modal-box__footer">
+                <button id="button-execution-modal-gateway-vm-stop" aria-disabled="false" class="pf-c-button pf-m-primary" type="button" data-ouia-safe="true">실행</button>
+                <button id="button-cancel-modal-gateway-vm-stop" aria-disabled="false" class="pf-c-button pf-m-link" type="button" data-ouia-safe="true">취소</button>
+            </footer>
+        </div>
+    </div>
+</div>
+<!-- 게이트웨이 VM 정지 : Modal 영역 끝 -->
+
+<!-- 게이트웨이 VM 정지 : Modal 영역 시작 -->
+<div id="div-modal-destroy-gateway-vm" class="pf-c-backdrop" style="display:none">
+    <div class="pf-l-bullseye">
+        <div class="pf-c-modal-box pf-m-sm" role="dialog" aria-modal="true" aria-label="Gateway VM destroy">
+            <button id="button-close-modal-gateway-vm-destroy" aria-disabled="false" aria-label="Close" class="pf-c-button pf-m-plain" type="button">
+                <i class="fas fa-times" aria-hidden="true"></i>
+            </button>
+            <header class="pf-c-modal-box__header"><h1 class="pf-c-modal-box__title"><span class="pf-c-modal-box__title-text">게이트웨이 VM 삭제</span></h1></header>
+            <div class="pf-c-modal-box__body">
+                <div>게이트웨이 VM을 삭제하시겠습니까?</div>
+            </div>
+            <footer class="pf-c-modal-box__footer">
+                <button id="button-execution-modal-gateway-vm-destroy" aria-disabled="false" class="pf-c-button pf-m-primary" type="button" data-ouia-safe="true">실행</button>
+                <button id="button-cancel-modal-gateway-vm-destroy" aria-disabled="false" class="pf-c-button pf-m-link" type="button" data-ouia-safe="true">취소</button>
+            </footer>
+        </div>
+    </div>
+</div>
+<!-- 게이트웨이 VM 정지 : Modal 영역 끝 -->
+
+<!-- 게이트웨이 VM 클린업 : Modal 영역 시작 -->
+<div id="div-modal-cleanup-gateway-vm" class="pf-c-backdrop" style="display:none">
+    <div class="pf-l-bullseye">
+        <div class="pf-c-modal-box pf-m-sm" role="dialog" aria-modal="true" aria-label="Gateway VM Cleanup">
+            <button id="button-close-modal-gateway-vm-cleanup" aria-disabled="false" aria-label="Close" class="pf-c-button pf-m-plain" type="button">
+                <i class="fas fa-times" aria-hidden="true"></i>
+            </button>
+            <header class="pf-c-modal-box__header"><h1 class="pf-c-modal-box__title"><span class="pf-c-modal-box__title-text">게이트웨이 VM 클러스터 클린업</span></h1></header>
+            <div class="pf-c-modal-box__body">
+                <div>게이트웨이 VM 클러스터를 클린업하시겠습니까?</div>
+            </div>
+            <footer class="pf-c-modal-box__footer">
+                <button id="button-execution-modal-gateway-vm-cleanup" aria-disabled="false" class="pf-c-button pf-m-primary" type="button" data-ouia-safe="true">실행</button>
+                <button id="button-cancel-modal-gateway-vm-cleanup" aria-disabled="false" class="pf-c-button pf-m-link" type="button" data-ouia-safe="true">취소</button>
+            </footer>
+        </div>
+    </div>
+</div>
+<!-- 게이트웨이 VM 클린업 : Modal 영역 끝 -->
+
+<!-- 게이트웨이 VM 마이그레이션 : Modal 영역 시작 -->
+<div id="div-modal-migration-gateway-vm" class="pf-c-backdrop" style="display:none">
+    <div class="pf-l-bullseye">
+        <div class="pf-c-modal-box pf-m-sm" role="dialog" aria-modal="true" aria-label="Gateway VM migration">
+            <button id="button-close-modal-gateway-vm-migration" aria-disabled="false" aria-label="Close" class="pf-c-button pf-m-plain" type="button">
+                <i class="fas fa-times" aria-hidden="true"></i>
+            </button>
+            <header class="pf-c-modal-box__header"><h1 class="pf-c-modal-box__title"><span class="pf-c-modal-box__title-text">게이트웨이 VM 마이그레이션</span></h1></header>
+            <div class="pf-c-modal-box__body">
+                <div>게이트웨이 VM 마이그레이션할 노드를 선택해주세요</div>
+                <div id="div-modal-migration-gateway-vm-select" style="color: var(--pf-global--danger-color--100);"></div>
+                <div>
+                    <div class="pf-c-dropdown">
+                        <select id="form-select-gateway-vm-migration-node" class="pf-c-form-control" style="width: 100%" name="form-select-gateway-vm-migration-node">
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <footer class="pf-c-modal-box__footer">
+                <button id="button-execution-modal-gateway-vm-migration" aria-disabled="false" class="pf-c-button pf-m-primary" type="button" data-ouia-safe="true">실행</button>
+                <button id="button-cancel-modal-gateway-vm-migration" aria-disabled="false" class="pf-c-button pf-m-link" type="button" data-ouia-safe="true">취소</button>
+            </footer>
+        </div>
+    </div>
+</div>
+<!-- 게이트웨이 VM 마이그레이션 : Modal 영역 끝 -->
+
 <!-- 모달 영역 끝  -->
 
 <!-- 해당 페이지에 필요한 javascript 파일 추가 영역 시작 -->
 <script src="./src/features/glue/main_glue.js"></script>
+<script src="./src/features/glue/gateway-vm-status.js"></script>
 <script src="./src/common/logger.js"></script>
 <!-- 해당 페이지에 필요한 javascript 파일 추가 영역 끝 -->
