@@ -40,7 +40,7 @@ $(document).ready(function(){
     nfsCheckInfo();
     setInterval(() => {
         gwvmInfoSet(),sambaCheckInfo(),gluefsCheckInfo(),nfsCheckInfo(),iscsiCheckInfo('delete');
-    }, 60000);
+    }, 15000);
 });
 // document.ready 영역 끝
 
@@ -86,6 +86,11 @@ $('#card-action-storage-cluster-iscsi-status').on('click', function(){
 $('#button-gateway-vm-setup').on('click', function(){
     $('#div-modal-gateway-vm-setup').show();
 });
+
+$('#menu-item-gateway-vm-setup').on('click', function(){
+    $('#div-modal-gateway-vm-setup').show();
+});
+
 /** 스토리지 서비스 구성 관련 action start */
 $('#button-gateway-vm-action').on('click', function(){
     var request = new XMLHttpRequest();
@@ -152,7 +157,7 @@ $('#menu-item-set-iscsi-construction').on('click', function(){
 // div-modal-alert-button-confirm 클릭시
 $('#modal-status-alert-button-confirm').on('click',function(){
     $('#div-modal-status-alert').hide();
-    location.reload();
+    // location.reload();
 });
 // alert modal 닫기
 $('#modal-status-alert-button-close1, #modal-status-alert-button-close2').on('click', function(){
@@ -1002,74 +1007,96 @@ function gwvmInfoSet(){
     $("#gwvm-back-color").attr('class','pf-c-label pf-m-orange');
     $("#gwvm-cluster-icon").attr('class','fas fa-fw fa-exclamation-triangle');
 
-    fetch('https://10.10.2.12:8080/api/v1/gwvm/cell',{
+    //디테일 정보 가져오기
+    fetch('https://10.10.2.12:8080/api/v1/gwvm/detail/cell',{
         method: 'GET'
     }).then(res => res.json()).then(data => {
-        var retVal = JSON.parse(data.Message);
-        // console.log(retVal)
-        if(retVal.code == "200"){
-            if(retVal.val["role"] == "Started"){
-                // var started_host = retVal.val["started"];
-                // var core = retVal.val['CPU(s)'];
-                // var mem = toBytes(retVal.val['Max memory'])
-                // var ip = retVal.val["ip"];
-                // var prefix = retVal.val["prefix"];
-                // var gw = retVal.val["gw"];
-                // var disk_cap = retVal.val["disk_cap"];
-                // var disk_phy = retVal.val["disk_phy"];
-                // var disk_usage_rate = retVal.val["disk_usage_rate"];
+        var retDetailVal = JSON.parse(data.Message);
+        console.log(retDetailVal)
+        if (retDetailVal.code == "200" || retDetailVal.val["role"] == 'Running') {
+            fetch('https://10.10.2.12:8080/api/v1/gwvm/cell',{
+                method: 'GET'
+            }).then(res => res.json()).then(data => {
+                var retVal = JSON.parse(data.Message);
+                console.log(retVal)
+                if(retVal.code == "200"){
+                    if(retVal.val["role"] == "Started"){
+                        $("#gwvm-status").text(retDetailVal.val["role"]);
+                        $("#gwvm-back-color").attr('class','pf-c-label pf-m-green');
+                        $("#gwvm-cluster-icon").attr('class','fas fa-fw fa-check-circle');
 
-                $("#gwvm-status").text("Running");
-                $("#gwvm-back-color").attr('class','pf-c-label pf-m-green');
-                $("#gwvm-cluster-icon").attr('class','fas fa-fw fa-check-circle');
+                        $('#td_gwvm_started_host').text(retVal.val["started"]);
+                        $('#td_gwvm_cpu_mem').text(retVal.val['CPU(s)'] + " vCore / " + toBytes(retVal.val['Max memory']));
+                        $('#td_gwvm_ip_prefix').text(retVal.val["ip"] + "/" + retVal.val["prefix"]);
+                        $('#td_gwvm_gw').text(retVal.val["gw"]);
+                        $('#td_gwvm_root_disk').text(retVal.val["disk_cap"] + " (사용가능 " + retVal.val["disk_phy"] + " / 사용률 " + retVal.val["disk_usage_rate"] + ")");
 
-                $('#td_gwvm_started_host').text(retVal.val["started"]);
-                $('#td_gwvm_cpu_mem').text(retVal.val['CPU(s)'] + " vCore / " + toBytes(retVal.val['Max memory']));
-                $('#td_gwvm_ip_prefix').text(retVal.val["ip"] + "/" + retVal.val["prefix"]);
-                $('#td_gwvm_gw').text(retVal.val["gw"]);
-                $('#td_gwvm_root_disk').text(retVal.val["disk_cap"] + " (사용가능 " + retVal.val["disk_phy"] + " / 사용률 " + retVal.val["disk_usage_rate"] + ")");
+                        // 마이그레이션 노드 옵션 설정
+                        var nodeText = '( ';
+                        var selectHtml = '<option selected="" value="null">노드를 선택해주세요.</option>';
+                        $('#form-select-gateway-vm-migration-node option').remove();
+                        for(var i=0; i<Object.keys(retDetailVal.val.clustered_host).length; i++){
+                            nodeText = nodeText +retDetailVal.val.clustered_host[i];
+                            if(retDetailVal.val.clustered_host[i] != retDetailVal.val.started){
+                                selectHtml = selectHtml + '<option value="' + retDetailVal.val.clustered_host[i] + '">' + retDetailVal.val.clustered_host[i] + '</option>';
+                            }
+                            if(i == (Object.keys(retDetailVal.val.clustered_host).length - 1)){
 
-                //게이트웨이 버튼 디스플레이 액션
-                $("#button-gateway-vm-setup").hide();
-                $("#menu-item-gateway-vm-setup").hide();
-                $("#menu-item-gateway-vm-setup").removeClass('pf-m-disabled');
-                $("#menu-item-gateway-vm-start").removeClass('pf-m-disabled');
-                $("#menu-item-gateway-vm-stop").removeClass('pf-m-disabled');
-                $("#menu-item-gateway-vm-destroy").removeClass('pf-m-disabled');
-                $("#menu-item-gateway-vm-cleanup").removeClass('pf-m-disabled');
-                $("#menu-item-gateway-vm-migrate").removeClass('pf-m-disabled');
-            }else{                
-                $("#gwvm-status").text("Stopped");
-                cleanGwvmInfo();
-                //게이트웨이 버튼 디스플레이 액션
-                $("#button-gateway-vm-setup").hide();
-                $("#menu-item-gateway-vm-setup").hide();
-                $("#menu-item-gateway-vm-start").removeClass('pf-m-disabled');
-                $("#menu-item-gateway-vm-stop").addClass('pf-m-disabled');
-                $("#menu-item-gateway-vm-destroy").removeClass('pf-m-disabled');
-                $("#menu-item-gateway-vm-cleanup").addClass('pf-m-disabled');
-                $("#menu-item-gateway-vm-migrate").addClass('pf-m-disabled');
-            }
-        } else if (retVal.code == "400"){
-            cleanGwvmInfo();
-            $("#gwvm-back-color").attr('class','pf-c-label pf-m-orange');
-            $("#gwvm-cluster-icon").attr('class','fas fa-fw fa-exclamation-triangle');
-            $("#gwvm-status").text("N/A");
-            //게이트웨이 버튼 디스플레이 액션
-            stateBeforeConfig()
-           
+                                nodeText = nodeText + ' )';
+                            }else{
+                                nodeText = nodeText + ', ';
+                            }
+                        }
+                        $('#form-select-gateway-vm-migration-node').append(selectHtml);
+
+                        //게이트웨이 버튼 디스플레이 액션
+                        $("#button-gateway-vm-setup").hide();
+                        $("#menu-item-gateway-vm-setup").hide();
+                        $("#menu-item-gateway-vm-setup").removeClass('pf-m-disabled');
+                        $("#menu-item-gateway-vm-start").addClass('pf-m-disabled');
+                        $("#menu-item-gateway-vm-stop").removeClass('pf-m-disabled');
+                        $("#menu-item-gateway-vm-destroy").addClass('pf-m-disabled');
+                        $("#menu-item-gateway-vm-cleanup").removeClass('pf-m-disabled');
+                        $("#menu-item-gateway-vm-migrate").removeClass('pf-m-disabled');
+                    }else if(retVal.val["role"] == "Stopped") {
+                        $("#gwvm-status").text(retDetailVal.val["role"]);
+                        cleanGwvmInfo();
+                        //게이트웨이 버튼 디스플레이 액션
+                        $("#button-gateway-vm-setup").hide();
+                        $("#menu-item-gateway-vm-setup").hide();
+                        $("#menu-item-gateway-vm-start").removeClass('pf-m-disabled');
+                        $("#menu-item-gateway-vm-stop").addClass('pf-m-disabled');
+                        $("#menu-item-gateway-vm-destroy").removeClass('pf-m-disabled');
+                        $("#menu-item-gateway-vm-cleanup").addClass('pf-m-disabled');
+                        $("#menu-item-gateway-vm-migrate").addClass('pf-m-disabled');
+                    }else{
+                        allDisableConfig(retDetailVal.val["role"]);
+                    }
+                } else {
+                    allDisableConfig(retDetailVal.val["role"]);
+                    console.log("err1");
+                }
+            }).catch(function(data){
+                allDisableConfig("Health Err");
+                createLoggerInfo("게이트웨이 가상머신 정보 조회 실패 "+data);
+                console.log("게이트웨이 가상머신 정보 조회 실패 "+data);
+            });
+        } else if (retDetailVal.code == "200" || retDetailVal.val["role"] == 'Stopped') {
+            $("#gwvm-status").text("Stopped1");
+            console.log("err2");
+        } else if (retDetailVal.code == "400") {
+            allDisableConfig("Not configured");
+            stateBeforeConfig();
+            
+            console.log("Not configured");
         } else {
-            cleanGwvmInfo();
-            $("#gwvm-status").text("Health Err");
-            //게이트웨이 버튼 디스플레이 액션
-            stateBeforeConfig()
+            allDisableConfig(retDetailVal.val["role"]);
+            console.log("err4");
         }
     }).catch(function(data){
-        cleanGwvmInfo()
-        $("#gwvm-status").text("Health Err");
-        createLoggerInfo("게이트웨이 가상머신 정보 조회 실패 "+data);
-        //게이트웨이 버튼 디스플레이 액션
-        stateBeforeConfig()
+        allDisableConfig("Health Err");
+        createLoggerInfo("게이트웨이 가상머신 상태 정보 상세 조회 실패 "+data);
+        console.log("게이트웨이 가상머신 상태 정보 상세 조회 실패 "+data);
     });
 }
 
@@ -1078,6 +1105,31 @@ function stateBeforeConfig(){
     $("#button-gateway-vm-setup").show();
     $("#menu-item-gateway-vm-setup").show();
     $("#menu-item-gateway-vm-setup").removeClass('pf-m-disabled');
+    $("#menu-item-gateway-vm-start").addClass('pf-m-disabled');
+    $("#menu-item-gateway-vm-stop").addClass('pf-m-disabled');
+    $("#menu-item-gateway-vm-destroy").addClass('pf-m-disabled');
+    $("#menu-item-gateway-vm-cleanup").addClass('pf-m-disabled');
+    $("#menu-item-gateway-vm-migrate").addClass('pf-m-disabled');
+}
+
+function stopStatusConfig(){
+    cleanGwvmInfo();
+    $("#gwvm-status").text("Stopped");
+    //게이트웨이 버튼 디스플레이 액션
+    $("#button-gateway-vm-setup").hide();
+    $("#menu-item-gateway-vm-setup").hide();
+    $("#menu-item-gateway-vm-start").removeClass('pf-m-disabled');
+    $("#menu-item-gateway-vm-stop").addClass('pf-m-disabled');
+    $("#menu-item-gateway-vm-destroy").removeClass('pf-m-disabled');
+    $("#menu-item-gateway-vm-cleanup").addClass('pf-m-disabled');
+    $("#menu-item-gateway-vm-migrate").addClass('pf-m-disabled');
+}
+
+function allDisableConfig(text){
+    cleanGwvmInfo();
+    $("#gwvm-status").text(text);
+    $("#button-gateway-vm-setup").hide();
+    $("#menu-item-gateway-vm-setup").hide();
     $("#menu-item-gateway-vm-start").addClass('pf-m-disabled');
     $("#menu-item-gateway-vm-stop").addClass('pf-m-disabled');
     $("#menu-item-gateway-vm-destroy").addClass('pf-m-disabled');

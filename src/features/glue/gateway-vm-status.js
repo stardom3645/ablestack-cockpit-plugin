@@ -24,7 +24,7 @@ $('#button-execution-modal-gateway-vm-start').on('click', function(){
     $('#div-modal-spinner-header-txt').text('게이트웨이 VM을 시작하고 있습니다.');
     $('#div-modal-spinner').show();
 
-    $("#modal-status-alert-title").html("게이트웨이 VM을 시작 실패");
+    $("#modal-status-alert-title").html("게이트웨이 VM 시작 실패");
     $("#modal-status-alert-body").html("게이트웨이 VM 시작을 실패하였습니다.");
 
     fetch('https://10.10.2.12:8080/api/v1/gwvm/start/cell',{
@@ -37,7 +37,7 @@ $('#button-execution-modal-gateway-vm-start').on('click', function(){
         $('#div-modal-spinner').hide();
         var retVal = JSON.parse(data.Message);
         if(retVal.code == 200){
-            $("#modal-status-alert-title").html("게이트웨이 VM을 시작 완료");
+            $("#modal-status-alert-title").html("게이트웨이 VM 시작 완료");
             $("#modal-status-alert-body").html("게이트웨이 VM 시작을 완료하였습니다.");
             $('#div-modal-status-alert').show();
             createLoggerInfo("gateway vm start success");
@@ -73,7 +73,7 @@ $('#button-execution-modal-gateway-vm-stop').on('click', function(){
     $('#div-modal-spinner-header-txt').text('게이트웨이 VM을 정지하고 있습니다.');
     $('#div-modal-spinner').show();
 
-    $("#modal-status-alert-title").html("게이트웨이 VM을 정지 실패");
+    $("#modal-status-alert-title").html("게이트웨이 VM 정지 실패");
     $("#modal-status-alert-body").html("게이트웨이 VM 정지를 실패하였습니다.");
 
     fetch('https://10.10.2.12:8080/api/v1/gwvm/stop/cell',{
@@ -86,7 +86,7 @@ $('#button-execution-modal-gateway-vm-stop').on('click', function(){
         $('#div-modal-spinner').hide();
         var retVal = JSON.parse(data.Message);
         if(retVal.code == 200){
-            $("#modal-status-alert-title").html("게이트웨이 VM을 정지 완료");
+            $("#modal-status-alert-title").html("게이트웨이 VM 정지 완료");
             $("#modal-status-alert-body").html("게이트웨이 VM 정지를 완료하였습니다.");
             $('#div-modal-status-alert').show();
             createLoggerInfo("gateway vm stop success");
@@ -120,6 +120,10 @@ $('#button-execution-modal-gateway-vm-destroy').on('click', function(){
     $('#div-modal-destroy-gateway-vm').hide();
     $('#div-modal-spinner-header-txt').text('게이트웨이 VM을 삭제하고 있습니다.');
     $('#div-modal-spinner').show();
+
+    $("#modal-status-alert-title").html("게이트웨이 VM 삭제 실패");
+    $("#modal-status-alert-body").html("게이트웨이 VM 삭제를 실패하였습니다.");
+
     fetch('https://10.10.2.12:8080/api/v1/gwvm/delete/cell',{
         method: 'DELETE',
         headers: {
@@ -130,8 +134,9 @@ $('#button-execution-modal-gateway-vm-destroy').on('click', function(){
         var retVal = JSON.parse(data.Message);
 
         if(retVal.code == 200){
-            $('#card-action-gateway-vm-change').attr('disabled', false);
-            $('#button-gateway-vm-snap-rollback').attr('disabled', false);
+            $("#modal-status-alert-title").html("게이트웨이 VM 삭제 완료");
+            $("#modal-status-alert-body").html("게이트웨이 VM 삭제를 완료하였습니다.");
+            $('#div-modal-status-alert').show();
             createLoggerInfo("gateway vm destroy success");
         }
         $('#div-modal-spinner').hide();
@@ -154,10 +159,10 @@ $('#button-close-modal-gateway-vm-cleanup').on('click', function(){
 $('#button-execution-modal-gateway-vm-cleanup').on('click', function(){
     $('#dropdown-menu-cloud-cluster-status').toggle();
     $('#div-modal-cleanup-gateway-vm').hide();
-    $('#div-modal-spinner-header-txt').text('게이트웨이 VM을을 클린업하고 있습니다.');
+    $('#div-modal-spinner-header-txt').text('게이트웨이 VM을 클린업하고 있습니다.');
     $('#div-modal-spinner').show();
 
-    $("#modal-status-alert-title").html("게이트웨이 VM을 클립업 실패");
+    $("#modal-status-alert-title").html("게이트웨이 VM 클립업 실패");
     $("#modal-status-alert-body").html("게이트웨이 VM 클린업을 실패하였습니다.");
 
     fetch('https://10.10.2.12:8080/api/v1/gwvm/cleanup/cell',{
@@ -170,7 +175,7 @@ $('#button-execution-modal-gateway-vm-cleanup').on('click', function(){
         $('#div-modal-spinner').hide();
         var retVal = JSON.parse(data.Message);
         if(retVal.code == 200){
-            $("#modal-status-alert-title").html("게이트웨이 VM을 클린업 완료");
+            $("#modal-status-alert-title").html("게이트웨이 VM 클린업 완료");
             $("#modal-status-alert-body").html("게이트웨이 VM 클린업을 완료하였습니다.");
             $('#div-modal-status-alert').show();
             createLoggerInfo("gateway vm cleanup success");
@@ -206,21 +211,52 @@ $('#button-execution-modal-gateway-vm-migration').on('click', function(){
     }else{
         $('#dropdown-menu-cloud-cluster-status').toggle();
         $('#div-modal-migration-gateway-vm').hide();
-        $('#div-modal-spinner-header-txt').text('클라우드센터VM을 마이그레이션하고 있습니다.');
+        $('#div-modal-spinner-header-txt').text('게이트웨이 VM을 마이그레이션하고 있습니다.');
         $('#div-modal-spinner').show();
-        cockpit.spawn(['/usr/bin/python3', pluginpath + '/python/cloud_cluster_status/card-cloud-cluster-status.py', 'pcsMigration', '--target', valSelect], { host: pcs_exe_host})
-        .then(function(data){
-            var retVal = JSON.parse(data);
-            if(retVal.code == 200){
-                CardCloudClusterStatus();
-                createLoggerInfo("migration gateway vm select spawn success");
-            }
-            $('#div-modal-migration-gateway-vm-select').text('');
+
+        $("#modal-status-alert-title").html("게이트웨이 VM 마이그레이션 실패");
+        $("#modal-status-alert-body").html("게이트웨이 VM 마이그레이션을 실패하였습니다.");
+
+        fetch('https://10.10.2.12:8080/api/v1/gwvm/migrate/cell',{
+            method: 'PATCH',
+            headers: {
+                'accept': 'application/json',
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: "target="+valSelect
+        }).then(res => res.json()).then(data => {
             $('#div-modal-spinner').hide();
+            var retVal = JSON.parse(data.Message);
+            if(retVal.code == 200){
+                $("#modal-status-alert-title").html("게이트웨이 VM 마이그레이션 완료");
+                $("#modal-status-alert-body").html("게이트웨이 VM 마이그레이션을 완료하였습니다.");
+                $('#div-modal-status-alert').show();
+                createLoggerInfo("gateway vm migrate success");
+            }else{
+                $('#div-modal-status-alert').show();
+            }
         }).catch(function(data){
-            createLoggerInfo("migration gateway vm select spawn error");
-            console.log('div-modal-migration-gateway-vm-select spawn error');
+            $('#div-modal-spinner').hide();
+            $('#div-modal-status-alert').show();
+            reateLoggerInfo("migration gateway vm select spawn error : "+data);
+            console.log('div-modal-migration-gateway-vm-select spawn error : '+data);
         });
+
+
+
+        // cockpit.spawn(['/usr/bin/python3', pluginpath + '/python/cloud_cluster_status/card-cloud-cluster-status.py', 'pcsMigration', '--target', valSelect], { host: pcs_exe_host})
+        // .then(function(data){
+        //     var retVal = JSON.parse(data);
+        //     if(retVal.code == 200){
+        //         CardCloudClusterStatus();
+        //         createLoggerInfo("migration gateway vm select spawn success");
+        //     }
+        //     $('#div-modal-migration-gateway-vm-select').text('');
+        //     $('#div-modal-spinner').hide();
+        // }).catch(function(data){
+        //     createLoggerInfo("migration gateway vm select spawn error");
+        //     console.log('div-modal-migration-gateway-vm-select spawn error');
+        // });
     }
 });
 
@@ -249,149 +285,6 @@ $('#menu-item-gateway-vm-migrate').on('click', function(){
 //         console.log('cloud-cluster-connect');
 //     });
 // });
-
-// // 클라우드 센터 클러스터 상태 조회 및 조회 결과값으로 화면 변경하는 함수
-// function CardCloudClusterStatus(){
-//     return new Promise((resolve) => {
-//         //초기 상태 체크 중 표시
-//         $('#cccs-status').html("상태 체크 중 &bull;&bull;&bull;&nbsp;&nbsp;&nbsp;<svg class='pf-c-spinner pf-m-md' role='progressbar' aria-valuetext='Loading...' viewBox='0 0 100 100' ><circle class='pf-c-spinner__path' cx='50' cy='50' r='45' fill='none'></circle></svg>");
-//         $("#cccs-back-color").attr('class','pf-c-label pf-m-orange');
-//         $("#cccs-cluster-icon").attr('class','fas fa-fw fa-exclamation-triangle');
-
-//         cockpit.spawn(['/usr/bin/python3', pluginpath + '/python/cloud_cluster_status/card-cloud-cluster-status.py', 'pcsDetail' ], { host: pcs_exe_host})
-//         .then(function(data){
-//             cockpit.spawn(['/usr/bin/python3', pluginpath + '/python/ablestack_json/ablestackJson.py', 'status', '--depth1', 'bootstrap', '--depth2', 'ccvm' ])
-//                 .then(function (bootstrap_data){
-//                     console.log("ablestackJson.py : "+bootstrap_data);
-//                     var retVal = JSON.parse(bootstrap_data);
-//                     var ccvmStatus = retVal.val;
-//                     console.log("ccvmStatus.ccvm = " + ccvmStatus.ccvm);
-//                     if(ccvmStatus.ccvm == 'false'){
-//                         sessionStorage.setItem("ccvm_bootstrap_status","false");
-//                         console.log('ccvm false in')
-//                         $('#ccvm-after-bootstrap-run').html('');
-//                         $('#ccvm-before-bootstrap-run').html('<a class="pf-c-dropdown__menu-item" href="#" id="menu-item-bootstrap-run-ccvm" onclick="ccvm_bootstrap_run()">Bootstrap 실행</a>');
-//                     }else if (ccvmStatus.ccvm == 'true'){
-//                         sessionStorage.setItem("ccvm_bootstrap_status","true");
-//                         console.log('ccvm true in')
-//                         html_text = '<a class="pf-c-dropdown__menu-item" href="#" id="menu-item-linkto-storage-center-ccvm" onclick="cccc_link_go()">클라우드센터 연결</a>'
-//                         $('#ccvm-after-bootstrap-run').html(html_text);
-//                         $('#ccvm-before-bootstrap-run').html('');
-//                     }
-//                 }).catch(function(data){
-//                 console.log('ClusterStatusInfo spawn error(ablestackJson.py');
-
-//             });
-//             cockpit.spawn(['/usr/bin/python3', pluginpath + '/python/ablestack_json/ablestackJson.py', 'status', '--depth1', 'monitoring', '--depth2', 'wall' ])
-//                 .then(function (monitoring_data){
-//                     console.log("ablestackJson.py : "+monitoring_data);
-//                     var retVal = JSON.parse(monitoring_data);
-//                     var wallStatus = retVal.val;
-//                     console.log("wallStatus.wall = " + wallStatus.wall);
-//                     if(wallStatus.wall == 'false'){
-//                         sessionStorage.setItem("wall_monitoring_status","false");
-//                         console.log('wall false in')
-//                         $('#ccvm-before-monitoring-run').html('<a class="pf-c-dropdown__menu-item" href="#" id="menu-item-monitoring-run-ccvm" onclick="wall_monitoring_run()">모니터링센터 구성</a>');
-//                         $('#ccvm-after-monitoring-run').html('');
-//                         $('#ccvm-monitoring-config-update').html('');
-//                     }else if (wallStatus.wall == 'true'){
-//                         sessionStorage.setItem("wall_monitoring_status","true");
-//                         console.log('wall true in')
-//                         $('#ccvm-before-monitoring-run').html('');
-//                         $('#ccvm-after-monitoring-run').html('<a class="pf-c-dropdown__menu-item" href="#" id="menu-item-linkto-wall" onclick="wall_link_go()">모니터링센터 대시보드 연결</a>');
-//                         $('#ccvm-monitoring-config-update').html('<a class="pf-c-dropdown__menu-item" href="#" id="menu-item-update-wall-config" onclick="wall_config_update_modal()">모니터링센터 수집 정보 업데이트</a>');
-//                     }
-//                 }).catch(function(data){
-//                     createLoggerInfo("ClusterStatusInfo spawn error(ablestackJson.py error");
-//                     console.log('ClusterStatusInfo spawn error(ablestackJson.py');
-//             });
-//             var retVal = JSON.parse(data);
-//             if(retVal.code == '200'){
-//                 var nodeText = '( ';
-//                 var selectHtml = '<option selected="" value="null">노드를 선택해주세요.</option>';
-//                 $('#form-select-gateway-vm-migration-node option').remove();
-
-//                 for(var i=0; i<Object.keys(retVal.val.clustered_host).length; i++){
-//                     nodeText = nodeText +retVal.val.clustered_host[i];
-//                     if(retVal.val.clustered_host[i] != retVal.val.started){
-//                         selectHtml = selectHtml + '<option value="' + retVal.val.clustered_host[i] + '">' + retVal.val.clustered_host[i] + '</option>';
-//                     }
-//                     if(i == (Object.keys(retVal.val.clustered_host).length - 1)){
-
-//                         nodeText = nodeText + ' )';
-//                     }else{
-//                         nodeText = nodeText + ', ';
-//                     }
-//                 }
-//                 $('#cccs-back-color').attr('class','pf-c-label pf-m-green');
-//                 $('#cccs-cluster-icon').attr('class','fas fa-fw fa-check-circle');
-//                 $('#cccs-status').text('Health Ok');
-//                 $('#cccs-node-info').text('총 ' + Object.keys(retVal.val.clustered_host).length + '노드로 구성됨 : ' + nodeText);
-//                 sessionStorage.setItem("cc_status", "HEALTH_OK");
-//                 if(retVal.val.active == 'true'){
-//                     $('#cccs-resource-status').text('실행중');
-//                     $('#cccs-execution-node').text(retVal.val.started);
-
-//                     $("#button-cloud-cluster-start").addClass('pf-m-disabled');
-//                     $("#button-cloud-cluster-stop").removeClass('pf-m-disabled');
-//                     $("#button-cloud-cluster-cleanup").removeClass('pf-m-disabled');
-//                     $("#button-cloud-cluster-migration").removeClass('pf-m-disabled');
-//                     $("#button-cloud-cluster-connect").removeClass('pf-m-disabled');
-//                     $("#card-action-gateway-vm-change").addClass('pf-m-disabled');
-//                     $("#button-gateway-vm-snap-backup").removeClass('pf-m-disabled');
-//                     $("#button-gateway-vm-snap-rollback").addClass('pf-m-disabled');
-//                     $("#button-mold-service-control").removeClass('pf-m-disabled');
-//                     $("#button-mold-db-control").removeClass('pf-m-disabled');
-//                     $("#card-action-gateway-vm-db-dump").removeClass('pf-m-disabled');
-//                     $("#menu-item-set-auto-shutdown-step-two").removeClass('pf-m-disabled');
-
-//                     $('#form-select-gateway-vm-migration-node').append(selectHtml);
-//                 }else if(retVal.val.active == 'false'){
-//                     $('#cccs-resource-status').text('정지됨');
-//                     $('#cccs-execution-node').text('N/A');
-//                     $('#div-mold-service-status').text('N/A');
-//                     $('#div-mold-db-status').text('N/A');
-
-//                     $("#button-cloud-cluster-start").removeClass('pf-m-disabled');
-//                     $("#button-cloud-cluster-stop").addClass('pf-m-disabled');
-//                     $("#button-cloud-cluster-cleanup").removeClass('pf-m-disabled');
-//                     $("#button-cloud-cluster-migration").addClass('pf-m-disabled');
-//                     $("#button-cloud-cluster-connect").addClass('pf-m-disabled');
-//                     $("#card-action-gateway-vm-change").removeClass('pf-m-disabled');
-//                     $("#button-gateway-vm-snap-backup").removeClass('pf-m-disabled');
-//                     $("#button-gateway-vm-snap-rollback").removeClass('pf-m-disabled');
-//                     $("#button-mold-service-control").addClass('pf-m-disabled');
-//                     $("#button-mold-db-control").addClass('pf-m-disabled');
-//                     $("#card-action-gateway-vm-db-dump").addClass('pf-m-disabled');
-//                     $("#menu-item-set-auto-shutdown-step-two").addClass('pf-m-disabled');
-//                 }
-//                 $('#cccs-low-info').text('클라우드센터 클러스터가 구성되었습니다.');
-//                 $('#cccs-low-info').attr('style','color: var(--pf-global--success-color--100)')
-//             }else if(retVal.code == '400' && retVal.val == 'cluster is not configured.'){
-//                 $('#cccs-status').text('Health Err');
-//                 $('#cccs-back-color').attr('class','pf-c-label pf-m-red');
-//                 $('#cccs-cluster-icon').attr('class','fas fa-fw fa-exclamation-triangle');
-//                 $('#cccs-low-info').text('클라우드센터 클러스터가 구성되지 않았습니다.');
-//                 sessionStorage.setItem("cc_status", "HEALTH_ERR1");
-//             }else if(retVal.code == '400' && retVal.val == 'resource not found.'){
-//                 $('#cccs-status').text('Health Err');
-//                 $('#cccs-back-color').attr('class','pf-c-label pf-m-red');
-//                 $('#cccs-cluster-icon').attr('class','fas fa-fw fa-exclamation-triangle');
-//                 $('#cccs-low-info').text('클라우드센터 클러스터는 구성되었으나 리소스 구성이 되지 않았습니다.');
-//                 sessionStorage.setItem("cc_status", "HEALTH_ERR2");
-//             }else{
-//                 createLoggerInfo("ClusterStatusInfo spawn error");
-//                 console.log('ClusterStatusInfo spawn error');
-//             }
-
-//             resolve();
-//         }).catch(function(data){
-//             createLoggerInfo("ClusterStatusInfo spawn error");
-//             console.log('ClusterStatusInfo spawn error');
-//             resolve();
-//         });
-//     });
-// }
 
 // function cccc_link_go(){
 //     // 클라우드센터 연결
