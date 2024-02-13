@@ -4,7 +4,7 @@
  * Writer  : 배태주
  * Description : main_glue.html에서 gateway 가상머신 관련 발생하는 이벤트 처리를 위한 JavaScript
 **/
-var role = '';
+
 /** gateway vm start 관련 action start */
 $('#menu-item-gateway-vm-start').on('click', function(){
     $('#div-modal-start-gateway-vm').show();

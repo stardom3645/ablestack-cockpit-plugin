@@ -16,8 +16,10 @@
                 </div>
                 <div class="pf-c-alert__action-group">
                     <!-- <button class="pf-c-button pf-m-link pf-m-inline" type="button" id="button-open-modal-wizard-gateway-vm">게이트웨이 가상머신 배포</button> -->
+                    <button style="font-size: 0.83rem;" class="pf-c-button pf-m-primary pf-m-inline" id="button-glue-api-server-connect" aria-disabled="false" type="button" data-ouia-safe="true" >GlueAPI 서버 연결</button>
+                    <button style="font-size: 0.83rem;" class="pf-c-button pf-m-primary pf-m-inline" id="button-storage-dashboard-connect" aria-disabled="false" type="button" data-ouia-safe="true" >스토리지센터 대시보드 연결</button>
                     <button style="display:none;font-size: 0.83rem;" class="pf-c-button pf-m-primary pf-m-inline" id="button-gateway-vm-setup" aria-disabled="false" type="button" data-ouia-safe="true" >게이트웨이 가상머신 구성</button>
-                    <!-- <button style="font-size: 0.83rem;" class="pf-c-button pf-m-primary pf-m-inline" id="button-gateway-vm-action" aria-disabled="false" type="button" data-ouia-safe="true" >게이트웨이 가상머신 구성2</button> -->
+                    <button style="font-size: 0.83rem;" class="pf-c-button pf-m-primary pf-m-inline" id="button-nfs-setup" aria-disabled="false" type="button" data-ouia-safe="true" >NFS 원클릭 구성</button>
                 </div>
             </div>
         </section>
@@ -25,204 +27,6 @@
         <!-- 상태를 보여주기 위한 레이아웃 시작 -->
         <section class="pf-c-page__main-section">
             <div class="pf-l-grid pf-m-gutter">
-                <div class="pf-l-grid__item pf-m-12-col">
-                    <div class="pf-l-grid pf-m-gutter">
-                        <!-- 파일 시스템 카드 영역 시작-->
-                        <div class="pf-l-grid__item pf-m-12-col">
-                            <div class="pf-c-card pf-m-hoverable pf-m-compact" id="card-storage-cluster-status">
-                                <div class="pf-c-card__header">
-                                    <div class="pf-c-card__title" id="card-storage-cluster-status-title">파일 시스템</div>
-                                    <div class="pf-c-card__actions">
-                                        <div class="pf-c-dropdown">
-                                            <button class="pf-c-dropdown__toggle pf-m-plain" id="card-action-storage-cluster-system-status" aria-expanded="false" type="button" aria-label="Actions">
-                                                <i class="fas fa-ellipsis-v" aria-hidden="true"></i>
-                                            </button>
-                                            <ul class="pf-c-dropdown__menu pf-m-align-right" aria-labelledby="card-action-storage-cluster-system-status" id="dropdown-menu-storage-system-status">
-                                                <li>
-                                                    <button class="pf-c-dropdown__menu-item pf-m-enabled" type="button" id="menu-item-set-gluefs-construction" >GlueFS 구성</button>
-                                                </li>
-                                                <li>
-                                                    <button class="pf-c-dropdown__menu-item pf-m-enabled" type="button" id="menu-item-set-gluefs-delete"  >GlueFS 삭제</button>
-                                                </li>
-                                                <li>
-                                                    <button class="pf-c-dropdown__menu-item pf-m-enabled" type="button" id="menu-item-set-nfs-construction" >NFS 구성</button>
-                                                </li>
-                                                <li>
-                                                    <button class="pf-c-dropdown__menu-item pf-m-enabled" type="button" id="menu-item-set-nfs-delete" >NFS 삭제</button>
-                                                </li>
-                                                <li>
-                                                    <button class="pf-c-dropdown__menu-item pf-m-enabled" type="button" id="menu-item-set-smb-construction" >SMB 구성</button>
-                                                </li>
-                                                <li>
-                                                    <button class="pf-c-dropdown__menu-item pf-m-enabled" type="button" id="menu-item-set-smb-delete" >SMB 삭제</button>
-                                                </li>
-                                                <li>
-                                                    <button class="pf-c-dropdown__menu-item pf-m-disabled" type="button" id="menu-item-set-filesystem-control" >파일 시스템 제어</button>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="pf-c-card__body">
-                                    <dl class="pf-c-description-list pf-m-horizontal" style="--pf-c-description-list--RowGap: 10px;">
-                                        <table class="pf-c-table pf-m-compact pf-m-grid-lg" role="grid" aria-label="This is a compact table example" id="file-system-table">
-                                            <thead>
-                                                <tr role="row">
-                                                    <th role="columnheader" scope="col">서비스</th>
-                                                    <th role="columnheader" scope="col">상태</th>
-                                                    <th role="columnheader" scope="col">FS 경로</th>
-                                                    <th role="columnheader" scope="col">마운트 경로</th>
-                                                    <th role="columnheader" scope="col">접근 IP</th>
-                                                    <th role="columnheader" scope="col">사용량/할당량</th>
-                                                    <th class="pf-c-table__icon" role="columnheader" scope="col">편집</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody role="rowgroup">
-                                                <tr role="row">
-                                                    <td role="cell" data-label="서비스">GlueFS</td>
-                                                    <td role="cell" data-label="상태">
-                                                        <span class="pf-c-label pf-m-red" id="gluefs-color">
-                                                            <span class="pf-c-label__content">
-                                                                <span class="pf-c-label__icon" >
-                                                                    <i class="fas fa-fw fa-exclamation-triangle" aria-hidden="true" id="gluefs-icon"></i>
-                                                                </span><div id="gluefs-status">Health Err</div>
-                                                            </span>
-                                                        </span>
-                                                    </td>
-                                                    <td role="cell" data-label="FS 경로" id="gluefs-path">N/A</td>
-                                                    <td role="cell" data-label="마운트 경로" id="gluefs-mount-path">N/A</td>
-                                                    <td role="cell" data-label="접근 IP" id="gluefs-access-ip">N/A</td>
-                                                    <td role="cell" data-label="사용량/할당량" id="gluefs-usage">N/A</td>
-                                                    <td class="pf-c-table__icon" role="cell" data-label="편집"> <button
-                                                        class="pf-c-dropdown__toggle pf-m-plain"
-                                                        id="gluefs-edit"
-                                                        aria-expanded="false"
-                                                        type="button"
-                                                        aria-label="Actions">
-                                                        <i class="fas fa-cog" aria-hidden="true"></i>
-                                                    </button></td>
-                                                </tr>
-                                                <tr role="row">
-                                                    <td role="cell" data-label="서비스">NFS</td>
-                                                    <td role="cell" data-label="상태">
-                                                        <span class="pf-c-label pf-m-red" id="nfs-color">
-                                                            <span class="pf-c-label__content">
-                                                                <span class="pf-c-label__icon" >
-                                                                    <i class="fas fa-fw fa-exclamation-triangle" aria-hidden="true" id="nfs-icon"></i>
-                                                                </span><div id="nfs-status">Health Err</div>
-                                                            </span>
-                                                        </span>
-                                                    </td>
-                                                    <td role="cell" data-label="FS 경로" id="nfs-path">N/A</td>
-                                                    <td role="cell" data-label="마운트 경로" id="nfs-mount-path">N/A</td>
-                                                    <td role="cell" data-label="접근 IP" id="nfs-access-ip">N/A</td>
-                                                    <td role="cell" data-label="사용량/할당량" id="nfs-usage">N/A</td>
-                                                    <td class="pf-c-table__icon" role="cell" data-label="편집"><button
-                                                        class="pf-c-dropdown__toggle pf-m-plain"
-                                                        id="nfs-edit"
-                                                        aria-expanded="false"
-                                                        type="button"
-                                                        aria-label="Actions">
-                                                        <i class="fas fa-cog" aria-hidden="true"></i>
-                                                    </button></td>
-                                                </tr>
-                                                <tr role="row">
-                                                    <td role="cell" data-label="서비스">SMB</td>
-                                                    <td role="cell" data-label="상태">
-                                                        <span class="pf-c-label pf-m-red" id="smb-color">
-                                                            <span class="pf-c-label__content">
-                                                                <span class="pf-c-label__icon" >
-                                                                    <i class="fas fa-fw fa-exclamation-triangle" aria-hidden="true" id="smb-icon"></i>
-                                                                </span><div id="smb-status">Health Err</div>
-                                                            </span>
-                                                        </span>
-                                                    </td>
-                                                    <td role="cell" data-label="FS 경로" id="smb-path">N/A</td>
-                                                    <td role="cell" data-label="마운트 경로" id="smb-mount-path">N/A</td>
-                                                    <td role="cell" data-label="접근 IP" id="smb-access-ip">N/A</td>
-                                                    <td role="cell" data-label="사용량/할당량" id="smb-usage">N/A</td>
-                                                    <td class="pf-c-table__icon" role="cell" data-label="편집"><button
-                                                        class="pf-c-dropdown__toggle pf-m-plain"
-                                                        id="smb-edit"
-                                                        aria-expanded="false"
-                                                        type="button"
-                                                        aria-label="Actions">
-                                                        <i class="fas fa-cog" aria-hidden="true"></i>
-                                                    </button></td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </dl>
-                                </div>
-                                <!-- <div class="pf-c-divider" role="separator"></div>
-                                <div class="pf-c-card__footer" style="color: var(--pf-global--danger-color--100);" id="scc-status-check">스토리지센터 클러스터가 구성되지 않았습니다.</div> -->
-                            </div>
-                        </div>
-                        <!-- 파일 시스템 카드 영역 끝-->
-                    </div>
-                </div>
-                <div class="pf-l-grid__item pf-m-12-col">
-                    <div class="pf-l-grid pf-m-gutter">
-                        <!-- 파일 시스템 카드 영역 시작-->
-                        <div class="pf-l-grid__item pf-m-12-col">
-                            <div class="pf-c-card pf-m-hoverable pf-m-compact" id="card-storage-cluster-status">
-                                <div class="pf-c-card__header">
-                                    <div class="pf-c-card__title" id="card-storage-cluster-status-title">iSCSI</div>
-                                        <span class="pf-c-label pf-m-red" id="iscsi-color" style="margin-left:20px;">
-                                            <span class="pf-c-label__content">
-                                                <span class="pf-c-label__icon" >
-                                                    <i class="fas fa-fw fa-exclamation-triangle" aria-hidden="true" id="iscsi-icon"></i>
-                                                </span><div id="iscsi-status">Health Err</div>
-                                            </span>
-                                        </span>
-                                    <div class="pf-c-card__actions">
-                                        <div class="pf-c-dropdown">
-                                            <button class="pf-c-dropdown__toggle pf-m-plain" id="card-action-storage-cluster-iscsi-status" aria-expanded="false" type="button" aria-label="Actions">
-                                                <i class="fas fa-ellipsis-v" aria-hidden="true"></i>
-                                            </button>
-                                            <ul class="pf-c-dropdown__menu pf-m-align-right" aria-labelledby="card-action-storage-cluster-iscsi-status" id="dropdown-menu-iscsi-status">
-                                                <li>
-                                                    <button class="pf-c-dropdown__menu-item pf-m-enabled" type="button" id="menu-item-set-iscsi-construction" >iSCSI 구성</button>
-                                                </li>
-                                                <li>
-                                                    <button class="pf-c-dropdown__menu-item pf-m-enabled" type="button" id="menu-item-set-iscsi-delete" >iSCSI 삭제</button>
-                                                </li>
-                                                <li>
-                                                    <button class="pf-c-dropdown__menu-item pf-m-enabled" type="button" id="menu-item-set-iscsi-service-control" >서비스 제어</button>
-                                                </li>
-                                                <li>
-                                                    <button class="pf-c-dropdown__menu-item pf-m-enabled" type="button" id="menu-item-set-iscsi-target-create" >타겟 생성</button>
-                                                </li>
-                                                <li>
-                                                    <button class="pf-c-dropdown__menu-item pf-m-enabled" type="button" id="menu-item-set-iscsi-acl-connect" >ACL 설정 연결</button>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="pf-c-card__body">
-                                    <dl class="pf-c-description-list pf-m-horizontal" style="--pf-c-description-list--RowGap: 10px;">
-                                        <table class="pf-c-table pf-m-compact pf-m-grid-lg" role="grid" aria-label="This is a compact table example" id="iscsi-table">
-                                            <thead>
-                                                <tr role="row">
-                                                    <th role="columnheader" scope="col" class="pf-m-width-20">대상</th>
-                                                    <th role="columnheader" scope="col">포털</th>
-                                                    <th role="columnheader" scope="col">이미지</th>
-                                                    <th role="columnheader" scope="col">크기</th>
-                                                    <th class="pf-c-table__icon" role="columnheader" scope="col">편집</th>
-                                                    <th class="pf-c-table__icon" role="columnheader" scope="col">삭제</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody role="rowgroup" id="iscsi-tbody">
-                                            </tbody>
-                                        </table>
-                                    </dl>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- 파일 시스템 카드 영역 끝-->
-                    </div>
-                </div>
                 <div class="pf-l-grid__item pf-m-12-col">
                     <div class="pf-l-grid pf-m-gutter">
                         <!-- 파일 시스템 카드 영역 시작-->
@@ -302,6 +106,353 @@
                         <!-- 파일 시스템 카드 영역 끝-->
                     </div>
                 </div>
+                <div class="pf-l-grid__item pf-m-12-col">
+                    <div class="pf-l-grid pf-m-gutter">
+                        <!-- 파일 시스템 카드 영역 시작-->
+                        <div class="pf-l-grid__item pf-m-12-col">
+                            <div class="pf-c-card pf-m-hoverable pf-m-compact" id="card-storage-cluster-status">
+                                <div class="pf-c-card__header">
+                                    <div class="pf-c-card__title" id="card-storage-cluster-status-title">Glue File System</div>
+                                    <div class="pf-c-card__actions">
+                                        <button style="font-size: 0.83rem;" class="pf-c-button pf-m-secondary pf-m-inline" id="button-gluefs-create" aria-disabled="false" type="button" data-ouia-safe="true" >추가</button>
+                                    </div>
+                                </div>
+                                <div class="pf-c-card__body">
+                                    <dl class="pf-c-description-list pf-m-horizontal" style="--pf-c-description-list--RowGap: 10px;">
+                                        <table class="pf-c-table pf-m-compact pf-m-grid-lg" role="grid" aria-label="This is a compact table example" id="file-system-table">
+                                            <thead>
+                                                <tr role="row">
+                                                    <th role="columnheader" scope="col">이름</th>
+                                                    <th role="columnheader" scope="col">상태</th>
+                                                    <th role="columnheader" scope="col">사용량</th>
+                                                    <th role="columnheader" scope="col">전체용량</th>
+                                                    <th role="columnheader" scope="col">데이터 풀</th>
+                                                    <th role="columnheader" scope="col">메타 데이터 풀</th>
+                                                    <th class="pf-c-table__icon" role="columnheader" scope="col"></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody role="rowgroup" id="gluefs-list">
+                                                <!-- <tr role="row">
+                                                    <td role="cell" data-label="이름" id="gluefs-name">GlueFS</td>
+                                                     <td role="cell" data-label="상태">
+                                                        <span class="pf-c-label pf-m-red" id="gluefs-color">
+                                                            <span class="pf-c-label__content">
+                                                                <span class="pf-c-label__icon" >
+                                                                    <i class="fas fa-fw fa-exclamation-triangle" aria-hidden="true" id="gluefs-icon"></i>
+                                                                </span><div id="gluefs-status">Health Err</div>
+                                                            </span>
+                                                        </span>
+                                                    </td>
+                                                    <td role="cell" data-label="상태" id="gluefs-status2">active</td>
+                                                    <td role="cell" data-label="사용량" id="gluefs-usage">10Gb</td>
+                                                    <td role="cell" data-label="전체용량" id="gluefs-total-capacity">4.5Tb</td>
+                                                    <td role="cell" data-label="데이터 풀" id="gluefs-data-pool">cephfs.gluefs.data</td>
+                                                    <td role="cell" data-label="메타 데이터 풀" id="gluefs-meta-data-pool">cephfs.gluefs.data</td>
+                                                    <td class="pf-c-table__icon" role="cell" data-label="편집">
+                                                        <div class="pf-c-dropdown">
+                                                            <button class="pf-c-dropdown__toggle pf-m-plain" id="card-action-glue-file-system-status" aria-expanded="false" type="button" aria-label="Actions">
+                                                                <i class="fas fa-ellipsis-v" aria-hidden="true"></i>
+                                                            </button>
+                                                            <ul class="pf-c-dropdown__menu pf-m-align-right" aria-labelledby="card-action-glue-file-system-status" id="dropdown-menu-card-action-glue-file-system-status">
+                                                                <li>
+                                                                    <button class="pf-c-dropdown__menu-item pf-m-enabled" type="button" id="menu-item-set-gluefs-construction" >GlueFS 생성</button>
+                                                                </li>
+                                                            </ul>
+                                                        </div>
+                                                    </td>
+                                                </tr> -->
+                                            </tbody>
+                                        </table>
+                                    </dl>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- 파일 시스템 카드 영역 끝-->
+                    </div>
+                </div>
+                <div class="pf-l-grid__item pf-m-4-col">
+                    <div class="pf-l-grid pf-m-gutter">
+                        <!-- NFS Cluster 카드 영역 시작-->
+                        <div class="pf-l-grid__item pf-m-4col">
+                            <div class="pf-c-card pf-m-hoverable pf-m-compact" id="card-nfs-cluster-status">
+                                <div class="pf-c-card__header">
+                                    <div class="pf-c-card__title" id="card-nfs-cluster-status-title">NFS Cluster</div>
+                                    <div class="pf-c-card__actions">
+                                        <button style="font-size: 0.83rem;" class="pf-c-button pf-m-secondary pf-m-inline" id="button-nfs-cluster-create" aria-disabled="false" type="button" data-ouia-safe="true" >추가</button>
+                                    </div>
+                                </div>
+                                <div class="pf-c-card__body">
+                                    <dl class="pf-c-description-list pf-m-horizontal" style="--pf-c-description-list--RowGap: 10px;">
+                                        <table class="pf-c-table pf-m-compact pf-m-grid-lg" role="grid" aria-label="This is a compact table example" id="file-system-table">
+                                            <thead>
+                                                <tr role="row">
+                                                    <th role="columnheader" scope="col">이름</th>
+                                                    <th role="columnheader" scope="col">호스트 명</th>
+                                                    <th role="columnheader" scope="col">IP</th>
+                                                    <th role="columnheader" scope="col">PORT</th>
+                                                    <th class="pf-c-table__icon" role="columnheader" scope="col"></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody role="rowgroup" id="nfs-cluster-list">
+                                                <!-- <tr role="row">
+                                                    <td role="cell" data-label="이름" id="nfs-cluster-name">nfs-cluster</td>
+                                                    <td role="cell" data-label="호스트 명" id="nfs-cluster-host-name">gwvm</td>
+                                                    <td role="cell" data-label="IP" id="nfs-cluster-ip">100.100.2.15</td>
+                                                    <td role="cell" data-label="PORT" id="nfs-cluster-port">2049</td>
+                                                    <td class="pf-c-table__icon" role="cell" data-label="편집">
+                                                        <div class="pf-c-dropdown">
+                                                            <button class="pf-c-dropdown__toggle pf-m-plain" id="card-action-nfs-cluster" aria-expanded="false" type="button" aria-label="Actions">
+                                                                <i class="fas fa-ellipsis-v" aria-hidden="true"></i>
+                                                            </button>
+                                                            <ul class="pf-c-dropdown__menu pf-m-align-right" aria-labelledby="card-action-nfs-cluster" id="dropdown-menu-card-action-nfs-cluster">
+                                                                <li>
+                                                                    <button class="pf-c-dropdown__menu-item pf-m-enabled" type="button" id="menu-item-nfs-cluster-remove" >NFS Cluster 삭제</button>
+                                                                </li>
+                                                            </ul>
+                                                        </div>
+                                                    </td>
+                                                </tr> -->
+                                            </tbody>
+                                        </table>
+                                    </dl>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- NFS Cluster 카드 영역 끝-->
+                    </div>
+                </div>
+                <div class="pf-l-grid__item pf-m-8-col">
+                    <div class="pf-l-grid pf-m-gutter">
+                        <!-- NFS Export 영역 시작-->
+                        <div class="pf-l-grid__item pf-m-8col">
+                            <div class="pf-c-card pf-m-hoverable pf-m-compact" id="card-nfs-export-status">
+                                <div class="pf-c-card__header">
+                                    <div class="pf-c-card__title" id="card-nfs-export-status-title">NFS Export</div>
+                                    <div class="pf-c-card__actions">
+                                        <button style="font-size: 0.83rem;" class="pf-c-button pf-m-secondary pf-m-inline" id="button-nfs-export-create" aria-disabled="false" type="button" data-ouia-safe="true" >추가</button>
+                                    </div>
+                                </div>
+                                <div class="pf-c-card__body">
+                                    <dl class="pf-c-description-list pf-m-horizontal" style="--pf-c-description-list--RowGap: 10px;">
+                                        <table class="pf-c-table pf-m-compact pf-m-grid-lg" role="grid" aria-label="This is a compact table example" id="file-system-table">
+                                            <thead>
+                                                <tr role="row">
+                                                    <th role="columnheader" scope="col">내보내기 경로</th>
+                                                    <th role="columnheader" scope="col">클러스터 이름</th>
+                                                    <th role="columnheader" scope="col">GlueFS 이름</th>
+                                                    <th role="columnheader" scope="col">프로토콜</th>
+                                                    <th role="columnheader" scope="col">접근 타입</th>
+                                                    <th role="columnheader" scope="col">Squash</th>
+                                                    <th class="pf-c-table__icon" role="columnheader" scope="col"></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody role="rowgroup" id="nfs-export-list">
+                                                <!-- <tr role="row">
+                                                    <td role="cell" data-label="내보내기 경로" id="nfs-export-name">/export</td>
+                                                    <td role="cell" data-label="클러스터 명" id="nfs-export-name">nfs</td>
+                                                    <td role="cell" data-label="GlueFS 명" id="nfs-export-name">gluefs</td>
+                                                    <td role="cell" data-label="프로토콜" id="nfs-export-name">tcp,udp</td>
+                                                    <td role="cell" data-label="접근 타입" id="nfs-export-name">RW</td>
+                                                    <td role="cell" data-label="Squash" id="nfs-export-name">no_root_squash</td>
+                                                    <td class="pf-c-table__icon" role="cell" data-label="편집">
+                                                        <div class="pf-c-dropdown">
+                                                            <button class="pf-c-dropdown__toggle pf-m-plain" id="card-action-nfs-export" aria-expanded="false" type="button" aria-label="Actions">
+                                                                <i class="fas fa-ellipsis-v" aria-hidden="true"></i>
+                                                            </button>
+                                                            <ul class="pf-c-dropdown__menu pf-m-align-right" aria-labelledby="card-action-nfs-export" id="dropdown-menu-card-action-nfs-export">
+                                                                <li>
+                                                                    <button class="pf-c-dropdown__menu-item pf-m-enabled" type="button" id="menu-item-nfs-export-edit" >NFS Cluster 편집</button>
+                                                                </li>
+                                                                <li>
+                                                                    <button class="pf-c-dropdown__menu-item pf-m-enabled" type="button" id="menu-item-nfs-export-remove" >NFS Cluster 삭제</button>
+                                                                </li>
+                                                            </ul>
+                                                        </div>
+                                                    </td>
+                                                </tr> -->
+                                            </tbody>
+                                        </table>
+                                    </dl>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- NFS Export 카드 영역 끝-->
+                    </div>
+                </div>
+                <div class="pf-l-grid__item pf-m-12-col">
+                    <div class="pf-l-grid pf-m-gutter">
+                        <!-- ISCSI 서비스 카드 영역 시작-->
+                        <div class="pf-l-grid__item pf-m-12-col">
+                            <div class="pf-c-card pf-m-hoverable pf-m-compact" id="card-storage-cluster-status">
+                                <div class="pf-c-card__header">
+                                    <div class="pf-c-card__title" id="card-storage-cluster-status-title">iSCSI Service</div>
+                                    <div class="pf-c-card__actions">
+                                        <button style="font-size: 0.83rem;" class="pf-c-button pf-m-secondary pf-m-inline" id="button-gluefs-create" aria-disabled="false" type="button" data-ouia-safe="true" >추가</button>
+                                    </div>
+                                </div>
+                                <div class="pf-c-card__body">
+                                    <dl class="pf-c-description-list pf-m-horizontal" style="--pf-c-description-list--RowGap: 10px;">
+                                        <table class="pf-c-table pf-m-compact pf-m-grid-lg" role="grid" aria-label="This is a compact table example" id="file-system-table">
+                                            <thead>
+                                                <tr role="row">
+                                                    <th role="columnheader" scope="col">이름</th>
+                                                    <th role="columnheader" scope="col">상태</th>
+                                                    <th role="columnheader" scope="col">서비스 호스트</th>
+                                                    <th role="columnheader" scope="col">스토리지 풀</th>
+                                                    <th role="columnheader" scope="col">API Port</th>
+                                                    <th class="pf-c-table__icon" role="columnheader" scope="col"></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody role="rowgroup" id="iscsi-service-list">
+                                                <tr role="row">
+                                                    <td role="cell" data-label="이름" id="gluefs-name">iscsi.iscsi</td>
+                                                    <td role="cell" data-label="상태" id="gluefs-status2">Active(1/1)</td>
+                                                    <td role="cell" data-label="사용량" id="gluefs-usage">gwvm</td>
+                                                    <td role="cell" data-label="전체용량" id="gluefs-total-capacity">rbd</td>
+                                                    <td role="cell" data-label="데이터 풀" id="gluefs-data-pool">5000</td>
+                                                    <td class="pf-c-table__icon" role="cell" data-label="편집">
+                                                        <div class="pf-c-dropdown">
+                                                            <button class="pf-c-dropdown__toggle pf-m-plain" id="card-action-glue-file-system-status" aria-expanded="false" type="button" aria-label="Actions">
+                                                                <i class="fas fa-ellipsis-v" aria-hidden="true"></i>
+                                                            </button>
+                                                            <!-- <ul class="pf-c-dropdown__menu pf-m-align-right" aria-labelledby="card-action-glue-file-system-status" id="dropdown-menu-card-action-glue-file-system-status">
+                                                                <li>
+                                                                    <button class="pf-c-dropdown__menu-item pf-m-enabled" type="button" id="menu-item-set-gluefs-construction" >GlueFS 생성</button>
+                                                                </li>
+                                                            </ul> -->
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                                <tr role="row">
+                                                    <td role="cell" data-label="이름" id="gluefs-name">iscsi.test</td>
+                                                    <td role="cell" data-label="상태" id="gluefs-status2">Active(1/1)</td>
+                                                    <td role="cell" data-label="사용량" id="gluefs-usage">gwvm</td>
+                                                    <td role="cell" data-label="전체용량" id="gluefs-total-capacity">rbd</td>
+                                                    <td role="cell" data-label="데이터 풀" id="gluefs-data-pool">5001</td>
+                                                    <td class="pf-c-table__icon" role="cell" data-label="편집">
+                                                        <div class="pf-c-dropdown">
+                                                            <button class="pf-c-dropdown__toggle pf-m-plain" id="card-action-glue-file-system-status" aria-expanded="false" type="button" aria-label="Actions">
+                                                                <i class="fas fa-ellipsis-v" aria-hidden="true"></i>
+                                                            </button>
+                                                            <!-- <ul class="pf-c-dropdown__menu pf-m-align-right" aria-labelledby="card-action-glue-file-system-status" id="dropdown-menu-card-action-glue-file-system-status">
+                                                                <li>
+                                                                    <button class="pf-c-dropdown__menu-item pf-m-enabled" type="button" id="menu-item-set-gluefs-construction" >GlueFS 생성</button>
+                                                                </li>
+                                                            </ul> -->
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </dl>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- ISCSI 서비스 카드 영역 끝-->
+                    </div>
+                </div>
+                <div class="pf-l-grid__item pf-m-12-col">
+                    <div class="pf-l-grid pf-m-gutter">
+                        <!-- ISCSI target 카드 영역 시작-->
+                        <div class="pf-l-grid__item pf-m-12-col">
+                            <div class="pf-c-card pf-m-hoverable pf-m-compact" id="card-storage-cluster-status">
+                                <div class="pf-c-card__header">
+                                    <div class="pf-c-card__title" id="card-storage-cluster-status-title">iSCSI Target</div>
+                                    <div class="pf-c-card__actions">
+                                        <button style="font-size: 0.83rem;" class="pf-c-button pf-m-secondary pf-m-inline" id="button-gluefs-create" aria-disabled="false" type="button" data-ouia-safe="true" >추가</button>
+                                    </div>
+                                </div>
+                                <div class="pf-c-card__body">
+                                    <dl class="pf-c-description-list pf-m-horizontal" style="--pf-c-description-list--RowGap: 10px;">
+                                        <table class="pf-c-table pf-m-compact pf-m-grid-lg" role="grid" aria-label="This is a compact table example" id="file-system-table">
+                                            <thead>
+                                                <tr role="row">
+                                                    <th role="columnheader" scope="col">IQN</th>
+                                                    <th role="columnheader" scope="col">디스크 정보</th>
+                                                    <th role="columnheader" scope="col">포탈</th>
+                                                    <th class="pf-c-table__icon" role="columnheader" scope="col"></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody role="rowgroup" id="iscsi-service-list">
+                                                <tr role="row">
+                                                    <td role="cell" data-label="이름" id="gluefs-name">iqn.2020-11.com.ablecloud:11</td>
+                                                    <td role="cell" data-label="상태" id="gluefs-status2">rbd/mcjeong</td>
+                                                    <td role="cell" data-label="사용량" id="gluefs-usage">gwvm:10.10.2.15</td>
+                                                    <td class="pf-c-table__icon" role="cell" data-label="편집">
+                                                        <div class="pf-c-dropdown">
+                                                            <button class="pf-c-dropdown__toggle pf-m-plain" id="card-action-glue-file-system-status" aria-expanded="false" type="button" aria-label="Actions">
+                                                                <i class="fas fa-ellipsis-v" aria-hidden="true"></i>
+                                                            </button>
+                                                            <!-- <ul class="pf-c-dropdown__menu pf-m-align-right" aria-labelledby="card-action-glue-file-system-status" id="dropdown-menu-card-action-glue-file-system-status">
+                                                                <li>
+                                                                    <button class="pf-c-dropdown__menu-item pf-m-enabled" type="button" id="menu-item-set-gluefs-construction" >GlueFS 생성</button>
+                                                                </li>
+                                                            </ul> -->
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                                <tr role="row">
+                                                    <td role="cell" data-label="이름" id="gluefs-name">iqn.2020-11.com.ablecloud:22</td>
+                                                    <td role="cell" data-label="상태" id="gluefs-status2">rbd/test-image</td>
+                                                    <td role="cell" data-label="사용량" id="gluefs-usage">gwvm:10.10.2.15</td>
+                                                    <td class="pf-c-table__icon" role="cell" data-label="편집">
+                                                        <div class="pf-c-dropdown">
+                                                            <button class="pf-c-dropdown__toggle pf-m-plain" id="card-action-glue-file-system-status" aria-expanded="false" type="button" aria-label="Actions">
+                                                                <i class="fas fa-ellipsis-v" aria-hidden="true"></i>
+                                                            </button>
+                                                            <!-- <ul class="pf-c-dropdown__menu pf-m-align-right" aria-labelledby="card-action-glue-file-system-status" id="dropdown-menu-card-action-glue-file-system-status">
+                                                                <li>
+                                                                    <button class="pf-c-dropdown__menu-item pf-m-enabled" type="button" id="menu-item-set-gluefs-construction" >GlueFS 생성</button>
+                                                                </li>
+                                                            </ul> -->
+                                                        </div>
+                                                    </td>
+                                                </tr>                                                
+                                            </tbody>
+                                        </table>
+                                    </dl>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- ISCSI target 카드 영역 끝-->
+                    </div>
+                </div>
+
+
+
+                <div class="pf-l-grid__item pf-m-12-col">
+                    <div class="pf-l-grid pf-m-gutter">
+                        <!-- ISCSI target 카드 영역 시작-->
+                        <div class="pf-l-grid__item pf-m-12-col">
+                            <div class="pf-c-card pf-m-hoverable pf-m-compact" id="card-storage-cluster-status">
+                                <div class="pf-c-card__header">
+                                    <div class="pf-c-card__title" id="card-storage-cluster-status-title">SMB Service</div>
+                                    <div class="pf-c-card__actions">
+                                        <button style="font-size: 0.83rem;" class="pf-c-button pf-m-secondary pf-m-inline" id="button-gluefs-create" aria-disabled="false" type="button" data-ouia-safe="true" >추가</button>
+                                    </div>
+                                </div>
+                                <div class="pf-c-card__body">
+                                    <dl class="pf-c-description-list pf-m-horizontal" style="--pf-c-description-list--RowGap: 10px;">
+                                        <table class="pf-c-table pf-m-compact pf-m-grid-lg" role="grid" aria-label="This is a compact table example" id="file-system-table">
+                                            <thead>
+                                                
+                                            </thead>
+                                            <tbody role="rowgroup" id="iscsi-service-list">
+                                                                                             
+                                            </tbody>
+                                        </table>
+                                    </dl>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- ISCSI target 카드 영역 끝-->
+                    </div>
+                </div>
+
+
+
+
+                <!-- 게이트웨이 가상머신 -->
             </div>
         </section>
     </main>
@@ -645,9 +796,9 @@
 <!-- 스토리지센터VM 배포 마법사 : ./src/features/storage-vm-wizard.html을 내용으로 load -->
 <div class="pf-c-backdrop" id="div-modal-wizard-gateway-vm"></div>
 
-<div class="pf-c-backdrop" id="div-modal-gluefs-construction"></div>
+<!-- <div class="pf-c-backdrop" id="div-modal-gluefs-construction"></div>
 <div class="pf-c-backdrop" id="div-modal-nfs-construction"></div>
-<div class="pf-c-backdrop" id="div-modal-smb-construction"></div>
+<div class="pf-c-backdrop" id="div-modal-smb-construction"></div> -->
 
 <!-- 클러스터 구성 준비 마법사 : ./src/features/cluster-config-prepare.html을 내용으로 load -->
 <!-- <div class="pf-c-backdrop" id="div-modal-wizard-cluster-config-prepare"></div> -->
@@ -760,10 +911,259 @@
 </div>
 <!-- 게이트웨이 VM 마이그레이션 : Modal 영역 끝 -->
 
+<!-- glue fs 생성 : Modal 영역 시작 -->
+<div id="div-modal-create-gluefs" class="pf-c-backdrop" style="display:none">
+    <div class="pf-l-bullseye">
+        <div class="pf-c-modal-box pf-m-sm" role="dialog" aria-modal="true" aria-label="Create Glue File System">
+            <button id="button-close-modal-create-gluefs" aria-disabled="false" aria-label="Close" class="pf-c-button pf-m-plain" type="button">
+                <i class="fas fa-times" aria-hidden="true"></i>
+            </button>
+            <header class="pf-c-modal-box__header"><h1 class="pf-c-modal-box__title"><span class="pf-c-modal-box__title-text">Glue File System 생성</span></h1></header>
+            <form novalidate class="pf-c-form pf-m-horizontal" style="margin-left:15px;margin-top:10px">
+                <section class="pf-c-form__section">
+                    <div class="pf-c-form__group">
+                        <div class="pf-c-form__group-label" style="margin-left: 20px;">
+                            <label class="pf-c-form__label" for="form-input-glue-fs-name" style="margin-left: 10px;width: 120px;">
+                                <span class="pf-c-form__label-text">GlueFS 이름</span>
+                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                            </label>
+                        </div>
+                        <div class="pf-c-form__group-control">
+                            <input class="pf-c-form-control" style="width:50%" type="text" id="form-input-glue-fs-name" name="form-input-glue-fs-name"/>
+                        </div>
+                    </div>
+                </section>
+            </form>
+            <footer class="pf-c-modal-box__footer">
+                <button id="button-execution-modal-create-gluefs" aria-disabled="false" class="pf-c-button pf-m-primary" type="button" data-ouia-safe="true">실행</button>
+                <button id="button-cancel-modal-create-gluefs" aria-disabled="false" class="pf-c-button pf-m-link" type="button" data-ouia-safe="true">취소</button>
+            </footer>
+        </div>
+    </div>
+</div>
+<!-- glue fs 생성 : Modal 영역 끝 -->
+
+<!-- glue fs 삭제 : Modal 영역 시작 -->
+<div id="div-modal-remove-gluefs" class="pf-c-backdrop" style="display:none">
+    <div class="pf-l-bullseye">
+        <div class="pf-c-modal-box pf-m-sm" role="dialog" aria-modal="true" aria-label="Remove Glue File System">
+            <button id="button-close-modal-remove-gluefs" aria-disabled="false" aria-label="Close" class="pf-c-button pf-m-plain" type="button">
+                <i class="fas fa-times" aria-hidden="true"></i>
+            </button>
+            <header class="pf-c-modal-box__header"><h1 class="pf-c-modal-box__title"><span class="pf-c-modal-box__title-text">Glue File System 삭제</span></h1></header>
+            <div class="pf-c-modal-box__body">
+                <div id="gluefs-id"></div>
+            </div>
+            <footer class="pf-c-modal-box__footer">
+                <button id="button-execution-modal-remove-gluefs" aria-disabled="false" class="pf-c-button pf-m-primary" type="button" data-ouia-safe="true">실행</button>
+                <button id="button-cancel-modal-remove-gluefs" aria-disabled="false" class="pf-c-button pf-m-link" type="button" data-ouia-safe="true">취소</button>
+            </footer>
+            <input type="text" id="gluefs-remove-id" name="gluefs-remove-id" value="" style="display:none" disabled/>
+        </div>
+    </div>
+</div>
+<!-- glue fs 삭제 : Modal 영역 끝 -->
+
+<!-- nfs cluster 생성 : Modal 영역 시작 -->
+<div id="div-modal-create-nfs-cluster" class="pf-c-backdrop" style="display:none">
+    <div class="pf-l-bullseye">
+        <div class="pf-c-modal-box pf-m-sm" role="dialog" aria-modal="true" aria-label="Create NFS Cluster">
+            <button id="button-close-modal-create-nfs-cluster" aria-disabled="false" aria-label="Close" class="pf-c-button pf-m-plain" type="button">
+                <i class="fas fa-times" aria-hidden="true"></i>
+            </button>
+            <header class="pf-c-modal-box__header"><h1 class="pf-c-modal-box__title"><span class="pf-c-modal-box__title-text">NFS Cluster 생성</span></h1></header>
+            <form novalidate class="pf-c-form pf-m-horizontal" style="margin-left:15px;margin-top:10px">
+                <section class="pf-c-form__section">
+                    <div class="pf-c-form__group">
+                        <div class="pf-c-form__group-label" style="margin-left: 20px;">
+                            <label class="pf-c-form__label" for="form-input-nfs-cluster-id" style="margin-left: 10px;width: 120px;">
+                                <span class="pf-c-form__label-text">NFS 클러스터 이름</span>
+                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                            </label>
+                        </div>
+                        <div class="pf-c-form__group-control">
+                            <input class="pf-c-form-control" style="width:50%" type="text" id="form-input-nfs-cluster-id" name="form-input-nfs-cluster-id"/>
+                        </div>
+                    </div>
+                    <div class="pf-c-form__group">
+                        <div class="pf-c-form__group-label" style="margin-left: 20px;">
+                            <label class="pf-c-form__label" for="form-input-nfs-cluster-port" style="margin-left: 10px;width: 120px;">
+                                <span class="pf-c-form__label-text">포트 번호</span>
+                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                            </label>
+                        </div>
+                        <div class="pf-c-form__group-control">
+                            <input class="pf-c-form-control" style="width:50%" type="text" id="form-input-nfs-cluster-port" name="form-input-nfs-cluster-port" placeholder="2049"/>
+                        </div>
+                    </div>
+                </section>
+            </form>
+            <footer class="pf-c-modal-box__footer">
+                <button id="button-execution-modal-create-nfs-cluster" aria-disabled="false" class="pf-c-button pf-m-primary" type="button" data-ouia-safe="true">실행</button>
+                <button id="button-cancel-modal-create-nfs-cluster" aria-disabled="false" class="pf-c-button pf-m-link" type="button" data-ouia-safe="true">취소</button>
+            </footer>
+        </div>
+    </div>
+</div>
+<!-- nfs cluster 생성 : Modal 영역 끝 -->
+
+<!-- nfs cluster 삭제 : Modal 영역 시작 -->
+<div id="div-modal-remove-nfs-cluster" class="pf-c-backdrop" style="display:none">
+    <div class="pf-l-bullseye">
+        <div class="pf-c-modal-box pf-m-sm" role="dialog" aria-modal="true" aria-label="Remove NFS Cluster">
+            <button id="button-close-modal-remove-nfs-cluster" aria-disabled="false" aria-label="Close" class="pf-c-button pf-m-plain" type="button">
+                <i class="fas fa-times" aria-hidden="true"></i>
+            </button>
+            <header class="pf-c-modal-box__header"><h1 class="pf-c-modal-box__title"><span class="pf-c-modal-box__title-text">NFS Cluster 삭제</span></h1></header>
+            <div class="pf-c-modal-box__body">
+                <div id="nfs-cluster-text"></div>
+            </div>
+            <footer class="pf-c-modal-box__footer">
+                <button id="button-execution-modal-remove-nfs-cluster" aria-disabled="false" class="pf-c-button pf-m-primary" type="button" data-ouia-safe="true">실행</button>
+                <button id="button-cancel-modal-remove-nfs-cluster" aria-disabled="false" class="pf-c-button pf-m-link" type="button" data-ouia-safe="true">취소</button>
+            </footer>
+            <input type="text" id="nfs-cluster-id" name="nfs-cluster-id" value="" style="display:none" disabled/>
+        </div>
+    </div>
+</div>
+<!-- nfs cluster 삭제 : Modal 영역 끝 -->
+
+<!-- nfs export 생성 : Modal 영역 시작 -->
+<div id="div-modal-create-nfs-export" class="pf-c-backdrop" style="display:none">
+    <div class="pf-l-bullseye">
+        <div class="pf-c-modal-box pf-m-sm" role="dialog" aria-modal="true" aria-label="Create NFS Export">
+            <button id="button-close-modal-create-nfs-export" aria-disabled="false" aria-label="Close" class="pf-c-button pf-m-plain" type="button">
+                <i class="fas fa-times" aria-hidden="true"></i>
+            </button>
+            <header class="pf-c-modal-box__header"><h1 class="pf-c-modal-box__title"><span class="pf-c-modal-box__title-text">NFS Export 생성</span></h1></header>
+            <form novalidate class="pf-c-form pf-m-horizontal" style="margin-left:15px;margin-top:10px">
+                <section class="pf-c-form__section">
+                    <div class="pf-c-form__group">
+                        <div class="pf-c-form__group-label" style="margin-left: 20px;">
+                            <label class="pf-c-form__label" for="form-input-nfs-export-pseudo" style="margin-left: 10px;width: 120px;">
+                                <span class="pf-c-form__label-text">내보내기 경로</span>
+                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                            </label>
+                        </div>
+                        <div class="pf-c-form__group-control">
+                            <input class="pf-c-form-control" style="width:50%" type="text" id="form-input-nfs-export-pseudo" name="form-input-nfs-export-pseudo"/>
+                        </div>
+                    </div>
+                    <div class="pf-c-form__group">
+                        <div class="pf-c-form__group-label" style="margin-left: 20px;">
+                            <label class="pf-c-form__label" for="form-input-nfs-cluster-name" style="margin-left: 10px;width: 120px;">
+                                <span class="pf-c-form__label-text">NFS Cluster 이름</span>
+                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                            </label>
+                        </div>
+                        <div class="pf-c-form__group-control">
+                            <input class="pf-c-form-control" style="width:50%" type="text" id="form-input-nfs-cluster-name" name="form-input-nfs-cluster-name"/>
+                        </div>
+                    </div>
+                    <div class="pf-c-form__group">
+                        <div class="pf-c-form__group-label" style="margin-left: 20px;">
+                            <label class="pf-c-form__label" for="form-input-gluefs-name" style="margin-left: 10px;width: 120px;">
+                                <span class="pf-c-form__label-text">Glue FS 이름</span>
+                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                            </label>
+                        </div>
+                        <div class="pf-c-form__group-control">
+                            <input class="pf-c-form-control" style="width:50%" type="text" id="form-input-gluefs-name" name="form-input-gluefs-name"/>
+                        </div>
+                    </div>
+                    <div class="pf-c-form__group">
+                        <div class="pf-c-form__group-label" style="margin-left: 20px;">
+                            <label class="pf-c-form__label" for="form-input-gluefs-path" style="margin-left: 10px;width: 120px;">
+                                <span class="pf-c-form__label-text">Glue FS 경로</span>
+                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                            </label>
+                        </div>
+                        <div class="pf-c-form__group-control">
+                            <input class="pf-c-form-control" style="width:50%" type="text" id="form-input-gluefs-path" name="form-input-gluefs-path"/>
+                        </div>
+                    </div>
+                    <div class="pf-c-form__group">
+                        <div class="pf-c-form__group-label" style="margin-left: 20px;">
+                            <label class="pf-c-form__label" for="form-select-nfs-export-access-type" style="margin-left: 10px;width: 120px;">
+                                <span class="pf-c-form__label-text">접근타입</span>
+                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                            </label>
+                        </div>
+                        <div class="pf-c-dropdown">
+                            <select class="pf-c-form-control" id="form-select-nfs-export-access-type" name="form-select-nfs-export-access-type" style="width: 180px;">
+                                <option value="RW" selected>RW</option>
+                                <option value="RO">RO</option>
+                                <option value="NONE">NONE</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="pf-c-form__group">
+                        <div class="pf-c-form__group-label" style="margin-left: 20px;">
+                            <label class="pf-c-form__label" for="form-select-nfs-export-squash-type" style="margin-left: 10px;width: 120px;">
+                                <span class="pf-c-form__label-text">스쿼시</span>
+                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                            </label>
+                        </div>
+                        <div class="pf-c-dropdown">
+                            <select class="pf-c-form-control" id="form-select-nfs-export-squash-type" name="form-select-nfs-export-squash-type" style="width: 180px;">
+                                <option value="no_root_squash" selected>no_root_squash</option>
+                                <option value="root_id_squash">root_id_squash</option>
+                                <option value="root_squash">root_squash</option>
+                                <option value="all_squash">all_squash</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="pf-c-form__group">
+                        <div class="pf-c-form__group-label" style="margin-left: 20px;">
+                            <label class="pf-c-form__label" for="form-select-storage-type" style="margin-left: 10px;width: 120px;">
+                                <span class="pf-c-form__label-text">스토리지 타입</span>
+                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                            </label>
+                        </div>
+                        <div class="pf-c-dropdown">
+                            <select class="pf-c-form-control" id="form-select-storage-type" name="form-select-storage-type" style="width: 180px;">
+                                <option value="CEPH" selected>CEPH</option>
+                            </select>
+                        </div>
+                    </div>                    
+                </section>
+            </form>
+            <footer class="pf-c-modal-box__footer">
+                <button id="button-execution-modal-create-nfs-export" aria-disabled="false" class="pf-c-button pf-m-primary" type="button" data-ouia-safe="true">실행</button>
+                <button id="button-cancel-modal-create-nfs-export" aria-disabled="false" class="pf-c-button pf-m-link" type="button" data-ouia-safe="true">취소</button>
+            </footer>
+        </div>
+    </div>
+</div>
+<!-- nfs cluster 생성 : Modal 영역 끝 -->
+
+<!-- nfs export 삭제 : Modal 영역 시작 -->
+<div id="div-modal-remove-nfs-export" class="pf-c-backdrop" style="display:none">
+    <div class="pf-l-bullseye">
+        <div class="pf-c-modal-box pf-m-sm" role="dialog" aria-modal="true" aria-label="Remove NFS Export">
+            <button id="button-close-modal-remove-nfs-export" aria-disabled="false" aria-label="Close" class="pf-c-button pf-m-plain" type="button">
+                <i class="fas fa-times" aria-hidden="true"></i>
+            </button>
+            <header class="pf-c-modal-box__header"><h1 class="pf-c-modal-box__title"><span class="pf-c-modal-box__title-text">NFS Export 삭제</span></h1></header>
+            <div class="pf-c-modal-box__body">
+                <div id="nfs-export-text"></div>
+            </div>
+            <footer class="pf-c-modal-box__footer">
+                <button id="button-execution-modal-remove-nfs-export" aria-disabled="false" class="pf-c-button pf-m-primary" type="button" data-ouia-safe="true">실행</button>
+                <button id="button-cancel-modal-remove-nfs-export" aria-disabled="false" class="pf-c-button pf-m-link" type="button" data-ouia-safe="true">취소</button>
+            </footer>
+            <input type="text" id="nfs-export-id" name="nfs-export-id" value="" style="display:none" disabled/>
+            <input type="text" id="nfs-cluster-id" name="nfs-cluster-id" value="" style="display:none" disabled/>
+        </div>
+    </div>
+</div>
+<!-- nfs export 삭제 : Modal 영역 끝 -->
 <!-- 모달 영역 끝  -->
 
 <!-- 해당 페이지에 필요한 javascript 파일 추가 영역 시작 -->
 <script src="./src/features/glue/main_glue.js"></script>
 <script src="./src/features/glue/gateway-vm-status.js"></script>
+<script src="./src/features/glue/gluefs.js"></script>
+<script src="./src/features/glue/nfs.js"></script>
 <script src="./src/common/logger.js"></script>
 <!-- 해당 페이지에 필요한 javascript 파일 추가 영역 끝 -->

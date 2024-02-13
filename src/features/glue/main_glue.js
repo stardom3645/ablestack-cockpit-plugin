@@ -33,14 +33,19 @@ $(document).ready(function(){
     $('#menu-item-set-iscsi-target-create').hide();
     $('#menu-item-set-iscsi-acl-connect').hide();
 
-    iscsiCheckInfo();
+    //gluefs list 조회
     gwvmInfoSet();
-    sambaCheckInfo();
-    gluefsCheckInfo();
-    nfsCheckInfo();
+    gluefsList();
+    nfsClusterList();
+    nfsExportList();
+
+    // iscsiCheckInfo();
+    // sambaCheckInfo();
+    // gluefsCheckInfo();
+    // nfsCheckInfo();
     setInterval(() => {
-        gwvmInfoSet(),sambaCheckInfo(),gluefsCheckInfo(),nfsCheckInfo(),iscsiCheckInfo('delete');
-    }, 15000);
+        gwvmInfoSet(),gluefsList(),nfsClusterList(),nfsExportList()
+    }, 10000);
 });
 // document.ready 영역 끝
 
@@ -64,9 +69,9 @@ $('#card-action-storage-cluster-system-status').on('click',function(){
     }
     $('#dropdown-menu-storage-system-status').toggle();
 });
+
 // iscsi 눈금 클릭 시
 $('#card-action-storage-cluster-iscsi-status').on('click', function(){
-
         if($('#iscsi-status').text() == "Health Err"){
             $('#menu-item-set-iscsi-delete').hide();
             $('#menu-item-set-iscsi-service-control').hide();
@@ -82,6 +87,12 @@ $('#card-action-storage-cluster-iscsi-status').on('click', function(){
         }
     $('#dropdown-menu-iscsi-status').toggle();
 });
+
+/** 스토리지 서비스 구성 관련 action start */
+$('#button-glue-api-server-connect').on('click', function(){
+    window.open("https://10.10.2.12:8080/swaggers/index.html");
+});
+
 /** 스토리지 서비스 구성 관련 action start */
 $('#button-gateway-vm-setup').on('click', function(){
     $('#div-modal-gateway-vm-setup').show();
@@ -91,20 +102,6 @@ $('#menu-item-gateway-vm-setup').on('click', function(){
     $('#div-modal-gateway-vm-setup').show();
 });
 
-/** 스토리지 서비스 구성 관련 action start */
-$('#button-gateway-vm-action').on('click', function(){
-    var request = new XMLHttpRequest();
-    request.open('PATCH', 'https://10.10.2.12:8080/api/v1/gwvm/start');
-    request.send();
-    request.onload = function() {
-        console.log(JSON.parse(request.response));
-    }
-
-    // fetch('https://10.10.2.12:8080/api/v1/gwvm/cell',{
-    //     method: 'GET'
-    // }).then(res => res.json())
-    // .then(data => console.log(data));
-});
 // iscsi 구성 화면 닫기
 $('#div-modal-iscsi-close, #button-cancel-iscsi').on('click', function(){
     $('#div-modal-iscsi').hide();
@@ -547,6 +544,16 @@ $('#button-execution-modal-delete').on('click',function(){
         })
     }
 });
+
+
+
+
+
+
+
+
+
+
 
 function iscsiCheckInfo(type){
     $('#iscsi-status').html("상태 체크 중 &bull;&bull;&bull;&nbsp;&nbsp;&nbsp;<svg class='pf-c-spinner pf-m-md' role='progressbar' aria-valuetext='Loading...' viewBox='0 0 100 100' ><circle class='pf-c-spinner__path' cx='50' cy='50' r='45' fill='none'></circle></svg>");
@@ -1006,7 +1013,7 @@ function gwvmInfoSet(){
     $('#gwvm-status').html("상태 체크 중 &bull;&bull;&bull;&nbsp;&nbsp;&nbsp;<svg class='pf-c-spinner pf-m-md' role='progressbar' aria-valuetext='Loading...' viewBox='0 0 100 100' ><circle class='pf-c-spinner__path' cx='50' cy='50' r='45' fill='none'></circle></svg>");
     $("#gwvm-back-color").attr('class','pf-c-label pf-m-orange');
     $("#gwvm-cluster-icon").attr('class','fas fa-fw fa-exclamation-triangle');
-
+    
     //디테일 정보 가져오기
     fetch('https://10.10.2.12:8080/api/v1/gwvm/detail/cell',{
         method: 'GET'
@@ -1178,3 +1185,36 @@ function toBytes(size){
         return (bytes / Math.pow(1024, Math.floor(e))) + " " + s[e];
 
 }
+
+function bytesToSize(bytes) {
+    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB']
+    if (bytes === 0) return '0 B'
+    const i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)), 10)
+    if (i === 0) return `${bytes} ${sizes[i]})`
+    return `${(bytes / (1024 ** i)).toFixed(1)} ${sizes[i]}`
+}
+
+function toggleAction(id,index){
+    $('#'+id+index).toggle();
+}
+
+$('#button-storage-dashboard-connect').on('click', function(){
+    // storageCenter url 링크 주소 가져오기
+    createLoggerInfo("button-storage-dashboard-connect click");
+    cockpit.spawn(["python3", pluginpath+"/python/url/create_address.py", "storageCenter"])
+    .then(function(data){
+        var retVal = JSON.parse(data);
+        if(retVal.code == 200){
+            // 스토리지센터 연결
+            window.open(retVal.val);
+        }else{
+            $("#modal-status-alert-title").html("스토리지센터 연결");
+            $("#modal-status-alert-body").html(retVal.val);
+            $('#div-modal-status-alert').show();
+        }
+    })
+    .catch(function(err){
+        createLoggerInfo(":::create_address.py storageCenter Error:::");
+        console.log(":::create_address.py storageCenter Error:::"+ err);
+    });
+});
