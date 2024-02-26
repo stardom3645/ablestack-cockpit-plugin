@@ -27,6 +27,7 @@ function gluefsList(){
                 }
             }
             
+            console.log(data.status.mdsmap)
             for(var j=0; j < data.status.mdsmap.length; j++){
                 if(data.list[i].name == data.status.mdsmap[j].name.split('.')[0]){
                     if(active==""){

@@ -134,20 +134,14 @@ def create(args):
         if json_data["clusterConfig"]["pcsCluster"]["hostname1"] is not None:
             pcs_cluster_list.append(json_data["clusterConfig"]["pcsCluster"]["hostname1"])
             create_gwvm_cloudinit_cmd.append(json_data["clusterConfig"]["pcsCluster"]["hostname1"])
-            # pcs_cluster_list.append("10.10.2.1")
-            # create_gwvm_cloudinit_cmd.append("10.10.2.1")
 
         if json_data["clusterConfig"]["pcsCluster"]["hostname2"] is not None:
             pcs_cluster_list.append(json_data["clusterConfig"]["pcsCluster"]["hostname2"])
             create_gwvm_cloudinit_cmd.append(json_data["clusterConfig"]["pcsCluster"]["hostname2"])
-            # pcs_cluster_list.append("10.10.2.2")
-            # create_gwvm_cloudinit_cmd.append("10.10.2.2")
 
         if json_data["clusterConfig"]["pcsCluster"]["hostname3"] is not None:
             pcs_cluster_list.append(json_data["clusterConfig"]["pcsCluster"]["hostname3"])
             create_gwvm_cloudinit_cmd.append(json_data["clusterConfig"]["pcsCluster"]["hostname3"])
-            # pcs_cluster_list.append("10.10.2.3")
-            # create_gwvm_cloudinit_cmd.append("10.10.2.3")
 
         create_gwvm_cloudinit_cmd.append('--mgmt-nic')
         create_gwvm_cloudinit_cmd.append('enp0s20')

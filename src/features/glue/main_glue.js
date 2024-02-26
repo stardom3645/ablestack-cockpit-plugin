@@ -33,18 +33,15 @@ $(document).ready(function(){
     $('#menu-item-set-iscsi-target-create').hide();
     $('#menu-item-set-iscsi-acl-connect').hide();
 
-    //gluefs list 조회
     gwvmInfoSet();
+    glueVmList();
     gluefsList();
     nfsClusterList();
     nfsExportList();
+    iscsiServiceList();
 
-    // iscsiCheckInfo();
-    // sambaCheckInfo();
-    // gluefsCheckInfo();
-    // nfsCheckInfo();
     setInterval(() => {
-        gwvmInfoSet(),gluefsList(),nfsClusterList(),nfsExportList()
+        gwvmInfoSet(),glueVmList(),gluefsList(),nfsClusterList(),nfsExportList(),iscsiServiceList()
     }, 10000);
 });
 // document.ready 영역 끝
@@ -1001,7 +998,7 @@ function Byte(size){
 
 }
 /**
- * Meathod Name : validateGatewayVm
+ * Meathod Name : gwvmInfoSet
  * Date Created : 2023.05.25
  * Writer  : 배태주
  * Description : 게이트웨이 가상머신 생성 전 입력받은 값의 유효성 검사
@@ -1034,8 +1031,7 @@ function gwvmInfoSet(){
 
                         $('#td_gwvm_started_host').text(retVal.val["started"]);
                         $('#td_gwvm_cpu_mem').text(retVal.val['CPU(s)'] + " vCore / " + toBytes(retVal.val['Max memory']));
-                        $('#td_gwvm_ip_prefix').text(retVal.val["ip"] + "/" + retVal.val["prefix"]);
-                        $('#td_gwvm_gw').text(retVal.val["gw"]);
+                        $('#td_gwvm_ip').text(retVal.val["ip"]);
                         $('#td_gwvm_root_disk').text(retVal.val["disk_cap"] + " (사용가능 " + retVal.val["disk_phy"] + " / 사용률 " + retVal.val["disk_usage_rate"] + ")");
 
                         // 마이그레이션 노드 옵션 설정
@@ -1149,7 +1145,7 @@ function cleanGwvmInfo(){
     $("#gwvm-cluster-icon").attr('class','fas fa-fw fa-exclamation-triangle');
     $('#td_gwvm_started_host').text("N/A");
     $('#td_gwvm_cpu_mem').text("N/A");
-    $('#td_gwvm_ip_prefix').text("N/A");
+    $('#td_gwvm_ip').text("N/A");
     $('#td_gwvm_gw').text("N/A");
     $('#td_gwvm_root_disk').text("N/A");
 }
@@ -1218,3 +1214,56 @@ $('#button-storage-dashboard-connect').on('click', function(){
         console.log(":::create_address.py storageCenter Error:::"+ err);
     });
 });
+
+/**
+ * Meathod Name : glueVmList
+ * Date Created : 2024.02.22
+ * Writer  : 배태주
+ * Description : 게이트웨이 가상머신 생성 전 입력받은 값의 유효성 검사
+ * Parameter : 없음
+ * Return  : 없음
+ * History  : 2024.02.22 최초 작성
+ */
+function glueVmList(){
+    fetch('https://10.10.2.12:8080/api/v1/glue/hosts',{
+        method: 'GET'
+    }).then(res => res.json()).then(data => {
+        $('#glue-vm-list tr').remove();
+        console.log(data)
+
+        for(var i=0; i < data.length; i++){
+            let insert_tr = "";
+                                                    
+            insert_tr += '<tr role="row">';
+
+            insert_tr += '<tr role="row">';
+            insert_tr += '    <td role="cell" data-label="이름" id="td_glue_host_name">'+data[i].hostname+'</td>';
+            insert_tr += '    <td role="cell" data-label="상태">';
+            if(data[i].status == ''){
+                insert_tr += '        <span class="pf-c-label pf-m-green">';
+                insert_tr += '            <span class="pf-c-label__content">';
+                insert_tr += '                <span class="pf-c-label__icon">';
+                insert_tr += '                    <i class="fas fa-fw fa-check-circle" aria-hidden="true"></i>';
+                insert_tr += '                </span><div>Online</div>';
+                insert_tr += '            </span>';
+                insert_tr += '        </span>';
+            }else{
+                insert_tr += '        <span class="pf-c-label pf-m-orange">';
+                insert_tr += '            <span class="pf-c-label__content">';
+                insert_tr += '                <span class="pf-c-label__icon">';
+                insert_tr += '                    <i class="fas fa-fw fa-exclamation-triangle" aria-hidden="true"></i>';
+                insert_tr += '                </span><div>'+data[i].status+'</div>';
+                insert_tr += '            </span>';
+                insert_tr += '        </span>';
+            }
+            insert_tr += '    </td>';
+            insert_tr += '    <td role="cell" data-label="관리 IP" id="td_glue_host_mngt_ip">'+data[i].main_addr+'</td>';
+            insert_tr += '    <td role="cell" data-label="스토리지 IP " id="td_glue_host_storage_ip">'+data[i].addr+'</td>';
+            insert_tr += '</tr>';
+            $("#glue-vm-list:last").append(insert_tr);
+        }
+    }).catch(function(data){
+        createLoggerInfo("Glue 가상머신 정보 조회 실패 "+data);
+        console.log("Glue 가상머신 정보 조회 실패 "+data);
+    });
+}

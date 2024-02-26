@@ -38,7 +38,7 @@ $(".tab-available").keydown(function (e) {
         });
     }else{
         cockpit.spawn(cmd,{ host: excute_host}).then(function(data){
-
+            
             setNicSelectBox(select_box_id, data)
 
         }).catch(function(){
