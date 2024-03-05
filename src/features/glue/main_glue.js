@@ -34,19 +34,46 @@ $(document).ready(function(){
     $('#menu-item-set-iscsi-acl-connect').hide();
 
     gwvmInfoSet();
-    glueVmList();
     gluefsList();
     nfsClusterList();
     nfsExportList();
     iscsiServiceList();
+    iscsiTargetList();
+    smbServiceList();
+    glueVmList();
 
     setInterval(() => {
-        gwvmInfoSet(),glueVmList(),gluefsList(),nfsClusterList(),nfsExportList(),iscsiServiceList()
+        gwvmInfoSet(),glueVmList()
+        // ,gluefsList(),nfsClusterList(),nfsExportList(),iscsiServiceList(),smbServiceList()
     }, 10000);
 });
 // document.ready 영역 끝
 
 // 이벤트 처리 함수
+// 상태 보기 드롭다운 메뉴를 활성화한 상태에서 다른 영역을 클릭 했을 경우 메뉴 닫기 (현재 활성화된 iframe 클릭할 때 작동)
+$('html').on('click', function(e){
+    console.log(e);
+    if(!$(e.target).hasClass('pf-c-dropdown__toggle')){
+        $('.pf-c-dropdown__menu, .pf-m-align-right').hide();
+    }
+    // if($(e.target).hasClass('pf-c-select__menu-item')){
+        
+    //     if($('#div-glue-hosts-list').css("display") != "none"){
+    //         alert(111111111)
+    //     }else{
+    //         alert(222222)
+    //     }
+    //     // $('.pf-c-select__menu').hide();
+    // }
+});
+
+// 상태 보기 드롭다운 메뉴를 활성화한 상태에서 다른 영역을 클릭 했을 경우 메뉴 닫기 (pareant html 클릭할 때 작동)
+$(top.document, 'html').on('click', function(e){
+    if(!$(e.target).hasClass('pf-c-dropdown__toggle')){
+        $('.pf-c-dropdown__menu, .pf-m-align-right').hide();
+    }
+});
+
 $('#card-action-gateway-vm-status').on('click', function(){
     $('#dropdown-menu-gateway-vm-status').toggle();
 });
@@ -54,6 +81,7 @@ $('#card-action-gateway-vm-status').on('click', function(){
 $('#button-open-modal-wizard-gateway-vm').on('click', function(){
     $('#div-modal-wizard-gateway-vm').show();
 });
+
 // 파일 시스템 눈금 클릭 시
 $('#card-action-storage-cluster-system-status').on('click',function(){
 
@@ -87,11 +115,11 @@ $('#card-action-storage-cluster-iscsi-status').on('click', function(){
 
 /** 스토리지 서비스 구성 관련 action start */
 $('#button-glue-api-server-connect').on('click', function(){
-    window.open("https://10.10.2.12:8080/swaggers/index.html");
+    window.open("https://10.10.5.11:8080/swagger/index.html");
 });
 
 /** 스토리지 서비스 구성 관련 action start */
-$('#button-gateway-vm-setup').on('click', function(){
+$('#button-gateway-vm-setup2').on('click', function(){
     $('#div-modal-gateway-vm-setup').show();
 });
 
@@ -1012,13 +1040,13 @@ function gwvmInfoSet(){
     $("#gwvm-cluster-icon").attr('class','fas fa-fw fa-exclamation-triangle');
     
     //디테일 정보 가져오기
-    fetch('https://10.10.2.12:8080/api/v1/gwvm/detail/cell',{
+    fetch('https://10.10.5.11:8080/api/v1/gwvm/detail/cell',{
         method: 'GET'
     }).then(res => res.json()).then(data => {
         var retDetailVal = JSON.parse(data.Message);
         console.log(retDetailVal)
         if (retDetailVal.code == "200" || retDetailVal.val["role"] == 'Running') {
-            fetch('https://10.10.2.12:8080/api/v1/gwvm/cell',{
+            fetch('https://10.10.5.11:8080/api/v1/gwvm/cell',{
                 method: 'GET'
             }).then(res => res.json()).then(data => {
                 var retVal = JSON.parse(data.Message);
@@ -1225,7 +1253,7 @@ $('#button-storage-dashboard-connect').on('click', function(){
  * History  : 2024.02.22 최초 작성
  */
 function glueVmList(){
-    fetch('https://10.10.2.12:8080/api/v1/glue/hosts',{
+    fetch('https://10.10.5.11:8080/api/v1/glue/hosts',{
         method: 'GET'
     }).then(res => res.json()).then(data => {
         $('#glue-vm-list tr').remove();
@@ -1257,7 +1285,7 @@ function glueVmList(){
                 insert_tr += '        </span>';
             }
             insert_tr += '    </td>';
-            insert_tr += '    <td role="cell" data-label="관리 IP" id="td_glue_host_mngt_ip">'+data[i].main_addr+'</td>';
+            insert_tr += '    <td role="cell" data-label="관리 IP" id="td_glue_host_mngt_ip">'+data[i].ip_address+'</td>';
             insert_tr += '    <td role="cell" data-label="스토리지 IP " id="td_glue_host_storage_ip">'+data[i].addr+'</td>';
             insert_tr += '</tr>';
             $("#glue-vm-list:last").append(insert_tr);
@@ -1267,3 +1295,25 @@ function glueVmList(){
         console.log("Glue 가상머신 정보 조회 실패 "+data);
     });
 }
+
+// glue 호스트 리스트 기능
+$('#button-glue-hosts-list-setting').on('click', function(){
+    $('#div-glue-hosts-list').toggle();
+});
+
+// glue 호스트 리스트 기능
+$('input[name=glue-hosts-list]').on('click', function(){
+    var cnt = 0;
+    var el = "";
+    $('input[type=checkbox][name="glue-hosts-list"]').each(function() {
+        if(this.checked){
+            if(cnt==0){
+                el = this.value
+            }else{
+                el += ", "+this.value
+            }
+            cnt++
+        }
+    });
+    $('#form-input-nfs-cluster-placement-hosts').val(el);
+});

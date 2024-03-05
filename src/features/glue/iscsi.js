@@ -7,7 +7,8 @@
 
 function iscsiServiceList(){
     //조회
-    fetch('https://10.10.2.12:8080/api/v1/service?service_type=iscsi',{
+    $('#button-iscsi-service-search').html("<svg class='pf-c-spinner pf-m-md' role='progressbar' aria-valuetext='Loading...' viewBox='0 0 100 100' ><circle class='pf-c-spinner__path' cx='50' cy='50' r='45' fill='none'></circle></svg>");
+    fetch('https://10.10.5.11:8080/api/v1/service?service_type=iscsi',{
         method: 'GET',
         headers: {
             'accept': 'application/json',
@@ -15,38 +16,57 @@ function iscsiServiceList(){
         }
     }).then(res => res.json()).then(data => {
         $('#iscsi-service-list tr').remove();
-        for(var i=0; i < data.length; i++){
-            let insert_tr = "";
-                                                    
-            insert_tr += '<tr role="row">';
-            insert_tr += '    <td role="cell" data-label="이름" id="iscsi-service-name">'+data[i].service_name+'</td>';
-            insert_tr += '    <td role="cell" data-label="상태" id="iscsi-service-status">'+data[i].status.running+'/'+data[i].status.size+'</td>';
-            insert_tr += '    <td role="cell" data-label="서비스 호스트" id="iscsi-service-host">'+data[i].placement.hosts+'</td>';
-            insert_tr += '    <td role="cell" data-label="스토리지 풀" id="iscsi-service-pool">'+data[i].spec.pool+'</td>';
-            insert_tr += '    <td role="cell" data-label="API Port" id="iscsi-service-api-port">'+data[i].spec.api_port+'</td>';
-            insert_tr += '    <td class="pf-c-table__icon" role="cell" data-label="편집">';
-            insert_tr += '        <div class="pf-c-dropdown">';
-            insert_tr += '            <button class="pf-c-dropdown__toggle pf-m-plain" id="card-action-iscsi-service-status'+i+'" onclick="toggleAction(\'dropdown-menu-card-action-iscsi-service-status\','+i+')" aria-expanded="false" type="button" aria-label="Actions">';
-            insert_tr += '                <i class="fas fa-ellipsis-v" aria-hidden="true"></i>';
-            insert_tr += '            </button>';
-            insert_tr += '            <ul class="pf-c-dropdown__menu pf-m-align-right" aria-labelledby="card-action-iscsi-service-status'+i+'" id="dropdown-menu-card-action-iscsi-service-status'+i+'">';
-            insert_tr += '                <li>';
-            insert_tr += '                    <button class="pf-c-dropdown__menu-item pf-m-enabled" type="button" id="menu-item-set-iscsi-service-remove" onclick=\'iscsiServiceDelete("'+data[i].service_name+'")\' >iSCSI Service 삭제</button>';
-            insert_tr += '                </li>';
-            insert_tr += '            </ul>';
-            insert_tr += '        </div>';
-            insert_tr += '    </td>';
-            insert_tr += '</tr>';
+        if(data.code!=500){
+            for(var i=0; i < data.length; i++){
+                let insert_tr = "";
+                                                        
+                insert_tr += '<tr role="row">';
+                insert_tr += '    <td role="cell" data-label="이름" id="iscsi-service-name">'+data[i].service_name+'</td>';
+                insert_tr += '    <td role="cell" data-label="상태" id="iscsi-service-status">'+data[i].status.running+'/'+data[i].status.size+'</td>';
+                insert_tr += '    <td role="cell" data-label="서비스 호스트" id="iscsi-service-host">'+data[i].placement.hosts+'</td>';
+                insert_tr += '    <td role="cell" data-label="스토리지 풀" id="iscsi-service-pool">'+data[i].spec.pool+'</td>';
+                insert_tr += '    <td role="cell" data-label="API Port" id="iscsi-service-api-port">'+data[i].spec.api_port+'</td>';
+                insert_tr += '    <td class="pf-c-table__icon" role="cell" data-label="편집">';
+                insert_tr += '        <div class="pf-c-dropdown">';
+                insert_tr += '            <button class="pf-c-dropdown__toggle pf-m-plain" id="card-action-iscsi-service-status'+i+'" onclick="toggleAction(\'dropdown-menu-card-action-iscsi-service-status\','+i+')" aria-expanded="false" type="button" aria-label="Actions">';
+                insert_tr += '                <i class="fas fa-ellipsis-v" aria-hidden="true"></i>';
+                insert_tr += '            </button>';
+                insert_tr += '            <ul class="pf-c-dropdown__menu pf-m-align-right" aria-labelledby="card-action-iscsi-service-status'+i+'" id="dropdown-menu-card-action-iscsi-service-status'+i+'">';
+                insert_tr += '                <li>';
+                insert_tr += '                    <button class="pf-c-dropdown__menu-item pf-m-enabled" type="button" id="menu-item-set-iscsi-service-remove" onclick=\'iscsiServiceDelete("'+data[i].service_name+'")\' >iSCSI 서비스 삭제</button>';
+                insert_tr += '                </li>';
+                insert_tr += '            </ul>';
+                insert_tr += '        </div>';
+                insert_tr += '    </td>';
+                insert_tr += '</tr>';
 
+                $("#iscsi-service-list:last").append(insert_tr);
+                $('#dropdown-menu-card-action-iscsi-service-status'+i).hide();
+            }
+        }else{
+            let insert_tr = "";
+            insert_tr += '<tr role="row">';
+            insert_tr += '    <td role="cell" colspan="6" style="text-align: center;">조회되는 데이터가 없습니다.</td>';
+            insert_tr += '</tr>';
             $("#iscsi-service-list:last").append(insert_tr);
-            $('#dropdown-menu-card-action-iscsi-service-status'+i).hide();
         }
+        $('#button-iscsi-service-search').html("<i class='fas fa-fw fa-redo' aria-hidden='true'></i>");
     }).catch(function(data){
         console.log("error : "+data);
         //조회되는 데이터가 없음
         $('#iscsi-service-list tr').remove();
+        let insert_tr = "";
+        insert_tr += '<tr role="row">';
+        insert_tr += '    <td role="cell" colspan="6" style="text-align: center;">조회되는 데이터가 없습니다.</td>';
+        insert_tr += '</tr>';
+        $("#iscsi-service-list:last").append(insert_tr);
+        $('#button-iscsi-service-search').html("<i class='fas fa-fw fa-redo' aria-hidden='true'></i>");
     });
 }
+
+$('#button-iscsi-service-search').on('click', function(){
+    iscsiServiceList();
+});
 
 function iscsiServiceDelete(iscsi_service_id){
     $('#div-modal-remove-iscsi-service').show();
@@ -84,7 +104,7 @@ $('#button-execution-modal-create-iscsi-service').on('click', function(){
     $("#modal-status-alert-title").html("iSCSI Service 생성 실패");
     $("#modal-status-alert-body").html("iSCSI Service 생성을 실패하였습니다.");
 
-    fetch('https://10.10.2.12:8080/api/v1/iscsi',{
+    fetch('https://10.10.5.11:8080/api/v1/iscsi',{
         method: 'POST',
         headers: {
             'accept': 'application/json',
@@ -133,7 +153,7 @@ $('#button-execution-modal-remove-iscsi-service').on('click', function(){
 
     $("#modal-status-alert-title").html("iSCSI Service 삭제 실패");
     $("#modal-status-alert-body").html("iSCSI Service 삭제를 실패하였습니다.");
-    fetch('https://10.10.2.12:8080/api/v1/service/'+iscsi_service_id,{
+    fetch('https://10.10.5.11:8080/api/v1/service/'+iscsi_service_id,{
         method: 'DELETE',
         headers: {
             'accept': 'application/json',
@@ -159,151 +179,129 @@ $('#button-execution-modal-remove-iscsi-service').on('click', function(){
 });
 /**  iSCSI Service delete 관련 action end */
 
-function nfsExportList(){
+function iscsiTargetList(){
     //조회
-    fetch('https://10.10.2.12:8080/api/v1/nfs/export',{
+    $('#button-iscsi-target-search').html("<svg class='pf-c-spinner pf-m-md' role='progressbar' aria-valuetext='Loading...' viewBox='0 0 100 100' ><circle class='pf-c-spinner__path' cx='50' cy='50' r='45' fill='none'></circle></svg>");
+    fetch('https://10.10.5.11:8080/api/v1/iscsi/target',{
         method: 'GET',
         headers: {
             'accept': 'application/json',
             'Content-Type': 'application/x-www-form-urlencoded'
         }
     }).then(res => res.json()).then(data => {
-        $('#nfs-export-list tr').remove();
-        if(data!=null){
+        $('#iscsi-target-list tr').remove();
+        if(data.code!="no_gateways_defined"){
             for(var i=0; i < data.length; i++){
                 let insert_tr = "";
+                insert_tr += '<tr role="row">';
+                insert_tr += '    <td role="cell" data-label="IQN" id="target_iqn">'+data[i].target_iqn+'</td>';
+                
+                if(data[i].portals != undefined && data[i].portals != ""){
+                    var portal_list=[];
+                    for(var j=0; j < data[i].portals.length; j++){
+                        portal_list.push(data[i].portals[j].host+':'+data[i].portals[j].ip);
+                    }
+                    insert_tr += '    <td role="cell" data-label="포탈" id="portals">'+portal_list+'</td>';
+                }else{
+                    insert_tr += '    <td role="cell" data-label="포탈" id="portals">N/A</td>';
+                }
 
-                insert_tr += '<tr role="row">'
-                insert_tr += '    <td role="cell" data-label="내보내기 경로" id="nfs-export-name">'+data[i].pseudo+'</td>'
-                insert_tr += '    <td role="cell" data-label="클러스터 명" id="nfs-export-name">'+data[i].cluster_id+'</td>'
-                insert_tr += '    <td role="cell" data-label="GlueFS 명" id="nfs-export-name">'+data[i].fsal.fs_name+'</td>'
-                insert_tr += '    <td role="cell" data-label="프로토콜" id="nfs-export-name">'+data[i].transports+'</td>'
-                insert_tr += '    <td role="cell" data-label="접근 타입" id="nfs-export-name">'+data[i].access_type+'</td>'
-                insert_tr += '    <td role="cell" data-label="Squash" id="nfs-export-name">'+data[i].squash+'</td>'
-                insert_tr += '    <td class="pf-c-table__icon" role="cell" data-label="편집">'
-                insert_tr += '         <div class="pf-c-dropdown">'
-                insert_tr += '            <button class="pf-c-dropdown__toggle pf-m-plain" id="card-action-nfs-export'+i+'" onclick="toggleAction(\'dropdown-menu-card-action-nfs-export\','+i+')" aria-expanded="false" type="button" aria-label="Actions">'
-                insert_tr += '                <i class="fas fa-ellipsis-v" aria-hidden="true"></i>'
-                insert_tr += '            </button>'
-                insert_tr += '            <ul class="pf-c-dropdown__menu pf-m-align-right" aria-labelledby="card-action-nfs-export'+i+'" id="dropdown-menu-card-action-nfs-export'+i+'">'
-                insert_tr += '                <li>'
-                insert_tr += '                    <button class="pf-c-dropdown__menu-item pf-m-enabled" type="button" id="menu-item-nfs-export-edit" onclick=\'nfsExportEdit("'+data[i].export_id+'")\' >iSCSI Service 편집</button>'
-                insert_tr += '                </li>'
-                insert_tr += '                <li>'
-                insert_tr += '                    <button class="pf-c-dropdown__menu-item pf-m-enabled" type="button" id="menu-item-nfs-export-remove" onclick=\'nfsExportDelete("'+data[i].export_id+'","'+data[i].pseudo+'","'+data[i].cluster_id+'")\' >iSCSI Service 삭제</button>'
-                insert_tr += '                </li>'
-                insert_tr += '            </ul>'
-                insert_tr += '       </div>'
-                insert_tr += '    </td>'
-                insert_tr += '</tr>'
+                if(data[i].disks != undefined && data[i].disks != ""){
+                    var disk_list=[];
+                    for(var j=0; j < data[i].disks.length; j++){
+                        disk_list.push(data[i].disks[j].pool+'/'+data[i].disks[j].image+':['+data[i].disks[j].lun+']');
+                    }
+                    insert_tr += '    <td role="cell" data-label="디스크 정보" id="disks">'+disk_list+'</td>';
+                }else{
+                    insert_tr += '    <td role="cell" data-label="디스크 정보" id="disks">N/A</td>';
+                }
 
-                $("#nfs-export-list:last").append(insert_tr);
-                $('#dropdown-menu-card-action-nfs-export'+i).hide();
+                if(data[i].info != undefined){
+                    insert_tr += '    <td role="cell" data-label="세션 수" id="num_sessions">'+data[i].info.num_sessions+'</td>';
+                }else{
+                    insert_tr += '    <td role="cell" data-label="세션 수" id="num_sessions">N/A</td>';
+                }
+                insert_tr += '    <td class="pf-c-table__icon" role="cell" data-label="편집">';
+                insert_tr += '        <div class="pf-c-dropdown">';
+                insert_tr += '            <button class="pf-c-dropdown__toggle pf-m-plain" id="card-action-iscsi-target-status'+i+'" onclick="toggleAction(\'dropdown-menu-card-action-iscsi-target-status\','+i+')" aria-expanded="false" type="button" aria-label="Actions">';
+                insert_tr += '                <i class="fas fa-ellipsis-v" aria-hidden="true"></i>';
+                insert_tr += '            </button>';
+                insert_tr += '            <ul class="pf-c-dropdown__menu pf-m-align-right" aria-labelledby="card-action-iscsi-target-status'+i+'" id="dropdown-menu-card-action-iscsi-target-status'+i+'">'
+                insert_tr += '                <li>';
+                insert_tr += '                    <button class="pf-c-dropdown__menu-item pf-m-enabled" type="button" id="menu-item-set-iscsi-target-remove" onclick=\'nfsExportEdit("'+data[i].export_id+'")\' >iSCSI target 삭제</button>'
+                insert_tr += '                </li>';
+                insert_tr += '            </ul>';
+                insert_tr += '        </div>';
+                insert_tr += '    </td>';
+                insert_tr += '</tr>';
+
+                $("#iscsi-target-list:last").append(insert_tr);
+                $('#dropdown-menu-card-action-iscsi-target-status'+i).hide();
             }
+        }else{
+            let insert_tr = "";
+            insert_tr += '<tr role="row">';
+            insert_tr += '    <td role="cell" colspan="5" style="text-align: center;">조회되는 데이터가 없습니다.</td>';
+            insert_tr += '</tr>';
+            $("#iscsi-target-list:last").append(insert_tr);
         }
+        $('#button-iscsi-target-search').html("<i class='fas fa-fw fa-redo' aria-hidden='true'></i>");
     }).catch(function(data){
         console.log("error : "+data);
         //조회되는 데이터가 없음
-        $('#nfs-export-list tr').remove();
+        $('#iscsi-target-list tr').remove();
+        $('#button-iscsi-target-search').html("<i class='fas fa-fw fa-redo' aria-hidden='true'></i>");
     });
 }
 
-function nfsExportEdit(id){
-    $('#div-modal-remove-gluefs').show();
-    $('#gluefs-remove-id').val(id);
-    $('#gluefs-id').text('선택하신 '+id+' 을(를) 삭제하시겠습니까?');
-}
+/** iSCSI target search 관련 action start */
+$('#button-iscsi-target-search').on('click', function(){
+    iscsiTargetList();
+});
+/** iSCSI target search 관련 action end */
 
-function nfsExportDelete(export_id, pseudo, cluster_id){
-    $('#div-modal-remove-nfs-export').show();
-    $('#nfs-export-id').val(export_id);
-    $('#iscsi-service-id').val(cluster_id);
-    $('#nfs-export-text').text('선택하신 '+pseudo+" : "+cluster_id+' 을(를) 삭제하시겠습니까?');
-}
+// function nfsExportDelete(export_id, pseudo, cluster_id){
+//     $('#div-modal-remove-iscsi-target').show();
+//     $('#iscsi-target-id').val(export_id);
+//     $('#iscsi-target-id').val(cluster_id);
+//     $('#nfs-export-text').text('선택하신 '+pseudo+" : "+cluster_id+' 을(를) 삭제하시겠습니까?');
+// }
 
-/** nfs export delete 관련 action start */
-$('#menu-item-nfs-export-remove').on('click', function(){
-    $('#div-modal-remove-nfs-export').show();
+/** iSCSI target create 관련 action start */
+$('#button-iscsi-target-create').on('click', function(){
+    $('#form-input-iqn-id').val(iqnIdCreate());
+    $('#div-modal-create-iscsi-target').show();
 });
 
-$('#button-close-modal-remove-nfs-export').on('click', function(){
-    $('#div-modal-remove-nfs-export').hide();
+$('#button-close-modal-create-iscsi-target').on('click', function(){
+    $('#div-modal-create-iscsi-target').hide();
 });
 
-$('#button-cancel-modal-remove-nfs-export').on('click', function(){
-    $('#div-modal-remove-nfs-export').hide();
+$('#button-cancel-modal-create-iscsi-target').on('click', function(){
+    $('#div-modal-create-iscsi-target').hide();
 });
 
-$('#button-execution-modal-remove-nfs-export').on('click', function(){
-    var nfs_export_id = $('#nfs-export-id').val()
-    var nfs_cluster_id = $('#iscsi-service-id').val()
+$('#button-execution-modal-create-iscsi-target').on('click', function(){
+    var portalSelect = $('#form-select-target-portal option:selected').val();
+        
+    var iqn_id = $('#form-input-iqn-id').val();
+    var hostname = portalSelect.split(':')[0];
+    var ip_address = portalSelect.split(':')[1];
+    var pool_name = $('#form-select-target-image-pool option:selected').val();
+    var image_name = $('#form-input-target-image-name option:selected').val();
+
+    // var yn_bool = $('input[type=checkbox][id="form-checkbox-existing-image-use-yn"]').is(":checked");
+
+    var body_val = "iqn_id="+iqn_id+"&hostname="+hostname+"&ip_address="+ip_address+"&pool_name="+pool_name+"&image_name="+image_name+"&acl_enabled=false"
     
-    $('#div-modal-remove-nfs-export').hide();
-    $('#div-modal-spinner-header-txt').text('NFS Export를 삭제하고 있습니다.');
+    $('#div-modal-create-iscsi-target').hide();
+    $('#div-modal-spinner-header-txt').text('iSCSI Target을 생성하고 있습니다.');
     $('#div-modal-spinner').show();
 
-    $("#modal-status-alert-title").html("NFS Export 삭제 실패");
-    $("#modal-status-alert-body").html("NFS Export 삭제를 실패하였습니다.");
+    $("#modal-status-alert-title").html("iSCSI Target 생성 실패");
+    $("#modal-status-alert-body").html("iSCSI Target 생성을 실패하였습니다.");
 
-    fetch('https://10.10.2.12:8080/api/v1/nfs/export/'+nfs_cluster_id+"/"+nfs_export_id,{
-        method: 'DELETE',
-        headers: {
-            'accept': 'application/json',
-            'Content-Type': 'application/x-www-form-urlencoded'
-        }
-    }).then(res => res.json()).then(data => {
-        $('#div-modal-spinner').hide();
-        if(data == "Success"){
-            $("#modal-status-alert-title").html("NFS Export 삭제 완료");
-            $("#modal-status-alert-body").html("NFS Export 삭제를 완료하였습니다.");
-            $('#div-modal-status-alert').show();
-            nfsExportList();
-            createLoggerInfo("nfs export remove success");
-        }else{
-            $('#div-modal-status-alert').show();
-        }
-    }).catch(function(data){
-        $('#div-modal-spinner').hide();
-        $('#div-modal-status-alert').show();
-        createLoggerInfo("nfs export remove error : "+ data);
-        console.log('button-execution-modal-remove-nfs-export : '+data);
-    });
-});
-/**  nfs export delete 관련 action end */
-
-/** nfs export create 관련 action start */
-$('#button-nfs-export-create').on('click', function(){
-    $('#div-modal-create-nfs-export').show();
-});
-
-$('#button-close-modal-create-nfs-export').on('click', function(){
-    $('#div-modal-create-nfs-export').hide();
-});
-
-$('#button-cancel-modal-create-nfs-export').on('click', function(){
-    $('#div-modal-create-nfs-export').hide();
-});
-
-$('#button-execution-modal-create-nfs-export').on('click', function(){
-    var nfs_cluster_id = $('#form-input-iscsi-service-name').val();
-    var access_type = $('#form-select-nfs-export-access-type').val();
-    var fs_name = $('#form-input-gluefs-name').val();
-    var path = $('#form-input-gluefs-path').val();
-    var pseudo = $('#form-input-nfs-export-pseudo').val();
-    var squash = $('#form-select-nfs-export-squash-type').val();
-    var storage_name = $('#form-select-storage-type').val();
-    var transports = "TCP"
-
-    var body_val = "access_type="+access_type+"&fs_name="+fs_name+"&path="+path+"&pseudo="+pseudo+"&squash="+squash+"&storage_name="+storage_name+"&transports="+transports
-
-    $('#div-modal-create-nfs-export').hide();
-    $('#div-modal-spinner-header-txt').text('NFS Export를 생성하고 있습니다.');
-    $('#div-modal-spinner').show();
-
-    $("#modal-status-alert-title").html("NFS Export 생성 실패");
-    $("#modal-status-alert-body").html("NFS Export 생성을 실패하였습니다.");
-
-    fetch('https://10.10.2.12:8080/api/v1/nfs/export/'+nfs_cluster_id,{
+    fetch('https://10.10.5.11:8080/api/v1/iscsi/target',{
         method: 'POST',
         headers: {
             'accept': 'application/json',
@@ -313,20 +311,45 @@ $('#button-execution-modal-create-nfs-export').on('click', function(){
     }).then(res => res.json()).then(data => {
         $('#div-modal-spinner').hide();
         if(data == "Success"){
-            $("#modal-status-alert-title").html("NFS Export 생성 완료");
-            $("#modal-status-alert-body").html("NFS Export 생성을 완료하였습니다.");
+            $("#modal-status-alert-title").html("iSCSI Target 생성 완료");
+            $("#modal-status-alert-body").html("iSCSI Target 생성을 완료하였습니다.");
             $('#div-modal-status-alert').show();
-            nfsClusterList();
-            nfsExportList();
-            createLoggerInfo("nfs export create success");
+            iscsiTargetList()
+            createLoggerInfo("iSCSI Target create success");
         }else{
             $('#div-modal-status-alert').show();
         }
     }).catch(function(data){
         $('#div-modal-spinner').hide();
         $('#div-modal-status-alert').show();
-        createLoggerInfo("nfs export create error : "+ data);
-        console.log('button-execution-modal-create-nfs-export : '+data);
+        createLoggerInfo("iSCSI Target create error : "+ data);
+        console.log('button-execution-modal-create-iscsi-target : '+data);
     });
 });
-/** nfs export create 관련 action end */
+/** iSCSI target create 관련 action end */
+
+function iqnIdCreate(){
+    // iqn.yyyy-mm.naming-authority:unique
+    var iqn_id = "";
+    var iqn = "iqn";
+    const date_time = new Date();
+    const year = date_time.getFullYear();
+    const month = date_time.getMonth() + 1;
+    var month_val = month >= 10 ? month : '0' + month;
+    var naming_authority = "io.glue";
+    var unique = Math.floor(new Date().getTime());
+
+    iqn_id += iqn+"."+year+"-"+month_val+"."+naming_authority+":"+unique;
+    return iqn_id;
+}
+
+$('#form-checkbox-existing-image-use-yn').on('click', function(){
+    var yn_bool = $('input[type=checkbox][id="form-checkbox-existing-image-use-yn"]').is(":checked");
+    if(yn_bool){
+        $('#div-target-image-size').hide();
+        $('#div-target-image-name').show();
+    }else{
+        $('#div-target-image-size').show();
+        $('#div-target-image-name').hide();
+    }
+});
