@@ -8,7 +8,7 @@
 function nfsClusterList(){
     //조회
     $('#button-nfs-cluster-search').html("<svg class='pf-c-spinner pf-m-md' role='progressbar' aria-valuetext='Loading...' viewBox='0 0 100 100' ><circle class='pf-c-spinner__path' cx='50' cy='50' r='45' fill='none'></circle></svg>");
-    fetch('https://10.10.5.11:8080/api/v1/nfs',{
+    fetch('https://10.10.2.11:8080/api/v1/nfs',{
         method: 'GET',
         headers: {
             'accept': 'application/json',
@@ -16,8 +16,8 @@ function nfsClusterList(){
         }
     }).then(res => res.json()).then(data => {
         nfs_cluster_names = Object.keys(data);
-        $('#nfs-cluster-list tr').remove();
         if(nfs_cluster_names.length != 0){
+            $('#nfs-cluster-list tr').remove();
             for(var i=0; i < nfs_cluster_names.length; i++){
                 let insert_tr = "";
     
@@ -57,17 +57,13 @@ function nfsClusterList(){
                 $('#dropdown-menu-card-action-nfs-cluster'+i).hide();
             }
         }else{
-            let insert_tr = "";
-            insert_tr += '<tr role="row">';
-            insert_tr += '    <td role="cell" colspan="5" style="text-align: center;">조회되는 데이터가 없습니다.</td>';
-            insert_tr += '</tr>';
-            $("#nfs-cluster-list:last").append(insert_tr);
+            noList("nfs-cluster-list",5);
         }
         $('#button-nfs-cluster-search').html("<i class='fas fa-fw fa-redo' aria-hidden='true'></i>");
     }).catch(function(data){
         console.log("error : "+data);
         //조회되는 데이터가 없음
-        $('#nfs-cluster-list tr').remove();
+        noList("nfs-cluster-list",5);
         $('#button-nfs-cluster-search').html("<i class='fas fa-fw fa-redo' aria-hidden='true'></i>");
     });
 }
@@ -87,6 +83,10 @@ $('#button-nfs-cluster-search').on('click', function(){
 
 /** nfs cluster create 관련 action start */
 $('#button-nfs-cluster-create').on('click', function(){
+    // 입력항목 초기화
+    setSelectHostsCheckbox('div-glue-hosts-list','form-input-nfs-cluster-placement-hosts');
+    $('#div-glue-hosts-list').hide();
+
     $('#div-modal-create-nfs-cluster').show();
 });
 
@@ -122,7 +122,7 @@ $('#button-execution-modal-create-nfs-cluster').on('click', function(){
     $("#modal-status-alert-title").html("NFS Cluster 생성 실패");
     $("#modal-status-alert-body").html("NFS Cluster 생성을 실패하였습니다.");
 
-    fetch('https://10.10.5.11:8080/api/v1/nfs/'+nfs_cluster_id+'/'+nfs_cluster_port,{
+    fetch('https://10.10.2.11:8080/api/v1/nfs/'+nfs_cluster_id+'/'+nfs_cluster_port,{
         method: 'POST',
         headers: {
             'accept': 'application/json',
@@ -173,7 +173,7 @@ $('#button-execution-modal-remove-nfs-cluster').on('click', function(){
     $("#modal-status-alert-title").html("NFS Cluster 삭제 실패");
     $("#modal-status-alert-body").html("NFS Cluster 삭제를 실패하였습니다.");
 
-    fetch('https://10.10.5.11:8080/api/v1/nfs/'+nfs_cluster_id,{
+    fetch('https://10.10.2.11:8080/api/v1/nfs/'+nfs_cluster_id,{
         method: 'DELETE',
         headers: {
             'accept': 'application/json',
@@ -203,15 +203,15 @@ $('#button-execution-modal-remove-nfs-cluster').on('click', function(){
 function nfsExportList(){
     //조회
     $('#button-nfs-export-search').html("<svg class='pf-c-spinner pf-m-md' role='progressbar' aria-valuetext='Loading...' viewBox='0 0 100 100' ><circle class='pf-c-spinner__path' cx='50' cy='50' r='45' fill='none'></circle></svg>");
-    fetch('https://10.10.5.11:8080/api/v1/nfs/export',{
+    fetch('https://10.10.2.11:8080/api/v1/nfs/export',{
         method: 'GET',
         headers: {
             'accept': 'application/json',
             'Content-Type': 'application/x-www-form-urlencoded'
         }
     }).then(res => res.json()).then(data => {
-        $('#nfs-export-list tr').remove();
-        if(data!=null){
+        if(data.length != 0){
+            $('#nfs-export-list tr').remove();
             for(var i=0; i < data.length; i++){
                 let insert_tr = "";
 
@@ -219,6 +219,7 @@ function nfsExportList(){
                 insert_tr += '    <td role="cell" data-label="내보내기 경로" id="nfs-export-name">'+data[i].pseudo+'</td>';
                 insert_tr += '    <td role="cell" data-label="클러스터 명" id="nfs-export-name">'+data[i].cluster_id+'</td>';
                 insert_tr += '    <td role="cell" data-label="GlueFS 명" id="nfs-export-name">'+data[i].fsal.fs_name+'</td>';
+                insert_tr += '    <td role="cell" data-label="GlueFS 경로" id="nfs-export-name">'+data[i].path+'</td>';
                 insert_tr += '    <td role="cell" data-label="프로토콜" id="nfs-export-name">'+data[i].transports+'</td>';
                 insert_tr += '    <td role="cell" data-label="접근 타입" id="nfs-export-name">'+data[i].access_type+'</td>';
                 insert_tr += '    <td role="cell" data-label="Squash" id="nfs-export-name">'+data[i].squash+'</td>';
@@ -229,7 +230,7 @@ function nfsExportList(){
                 insert_tr += '            </button>';
                 insert_tr += '            <ul class="pf-c-dropdown__menu pf-m-align-right" aria-labelledby="card-action-nfs-export'+i+'" id="dropdown-menu-card-action-nfs-export'+i+'">';
                 insert_tr += '                <li>';
-                insert_tr += '                    <button class="pf-c-dropdown__menu-item pf-m-enabled" type="button" id="menu-item-nfs-export-edit" onclick=\'nfsExportEdit("'+data[i].export_id+'")\' >NFS Cluster 편집</button>';
+                insert_tr += '                    <button class="pf-c-dropdown__menu-item pf-m-enabled" type="button" id="menu-item-nfs-export-edit" onclick=\'nfsExportEdit("'+data[i].export_id+'")\' >NFS Cluster 수정</button>';
                 insert_tr += '                </li>';
                 insert_tr += '                <li>';
                 insert_tr += '                    <button class="pf-c-dropdown__menu-item pf-m-enabled" type="button" id="menu-item-nfs-export-remove" onclick=\'nfsExportDelete("'+data[i].export_id+'","'+data[i].pseudo+'","'+data[i].cluster_id+'")\' >NFS Cluster 삭제</button>';
@@ -243,17 +244,13 @@ function nfsExportList(){
                 $('#dropdown-menu-card-action-nfs-export'+i).hide();
             }
         }else{
-            let insert_tr = "";
-            insert_tr += '<tr role="row">';
-            insert_tr += '    <td role="cell" colspan="7" style="text-align: center;">조회되는 데이터가 없습니다.</td>';
-            insert_tr += '</tr>';
-            $("#nfs-export-list:last").append(insert_tr);
+            noList("nfs-export-list",8);
         }
         $('#button-nfs-export-search').html("<i class='fas fa-fw fa-redo' aria-hidden='true'></i>");
     }).catch(function(data){
         console.log("error : "+data);
         //조회되는 데이터가 없음
-        $('#nfs-export-list tr').remove();
+        noList("nfs-export-list",8);
         $('#button-nfs-export-search').html("<i class='fas fa-fw fa-redo' aria-hidden='true'></i>");
     });
 }
@@ -301,7 +298,7 @@ $('#button-execution-modal-remove-nfs-export').on('click', function(){
     $("#modal-status-alert-title").html("NFS Export 삭제 실패");
     $("#modal-status-alert-body").html("NFS Export 삭제를 실패하였습니다.");
 
-    fetch('https://10.10.5.11:8080/api/v1/nfs/export/'+nfs_cluster_id+"/"+nfs_export_id,{
+    fetch('https://10.10.2.11:8080/api/v1/nfs/export/'+nfs_cluster_id+"/"+nfs_export_id,{
         method: 'DELETE',
         headers: {
             'accept': 'application/json',
@@ -359,7 +356,7 @@ $('#button-execution-modal-create-nfs-export').on('click', function(){
     $("#modal-status-alert-title").html("NFS Export 생성 실패");
     $("#modal-status-alert-body").html("NFS Export 생성을 실패하였습니다.");
 
-    fetch('https://10.10.5.11:8080/api/v1/nfs/export/'+nfs_cluster_id,{
+    fetch('https://10.10.2.11:8080/api/v1/nfs/export/'+nfs_cluster_id,{
         method: 'POST',
         headers: {
             'accept': 'application/json',

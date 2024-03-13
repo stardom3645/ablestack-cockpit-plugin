@@ -8,13 +8,15 @@
 function smbServiceList(){
     //조회
     $('#button-smb-service-search').html("<svg class='pf-c-spinner pf-m-md' role='progressbar' aria-valuetext='Loading...' viewBox='0 0 100 100' ><circle class='pf-c-spinner__path' cx='50' cy='50' r='45' fill='none'></circle></svg>");
-    fetch('https://10.10.5.11:8080/api/v1/smb',{
+    fetch('https://10.10.2.11:8080/api/v1/smb',{
         method: 'GET',
         headers: {
             'accept': 'application/json',
             'Content-Type': 'application/x-www-form-urlencoded'
         }
     }).then(res => res.json()).then(data => {
+        console.log(11111)
+        console.log(data)
         $('#smb-service-list tr').remove();
         let insert_tr = "";
         var i=0;
@@ -23,8 +25,10 @@ function smbServiceList(){
         insert_tr += '    <td role="cell" data-label="IP" id="smb-service-ip">'+data.ip_address+'</td>';
         insert_tr += '    <td role="cell" data-label="상태" id="smb-service-status">'+data.status+'</td>';
         insert_tr += '    <td role="cell" data-label="PORT" id="smb-service-port">'+data.port+'</td>';
-        insert_tr += '    <td role="cell" data-label="PORT" id="smb-service-port">'+data.folder_name+'</td>';
-        insert_tr += '    <td role="cell" data-label="PORT" id="smb-service-port">'+data.path+'</td>';
+        insert_tr += '    <td role="cell" data-label="PORT" id="smb-service-folder-name">'+data.folder_name+'</td>';
+        insert_tr += '    <td role="cell" data-label="PORT" id="smb-service-path">'+data.path+'</td>';
+        insert_tr += '    <td role="cell" data-label="PORT" id="smb-service-fs-name">'+data.fs_name+'</td>';
+        insert_tr += '    <td role="cell" data-label="PORT" id="smb-service-volume-path">'+data.volume_path+'</td>';
         insert_tr += '    <td class="pf-c-table__icon" role="cell" data-label="편집">';
         insert_tr += '        <div class="pf-c-dropdown">';
         insert_tr += '            <button class="pf-c-dropdown__toggle pf-m-plain" id="card-action-smb-service-status'+i+'" onclick="toggleAction(\'dropdown-menu-card-action-smb-service-status\','+i+')" aria-expanded="false" type="button" aria-label="Actions">';
@@ -93,7 +97,7 @@ $('#button-execution-modal-create-smb-service').on('click', function(){
     $("#modal-status-alert-title").html("SMB Service 생성 실패");
     $("#modal-status-alert-body").html("SMB Service 생성을 실패하였습니다.");
 
-    fetch('https://10.10.5.11:8080/api/v1/smb',{
+    fetch('https://10.10.2.11:8080/api/v1/smb',{
         method: 'POST',
         headers: {
             'accept': 'application/json',
@@ -142,7 +146,7 @@ $('#button-execution-modal-remove-iscsi-service').on('click', function(){
 
     $("#modal-status-alert-title").html("iSCSI Service 삭제 실패");
     $("#modal-status-alert-body").html("iSCSI Service 삭제를 실패하였습니다.");
-    fetch('https://10.10.5.11:8080/api/v1/service/'+iscsi_service_id,{
+    fetch('https://10.10.2.11:8080/api/v1/service/'+iscsi_service_id,{
         method: 'DELETE',
         headers: {
             'accept': 'application/json',

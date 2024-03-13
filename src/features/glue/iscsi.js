@@ -8,15 +8,15 @@
 function iscsiServiceList(){
     //조회
     $('#button-iscsi-service-search').html("<svg class='pf-c-spinner pf-m-md' role='progressbar' aria-valuetext='Loading...' viewBox='0 0 100 100' ><circle class='pf-c-spinner__path' cx='50' cy='50' r='45' fill='none'></circle></svg>");
-    fetch('https://10.10.5.11:8080/api/v1/service?service_type=iscsi',{
+    fetch('https://10.10.2.11:8080/api/v1/service?service_type=iscsi',{
         method: 'GET',
         headers: {
             'accept': 'application/json',
             'Content-Type': 'application/x-www-form-urlencoded'
         }
     }).then(res => res.json()).then(data => {
-        $('#iscsi-service-list tr').remove();
         if(data.code!=500){
+            $('#iscsi-service-list tr').remove();
             for(var i=0; i < data.length; i++){
                 let insert_tr = "";
                                                         
@@ -44,22 +44,13 @@ function iscsiServiceList(){
                 $('#dropdown-menu-card-action-iscsi-service-status'+i).hide();
             }
         }else{
-            let insert_tr = "";
-            insert_tr += '<tr role="row">';
-            insert_tr += '    <td role="cell" colspan="6" style="text-align: center;">조회되는 데이터가 없습니다.</td>';
-            insert_tr += '</tr>';
-            $("#iscsi-service-list:last").append(insert_tr);
+            noList("iscsi-service-list",6);
         }
         $('#button-iscsi-service-search').html("<i class='fas fa-fw fa-redo' aria-hidden='true'></i>");
     }).catch(function(data){
         console.log("error : "+data);
         //조회되는 데이터가 없음
-        $('#iscsi-service-list tr').remove();
-        let insert_tr = "";
-        insert_tr += '<tr role="row">';
-        insert_tr += '    <td role="cell" colspan="6" style="text-align: center;">조회되는 데이터가 없습니다.</td>';
-        insert_tr += '</tr>';
-        $("#iscsi-service-list:last").append(insert_tr);
+        noList("iscsi-service-list",6);
         $('#button-iscsi-service-search').html("<i class='fas fa-fw fa-redo' aria-hidden='true'></i>");
     });
 }
@@ -104,7 +95,7 @@ $('#button-execution-modal-create-iscsi-service').on('click', function(){
     $("#modal-status-alert-title").html("iSCSI Service 생성 실패");
     $("#modal-status-alert-body").html("iSCSI Service 생성을 실패하였습니다.");
 
-    fetch('https://10.10.5.11:8080/api/v1/iscsi',{
+    fetch('https://10.10.2.11:8080/api/v1/iscsi',{
         method: 'POST',
         headers: {
             'accept': 'application/json',
@@ -153,7 +144,7 @@ $('#button-execution-modal-remove-iscsi-service').on('click', function(){
 
     $("#modal-status-alert-title").html("iSCSI Service 삭제 실패");
     $("#modal-status-alert-body").html("iSCSI Service 삭제를 실패하였습니다.");
-    fetch('https://10.10.5.11:8080/api/v1/service/'+iscsi_service_id,{
+    fetch('https://10.10.2.11:8080/api/v1/service/'+iscsi_service_id,{
         method: 'DELETE',
         headers: {
             'accept': 'application/json',
@@ -182,15 +173,16 @@ $('#button-execution-modal-remove-iscsi-service').on('click', function(){
 function iscsiTargetList(){
     //조회
     $('#button-iscsi-target-search').html("<svg class='pf-c-spinner pf-m-md' role='progressbar' aria-valuetext='Loading...' viewBox='0 0 100 100' ><circle class='pf-c-spinner__path' cx='50' cy='50' r='45' fill='none'></circle></svg>");
-    fetch('https://10.10.5.11:8080/api/v1/iscsi/target',{
+    fetch('https://10.10.2.11:8080/api/v1/iscsi/target',{
         method: 'GET',
         headers: {
             'accept': 'application/json',
             'Content-Type': 'application/x-www-form-urlencoded'
         }
     }).then(res => res.json()).then(data => {
-        $('#iscsi-target-list tr').remove();
-        if(data.code!="no_gateways_defined"){
+        //iscis target 상태에 따른 차이값 확인 필요
+        if(data.length>0 || (data.code != undefined && data.code!="no_gateways_defined")){
+            $('#iscsi-target-list tr').remove();
             for(var i=0; i < data.length; i++){
                 let insert_tr = "";
                 insert_tr += '<tr role="row">';
@@ -228,7 +220,7 @@ function iscsiTargetList(){
                 insert_tr += '            </button>';
                 insert_tr += '            <ul class="pf-c-dropdown__menu pf-m-align-right" aria-labelledby="card-action-iscsi-target-status'+i+'" id="dropdown-menu-card-action-iscsi-target-status'+i+'">'
                 insert_tr += '                <li>';
-                insert_tr += '                    <button class="pf-c-dropdown__menu-item pf-m-enabled" type="button" id="menu-item-set-iscsi-target-remove" onclick=\'nfsExportEdit("'+data[i].export_id+'")\' >iSCSI target 삭제</button>'
+                insert_tr += '                    <button class="pf-c-dropdown__menu-item pf-m-enabled" type="button" id="menu-item-set-iscsi-target-remove" onclick=\'iscsiTargetDelete("'+data[i].target_iqn+'")\' >iSCSI target 삭제</button>'
                 insert_tr += '                </li>';
                 insert_tr += '            </ul>';
                 insert_tr += '        </div>';
@@ -239,17 +231,13 @@ function iscsiTargetList(){
                 $('#dropdown-menu-card-action-iscsi-target-status'+i).hide();
             }
         }else{
-            let insert_tr = "";
-            insert_tr += '<tr role="row">';
-            insert_tr += '    <td role="cell" colspan="5" style="text-align: center;">조회되는 데이터가 없습니다.</td>';
-            insert_tr += '</tr>';
-            $("#iscsi-target-list:last").append(insert_tr);
+            noList("iscsi-target-list",5);
         }
         $('#button-iscsi-target-search').html("<i class='fas fa-fw fa-redo' aria-hidden='true'></i>");
     }).catch(function(data){
         console.log("error : "+data);
         //조회되는 데이터가 없음
-        $('#iscsi-target-list tr').remove();
+        noList("iscsi-target-list",5);
         $('#button-iscsi-target-search').html("<i class='fas fa-fw fa-redo' aria-hidden='true'></i>");
     });
 }
@@ -260,12 +248,11 @@ $('#button-iscsi-target-search').on('click', function(){
 });
 /** iSCSI target search 관련 action end */
 
-// function nfsExportDelete(export_id, pseudo, cluster_id){
-//     $('#div-modal-remove-iscsi-target').show();
-//     $('#iscsi-target-id').val(export_id);
-//     $('#iscsi-target-id').val(cluster_id);
-//     $('#nfs-export-text').text('선택하신 '+pseudo+" : "+cluster_id+' 을(를) 삭제하시겠습니까?');
-// }
+function iscsiTargetDelete(iqn_id){
+    $('#div-modal-remove-iscsi-target').show();
+    $('#iscsi-target-iqn-id').val(iqn_id);
+    $('#iscsi-target-text').text('선택하신 '+iqn_id+' 을(를) 삭제하시겠습니까?');
+}
 
 /** iSCSI target create 관련 action start */
 $('#button-iscsi-target-create').on('click', function(){
@@ -301,7 +288,7 @@ $('#button-execution-modal-create-iscsi-target').on('click', function(){
     $("#modal-status-alert-title").html("iSCSI Target 생성 실패");
     $("#modal-status-alert-body").html("iSCSI Target 생성을 실패하였습니다.");
 
-    fetch('https://10.10.5.11:8080/api/v1/iscsi/target',{
+    fetch('https://10.10.2.11:8080/api/v1/iscsi/target',{
         method: 'POST',
         headers: {
             'accept': 'application/json',
@@ -328,6 +315,57 @@ $('#button-execution-modal-create-iscsi-target').on('click', function(){
 });
 /** iSCSI target create 관련 action end */
 
+/** iSCSI target delete 관련 action start */
+$('#menu-item-iscsi-target-remove').on('click', function(){
+    $('#div-modal-remove-iscsi-target').show();
+});
+
+$('#button-close-modal-remove-iscsi-target').on('click', function(){
+    $('#div-modal-remove-iscsi-target').hide();
+});
+
+$('#button-cancel-modal-remove-iscsi-target').on('click', function(){
+    $('#div-modal-remove-iscsi-target').hide();
+});
+
+$('#button-execution-modal-remove-iscsi-target').on('click', function(){
+    var iqn_id = $('#iscsi-target-iqn-id').val()
+    var body_val = "iqn_id="+iqn_id;
+    
+    $('#div-modal-remove-iscsi-target').hide();
+    $('#div-modal-spinner-header-txt').text('iSCSI Target을 삭제하고 있습니다.');
+    $('#div-modal-spinner').show();
+
+    $("#modal-status-alert-title").html("iSCSI Target 삭제 실패");
+    $("#modal-status-alert-body").html("iSCSI Target 삭제를 실패하였습니다.");
+    fetch('https://10.10.2.11:8080/api/v1/iscsi/target?iqn_id='+iqn_id,{
+        method: 'DELETE',
+        headers: {
+            'accept': 'application/json',
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: body_val
+    }).then(res => res.json()).then(data => {
+        $('#div-modal-spinner').hide();
+        
+        if(data == "Success"){
+            $("#modal-status-alert-title").html("iSCSI Target 삭제 완료");
+            $("#modal-status-alert-body").html("iSCSI Target 삭제를 완료하였습니다.");
+            $('#div-modal-status-alert').show();
+            iscsiTargetList();
+            createLoggerInfo("iSCSI Target remove success");
+        }else{
+            $('#div-modal-status-alert').show();
+        }
+    }).catch(function(data){
+        $('#div-modal-spinner').hide();
+        $('#div-modal-status-alert').show();
+        createLoggerInfo("iSCSI Target remove error : "+ data);
+        console.log('button-execution-modal-remove-iscsi-target : '+data);
+    });
+});
+/**  iSCSI target delete 관련 action end */
+
 function iqnIdCreate(){
     // iqn.yyyy-mm.naming-authority:unique
     var iqn_id = "";
@@ -336,8 +374,8 @@ function iqnIdCreate(){
     const year = date_time.getFullYear();
     const month = date_time.getMonth() + 1;
     var month_val = month >= 10 ? month : '0' + month;
-    var naming_authority = "io.glue";
-    var unique = Math.floor(new Date().getTime());
+    var naming_authority = "ablecloud.io";
+    var unique = Math.floor(new Date().getTime()/1000);
 
     iqn_id += iqn+"."+year+"-"+month_val+"."+naming_authority+":"+unique;
     return iqn_id;

@@ -33,10 +33,13 @@ $(document).ready(function(){
     $('#menu-item-set-iscsi-target-create').hide();
     $('#menu-item-set-iscsi-acl-connect').hide();
 
+    topTabAction("button-tab-glue-vm");
+    scanHostKey();
     gwvmInfoSet();
     gluefsList();
     nfsClusterList();
     nfsExportList();
+    ingressList();
     iscsiServiceList();
     iscsiTargetList();
     smbServiceList();
@@ -45,25 +48,21 @@ $(document).ready(function(){
     setInterval(() => {
         gwvmInfoSet(),glueVmList()
         // ,gluefsList(),nfsClusterList(),nfsExportList(),iscsiServiceList(),smbServiceList()
-    }, 10000);
+    }, 60000);
 });
 // document.ready 영역 끝
 
 // 이벤트 처리 함수
 // 상태 보기 드롭다운 메뉴를 활성화한 상태에서 다른 영역을 클릭 했을 경우 메뉴 닫기 (현재 활성화된 iframe 클릭할 때 작동)
 $('html').on('click', function(e){
-    console.log(e);
     if(!$(e.target).hasClass('pf-c-dropdown__toggle')){
         $('.pf-c-dropdown__menu, .pf-m-align-right').hide();
     }
-    // if($(e.target).hasClass('pf-c-select__menu-item')){
-        
-    //     if($('#div-glue-hosts-list').css("display") != "none"){
-    //         alert(111111111)
-    //     }else{
-    //         alert(222222)
+    
+    // if(!$(e.target).hasClass('pf-c-check__input') || ){
+    //     if(!$(e.target).hasClass('pf-c-select__toggle') || !$(e.target).hasClass('pf-c-select__menu-item') || !$(e.target).hasClass('pf-c-select__menu')){
+    //         $('.pf-c-select__menu').hide();
     //     }
-    //     // $('.pf-c-select__menu').hide();
     // }
 });
 
@@ -73,6 +72,12 @@ $(top.document, 'html').on('click', function(e){
         $('.pf-c-dropdown__menu, .pf-m-align-right').hide();
     }
 });
+
+// 상태 보기 드롭다운 메뉴를 활성화한 상태에서 다른 드롭다운 메뉴를 클릭 했을 경우 메뉴 닫기
+function toggleAction(id,index){
+    $('.pf-c-dropdown__menu, .pf-m-align-right').hide();
+    $('#'+id+index).toggle();
+}
 
 $('#card-action-gateway-vm-status').on('click', function(){
     $('#dropdown-menu-gateway-vm-status').toggle();
@@ -115,7 +120,7 @@ $('#card-action-storage-cluster-iscsi-status').on('click', function(){
 
 /** 스토리지 서비스 구성 관련 action start */
 $('#button-glue-api-server-connect').on('click', function(){
-    window.open("https://10.10.5.11:8080/swagger/index.html");
+    window.open("https://10.10.2.11:8080/swagger/index.html");
 });
 
 /** 스토리지 서비스 구성 관련 action start */
@@ -1004,20 +1009,20 @@ function Byte(size){
     if(size < (1024*1024))
     {
         ret_byte = parseFloat(size)/1024;
-        ret_byte_name = "KB";
+        ret_byte_name = "KiB";
     }
     else if (size < (1024*1024*1024))
     {
         ret_byte = parseFloat(size)/(1024*1024);
-        ret_byte_name = "MB";
+        ret_byte_name = "MiB";
     }
     else if (size < (1024*1024*1024*1024)){
         ret_byte = parseFloat(size)/(1024*1024*1024);
-        ret_byte_name = "GB";
+        ret_byte_name = "GiB";
     }
     else if (size < (1024*1024*1024*1024*1024)){
         ret_byte = parseFloat(size)/(1024*1024*1024*1024);
-        ret_byte_name = "TB";
+        ret_byte_name = "TiB";
     }
 
     var bytes = parseInt(ret_byte);
@@ -1040,13 +1045,13 @@ function gwvmInfoSet(){
     $("#gwvm-cluster-icon").attr('class','fas fa-fw fa-exclamation-triangle');
     
     //디테일 정보 가져오기
-    fetch('https://10.10.5.11:8080/api/v1/gwvm/detail/cell',{
+    fetch('https://10.10.2.11:8080/api/v1/gwvm/detail/cell',{
         method: 'GET'
     }).then(res => res.json()).then(data => {
         var retDetailVal = JSON.parse(data.Message);
         console.log(retDetailVal)
         if (retDetailVal.code == "200" || retDetailVal.val["role"] == 'Running') {
-            fetch('https://10.10.5.11:8080/api/v1/gwvm/cell',{
+            fetch('https://10.10.2.11:8080/api/v1/gwvm/cell',{
                 method: 'GET'
             }).then(res => res.json()).then(data => {
                 var retVal = JSON.parse(data.Message);
@@ -1218,10 +1223,6 @@ function bytesToSize(bytes) {
     return `${(bytes / (1024 ** i)).toFixed(1)} ${sizes[i]}`
 }
 
-function toggleAction(id,index){
-    $('#'+id+index).toggle();
-}
-
 $('#button-storage-dashboard-connect').on('click', function(){
     // storageCenter url 링크 주소 가져오기
     createLoggerInfo("button-storage-dashboard-connect click");
@@ -1253,11 +1254,10 @@ $('#button-storage-dashboard-connect').on('click', function(){
  * History  : 2024.02.22 최초 작성
  */
 function glueVmList(){
-    fetch('https://10.10.5.11:8080/api/v1/glue/hosts',{
+    fetch('https://10.10.2.11:8080/api/v1/glue/hosts',{
         method: 'GET'
     }).then(res => res.json()).then(data => {
         $('#glue-vm-list tr').remove();
-        console.log(data)
 
         for(var i=0; i < data.length; i++){
             let insert_tr = "";
@@ -1297,23 +1297,173 @@ function glueVmList(){
 }
 
 // glue 호스트 리스트 기능
-$('#button-glue-hosts-list-setting').on('click', function(){
-    $('#div-glue-hosts-list').toggle();
+$('#button-glue-hosts-list-setting, #button-ingress-glue-hosts-list-setting').on('click', function(e){
+    $('#'+e.target.parentElement.children[2].id).toggle();
 });
 
-// glue 호스트 리스트 기능
-$('input[name=glue-hosts-list]').on('click', function(){
-    var cnt = 0;
-    var el = "";
-    $('input[type=checkbox][name="glue-hosts-list"]').each(function() {
-        if(this.checked){
-            if(cnt==0){
-                el = this.value
-            }else{
-                el += ", "+this.value
-            }
-            cnt++
-        }
+function scanHostKey(){
+    //createLoggerInfo("scanHostKey() start");
+    cockpit.spawn(['python3', pluginpath + '/python/host/ssh-scan.py'])
+    .then(function(data){
+        console.log("keyscan ok");
+    })
+    .catch(function(err){
+        createLoggerInfo("keyscan err");
+        console.log("keyscan err : " + err);
     });
-    $('#form-input-nfs-cluster-placement-hosts').val(el);
+}
+
+/**
+ * Meathod Name : noList
+ * Date Created : 2024.03.06
+ * Writer  : 배태주
+ * Description : 조회되는 데이터가 없을경우 테이블에 조회되는 데이터 없음으로 표시해주는 공통 메소드
+ * Parameter : 없음
+ * Return  : 없음
+ * History  : 2024.03.06 최초 작성
+ */
+function noList(tbody_id, col_num, text_val){
+    let insert_tr = "";
+    let txt = "조회되는 데이터가 없습니다.";
+    if(text_val != null){
+        txt = text_val
+    }
+
+    $('#'+tbody_id+' tr').remove();
+    insert_tr += '<tr role="row">';
+    insert_tr += '    <td role="cell" colspan="'+col_num+'" style="text-align: center;">'+txt+'</td>';
+    insert_tr += '</tr>';
+    $("#"+tbody_id+":last").append(insert_tr);
+}
+
+
+/**
+ * Meathod Name : hostListCheckbox
+ * Date Created : 2024.03.06
+ * Writer  : 배태주
+ * Description : 호스트 다중 체크리스트를 세팅하는 메소드
+ * Parameter : 없음
+ * Return  : 없음
+ * History  : 2024.03.06 최초 작성
+ */
+function hostListCheckbox(tbody_id, col_num, text_val){
+    let insert_tr = "";
+    let txt = "조회되는 데이터가 없습니다.";
+    if(text_val != null){
+        txt = text_val
+    }
+
+    $('#'+tbody_id+' tr').remove();
+    insert_tr += '<tr role="row">';
+    insert_tr += '    <td role="cell" colspan="'+col_num+'" style="text-align: center;">'+txt+'</td>';
+    insert_tr += '</tr>';
+    $("#"+tbody_id+":last").append(insert_tr);
+}
+
+function topTabAction(button_id){
+    //선택되어 있는 탭 해제
+    $('#ul-top-tab-list').children().each(function(index){
+        $(this).removeClass('pf-m-current');
+    });
+    $('#'+button_id).parent().addClass('pf-m-current');
+    
+    //본문 영역 숨기기 시작
+    $('#div-gwvm-card').hide();
+    $('#div-glue-vm-card').hide();
+    $('#div-glue-fs-card').hide();
+    $('#div-nfs-cluster-card').hide();
+    $('#div-nfs-export-card').hide();
+    $('#div-ingress-card').hide();
+    $('#div-iscsi-service-card').hide();
+    $('#div-iscsi-target-card').hide();
+    $('#div-smb-service-card').hide();
+
+    //본문 영역 숨기기 끝
+    switch (button_id) {
+        case 'button-tab-glue-vm':
+            $('#div-gwvm-card').show();
+            $('#div-glue-vm-card').show();
+            break;
+        case 'button-tab-gluefs':
+            $('#div-glue-fs-card').show();
+            break;
+        case 'button-tab-nfs':
+            $('#div-nfs-cluster-card').show();
+            $('#div-nfs-export-card').show();
+            break;
+        case 'button-tab-ingress':
+            $('#div-ingress-card').show();
+            break;
+        case 'button-tab-iscsi':
+            $('#div-iscsi-service-card').show();
+            $('#div-iscsi-target-card').show();
+            break;
+        case 'button-tab-smb':
+            $('#div-smb-service-card').show();
+            break;
+        default:
+            alert( "탭을 잘못 선택했습니다." );
+    }
+}
+
+$('#ul-top-tab-list').on('click', function(e){
+    var button_id = "";
+    if(e.target.className == "pf-c-tabs__item-text"){
+        button_id = e.target.parentElement.id;
+    } else if (e.target.className == "pf-c-tabs__link"){
+        button_id = e.target.id
+    }
+    topTabAction(button_id);    
 });
+
+
+function setSelectHostsCheckbox(div_id, form_input_id, selectHosts){
+    // 호스트 선택된 호스트가 없으면 새창으로 세팅 
+    if(selectHosts==null){
+        //호스트 리스트 불러와서
+        fetch('https://10.10.2.11:8080/api/v1/glue/hosts',{
+            method: 'GET'
+        }).then(res => res.json()).then(data => {
+            $('#'+div_id+' fieldset').remove();
+            let insert_tr = "";
+            insert_tr += '<fieldset class="pf-c-select__menu-fieldset" aria-label="Select input">';
+            for(var i=0; i < data.length; i++){
+                // insert_tr += '    <label class="pf-c-check pf-c-select__menu-item" for="glue-host-list-1">';
+                // insert_tr += '        <input class="pf-c-check__input" type="checkbox" id="glue-host-list-1" name="glue-hosts-list" value="scvm1"/>';
+                // insert_tr += '        <span class="pf-c-check__label">scvm1</span>';
+                // insert_tr += '    </label>';
+
+                insert_tr += '    <label class="pf-c-check pf-c-select__menu-item">';
+                insert_tr += '        <input class="pf-c-check__input" type="checkbox" id="glue-host-list-"'+i+'" name="glue-hosts-list" value="'+data[i].hostname+'"/>';
+                insert_tr += '        <span class="pf-c-check__label">'+data[i].hostname+'</span>';
+                insert_tr += '    </label>';
+            }
+            insert_tr += '</fieldset>';
+            $("#"+div_id).append(insert_tr);
+
+            if(form_input_id!=null){
+                // glue 호스트 리스트 기능
+                $('input[name=glue-hosts-list]').on('click', function(){
+                    var cnt = 0;
+                    var el = "";
+                    $('input[type=checkbox][name="glue-hosts-list"]').each(function() {
+                        if(this.checked){
+                            if(cnt==0){
+                                el = this.value
+                            }else{
+                                el += ", "+this.value
+                            }
+                            cnt++
+                        }
+                    });
+                    $('#'+form_input_id).val(el);
+                });
+            }
+        }).catch(function(data){
+            createLoggerInfo("Glue 가상머신 cleckbox 세팅 에러 : "+data);
+            console.log("Glue 가상머신 cleckbox 세팅 에러 : "+data);
+        });
+    }else{
+
+    }
+}
