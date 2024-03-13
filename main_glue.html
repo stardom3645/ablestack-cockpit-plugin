@@ -1,16 +1,58 @@
 <div class="pf-c-page" id="main-page-glue-ablestack">
     <main class="pf-c-page__main" tabindex="-1" id="main-content-card-glue-view">
         <!-- ui 영역 시작 -->
-        <!-- ABLESTACK  Glue 상태 요약 및 바로가기 ALERT Ribbon 영역 시작 -->
         
-        <section class="pf-c-page__main-section pf-m-padding pf-m-light ct-overview-header">
-            <div class="pf-c-alert__action-group pf-m-">
+        <section class="pf-c-page__main-section pf-m-light" style="height: 70px;">
+            <!-- <div class="pf-c-alert__action-group pf-m-">
                 <button style="font-size: 0.83rem;" class="pf-c-button pf-m-secondary pf-m-inline" id="button-glue-api-server-connect" aria-disabled="false" type="button" data-ouia-safe="true" >GlueAPI 서버 연결</button>
                 <button style="font-size: 0.83rem;" class="pf-c-button pf-m-secondary pf-m-inline" id="button-storage-dashboard-connect" aria-disabled="false" type="button" data-ouia-safe="true" >스토리지센터 대시보드 연결</button>
-                <!-- <button style="font-size: 0.83rem;" class="pf-c-button pf-m-secondary pf-m-inline" id="button-nfs-setup" aria-disabled="false" type="button" data-ouia-safe="true" >NFS 원클릭 구성</button>
-                <button style="display:none;font-size: 0.83rem;" class="pf-c-button pf-m-secondary pf-m-inline" id="button-gateway-vm-setup" aria-disabled="false" type="button" data-ouia-safe="true" >게이트웨이 가상머신 구성</button> -->
+                <button style="font-size: 0.83rem;" class="pf-c-button pf-m-secondary pf-m-inline" id="button-nfs-setup" aria-disabled="false" type="button" data-ouia-safe="true" >NFS 원클릭 구성</button>
+                <button style="display:none;font-size: 0.83rem;" class="pf-c-button pf-m-secondary pf-m-inline" id="button-gateway-vm-setup" aria-disabled="false" type="button" data-ouia-safe="true" >게이트웨이 가상머신 구성</button>
+            </div> -->
+
+            <!-- <div class="pf-c-tabs pf-m-scrollable" id="overflow-beginning-of-list"> -->
+            <div class="pf-c-tabs">
+                <button class="pf-c-tabs__scroll-button" type="button" disabled aria-label="Scroll left">
+                    <i class="fas fa-angle-left" aria-hidden="true"></i>
+                </button>
+                <ul class="pf-c-tabs__list" id="ul-top-tab-list">
+                    <li class="pf-c-tabs__item pf-m-current">
+                        <button type="button" class="pf-c-tabs__link" id="button-tab-glue-vm">
+                            <span class="pf-c-tabs__item-text">GLUE VM</span>
+                        </button>
+                    </li>
+                    <li class="pf-c-tabs__item">
+                        <button type="button" class="pf-c-tabs__link" id="button-tab-gluefs">
+                            <span class="pf-c-tabs__item-text">GLUE FS</span>
+                        </button>
+                    </li>
+                    <li class="pf-c-tabs__item">
+                        <button type="button" class="pf-c-tabs__link" id="button-tab-nfs">
+                            <span class="pf-c-tabs__item-text">NFS</span>
+                        </button>
+                    </li>
+                    <li class="pf-c-tabs__item">
+                        <button type="button" class="pf-c-tabs__link" id="button-tab-ingress">
+                            <span class="pf-c-tabs__item-text">INGRESS</span>
+                        </button>
+                    </li>
+                    <li class="pf-c-tabs__item">
+                        <button type="button" class="pf-c-tabs__link" id="button-tab-iscsi">
+                            <span class="pf-c-tabs__item-text">iSCSI</span>
+                        </button>
+                    </li>
+                    <li class="pf-c-tabs__item">
+                        <button type="button" class="pf-c-tabs__link" id="button-tab-smb">
+                            <span class="pf-c-tabs__item-text">SMB</span>
+                        </button>
+                    </li>
+                </ul>
+                <button class="pf-c-tabs__scroll-button" type="button" aria-label="Scroll right">
+                    <i class="fas fa-angle-right" aria-hidden="true"></i>
+                </button>
             </div>
         </section>
+        
         <!-- <section class="pf-c-page__main-section pf-m-no-padding">
             <div class="pf-c-alert pf-m-warning" aria-label="Warning alert" id="glue-ribbon">
                 <div class="pf-c-alert__icon">
@@ -35,7 +77,54 @@
         <!-- 상태를 보여주기 위한 레이아웃 시작 -->
         <section class="pf-c-page__main-section">
             <div class="pf-l-grid pf-m-gutter">
-                <div class="pf-l-grid__item pf-m-12-col">
+                <div class="pf-l-grid__item pf-m-12-col" id="div-glue-vm-card" hidden>
+                    <div class="pf-l-grid pf-m-gutter">
+                        <!-- glue vm 카드 영역 시작-->
+                        <div class="pf-l-grid__item pf-m-12-col">
+                            <div class="pf-c-card pf-m-hoverable pf-m-compact" id="card-glue-vm-status">
+                                <div class="pf-c-card__header">
+                                    <div class="pf-c-card__title" id="card-glue-vm-status-title">Glue 가상머신</div>
+                                    <div class="pf-c-card__actions">
+                                        <button style="font-size: 0.83rem;" class="pf-c-button pf-m-secondary pf-m-inline" id="button-glue-api-server-connect" aria-disabled="false" type="button" data-ouia-safe="true" >GlueAPI 서버 연결</button>
+                                        <button style="font-size: 0.83rem;" class="pf-c-button pf-m-secondary pf-m-inline" id="button-storage-dashboard-connect" aria-disabled="false" type="button" data-ouia-safe="true" >스토리지센터 대시보드 연결</button>
+                                    </div>
+                                </div>
+                                <div class="pf-c-card__body">
+                                    <dl class="pf-c-description-list pf-m-horizontal" style="--pf-c-description-list--RowGap: 10px;">
+                                        <table class="pf-c-table pf-m-compact pf-m-grid-lg" role="grid" aria-label="This is a compact table example" id="compact-demo-table">
+                                            <thead>
+                                                <tr role="row">
+                                                    <th role="columnheader" scope="col" class="pf-m-width-10">이름</th>
+                                                    <th role="columnheader" scope="col" class="pf-m-width-10">상태</th>
+                                                    <th role="columnheader" scope="col" class="pf-m-width-10">관리 IP</th>
+                                                    <th role="columnheader" scope="col" class="pf-m-width-10">스토리지 IP</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody role="rowgroup" id="glue-vm-list">
+                                                <!-- <tr role="row">
+                                                    <td role="cell" data-label="이름" id="td_glue_host_name">scvm1</td>
+                                                    <td role="cell" data-label="상태">
+                                                        <span class="pf-c-label pf-m-red" id="glue-back-color">
+                                                            <span class="pf-c-label__content" id="span-cloud-vm-status-content">
+                                                                <span class="pf-c-label__icon">
+                                                                    <i id="glue-cluster-icon" class="fas fa-fw fa-exclamation-triangle" aria-hidden="true"></i>
+                                                                </span><div id="glue-status">Health Err</div>
+                                                            </span>
+                                                        </span>
+                                                    </td>
+                                                    <td role="cell" data-label="관리 IP" id="td_glue_host_mngt_ip">10.10.2.1</td>
+                                                    <td role="cell" data-label="스토리지 IP " id="td_glue_host_storage_ip">10.10.2.11</td>
+                                                </tr> -->
+                                            </tbody>
+                                        </table>
+                                    </dl>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- glue vm 카드 영역 끝-->
+                    </div>
+                </div>
+                <div class="pf-l-grid__item pf-m-12-col" id="div-gwvm-card" hidden>
                     <div class="pf-l-grid pf-m-gutter">
                         <!-- 파일 시스템 카드 영역 시작-->
                         <div class="pf-l-grid__item pf-m-12-col">
@@ -107,10 +196,10 @@
                         <!-- 파일 시스템 카드 영역 끝-->
                     </div>
                 </div>
-                <div class="pf-l-grid__item pf-m-12-col">
+                <div class="pf-l-grid__item pf-m-12-col" id="div-glue-fs-card" hidden>
                     <div class="pf-l-grid pf-m-gutter">
                         <!-- 파일 시스템 카드 영역 시작-->
-                        <div class="pf-l-grid__item pf-m-12-col">
+                        <div class="pf-l-grid__item pf-m-6-col">
                             <div class="pf-c-card pf-m-hoverable pf-m-compact" id="card-storage-cluster-status">
                                 <div class="pf-c-card__header">
                                     <div class="pf-c-card__title" id="card-storage-cluster-status-title">Glue File System</div>
@@ -170,9 +259,59 @@
                             </div>
                         </div>
                         <!-- 파일 시스템 카드 영역 끝-->
+                        <!-- 파일 시스템 카드 영역 시작-->
+                        <div class="pf-l-grid__item pf-m-6-col">
+                            <div class="pf-c-card pf-m-hoverable pf-m-compact" id="card-gluefs-subvolume-group">
+                                <div class="pf-c-card__header">
+                                    <div class="pf-c-card__title" id="card-gluefs-subvolume-group-title">SubVolume Group</div>
+                                    <div class="pf-c-card__actions">
+                                        <button style="font-size: 0.83rem;" class="pf-c-button pf-m-secondary pf-m-inline" id="button-gluefs-subvolume-group-search" aria-disabled="false" type="button" data-ouia-safe="true" ><i class="fas fa-fw fa-redo" aria-hidden="true"></i></button>
+                                        <button style="font-size: 0.83rem;" class="pf-c-button pf-m-secondary pf-m-inline" id="button-gluefs-subvolume-group-create" aria-disabled="false" type="button" data-ouia-safe="true" >추가</button>
+                                    </div>
+                                    <input type="text" id="gluefs-select-id" name="gluefs-select-id" value="" style="display:none" disabled/>
+                                    <input type="text" id="gluefs-select-data-pool" name="gluefs-select-data-pool" value="" style="display:none" disabled/>
+                                </div>
+                                <div class="pf-c-card__body">
+                                    <dl class="pf-c-description-list pf-m-horizontal" style="--pf-c-description-list--RowGap: 10px;">
+                                        <table class="pf-c-table pf-m-compact pf-m-grid-lg" role="grid" aria-label="This is a compact table example" id="file-system-table">
+                                            <thead>
+                                                <tr role="row">
+                                                    <th role="columnheader" scope="col">이름</th>
+                                                    <th role="columnheader" scope="col">경로</th>
+                                                    <th role="columnheader" scope="col">사용량</th>
+                                                    <th role="columnheader" scope="col">할당 용량</th>
+                                                    <th class="pf-c-table__icon" style="width:10%" role="columnheader" scope="col"  class="pf-m-width-10"></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody role="rowgroup" id="gluefs-subvolume-group-list">
+                                                <!-- <tr role="row">
+                                                    <td role="cell" data-label="이름" id="gluefs-subvolume-group-name">nfs</td>
+                                                    <td role="cell" data-label="경로" id="gluefs-subvolume-group-path">/volumes/nfs</td>
+                                                    <td role="cell" data-label="사용량" id="gluef-subvolume-groups-usage">20%</td>
+                                                    <td role="cell" data-label="사용량" id="gluef-subvolume-groups-total-capacity">500Gb</td>
+                                                    <td class="pf-c-table__icon" role="cell" data-label="편집">
+                                                        <div class="pf-c-dropdown">
+                                                            <button class="pf-c-dropdown__toggle pf-m-plain" id="card-action-gluefs-subvolume-group-status" aria-expanded="false" type="button" aria-label="Actions">
+                                                                <i class="fas fa-ellipsis-v" aria-hidden="true"></i>
+                                                            </button>
+                                                            <ul class="pf-c-dropdown__menu pf-m-align-right" aria-labelledby="card-action-gluefs-subvolume-group-status" id="dropdown-menu-card-action-gluefs-subvolume-group-status">
+                                                                <li>
+                                                                    <button class="pf-c-dropdown__menu-item pf-m-enabled" type="button" id="menu-item-set-gluefs-construction" >GlueFS 생성</button>
+                                                                </li>
+                                                            </ul>
+                                                        </div>
+                                                    </td>
+                                                </tr> -->
+                                            </tbody>
+                                        </table>
+                                    </dl>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- 파일 시스템 카드 영역 끝-->
                     </div>
                 </div>
-                <div class="pf-l-grid__item pf-m-12-col">
+                <div class="pf-l-grid__item pf-m-12-col" id="div-nfs-cluster-card" hidden>
                     <div class="pf-l-grid pf-m-gutter">
                         <!-- NFS Cluster 카드 영역 시작-->
                         <div class="pf-l-grid__item pf-m-12col">
@@ -224,7 +363,7 @@
                         <!-- NFS Cluster 카드 영역 끝-->
                     </div>
                 </div>
-                <div class="pf-l-grid__item pf-m-12-col">
+                <div class="pf-l-grid__item pf-m-12-col" id="div-nfs-export-card" hidden>
                     <div class="pf-l-grid pf-m-gutter">
                         <!-- NFS Export 영역 시작-->
                         <div class="pf-l-grid__item pf-m-12col">
@@ -244,6 +383,7 @@
                                                     <th role="columnheader" scope="col">내보내기 경로</th>
                                                     <th role="columnheader" scope="col">클러스터 이름</th>
                                                     <th role="columnheader" scope="col">GlueFS 이름</th>
+                                                    <th role="columnheader" scope="col">GlueFS 경로</th>
                                                     <th role="columnheader" scope="col">프로토콜</th>
                                                     <th role="columnheader" scope="col">접근 타입</th>
                                                     <th role="columnheader" scope="col">Squash</th>
@@ -253,8 +393,9 @@
                                             <tbody role="rowgroup" id="nfs-export-list">
                                                 <!-- <tr role="row">
                                                     <td role="cell" data-label="내보내기 경로" id="nfs-export-name">/export</td>
-                                                    <td role="cell" data-label="클러스터 명" id="nfs-export-name">nfs</td>
-                                                    <td role="cell" data-label="GlueFS 명" id="nfs-export-name">gluefs</td>
+                                                    <td role="cell" data-label="클러스터 이름" id="nfs-export-name">nfs</td>
+                                                    <td role="cell" data-label="GlueFS 이름" id="nfs-export-name">gluefs</td>
+                                                    <td role="cell" data-label="GlueFS 경로" id="nfs-export-name">gluefs</td>
                                                     <td role="cell" data-label="프로토콜" id="nfs-export-name">tcp,udp</td>
                                                     <td role="cell" data-label="접근 타입" id="nfs-export-name">RW</td>
                                                     <td role="cell" data-label="Squash" id="nfs-export-name">no_root_squash</td>
@@ -283,7 +424,63 @@
                         <!-- NFS Export 카드 영역 끝-->
                     </div>
                 </div>
-                <div class="pf-l-grid__item pf-m-12-col">
+                <div class="pf-l-grid__item pf-m-12-col" id="div-ingress-card" hidden>
+                    <div class="pf-l-grid pf-m-gutter">
+                        <!-- ingress 카드 영역 시작-->
+                        <div class="pf-l-grid__item pf-m-12col">
+                            <div class="pf-c-card pf-m-hoverable pf-m-compact" id="card-ingress-status">
+                                <div class="pf-c-card__header">
+                                    <div class="pf-c-card__title" id="card-ingress-status-title">INGRESS Service</div>
+                                    <div class="pf-c-card__actions">
+                                        <button style="font-size: 0.83rem;" class="pf-c-button pf-m-secondary pf-m-inline" id="button-ingress-search" aria-disabled="false" type="button" data-ouia-safe="true" ><i class="fas fa-fw fa-redo" aria-hidden="true"></i></button>
+                                        <button style="font-size: 0.83rem;" class="pf-c-button pf-m-secondary pf-m-inline" id="button-ingress-create" aria-disabled="false" type="button" data-ouia-safe="true" >추가</button>
+                                    </div>
+                                </div>
+                                <div class="pf-c-card__body">
+                                    <dl class="pf-c-description-list pf-m-horizontal" style="--pf-c-description-list--RowGap: 10px;">
+                                        <table class="pf-c-table pf-m-compact pf-m-grid-lg" role="grid" aria-label="This is a compact table example">
+                                            <thead>
+                                                <tr role="row">
+                                                    <th role="columnheader" scope="col">이름</th>
+                                                    <th role="columnheader" scope="col">백엔드 서비스</th>
+                                                    <th role="columnheader" scope="col">배치 호스트</th>
+                                                    <th role="columnheader" scope="col">가상 IP</th>
+                                                    <th role="columnheader" scope="col">프론트엔드 PORT</th>
+                                                    <th role="columnheader" scope="col">모니터 포트</th>
+                                                    <th class="pf-c-table__icon" style="width:10%" role="columnheader" scope="col"></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody role="rowgroup" id="ingress-list">
+                                                <!-- <tr role="row">
+                                                    <td role="cell" data-label="이름" id="ingress-name">ingress.nfs.test</td>
+                                                    <td role="cell" data-label="백엔드 서비스" id="ingress-backend-service-name">nfs.test</td>
+                                                    <td role="cell" data-label="배치 호스트" id="ingress-placement-hosts">scvm1,scvm2</td>
+                                                    <td role="cell" data-label="가상 IP" id="ingress-virtual-ip">10.10.2.18</td>
+                                                    <td role="cell" data-label="프론트엔드 PORT" id="ingress-frontend-port">30000</td>
+                                                    <td role="cell" data-label="모니터 포트" id="ingress-monitor-port">20000</td>
+                                                    <td class="pf-c-table__icon" role="cell" data-label="편집">
+                                                        <div class="pf-c-dropdown">
+                                                            <button class="pf-c-dropdown__toggle pf-m-plain" id="card-action-ingress" aria-expanded="false" type="button" aria-label="Actions">
+                                                                <i class="fas fa-ellipsis-v" aria-hidden="true"></i>
+                                                            </button>
+                                                            <ul class="pf-c-dropdown__menu pf-m-align-right" aria-labelledby="card-action-ingress" id="dropdown-menu-card-action-ingress">
+                                                                <li>
+                                                                    <button class="pf-c-dropdown__menu-item pf-m-enabled" type="button" id="menu-ingress-remove" >INGRESS Service 삭제</button>
+                                                                </li>
+                                                            </ul>
+                                                        </div>
+                                                    </td>
+                                                </tr> -->
+                                            </tbody>
+                                        </table>
+                                    </dl>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- ingress 카드 영역 끝-->
+                    </div>
+                </div>
+                <div class="pf-l-grid__item pf-m-12-col" id="div-iscsi-service-card" hidden>
                     <div class="pf-l-grid pf-m-gutter">
                         <!-- ISCSI 서비스 카드 영역 시작-->
                         <div class="pf-l-grid__item pf-m-12-col">
@@ -337,7 +534,7 @@
                         <!-- ISCSI 서비스 카드 영역 끝-->
                     </div>
                 </div>
-                <div class="pf-l-grid__item pf-m-12-col">
+                <div class="pf-l-grid__item pf-m-12-col" id="div-iscsi-target-card" hidden>
                     <div class="pf-l-grid pf-m-gutter">
                         <!-- ISCSI target 카드 영역 시작-->
                         <div class="pf-l-grid__item pf-m-12-col">
@@ -389,7 +586,7 @@
                         <!-- ISCSI target 카드 영역 끝-->
                     </div>
                 </div>
-                <div class="pf-l-grid__item pf-m-12-col">
+                <div class="pf-l-grid__item pf-m-12-col" id="div-smb-service-card" hidden>
                     <div class="pf-l-grid pf-m-gutter">
                         <!-- SMB 서비스 카드 영역 시작-->
                         <div class="pf-l-grid__item pf-m-12-col">
@@ -410,19 +607,23 @@
                                                     <th role="columnheader" scope="col">IP</th>
                                                     <th role="columnheader" scope="col">상태</th>
                                                     <th role="columnheader" scope="col">PORT</th>
-                                                    <th role="columnheader" scope="col">공유 폴더</th>
-                                                    <th role="columnheader" scope="col">공유 경로</th>
+                                                    <th role="columnheader" scope="col">SMB 공유 폴더</th>
+                                                    <th role="columnheader" scope="col">SMB 공유 경로</th>
+                                                    <th role="columnheader" scope="col">GlueFS 이름</th>
+                                                    <th role="columnheader" scope="col">GlueFS 경로</th>
                                                     <th class="pf-c-table__icon" style="width:10%" role="columnheader" scope="col"></th>
                                                 </tr>
                                             </thead>
                                             <tbody role="rowgroup" id="smb-service-list">
                                                 <!-- <tr role="row">
-                                                    <td role="cell" data-label="호스트" id="smb-host">gwvm</td>
-                                                    <td role="cell" data-label="IP" id="smb-ip">10.10.2.15</td>
-                                                    <td role="cell" data-label="상태" id="smb-status">active</td>
-                                                    <td role="cell" data-label="PORT" id="smb-port">tcp/137, tcp/445</td>
-                                                    <td role="cell" data-label="공유 폴더" id="smb-port">smb_test</td>
-                                                    <td role="cell" data-label="공유 경로" id="smb-port">/opt</td>
+                                                    <td role="cell" data-label="호스트" id="smb-service-host-name">'+data.hostname+'</td>
+                                                    <td role="cell" data-label="IP" id="smb-service-ip">'+data.ip_address+'</td>
+                                                    <td role="cell" data-label="상태" id="smb-service-status">'+data.status+'</td>
+                                                    <td role="cell" data-label="PORT" id="smb-service-port">'+data.port+'</td>
+                                                    <td role="cell" data-label="PORT" id="smb-service-folder-name">'+data.folder_name+'</td>
+                                                    <td role="cell" data-label="PORT" id="smb-service-path">'+data.path+'</td>
+                                                    <td role="cell" data-label="PORT" id="smb-service-fs-name">'+data.fs_name+'</td>
+                                                    <td role="cell" data-label="PORT" id="smb-service-volume-path">'+data.volume_path+'</td>
                                                     <td class="pf-c-table__icon" role="cell" data-label="편집">
                                                         <div class="pf-c-dropdown">
                                                             <button class="pf-c-dropdown__toggle pf-m-plain" id="card-action-smb-service-status" aria-expanded="false" type="button" aria-label="Actions">
@@ -445,50 +646,6 @@
                         <!-- SMB 서비스 카드 영역 끝-->
                     </div>
                 </div>
-                <div class="pf-l-grid__item pf-m-12-col">
-                    <div class="pf-l-grid pf-m-gutter">
-                        <!-- 파일 시스템 카드 영역 시작-->
-                        <div class="pf-l-grid__item pf-m-12-col">
-                            <div class="pf-c-card pf-m-hoverable pf-m-compact" id="card-glue-vm-status">
-                                <div class="pf-c-card__header">
-                                    <div class="pf-c-card__title" id="card-glue-vm-status-title">Glue 가상머신</div>
-                                </div>
-                                <div class="pf-c-card__body">
-                                    <dl class="pf-c-description-list pf-m-horizontal" style="--pf-c-description-list--RowGap: 10px;">
-                                        <table class="pf-c-table pf-m-compact pf-m-grid-lg" role="grid" aria-label="This is a compact table example" id="compact-demo-table">
-                                            <thead>
-                                                <tr role="row">
-                                                    <th role="columnheader" scope="col" class="pf-m-width-10">이름</th>
-                                                    <th role="columnheader" scope="col" class="pf-m-width-10">상태</th>
-                                                    <th role="columnheader" scope="col" class="pf-m-width-10">관리 IP</th>
-                                                    <th role="columnheader" scope="col" class="pf-m-width-10">스토리지 IP</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody role="rowgroup" id="glue-vm-list">
-                                                <!-- <tr role="row">
-                                                    <td role="cell" data-label="이름" id="td_glue_host_name">scvm1</td>
-                                                    <td role="cell" data-label="상태">
-                                                        <span class="pf-c-label pf-m-red" id="glue-back-color">
-                                                            <span class="pf-c-label__content" id="span-cloud-vm-status-content">
-                                                                <span class="pf-c-label__icon">
-                                                                    <i id="glue-cluster-icon" class="fas fa-fw fa-exclamation-triangle" aria-hidden="true"></i>
-                                                                </span><div id="glue-status">Health Err</div>
-                                                            </span>
-                                                        </span>
-                                                    </td>
-                                                    <td role="cell" data-label="관리 IP" id="td_glue_host_mngt_ip">10.10.2.1</td>
-                                                    <td role="cell" data-label="스토리지 IP " id="td_glue_host_storage_ip">10.10.2.11</td>
-                                                </tr> -->
-                                            </tbody>
-                                        </table>
-                                    </dl>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- 파일 시스템 카드 영역 끝-->
-                    </div>
-                </div>
-                <!-- 게이트웨이 가상머신 -->
             </div>
         </section>
     </main>
@@ -917,6 +1074,104 @@
 </div>
 <!-- glue fs 삭제 : Modal 영역 끝 -->
 
+<!-- glue fs subvolume group 생성 : Modal 영역 시작 -->
+<div id="div-modal-create-gluefs-subvolume-group" class="pf-c-backdrop" style="display:none">
+    <div class="pf-l-bullseye">
+        <div class="pf-c-modal-box pf-m-sm" role="dialog" aria-modal="true" aria-label="Create Glue FS SubVolume Group">
+            <button id="button-close-modal-create-gluefs-subvolume-group" aria-disabled="false" aria-label="Close" class="pf-c-button pf-m-plain" type="button">
+                <i class="fas fa-times" aria-hidden="true"></i>
+            </button>
+            <header class="pf-c-modal-box__header"><h1 class="pf-c-modal-box__title"><span class="pf-c-modal-box__title-text">Glue FS Subvolume Group 생성</span></h1></header>
+            <form novalidate class="pf-c-form pf-m-horizontal" style="margin-left:15px;margin-top:10px">
+                <section class="pf-c-form__section">
+                    <div class="pf-c-form__group">
+                        <div class="pf-c-form__group-label" style="margin-left: 20px;">
+                            <label class="pf-c-form__label" for="form-input-glue-fs-subvolume-group-name" style="margin-left: 10px;width: 120px;">
+                                <span class="pf-c-form__label-text">Group 이름</span>
+                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                            </label>
+                        </div>
+                        <div class="pf-c-form__group-control">
+                            <input class="pf-c-form-control" style="width:50%" type="text" id="form-input-glue-fs-subvolume-group-name" name="form-input-glue-fs-subvolume-group-name"/>
+                        </div>
+                    </div>
+                    <div class="pf-c-form__group">
+                        <div class="pf-c-form__group-label" style="margin-left: 20px;">
+                            <label class="pf-c-form__label" for="form-input-glue-fs-subvolume-group-size" style="margin-left: 10px;width: 120px;">
+                                <span class="pf-c-form__label-text">용량</span>
+                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                            </label>
+                        </div>
+                        <div class="pf-c-form__group-control">
+                            <input class="pf-c-form-control" style="width:50%" type="text" id="form-input-glue-fs-subvolume-group-size" name="form-input-glue-fs-subvolume-group-size"/>
+                        </div>
+                    </div>
+                    <div class="pf-c-form__group">
+                        <div class="pf-c-form__group-label" style="margin-left: 20px;">
+                            <label class="pf-c-form__label" for="form-input-glue-fs-svg-name" style="margin-left: 10px;width: 120px;">
+                                <span class="pf-c-form__label-text">GlueFS 이름</span>
+                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                            </label>
+                        </div>
+                        <div class="pf-c-form__group-control">
+                            <input class="pf-c-form-control" style="width:50%" type="text" id="form-input-glue-fs-svg-name" name="form-input-glue-fs-svg-name" disabled/>
+                        </div>
+                    </div>
+                    <div class="pf-c-form__group">
+                        <div class="pf-c-form__group-label" style="margin-left: 20px;">
+                            <label class="pf-c-form__label" for="form-input-glue-fs-subvolume-group-data-pool" style="margin-left: 10px;width: 120px;">
+                                <span class="pf-c-form__label-text">데이터 풀</span>
+                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                            </label>
+                        </div>
+                        <div class="pf-c-form__group-control">
+                            <input class="pf-c-form-control" style="width:50%" type="text" id="form-input-glue-fs-subvolume-group-data-pool" name="form-input-glue-fs-subvolume-group-data-pool" disabled/>
+                        </div>
+                    </div>
+                    <!-- <div class="pf-c-form__group">
+                        <div class="pf-c-form__group-label" style="margin-left: 20px;">
+                            <label class="pf-c-form__label" for="form-input-glue-fs-subvolume-group-mode" style="margin-left: 10px;width: 120px;">
+                                <span class="pf-c-form__label-text">모드</span>
+                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                            </label>
+                        </div>
+                        <div class="pf-c-form__group-control">
+                            <input class="pf-c-form-control" style="width:50%" type="text" id="form-input-glue-fs-subvolume-group-mode" name="form-input-glue-fs-subvolume-group-mode"/>
+                        </div>
+                    </div> -->
+                </section>
+            </form>
+            <footer class="pf-c-modal-box__footer">
+                <button id="button-execution-modal-create-gluefs-subvolume-group" aria-disabled="false" class="pf-c-button pf-m-primary" type="button" data-ouia-safe="true">실행</button>
+                <button id="button-cancel-modal-create-gluefs-subvolume-group" aria-disabled="false" class="pf-c-button pf-m-link" type="button" data-ouia-safe="true">취소</button>
+            </footer>
+        </div>
+    </div>
+</div>
+<!-- glue fs subvolume group 생성 : Modal 영역 끝 -->
+
+<!-- glue fs subvolume group 삭제 : Modal 영역 시작 -->
+<div id="div-modal-remove-gluefs-subvolume-group" class="pf-c-backdrop" style="display:none">
+    <div class="pf-l-bullseye">
+        <div class="pf-c-modal-box pf-m-sm" role="dialog" aria-modal="true" aria-label="Remove Glue FS Subvolume Group">
+            <button id="button-close-modal-remove-gluefs-subvolume-group" aria-disabled="false" aria-label="Close" class="pf-c-button pf-m-plain" type="button">
+                <i class="fas fa-times" aria-hidden="true"></i>
+            </button>
+            <header class="pf-c-modal-box__header"><h1 class="pf-c-modal-box__title"><span class="pf-c-modal-box__title-text">GlueFS SubVolume Group 삭제</span></h1></header>
+            <div class="pf-c-modal-box__body">
+                <div id="gluefs-subvolume-group-id"></div>
+            </div>
+            <footer class="pf-c-modal-box__footer">
+                <button id="button-execution-modal-remove-gluefs-subvolume-group" aria-disabled="false" class="pf-c-button pf-m-primary" type="button" data-ouia-safe="true">실행</button>
+                <button id="button-cancel-modal-remove-gluefs-subvolume-group" aria-disabled="false" class="pf-c-button pf-m-link" type="button" data-ouia-safe="true">취소</button>
+            </footer>
+            <input type="text" id="gluefs-remove-id" name="gluefs-remove-id" value="" style="display:none" disabled/>
+            <input type="text" id="gluefs-subvolume-group-remove-id" name="gluefs-subvolume-group-remove-id" value="" style="display:none" disabled/>
+        </div>
+    </div>
+</div>
+<!-- glue fs subvolume group 삭제 : Modal 영역 끝 -->
+
 <!-- nfs cluster 생성 : Modal 영역 시작 -->
 <div id="div-modal-create-nfs-cluster" class="pf-c-backdrop" style="display:none">
     <div class="pf-l-bullseye">
@@ -953,12 +1208,13 @@
                                         <span class="pf-c-select__toggle-text">선택해주세요.</span>
                                     </div>
                                     <span class="pf-c-select__toggle-arrow">
+                                        <i class="fas fa-times" aria-hidden="true"></i>
                                         <i class="fas fa-caret-down" aria-hidden="true"></i>
                                     </span>
                                 </button>
                                 <!-- <div class="pf-c-select__menu" style="min-width: 60%;height: 250px;overflow: auto;"> -->
                                 <div class="pf-c-select__menu" style="min-width: 60%;display: none;" id="div-glue-hosts-list">
-                                    <fieldset class="pf-c-select__menu-fieldset" aria-label="Select input">
+                                    <!-- <fieldset class="pf-c-select__menu-fieldset" aria-label="Select input">
                                         <label class="pf-c-check pf-c-select__menu-item" for="glue-host-list-1">
                                             <input class="pf-c-check__input" type="checkbox" id="glue-host-list-1" name="glue-hosts-list" value="scvm1"/>
                                             <span class="pf-c-check__label">scvm1</span>
@@ -975,7 +1231,7 @@
                                             <input class="pf-c-check__input" type="checkbox" id="glue-host-list-4" name="glue-hosts-list" value="gwvm"/>
                                             <span class="pf-c-check__label">gwvm</span>
                                         </label>
-                                    </fieldset>
+                                    </fieldset> -->
                                 </div>
                             </div>
                         </div>
@@ -1154,6 +1410,135 @@
 </div>
 <!-- nfs export 삭제 : Modal 영역 끝 -->
 
+<!-- ingress 생성 : Modal 영역 시작 -->
+<div id="div-modal-create-ingress" class="pf-c-backdrop" style="display:none">
+    <div class="pf-l-bullseye">
+        <div class="pf-c-modal-box pf-m-sm" role="dialog" aria-modal="true" aria-label="Create INGRESS">
+            <button id="button-close-modal-create-ingress" aria-disabled="false" aria-label="Close" class="pf-c-button pf-m-plain" type="button">
+                <i class="fas fa-times" aria-hidden="true"></i>
+            </button>
+            <header class="pf-c-modal-box__header"><h1 class="pf-c-modal-box__title"><span class="pf-c-modal-box__title-text">INGRESS 생성</span></h1></header>
+            <form novalidate class="pf-c-form pf-m-horizontal" style="margin-left:15px;margin-top:10px">
+                <section class="pf-c-form__section">
+                    <div class="pf-c-form__group">
+                        <div class="pf-c-form__group-label" style="margin-left: 15px;">
+                            <label class="pf-c-form__label" for="form-input-ingress-nfs-cluster-id" style="margin-left: 10px;width: 120px;">
+                                <span class="pf-c-form__label-text">NFS 클러스터 이름</span>
+                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                            </label>
+                        </div>
+                        <div class="pf-c-form__group-control">
+                            <input class="pf-c-form-control" style="width:50%" type="text" id="form-input-ingress-nfs-cluster-id" name="form-input-ingress-nfs-cluster-id"/>
+                        </div>
+                    </div>
+                    <div class="pf-c-form__group">
+                        <div class="pf-c-form__group-label" style="margin-left: 20px;">
+                            <label class="pf-c-form__label" for="button-ingress-glue-hosts-list-setting" style="margin-left: 10px;width: 120px;">
+                                <span class="pf-c-form__label-text">배치 호스트</span>
+                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                            </label>
+                        </div>
+                        <div class="pf-c-form__group-control">
+                            <div class="pf-c-select pf-m-expanded">
+                                <input class="pf-c-form-control" type="text" style="width:60%" id="form-input-ingress-placement-hosts" name="form-input-ingress-placement-hosts" disabled/>
+                                <button class="pf-c-select__toggle" type="button" style="width: 60%;" id="button-ingress-glue-hosts-list-setting" aria-haspopup="true" aria-expanded="true" aria-labelledby="select-checkbox-expanded-toggle">
+                                    <div class="pf-c-select__toggle-wrapper">
+                                        <span class="pf-c-select__toggle-text">선택해주세요.</span>
+                                    </div>
+                                    <span class="pf-c-select__toggle-arrow">
+                                        <i class="fas fa-times" aria-hidden="true"></i>
+                                        <i class="fas fa-caret-down" aria-hidden="true"></i>
+                                    </span>
+                                </button>
+                                <!-- <div class="pf-c-select__menu" style="min-width: 60%;height: 250px;overflow: auto;"> -->
+                                <div class="pf-c-select__menu" style="min-width: 60%;display: none;" id="div-ingress-glue-hosts-list">
+                                    <!-- <fieldset class="pf-c-select__menu-fieldset" aria-label="Select input">
+                                        <label class="pf-c-check pf-c-select__menu-item" for="glue-host-list-1">
+                                            <input class="pf-c-check__input" type="checkbox" id="glue-host-list-1" name="glue-hosts-list" value="scvm1"/>
+                                            <span class="pf-c-check__label">scvm1</span>
+                                        </label>
+                                        <label class="pf-c-check pf-c-select__menu-item" for="glue-host-list-2">
+                                            <input class="pf-c-check__input" type="checkbox" id="glue-host-list-2" name="glue-hosts-list" value="scvm2"/>
+                                            <span class="pf-c-check__label">scvm2</span>
+                                        </label>
+                                        <label class="pf-c-check pf-c-select__menu-item" for="glue-host-list-3">
+                                            <input class="pf-c-check__input" type="checkbox" id="glue-host-list-3" name="glue-hosts-list" value="scvm3"/>
+                                            <span class="pf-c-check__label">scvm3</span>
+                                        </label>
+                                        <label class="pf-c-check pf-c-select__menu-item" for="glue-host-list-4">
+                                            <input class="pf-c-check__input" type="checkbox" id="glue-host-list-4" name="glue-hosts-list" value="gwvm"/>
+                                            <span class="pf-c-check__label">gwvm</span>
+                                        </label>
+                                    </fieldset> -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pf-c-form__group">
+                        <div class="pf-c-form__group-label" style="margin-left: 20px;">
+                            <label class="pf-c-form__label" for="form-input-ingress-virtual-ip" style="margin-left: 10px;width: 120px;">
+                                <span class="pf-c-form__label-text">가상 IP</span>
+                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                            </label>
+                        </div>
+                        <div class="pf-c-form__group-control">
+                            <input class="pf-c-form-control" style="width:50%" type="text" id="form-input-ingress-virtual-ip" name="form-input-ingress-virtual-ip" />
+                        </div>
+                    </div>
+                    <div class="pf-c-form__group">
+                        <div class="pf-c-form__group-label" style="margin-left: 20px;">
+                            <label class="pf-c-form__label" for="form-input-ingress-frontend-port" style="margin-left: 10px;width: 120px;">
+                                <span class="pf-c-form__label-text">프론트엔드 PORT</span>
+                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                            </label>
+                        </div>
+                        <div class="pf-c-form__group-control">
+                            <input class="pf-c-form-control" style="width:50%" type="text" id="form-input-ingress-frontend-port" name="form-input-ingress-frontend-port" />
+                        </div>
+                    </div>
+                    <div class="pf-c-form__group">
+                        <div class="pf-c-form__group-label" style="margin-left: 20px;">
+                            <label class="pf-c-form__label" for="form-input-ingress-monitor-port" style="margin-left: 10px;width: 120px;">
+                                <span class="pf-c-form__label-text">모니터 PORT</span>
+                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                            </label>
+                        </div>
+                        <div class="pf-c-form__group-control">
+                            <input class="pf-c-form-control" style="width:50%" type="text" id="form-input-ingress-monitor-port" name="form-input-ingress-monitor-port" />
+                        </div>
+                    </div>
+                </section>
+            </form>
+            <footer class="pf-c-modal-box__footer">
+                <button id="button-execution-modal-create-ingress" aria-disabled="false" class="pf-c-button pf-m-primary" type="button" data-ouia-safe="true">실행</button>
+                <button id="button-cancel-modal-create-ingress" aria-disabled="false" class="pf-c-button pf-m-link" type="button" data-ouia-safe="true">취소</button>
+            </footer>
+        </div>
+    </div>
+</div>
+<!-- ingress 생성 : Modal 영역 끝 -->
+
+<!-- ingress 삭제 : Modal 영역 시작 -->
+<div id="div-modal-remove-ingress" class="pf-c-backdrop" style="display:none">
+    <div class="pf-l-bullseye">
+        <div class="pf-c-modal-box pf-m-sm" role="dialog" aria-modal="true" aria-label="Remove Ingress">
+            <button id="button-close-modal-remove-ingress" aria-disabled="false" aria-label="Close" class="pf-c-button pf-m-plain" type="button">
+                <i class="fas fa-times" aria-hidden="true"></i>
+            </button>
+            <header class="pf-c-modal-box__header"><h1 class="pf-c-modal-box__title"><span class="pf-c-modal-box__title-text">Ingress 삭제</span></h1></header>
+            <div class="pf-c-modal-box__body">
+                <div id="ingress-text"></div>
+            </div>
+            <footer class="pf-c-modal-box__footer">
+                <button id="button-execution-modal-remove-ingress" aria-disabled="false" class="pf-c-button pf-m-primary" type="button" data-ouia-safe="true">실행</button>
+                <button id="button-cancel-modal-remove-ingress" aria-disabled="false" class="pf-c-button pf-m-link" type="button" data-ouia-safe="true">취소</button>
+            </footer>
+            <input type="text" id="ingress-id" name="ingress-id" value="" style="display:none" disabled/>
+        </div>
+    </div>
+</div>
+<!-- ingress 삭제 : Modal 영역 끝 -->
+
 <!-- iscsi service 생성 : Modal 영역 시작 -->
 <div id="div-modal-create-iscsi-service" class="pf-c-backdrop" style="display:none">
     <div class="pf-l-bullseye">
@@ -1304,14 +1689,14 @@
                         <div class="pf-c-dropdown">
                             <select class="pf-c-form-control" id="form-select-target-portal" name="form-select-target-portal" style="width: 50%;">
                                 <option value="" selected>선택해주세요.</option>
-                                <option value="gwvm:10.10.5.15" >gwvm:10.10.5.15</option>
+                                <option value="gwvm:10.10.2.15" >gwvm:10.10.2.15</option>
                                 <option value="gwvm:100.100.5.15" >gwvm:100.100.5.15</option>
-                                <option value="gwvm:10.10.5.11" >gwvm:10.10.5.11</option>
-                                <option value="gwvm:100.100.5.11" >gwvm:100.100.5.11</option>
-                                <option value="gwvm:10.10.5.12" >gwvm:10.10.5.12</option>
-                                <option value="gwvm:100.100.5.12" >gwvm:100.100.5.12</option>
-                                <option value="gwvm:10.10.5.13" >gwvm:10.10.5.13</option>
-                                <option value="gwvm:100.100.5.13" >gwvm:100.100.5.13</option>
+                                <option value="scvm1:10.10.2.11" >scvm1:10.10.2.11</option>
+                                <option value="scvm1:100.100.2.11" >gwvm:100.100.5.11</option>
+                                <option value="scvm2:10.10.2.12" >scvm1:100.100.2.11</option>
+                                <option value="scvm2:100.100.2.12" >scvm2:100.100.2.12</option>
+                                <option value="scvm3:10.10.2.13" >scvm3:10.10.2.13</option>
+                                <option value="scvm3:100.100.2.13" >scvm3:100.100.2.13</option>
                             </select>
                         </div>
                     </div>
@@ -1377,7 +1762,26 @@
     </div>
 </div>
 <!-- iscsi target 생성 : Modal 영역 끝 -->
-
+<!-- iscsi target 삭제 : Modal 영역 시작 -->
+<div id="div-modal-remove-iscsi-target" class="pf-c-backdrop" style="display:none">
+    <div class="pf-l-bullseye">
+        <div class="pf-c-modal-box pf-m-sm" role="dialog" aria-modal="true" aria-label="Remove iSCSI target">
+            <button id="button-close-modal-remove-iscsi-target" aria-disabled="false" aria-label="Close" class="pf-c-button pf-m-plain" type="button">
+                <i class="fas fa-times" aria-hidden="true"></i>
+            </button>
+            <header class="pf-c-modal-box__header"><h1 class="pf-c-modal-box__title"><span class="pf-c-modal-box__title-text">iSCSI 타겟 삭제</span></h1></header>
+            <div class="pf-c-modal-box__body">
+                <div id="iscsi-target-text"></div>
+            </div>
+            <footer class="pf-c-modal-box__footer">
+                <button id="button-execution-modal-remove-iscsi-target" aria-disabled="false" class="pf-c-button pf-m-primary" type="button" data-ouia-safe="true">실행</button>
+                <button id="button-cancel-modal-remove-iscsi-target" aria-disabled="false" class="pf-c-button pf-m-link" type="button" data-ouia-safe="true">취소</button>
+            </footer>
+            <input type="text" id="iscsi-target-iqn-id" name="iscsi-target-iqn-id" value="" style="display:none" disabled/>
+        </div>
+    </div>
+</div>
+<!-- iscsi target 삭제 : Modal 영역 끝 -->
 
 
 
@@ -1457,6 +1861,7 @@
 <script src="./src/features/glue/gateway-vm-status.js"></script>
 <script src="./src/features/glue/gluefs.js"></script>
 <script src="./src/features/glue/nfs.js"></script>
+<script src="./src/features/glue/ingress.js"></script>
 <script src="./src/features/glue/iscsi.js"></script>
 <script src="./src/features/glue/smb.js"></script>
 <script src="./src/common/logger.js"></script>
