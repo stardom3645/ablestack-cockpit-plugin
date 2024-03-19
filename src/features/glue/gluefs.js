@@ -7,8 +7,9 @@
 
 function gluefsList(){
     //조회
+    $('#gluefs-subvolume-group-list tr').remove();
     $('#button-gluefs-search').html("<svg class='pf-c-spinner pf-m-md' role='progressbar' aria-valuetext='Loading...' viewBox='0 0 100 100' ><circle class='pf-c-spinner__path' cx='50' cy='50' r='45' fill='none'></circle></svg>");
-    fetch('https://10.10.2.11:8080/api/v1/gluefs',{
+    fetch('https://10.10.5.11:8080/api/v1/gluefs',{
         method: 'GET',
         headers: {
             'accept': 'application/json',
@@ -48,7 +49,7 @@ function gluefsList(){
                 insert_tr += '    <td role="cell" data-label="사용량" id="gluefs-usage">'+bytesToSize(used)+'</td>';
                 insert_tr += '    <td role="cell" data-label="전체용량" id="gluefs-total-capacity">'+bytesToSize(avail)+'</td>';
                 insert_tr += '    <td role="cell" data-label="데이터 풀" id="gluefs-data-pool">'+data.list[i].data_pools+'</td>';
-                insert_tr += '    <td role="cell" data-label="메타 데이터 풀" id="gluefs-meta-data-pool">'+data.list[i].metadata_pool+'</td>';
+                // insert_tr += '    <td role="cell" data-label="메타 데이터 풀" id="gluefs-meta-data-pool">'+data.list[i].metadata_pool+'</td>';
                 insert_tr += '    <td class="pf-c-table__icon" role="cell" data-label="편집">';
                 insert_tr += '       <div class="pf-c-dropdown">';
                 insert_tr += '            <button class="pf-c-dropdown__toggle pf-m-plain" id="card-action-glue-file-system-status'+i+'" onclick="toggleAction(\'dropdown-menu-card-action-glue-file-system-status\','+i+')" aria-expanded="false" type="button" aria-label="Actions">';
@@ -93,6 +94,7 @@ $('#button-gluefs-search').on('click', function(){
 
 /** glue fs create 관련 action start */
 $('#button-gluefs-create').on('click', function(){
+    gluefsCreateInitInputValue();
     $('#div-modal-create-gluefs').show();
 });
 
@@ -114,7 +116,7 @@ $('#button-execution-modal-create-gluefs').on('click', function(){
     $("#modal-status-alert-title").html("Glue File System 생성 실패");
     $("#modal-status-alert-body").html("Glue File System 생성을 실패하였습니다.");
 
-    fetch('https://10.10.2.11:8080/api/v1/gluefs/'+gluefs_id,{
+    fetch('https://10.10.5.11:8080/api/v1/gluefs/'+gluefs_id,{
         method: 'POST',
         headers: {
             'accept': 'application/json',
@@ -164,7 +166,7 @@ $('#button-execution-modal-remove-gluefs').on('click', function(){
     $("#modal-status-alert-title").html("Glue File System 삭제 실패");
     $("#modal-status-alert-body").html("Glue File System 삭제를 실패하였습니다.");
 
-    fetch('https://10.10.2.11:8080/api/v1/gluefs/'+gluefs_id,{
+    fetch('https://10.10.5.11:8080/api/v1/gluefs/'+gluefs_id,{
         method: 'DELETE',
         headers: {
             'accept': 'application/json',
@@ -198,7 +200,7 @@ function gluefsSubvolumeGroupList(gluefs_name, gluefs_data_pool){
     $('#gluefs-select-id').val(gluefs_name);
     $('#gluefs-select-data-pool').val(gluefs_data_pool);
 
-    fetch('https://10.10.2.11:8080/api/v1/gluefs/subvolume/group?vol_name='+gluefs_name,{
+    fetch('https://10.10.5.11:8080/api/v1/gluefs/subvolume/group?vol_name='+gluefs_name,{
         method: 'GET',
         headers: {
             'accept': 'application/json',
@@ -206,7 +208,6 @@ function gluefsSubvolumeGroupList(gluefs_name, gluefs_data_pool){
         }
     }).then(res => res.json()).then(data => {
         if(data != null && data.length != 0){
-            console.log(data);
             for(var i=0; i < data.length; i++){
                 let insert_tr = "";
 
@@ -222,7 +223,8 @@ function gluefsSubvolumeGroupList(gluefs_name, gluefs_data_pool){
                 insert_tr += '            </button>';
                 insert_tr += '            <ul class="pf-c-dropdown__menu pf-m-align-right  pf-m-disabled" aria-labelledby="card-action-glue-file-system-status'+i+'" id="dropdown-menu-card-action-gluefs-subvolume-group-status'+i+'">';
                 insert_tr += '                <li>';
-                insert_tr += '                    <button class="pf-c-dropdown__menu-item pf-m-enabled" type="button" id="menu-item-gluefs-subvolume-group-remove" onclick=\'glueFsSubvolumeGroupDelete("'+data[i].name+'")\' >SubVolume Group 삭제</button>';
+                insert_tr += '                    <button class="pf-c-dropdown__menu-item pf-m-enabled" type="button" onclick=\'glueFsSubvolumeGroupUpdate("'+data[i].name+'","'+byteOnlyGib(data[i].Info.bytes_quota)+'")\' >SubVolume Group 수정</button>';
+                insert_tr += '                    <button class="pf-c-dropdown__menu-item pf-m-enabled" type="button" onclick=\'glueFsSubvolumeGroupDelete("'+data[i].name+'")\' >SubVolume Group 삭제</button>';
                 insert_tr += '                </li>';
                 insert_tr += '             </ul>';
                 insert_tr += '        </div>';
@@ -251,6 +253,7 @@ $('#button-gluefs-subvolume-group-search').on('click', function(){
 
 /** glue fs subvolume group create 관련 action start */
 $('#button-gluefs-subvolume-group-create').on('click', function(){
+    gluefsSubvolumeGroupCreateInitInputValue();
     var vol_name = $('#gluefs-select-id').val();
     var data_pool_name = $('#gluefs-select-data-pool').val();
     
@@ -283,7 +286,7 @@ $('#button-execution-modal-create-gluefs-subvolume-group').on('click', function(
     $("#modal-status-alert-title").html("Glue FS Subvolume Group 생성 실패");
     $("#modal-status-alert-body").html("Glue FS Subvolume Group 생성을 실패하였습니다.");
 
-    fetch('https://10.10.2.11:8080/api/v1/gluefs/subvolume/group',{
+    fetch('https://10.10.5.11:8080/api/v1/gluefs/subvolume/group',{
         method: 'POST',
         headers: {
             'accept': 'application/json',
@@ -308,8 +311,64 @@ $('#button-execution-modal-create-gluefs-subvolume-group').on('click', function(
         console.log('button-execution-modal-create-gluefs-subvolume-group : '+data);
     });
 });
-/**  glue fs subvolume group create 관련 action end */
+/** glue fs subvolume group create 관련 action end */
 
+/** glue fs subvolume group update 관련 action start */
+function glueFsSubvolumeGroupUpdate(svg_id, size){
+    $('#form-input-update-glue-fs-subvolume-group-name').val(svg_id);
+    $('#form-input-update-glue-fs-subvolume-group-size').val(size);
+    $('#div-modal-update-gluefs-subvolume-group').show();
+}
+
+$('#button-close-modal-update-gluefs-subvolume-group').on('click', function(){
+    $('#div-modal-update-gluefs-subvolume-group').hide();
+});
+
+$('#button-cancel-modal-update-gluefs-subvolume-group').on('click', function(){
+    $('#div-modal-update-gluefs-subvolume-group').hide();
+});
+
+$('#button-execution-modal-update-gluefs-subvolume-group').on('click', function(){
+    var vol_name = $('#gluefs-select-id').val();
+    var data_pool_name = $('#gluefs-select-data-pool').val();
+    var group_name= $('#form-input-update-glue-fs-subvolume-group-name').val();
+    var new_size = $('#form-input-update-glue-fs-subvolume-group-size').val();
+
+    var body_val = "vol_name="+vol_name+"&group_name="+group_name+"&new_size="+new_size
+    
+    $('#div-modal-update-gluefs-subvolume-group').hide();
+    $('#div-modal-spinner-header-txt').text('Glue FS Subvolume Group을 생성하고 있습니다.');
+    $('#div-modal-spinner').show();
+
+    $("#modal-status-alert-title").html("Glue FS Subvolume Group 생성 실패");
+    $("#modal-status-alert-body").html("Glue FS Subvolume Group 생성을 실패하였습니다.");
+
+    fetch('https://10.10.5.11:8080/api/v1/gluefs/subvolume/group',{
+        method: 'PUT',
+        headers: {
+            'accept': 'application/json',
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: body_val
+    }).then(res => res.json()).then(data => {
+        $('#div-modal-spinner').hide();
+        if(data == "Success"){
+            $("#modal-status-alert-title").html("Glue FS Subvolume Group 생성 완료");
+            $("#modal-status-alert-body").html("Glue FS Subvolume Group 생성을 완료하였습니다.");
+            $('#div-modal-status-alert').show();
+            gluefsSubvolumeGroupList(vol_name, data_pool_name);
+            createLoggerInfo("gluefs subvolume group update success");
+        }else{
+            $('#div-modal-status-alert').show();
+        }
+    }).catch(function(data){
+        $('#div-modal-spinner').hide();
+        $('#div-modal-status-alert').show();
+        createLoggerInfo("gluefs subvolume group update error : "+ data);
+        console.log('button-execution-modal-update-gluefs-subvolume-group : '+data);
+    });
+});
+/** glue fs subvolume group update 관련 action end */
 /** glue fs subvolume group delete 관련 action start */
 function glueFsSubvolumeGroupDelete(svg_id){
     var gluefs_id = $('#gluefs-select-id').val();
@@ -321,10 +380,6 @@ function glueFsSubvolumeGroupDelete(svg_id){
     $('#gluefs-subvolume-group-id').text('선택하신 '+gluefs_id+" 의 "+svg_id+' 을(를) 삭제하시겠습니까?');
 }
 
-$('#menu-item-gluefs-subvolume-group-remove').on('click', function(){
-    $('#div-modal-remove-gluefs-subvolume-group').show();
-});
-
 $('#button-close-modal-remove-gluefs-subvolume-group').on('click', function(){
     $('#div-modal-remove-gluefs-subvolume-group').hide();
 });
@@ -334,7 +389,7 @@ $('#button-cancel-modal-remove-gluefs-subvolume-group').on('click', function(){
 });
 
 $('#button-execution-modal-remove-gluefs-subvolume-group').on('click', function(){
-    var vol_name = $('#gluefs-remove-id').val();
+    var vol_name = $('#gluefs-select-id').val();
     var data_pool_name = $('#gluefs-select-data-pool').val();
     var group_name = $('#gluefs-subvolume-group-remove-id').val();
     
@@ -345,7 +400,7 @@ $('#button-execution-modal-remove-gluefs-subvolume-group').on('click', function(
     $("#modal-status-alert-title").html("Glue FS Subvolume Group 삭제 실패");
     $("#modal-status-alert-body").html("Glue FS Subvolume Group 삭제를 실패하였습니다.");
 
-    fetch('https://10.10.2.11:8080/api/v1/gluefs/subvolume/group?vol_name='+vol_name+'&group_name='+group_name,{
+    fetch('https://10.10.5.11:8080/api/v1/gluefs/subvolume/group?vol_name='+vol_name+'&group_name='+group_name,{
         method: 'DELETE',
         headers: {
             'accept': 'application/json',
@@ -369,4 +424,9 @@ $('#button-execution-modal-remove-gluefs-subvolume-group').on('click', function(
         console.log('button-execution-modal-remove-gluefs-subvolume-group : '+data);
     });
 });
-/**  glue fs subvolume group delete 관련 action end */
+/** glue fs subvolume group delete 관련 action end */
+
+// glue fs 생성 입력값 초기화
+function gluefsCreateInitInputValue(){
+    $('#form-input-glue-fs-name').val("");
+}

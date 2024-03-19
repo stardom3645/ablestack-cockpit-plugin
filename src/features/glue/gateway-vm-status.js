@@ -27,7 +27,7 @@ $('#button-execution-modal-gateway-vm-start').on('click', function(){
     $("#modal-status-alert-title").html("게이트웨이 VM 시작 실패");
     $("#modal-status-alert-body").html("게이트웨이 VM 시작을 실패하였습니다.");
 
-    fetch('https://10.10.2.11:8080/api/v1/gwvm/start/cell',{
+    fetch('https://10.10.5.11:8080/api/v1/gwvm/start/cell',{
         method: 'PATCH',
         headers: {
             'accept': 'application/json',
@@ -76,7 +76,7 @@ $('#button-execution-modal-gateway-vm-stop').on('click', function(){
     $("#modal-status-alert-title").html("게이트웨이 VM 정지 실패");
     $("#modal-status-alert-body").html("게이트웨이 VM 정지를 실패하였습니다.");
 
-    fetch('https://10.10.2.11:8080/api/v1/gwvm/stop/cell',{
+    fetch('https://10.10.5.11:8080/api/v1/gwvm/stop/cell',{
         method: 'PATCH',
         headers: {
             'accept': 'application/json',
@@ -124,7 +124,7 @@ $('#button-execution-modal-gateway-vm-destroy').on('click', function(){
     $("#modal-status-alert-title").html("게이트웨이 VM 삭제 실패");
     $("#modal-status-alert-body").html("게이트웨이 VM 삭제를 실패하였습니다.");
 
-    fetch('https://10.10.2.11:8080/api/v1/gwvm/delete/cell',{
+    fetch('https://10.10.5.11:8080/api/v1/gwvm/delete/cell',{
         method: 'DELETE',
         headers: {
             'accept': 'application/json',
@@ -165,7 +165,7 @@ $('#button-execution-modal-gateway-vm-cleanup').on('click', function(){
     $("#modal-status-alert-title").html("게이트웨이 VM 클립업 실패");
     $("#modal-status-alert-body").html("게이트웨이 VM 클린업을 실패하였습니다.");
 
-    fetch('https://10.10.2.11:8080/api/v1/gwvm/cleanup/cell',{
+    fetch('https://10.10.5.11:8080/api/v1/gwvm/cleanup/cell',{
         method: 'PATCH',
         headers: {
             'accept': 'application/json',
@@ -217,7 +217,7 @@ $('#button-execution-modal-gateway-vm-migration').on('click', function(){
         $("#modal-status-alert-title").html("게이트웨이 VM 마이그레이션 실패");
         $("#modal-status-alert-body").html("게이트웨이 VM 마이그레이션을 실패하였습니다.");
 
-        fetch('https://10.10.2.11:8080/api/v1/gwvm/migrate/cell',{
+        fetch('https://10.10.5.11:8080/api/v1/gwvm/migrate/cell',{
             method: 'PATCH',
             headers: {
                 'accept': 'application/json',

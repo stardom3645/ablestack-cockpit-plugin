@@ -61,7 +61,7 @@ $('#button-execution-modal-gateway-vm-create').on('click', function () {
 $('#button-cancel-modal-gateway-vm-create').on('click', function () {
     $('#div-modal-gateway-vm-setup').hide();
     //상태값 초기화 겸 페이지 리로드
-    location.reload();
+    // location.reload();
 });
 
 $('#button-close-modal-gateway-vm-create').on('click', function () {
@@ -95,7 +95,7 @@ $('#button-execution-modal-gateway-wizard-confirm').on('click', function () {
         // 스토리지 ip
         var snb_ip = $('#form-input-gateway-vm-storage-nic-ip').val();
 
-        fetch('https://10.10.2.11:8080/api/v1/gwvm/cell',{
+        fetch('https://10.10.5.11:8080/api/v1/gwvm/cell',{
             method: 'POST',
             headers: {
                 'accept': 'application/json',

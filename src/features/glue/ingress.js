@@ -8,7 +8,7 @@
 function ingressList(){
     //조회
     $('#button-ingress-search').html("<svg class='pf-c-spinner pf-m-md' role='progressbar' aria-valuetext='Loading...' viewBox='0 0 100 100' ><circle class='pf-c-spinner__path' cx='50' cy='50' r='45' fill='none'></circle></svg>");
-    fetch('https://10.10.2.11:8080/api/v1/service?service_type=ingress',{
+    fetch('https://10.10.5.11:8080/api/v1/service?service_type=ingress',{
         method: 'GET',
         headers: {
             'accept': 'application/json',
@@ -72,7 +72,9 @@ $('#button-ingress-search').on('click', function(){
 /** ingress create 관련 action start */
 $('#button-ingress-create').on('click', function(){
     // 입력항목 초기화
+    ingressCreateInitInputValue();
     setSelectHostsCheckbox('div-ingress-glue-hosts-list','form-input-ingress-placement-hosts');
+    setNfsClusterNameSelectBox('form-ingress-nfs-cluster-name')
     $('#div-ingress-glue-hosts-list').hide();
 
     $('#div-modal-create-ingress').show();
@@ -88,8 +90,8 @@ $('#button-cancel-modal-create-ingress').on('click', function(){
 
 $('#button-execution-modal-create-ingress').on('click', function(){
     var body_val = "";
-    var service_id = $('#form-input-ingress-nfs-cluster-id').val();
-    var backend_service = $('#form-input-ingress-nfs-cluster-id').val();
+    var service_id = $('#form-ingress-nfs-cluster-name option:selected').val();
+    var backend_service = $('#form-ingress-nfs-cluster-name option:selected').val();
     
     body_val +="service_id="+service_id+"&backend_service="+backend_service
     
@@ -114,7 +116,7 @@ $('#button-execution-modal-create-ingress').on('click', function(){
     $("#modal-status-alert-title").html("INGRESS 생성 실패");
     $("#modal-status-alert-body").html("INGRESS 생성을 실패하였습니다.");
 
-    fetch('https://10.10.2.11:8080/api/v1/nfs/ingress',{
+    fetch('https://10.10.5.11:8080/api/v1/nfs/ingress',{
         method: 'POST',
         headers: {
             'accept': 'application/json',
@@ -163,7 +165,7 @@ $('#button-execution-modal-remove-ingress').on('click', function(){
     $("#modal-status-alert-title").html("INGRESS 삭제 실패");
     $("#modal-status-alert-body").html("INGRESS 삭제를 실패하였습니다.");
     
-    fetch('https://10.10.2.11:8080/api/v1/service/'+ingress_id,{
+    fetch('https://10.10.5.11:8080/api/v1/service/'+ingress_id,{
         method: 'DELETE',
         headers: {
             'accept': 'application/json',
@@ -188,3 +190,12 @@ $('#button-execution-modal-remove-ingress').on('click', function(){
     });
 });
 /**  ingress delete 관련 action end */
+
+// ingress 생성 입력값 초기화
+function ingressCreateInitInputValue(){
+    $('#form-ingress-nfs-cluster-name').val("");
+    $('#form-input-ingress-placement-hosts').val("");
+    $('#form-input-ingress-virtual-ip').val("");
+    $('#form-input-ingress-frontend-port').val("");
+    $('#form-input-ingress-monitor-port').val("");
+}

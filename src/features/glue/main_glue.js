@@ -36,13 +36,6 @@ $(document).ready(function(){
     topTabAction("button-tab-glue-vm");
     scanHostKey();
     gwvmInfoSet();
-    gluefsList();
-    nfsClusterList();
-    nfsExportList();
-    ingressList();
-    iscsiServiceList();
-    iscsiTargetList();
-    smbServiceList();
     glueVmList();
 
     setInterval(() => {
@@ -120,15 +113,16 @@ $('#card-action-storage-cluster-iscsi-status').on('click', function(){
 
 /** 스토리지 서비스 구성 관련 action start */
 $('#button-glue-api-server-connect').on('click', function(){
-    window.open("https://10.10.2.11:8080/swagger/index.html");
+    window.open("https://10.10.5.11:8080/swagger/index.html");
 });
 
 /** 스토리지 서비스 구성 관련 action start */
-$('#button-gateway-vm-setup2').on('click', function(){
-    $('#div-modal-gateway-vm-setup').show();
-});
-
 $('#menu-item-gateway-vm-setup').on('click', function(){
+    $('#form-select-gateway-vm-mngt-nic-parent').val("");
+    $('#form-input-gateway-vm-mngt-nic-ip').val("");
+    $('#form-select-gateway-vm-storage-nic-parent').val("");
+    $('#form-input-gateway-vm-storage-nic-ip').val("");
+    
     $('#div-modal-gateway-vm-setup').show();
 });
 
@@ -186,9 +180,57 @@ $('#modal-status-alert-button-confirm').on('click',function(){
     $('#div-modal-status-alert').hide();
     // location.reload();
 });
+
 // alert modal 닫기
 $('#modal-status-alert-button-close1, #modal-status-alert-button-close2').on('click', function(){
     $('#div-modal-status-alert').hide();
+});
+
+// help 팝업 이벤트 처리 시작
+$('i[name=icon-help-action]').on('click',function(e){
+    console.log(e.target.id);
+    $("#modal-help-title").html("");
+    // $("#modal-help-body").html("");
+    
+    if(e.target.id == "icon-help-glue-vm-status"){
+        $("#modal-help-title").html("Glue 가상머신 도움말");
+        $("#modal-help-body").html("Glue 스토리지 클러스터를 구성하는 가상머신 상태 정보와 IP 정보를 확인할 수 있습니다.");
+    } else if (e.target.id == "icon-help-gateway-vm-status") {
+        $("#modal-help-title").html("게이트웨이 가상머신 도움말");
+        $("#modal-help-body").html("스토리지 서비스 게이트웨이 전용 가상머신으로 필요시 해당 가상머신을 구성하여 사용할 수 있습니다.");
+    } else if (e.target.id == "icon-help-gluefs") {
+        $("#modal-help-title").html("Glue File System 도움말");
+        $("#modal-help-body").html("Glue 파일 시스템( GlueFS )은 Glue의 분산 객체 저장소인 RADOS 위에 구축된 POSIX 호환 파일 시스템입니다. Glue FS는 공유 홈 디렉터리, HPC 스크래치 공간, 분산 워크플로 공유 스토리지와 같은 다양한 애플리케이션을 위한 최첨단 다용도 고가용성 고성능 파일 저장소를 제공합니다.");
+    } else if (e.target.id == "icon-help-gluefs-subvolume-group") {
+        $("#modal-help-title").html("Glue FS Subvolume Group 도움말");
+        $("#modal-help-body").html("GlueFS(Glue File System) 하위 볼륨 그룹을 생성, 조회, 절대 경로 가져오기 및 제거할 수 있습니다. Glue FS의 하위 그룹을 생성하여 효율적으로 GlueFS의 그룹 및 경로를 관리할 수 있습니다.");
+    } else if (e.target.id == "icon-help-nfs-cluster") {
+        $("#modal-help-title").html("NFS Cluster 도움말");
+        $("#modal-help-body").html("NFS 서비스를 제공하는 클러스터를 생성할 수 있습니다.");
+    } else if (e.target.id == "icon-help-nfs-export") {
+        $("#modal-help-title").html("NFS Export 도움말");
+        $("#modal-help-body").html("NFS Export의 경로, GlueFS, 프로토콜, 접근타입, Squash를 설정 및 관리할 수 있습니다.");
+    } else if (e.target.id == "icon-help-ingress-service") {
+        $("#modal-help-title").html("INGRESS Service 도움말");
+        $("#modal-help-body").html("NFS 서비스에 대한 INGRESS 서비스를 배포하면 가상 IP를 통한 안적적 접근이 가능하고, SCVM 장애 발생시 SCVM간 페일오버가 가능합니다.");
+    } else if (e.target.id == "icon-help-iscsi-service") {
+        $("#modal-help-title").html("iSCSI Service 도움말");
+        $("#modal-help-body").html("iSCSI 게이트웨이 서비스는 RBD(RADOS 블록 장치) 이미지를 SCSI 디스크로 내보내는 HA(고가용성) iSCSI Target을 제공합니다. iSCSI 프로토콜을 사용하면 클라이언트(이니시에이터)가 TCP/IP 네트워크를 통해 스토리지 장치(대상)에 SCSI 명령을 보낼 수 있으므로 클라이언트가 Glue 블록 스토리지에 액세스할 수 있습니다.");
+    } else if (e.target.id == "icon-help-iscsi-target") {
+        $("#modal-help-title").html("iSCSI Target 도움말");
+        $("#modal-help-body").html("iSCSI Target을 생성하고 관리할 수 있습니다.");
+    } else if (e.target.id == "icon-help-smb-service") {
+        $("#modal-help-title").html("SMB Service 도움말");
+        $("#modal-help-body").html("SMB 서비스를 제공 및 활성화 하고 관리할 수 있습니다.");
+    }
+
+    $('#div-modal-help').show();
+})
+// help 팝업 이벤트 처리 끝
+
+// div-modal-alert-button-confirm 클릭시
+$('#modal-help-button-confirm, #modal-help-button-close1').on('click',function(){
+    $('#div-modal-help').hide();
 });
 
 // 삭제 modal 닫기
@@ -198,10 +240,9 @@ $('#button-cancel-modal-delete, #button-close-modal-delete').on('click',function
 // gluefs 편집 열기
 $('#gluefs-edit').on('click',function(){
     sessionStorage.setItem('type','gluefs_edit');
-
-        $('#gluefs-construction-type').attr('style', "display:none;");
-        $('#modal-title-gluefs-construciton').text('GlueFS 편집');
-        $('#div-modal-gluefs-construction').show();
+    $('#gluefs-construction-type').attr('style', "display:none;");
+    $('#modal-title-gluefs-construciton').text('GlueFS 편집');
+    $('#div-modal-gluefs-construction').show();
 
 });
 // nfs 편집 열기
@@ -1030,6 +1071,28 @@ function Byte(size){
     return (bytes + ret_byte_name);
 
 }
+
+/**
+ * Meathod Name : Byte
+ * Date Created : 2023.08.30
+ * Writer  : 정민철
+ * Description : 용량 숫자를 단위에 맞춰 byte단위로 변경하는 함수
+ * Parameter : 없음
+ * Return  : 없음
+ * History  : 2023.08.30 최초 작성
+ */
+function byteOnlyGib(size){
+    var ret_byte
+
+    ret_byte = parseFloat(size)/(1024*1024*1024);
+    ret_byte_name = "GiB";
+    
+
+    var bytes = parseInt(ret_byte);
+
+    return (bytes);
+}
+
 /**
  * Meathod Name : gwvmInfoSet
  * Date Created : 2023.05.25
@@ -1045,13 +1108,13 @@ function gwvmInfoSet(){
     $("#gwvm-cluster-icon").attr('class','fas fa-fw fa-exclamation-triangle');
     
     //디테일 정보 가져오기
-    fetch('https://10.10.2.11:8080/api/v1/gwvm/detail/cell',{
+    fetch('https://10.10.5.11:8080/api/v1/gwvm/detail/cell',{
         method: 'GET'
     }).then(res => res.json()).then(data => {
         var retDetailVal = JSON.parse(data.Message);
         console.log(retDetailVal)
         if (retDetailVal.code == "200" || retDetailVal.val["role"] == 'Running') {
-            fetch('https://10.10.2.11:8080/api/v1/gwvm/cell',{
+            fetch('https://10.10.5.11:8080/api/v1/gwvm/cell',{
                 method: 'GET'
             }).then(res => res.json()).then(data => {
                 var retVal = JSON.parse(data.Message);
@@ -1183,6 +1246,13 @@ function cleanGwvmInfo(){
     $('#td_gwvm_root_disk').text("N/A");
 }
 
+function sleep(sec) {
+    let start = Date.now(), now = start;
+    while (now - start < sec * 1000) {
+        now = Date.now();
+    }
+}
+
 /*
     용량 숫자를 단위에 맞춰 bytes단위로 변경하는 함수
     ex) ccvm_instance.toBytes("1.5 GiB") == 1610612736
@@ -1254,7 +1324,7 @@ $('#button-storage-dashboard-connect').on('click', function(){
  * History  : 2024.02.22 최초 작성
  */
 function glueVmList(){
-    fetch('https://10.10.2.11:8080/api/v1/glue/hosts',{
+    fetch('https://10.10.5.11:8080/api/v1/glue/hosts',{
         method: 'GET'
     }).then(res => res.json()).then(data => {
         $('#glue-vm-list tr').remove();
@@ -1297,9 +1367,19 @@ function glueVmList(){
 }
 
 // glue 호스트 리스트 기능
-$('#button-glue-hosts-list-setting, #button-ingress-glue-hosts-list-setting').on('click', function(e){
+$('#button-glue-hosts-list-setting, #button-ingress-glue-hosts-list-setting, #button-iscsi-glue-hosts-list-setting').on('click', function(e){
     $('#'+e.target.parentElement.children[2].id).toggle();
 });
+
+// iscsi portal 리스트 기능
+$('#button-iscsi-portal-list-setting').on('click', function(e){
+    $('#'+e.target.parentElement.children[2].id).toggle();
+});
+
+$('#button-iscsi-image-list-setting').on('click', function(e){
+    $('#'+e.target.parentElement.children[2].id).toggle();
+});
+
 
 function scanHostKey(){
     //createLoggerInfo("scanHostKey() start");
@@ -1385,20 +1465,27 @@ function topTabAction(button_id){
             $('#div-glue-vm-card').show();
             break;
         case 'button-tab-gluefs':
+            gluefsList();
             $('#div-glue-fs-card').show();
             break;
         case 'button-tab-nfs':
+            nfsClusterList();
+            nfsExportList();
             $('#div-nfs-cluster-card').show();
             $('#div-nfs-export-card').show();
             break;
         case 'button-tab-ingress':
+            ingressList();
             $('#div-ingress-card').show();
             break;
         case 'button-tab-iscsi':
+            iscsiServiceList();
+            iscsiTargetList();
             $('#div-iscsi-service-card').show();
             $('#div-iscsi-target-card').show();
             break;
         case 'button-tab-smb':
+            smbServiceList();
             $('#div-smb-service-card').show();
             break;
         default:
@@ -1421,18 +1508,13 @@ function setSelectHostsCheckbox(div_id, form_input_id, selectHosts){
     // 호스트 선택된 호스트가 없으면 새창으로 세팅 
     if(selectHosts==null){
         //호스트 리스트 불러와서
-        fetch('https://10.10.2.11:8080/api/v1/glue/hosts',{
+        fetch('https://10.10.5.11:8080/api/v1/glue/hosts',{
             method: 'GET'
         }).then(res => res.json()).then(data => {
             $('#'+div_id+' fieldset').remove();
             let insert_tr = "";
             insert_tr += '<fieldset class="pf-c-select__menu-fieldset" aria-label="Select input">';
             for(var i=0; i < data.length; i++){
-                // insert_tr += '    <label class="pf-c-check pf-c-select__menu-item" for="glue-host-list-1">';
-                // insert_tr += '        <input class="pf-c-check__input" type="checkbox" id="glue-host-list-1" name="glue-hosts-list" value="scvm1"/>';
-                // insert_tr += '        <span class="pf-c-check__label">scvm1</span>';
-                // insert_tr += '    </label>';
-
                 insert_tr += '    <label class="pf-c-check pf-c-select__menu-item">';
                 insert_tr += '        <input class="pf-c-check__input" type="checkbox" id="glue-host-list-"'+i+'" name="glue-hosts-list" value="'+data[i].hostname+'"/>';
                 insert_tr += '        <span class="pf-c-check__label">'+data[i].hostname+'</span>';
@@ -1462,6 +1544,384 @@ function setSelectHostsCheckbox(div_id, form_input_id, selectHosts){
         }).catch(function(data){
             createLoggerInfo("Glue 가상머신 cleckbox 세팅 에러 : "+data);
             console.log("Glue 가상머신 cleckbox 세팅 에러 : "+data);
+        });
+    }else{
+
+    }
+}
+
+function setSmbUserSelectBox(select_box_id, data){
+    // 초기화
+    $('#'+select_box_id).empty();
+    var smb_user_list = data.split(",")
+    
+    var el ='';
+
+    el += '<option value="" selected>선택하십시오.</option>';
+    if(smb_user_list != ""){
+        for(var i = 0 ; i < smb_user_list.length ; i ++ ){
+            el += '<option value="'+smb_user_list[i]+'">'+smb_user_list[i]+'</option>';
+        }
+    }
+
+    $('#'+select_box_id).append(el);
+
+    createLoggerInfo("setSmbUserSelectBox success");
+}
+
+function setGlueFsSelectBox(fs_select_box_id, path_select_box_id, selected_gluefs_id){
+    fetch('https://10.10.5.11:8080/api/v1/gluefs',{
+        method: 'GET',
+        headers: {
+            'accept': 'application/json',
+            'Content-Type': 'application/x-www-form-urlencoded'
+        }
+    }).then(res => res.json()).then(data => {
+        $('#'+fs_select_box_id).empty();
+        var el ='';
+        el += '<option value="" selected>선택하십시오.</option>';
+        if(data.list.length != 0){
+            // 초기화
+            for(var i = 0 ; i < data.list.length ; i ++ ){
+                if(selected_gluefs_id == null){
+                    el += '<option value="'+data.list[i].name+'">'+data.list[i].name+'</option>';
+                } else {
+                    if(selected_gluefs_id != data.list[i].name){
+                        el += '<option value="'+data.list[i].name+'">'+data.list[i].name+'</option>';
+                    }else{
+                        el += '<option value="'+data.list[i].name+'" selected>'+data.list[i].name+'</option>';
+                    }
+                }
+            }
+            if(path_select_box_id != ""){
+                $('#'+fs_select_box_id).off('change');
+                $('#'+fs_select_box_id).on('change',function(){
+                    var gluefs_name = $('#'+fs_select_box_id+' option:selected').val();
+                    setGlueFsVolumeGroupSelectBox(gluefs_name, path_select_box_id);
+                });
+            }
+        }
+        $('#'+fs_select_box_id).append(el);
+        createLoggerInfo("setGlueFsSelectBox success");
+    }).catch(function(data){
+        console.log("setGlueFsSelectBox error : "+data);
+    });
+}
+
+function setGlueFsVolumeGroupSelectBox(gluefs_name, path_select_box_id, selected_subvolume_group_path_id){
+    $('#'+path_select_box_id).empty();
+    if(gluefs_name == ""){
+        var el ='';
+        el += '<option value="" selected>선택하십시오.</option>';
+        $('#'+path_select_box_id).append(el);
+        return
+    }
+    fetch('https://10.10.5.11:8080/api/v1/gluefs/subvolume/group?vol_name='+gluefs_name,{
+        method: 'GET',
+        headers: {
+            'accept': 'application/json',
+            'Content-Type': 'application/x-www-form-urlencoded'
+        }
+    }).then(res => res.json()).then(data => {
+        $('#'+path_select_box_id).empty();
+        var el ='';
+        el += '<option value="" selected>선택하십시오.</option>';
+        if(data != null && data.length != 0){
+            // 초기화
+            if(selected_subvolume_group_path_id == undefined){
+                el += '<option value="/">/</option>';
+                for(var i = 0 ; i < data.length ; i ++ ){
+                    el += '<option value="'+data[i].path+'">'+data[i].path+'</option>';
+                }
+            } else {
+                if(selected_subvolume_group_path_id == "/"){
+                    el += '<option value="/" selected>/</option>';   
+                    for(var i = 0 ; i < data.length ; i ++ ){
+                        el += '<option value="'+data[i].path+'">'+data[i].path+'</option>';
+                    }
+                }else{
+                    el += '<option value="/">/</option>';
+                    for(var i = 0 ; i < data.length ; i ++ ){
+                        if(selected_subvolume_group_path_id == data[i].path){
+                            el += '<option value="'+data[i].path+'" selected>'+data[i].path+'</option>';
+                        }else{
+                            el += '<option value="'+data[i].path+'">'+data[i].path+'</option>';
+                        }
+                    }
+                }
+            }
+        }
+        $('#'+path_select_box_id).append(el);
+        createLoggerInfo("setGlueFsVolumeGroupSelectBox success");
+    }).catch(function(data){
+        console.log("setGlueFsVolumeGroupSelectBox error : "+data);
+    });
+}
+
+function setNfsClusterSelectBox(select_box_id, selected_cluster_id){
+    fetch('https://10.10.5.11:8080/api/v1/nfs',{
+        method: 'GET',
+        headers: {
+            'accept': 'application/json',
+            'Content-Type': 'application/x-www-form-urlencoded'
+        }
+    }).then(res => res.json()).then(data => {
+        $('#'+select_box_id).empty();
+        var el ='';
+        el += '<option value="" selected>선택하십시오.</option>';
+
+        nfs_cluster_names = Object.keys(data);
+        if(nfs_cluster_names.length != 0){
+            for(var i=0; i < nfs_cluster_names.length; i++){
+                if(selected_cluster_id == null){
+                    el += '<option value="'+nfs_cluster_names[i]+'">'+nfs_cluster_names[i]+'</option>';
+                } else {
+                    if(selected_cluster_id != nfs_cluster_names[i]){
+                        el += '<option value="'+nfs_cluster_names[i]+'">'+nfs_cluster_names[i]+'</option>';
+                    }else{
+                        el += '<option value="'+nfs_cluster_names[i]+'" selected>'+nfs_cluster_names[i]+'</option>';
+                    }
+                }
+            }
+        }
+
+        $('#'+select_box_id).append(el);
+        createLoggerInfo("setNfsClusterSelectBox success");
+    }).catch(function(data){
+        console.log("setNfsClusterSelectBox error : "+data);
+    });
+}
+
+function setNfsClusterNameSelectBox(select_box_id){
+    fetch('https://10.10.5.11:8080/api/v1/service?service_type=nfs',{
+        method: 'GET',
+        headers: {
+            'accept': 'application/json',
+            'Content-Type': 'application/x-www-form-urlencoded'
+        }
+    }).then(res => res.json()).then(data => {
+        $('#'+select_box_id).empty();
+        var el ='';
+        el += '<option value="" selected>선택하십시오.</option>';
+
+        if(data.length != 0){
+            for(var i=0; i < data.length; i++){
+                    el += '<option value="'+data[i].service_name+'">'+data[i].service_name+'</option>';
+            }
+        }
+
+        $('#'+select_box_id).append(el);
+        createLoggerInfo("setNfsClusterSelectBox success");
+    }).catch(function(data){
+        console.log("setNfsClusterSelectBox error : "+data);
+    });
+}
+
+function setPoolSelectBox(select_box_id){
+    fetch('https://10.10.5.11:8080/api/v1/pool?pool_name=rbd',{
+        method: 'GET',
+        headers: {
+            'accept': 'application/json',
+            'Content-Type': 'application/x-www-form-urlencoded'
+        }
+    }).then(res => res.json()).then(data => {
+        $('#'+select_box_id).empty();
+        var el ='';
+        el += '<option value="" selected>선택하십시오.</option>';
+
+        if(data.length != 0){
+            for(var i=0; i < data.length; i++){
+                    el += '<option value="'+data[i]+'">'+data[i]+'</option>';
+            }
+        }
+
+        $('#'+select_box_id).append(el);
+        createLoggerInfo("setNfsClusterSelectBox success");
+    }).catch(function(data){
+        console.log("setNfsClusterSelectBox error : "+data);
+    });
+}
+
+function setIscsiPortalCheckbox(div_id, form_input_id, selectHosts){
+    // 선택된 포탈이 없으면 새창으로 세팅 
+    if(selectHosts==null){
+        //호스트 리스트 불러와서
+        fetch('https://10.10.5.11:8080/api/v1/glue/hosts',{
+            method: 'GET'
+        }).then(res => res.json()).then(data => {
+            $('#'+div_id+' fieldset').remove();
+            let insert_tr = "";
+            insert_tr += '<fieldset class="pf-c-select__menu-fieldset" aria-label="Select input">';
+            for(var i=0; i < data.length; i++){
+                insert_tr += '    <label class="pf-c-check pf-c-select__menu-item">';
+                insert_tr += '        <input class="pf-c-check__input" type="checkbox" id="iscsi-portal-list-"'+i+'" name="iscsi-portal-list" value="'+data[i].hostname+':'+data[i].ip_address+'"/>';
+                insert_tr += '        <span class="pf-c-check__label">'+data[i].hostname+':'+data[i].ip_address+'</span>';
+                insert_tr += '    </label>';
+                insert_tr += '    <label class="pf-c-check pf-c-select__menu-item">';
+                insert_tr += '        <input class="pf-c-check__input" type="checkbox" id="iscsi-portal-list-"'+i+'" name="iscsi-portal-list" value="'+data[i].hostname+':'+data[i].addr+'"/>';
+                insert_tr += '        <span class="pf-c-check__label">'+data[i].hostname+':'+data[i].addr+'</span>';
+                insert_tr += '    </label>';
+            }
+            insert_tr += '</fieldset>';
+            $("#"+div_id).append(insert_tr);
+
+            if(form_input_id!=null){
+                // iscis portal 리스트 기능
+                $('input[name=iscsi-portal-list]').on('click', function(){
+                    var cnt = 0;
+                    var el = "";
+                    $('input[type=checkbox][name="iscsi-portal-list"]').each(function() {
+                        if(this.checked){
+                            if(cnt==0){
+                                el = this.value
+                            }else{
+                                el += ", "+this.value
+                            }
+                            cnt++
+                        }
+                    });
+                    $('#'+form_input_id).val(el);
+                });
+            }
+        }).catch(function(data){
+            createLoggerInfo("iscis portal cleckbox 세팅 에러 : "+data);
+            console.log("iscis portal cleckbox 세팅 에러 : "+data);
+        });
+    }else{
+
+    }
+}
+
+function setIscsiPortalCheckbox(div_id, form_input_id, selectHosts){
+    // 선택된 포탈이 없으면 새창으로 세팅 
+    if(selectHosts==null){
+        //호스트 리스트 불러와서
+        fetch('https://10.10.5.11:8080/api/v1/glue/hosts',{
+            method: 'GET'
+        }).then(res => res.json()).then(data => {
+            $('#'+div_id+' fieldset').remove();
+            let insert_tr = "";
+            insert_tr += '<fieldset class="pf-c-select__menu-fieldset" aria-label="Select input">';
+            for(var i=0; i < data.length; i++){
+                insert_tr += '    <label class="pf-c-check pf-c-select__menu-item">';
+                insert_tr += '        <input class="pf-c-check__input" type="checkbox" id="iscsi-portal-list-"'+i+'" name="iscsi-portal-list" value="'+data[i].hostname+':'+data[i].ip_address+'"/>';
+                insert_tr += '        <span class="pf-c-check__label">'+data[i].hostname+':'+data[i].ip_address+'</span>';
+                insert_tr += '    </label>';
+                insert_tr += '    <label class="pf-c-check pf-c-select__menu-item">';
+                insert_tr += '        <input class="pf-c-check__input" type="checkbox" id="iscsi-portal-list-"'+i+'" name="iscsi-portal-list" value="'+data[i].hostname+':'+data[i].addr+'"/>';
+                insert_tr += '        <span class="pf-c-check__label">'+data[i].hostname+':'+data[i].addr+'</span>';
+                insert_tr += '    </label>';
+            }
+            insert_tr += '</fieldset>';
+            $("#"+div_id).append(insert_tr);
+
+            if(form_input_id!=null){
+                // iscis portal 리스트 기능
+                $('input[name=iscsi-portal-list]').on('click', function(){
+                    var cnt = 0;
+                    var el = "";
+                    $('input[type=checkbox][name="iscsi-portal-list"]').each(function() {
+                        if(this.checked){
+                            if(cnt==0){
+                                el = this.value
+                            }else{
+                                el += ", "+this.value
+                            }
+                            cnt++
+                        }
+                    });
+                    $('#'+form_input_id).val(el);
+                });
+            }
+        }).catch(function(data){
+            createLoggerInfo("iscis portal cleckbox 세팅 에러 : "+data);
+            console.log("iscis portal cleckbox 세팅 에러 : "+data);
+        });
+    }else{
+
+    }
+}
+
+function setImageSelectBox2(rbd_pool_name, path_select_box_id){
+    if(rbd_pool_name == ""){
+        $('#'+path_select_box_id).empty();
+        var el ='';
+        el += '<option value="" selected>선택하십시오.</option>';
+        $('#'+path_select_box_id).append(el);
+        return
+    }
+    fetch('https://10.10.5.11:8080/api/v1/image?pool_name='+rbd_pool_name,{
+        method: 'GET',
+        headers: {
+            'accept': 'application/json',
+            'Content-Type': 'application/x-www-form-urlencoded'
+        }
+    }).then(res => res.json()).then(data => {
+        $('#'+path_select_box_id).empty();
+        var el ='';
+        el += '<option value="" selected>선택하십시오.</option>';
+        if(data.length != 0){
+            // 초기화
+            for(var i = 0 ; i < data.length ; i ++ ){
+                if(data[i].lock_type == undefined && data[i].protected == undefined && data[i].parent == undefined){
+                    el += '<option value="'+data[i].image+'">'+data[i].image+'</option>';
+                }
+            }
+        }
+        $('#'+path_select_box_id).append(el);
+        createLoggerInfo("setImageSelectBox success");
+    }).catch(function(data){
+        console.log("setImageSelectBox error : "+data);
+    });
+}
+
+
+function setImageSelectBox(div_id, form_input_id, selectHosts){
+    // 선택된 포탈이 없으면 새창으로 세팅 
+    if(selectHosts==null){
+        //호스트 리스트 불러와서
+        fetch('https://10.10.5.11:8080/api/v1/image',{
+            method: 'GET'
+        }).then(res => res.json()).then(data => {
+            $('#'+div_id+' fieldset').remove();
+            let insert_tr = "";
+            insert_tr += '<fieldset class="pf-c-select__menu-fieldset" aria-label="Select input">';
+            
+            if(data.length > 4){
+                div_id
+                $("#"+div_id).css('height', '200px'); 
+                $("#"+div_id).css('overflow', 'auto');
+            }
+            for(var i=0; i < data.length; i++){
+                insert_tr += '    <label class="pf-c-check pf-c-select__menu-item">';
+                insert_tr += '        <input class="pf-c-check__input" type="checkbox" id="iscsi-image-list-"'+i+'" name="iscsi-image-list" value="'+data[i]+'"/>';
+                insert_tr += '        <span class="pf-c-check__label">'+data[i]+'</span>';
+                insert_tr += '    </label>';
+            }
+            insert_tr += '</fieldset>';
+            $("#"+div_id).append(insert_tr);
+
+            if(form_input_id!=null){
+                // iscis portal 리스트 기능
+                $('input[name=iscsi-image-list]').on('click', function(){
+                    var cnt = 0;
+                    var el = "";
+                    $('input[type=checkbox][name="iscsi-image-list"]').each(function() {
+                        if(this.checked){
+                            if(cnt==0){
+                                el = this.value
+                            }else{
+                                el += ", "+this.value
+                            }
+                            cnt++
+                        }
+                    });
+                    $('#'+form_input_id).val(el);
+                });
+            }
+        }).catch(function(data){
+            createLoggerInfo("iscis portal cleckbox 세팅 에러 : "+data);
+            console.log("iscis portal cleckbox 세팅 에러 : "+data);
         });
     }else{
 

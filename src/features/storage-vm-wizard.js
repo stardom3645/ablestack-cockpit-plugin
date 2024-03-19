@@ -1084,7 +1084,7 @@ $('input[name="form-radio-storage-vm-nic-type"]').change(function() {
         var result = JSON.parse(data);
         var ethernets_list = result.val.ethernets;
 
-        el += '<option value="" selected>선택하십시오</option>';
+        el += '<option value="" selected>선택하십시오.</option>';
         for(var i = 0 ; i < ethernets_list.length ; i ++ ){
             el += '<option value="'+ethernets_list[i].PCI+'">'+ethernets_list[i].DEVICE+' '+ethernets_list[i].TYPE+' '+ethernets_list[i].PCI+' ('+ethernets_list[i].STATE+')</option>';
         }

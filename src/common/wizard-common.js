@@ -57,7 +57,7 @@ function setNicSelectBox(select_box_id, data){
     var bridge_list = result.val.bridges;
     var bridge_others_list = result.val.others;
 
-    el += '<option value="" selected>선택하십시오</option>';
+    el += '<option value="" selected>선택하십시오.</option>';
     for(var i = 0 ; i < bridge_list.length ; i ++ ){
         el += '<option value="'+bridge_list[i].DEVICE+'">'+bridge_list[i].DEVICE+' ('+bridge_list[i].STATE+')</option>';
     }
