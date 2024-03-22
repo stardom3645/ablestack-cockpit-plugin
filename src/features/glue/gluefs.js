@@ -107,38 +107,40 @@ $('#button-cancel-modal-create-gluefs').on('click', function(){
 });
 
 $('#button-execution-modal-create-gluefs').on('click', function(){
-    var gluefs_id = $('#form-input-glue-fs-name').val()
+    if(gluefsValidateCheck()){
+        var gluefs_id = $('#form-input-glue-fs-name').val()
+        
+        $('#div-modal-create-gluefs').hide();
+        $('#div-modal-spinner-header-txt').text('Glue File System을 생성하고 있습니다.');
+        $('#div-modal-spinner').show();
     
-    $('#div-modal-create-gluefs').hide();
-    $('#div-modal-spinner-header-txt').text('Glue File System을 생성하고 있습니다.');
-    $('#div-modal-spinner').show();
-
-    $("#modal-status-alert-title").html("Glue File System 생성 실패");
-    $("#modal-status-alert-body").html("Glue File System 생성을 실패하였습니다.");
-
-    fetch('https://10.10.5.11:8080/api/v1/gluefs/'+gluefs_id,{
-        method: 'POST',
-        headers: {
-            'accept': 'application/json',
-            'Content-Type': 'application/x-www-form-urlencoded'
-        }
-    }).then(res => res.json()).then(data => {
-        $('#div-modal-spinner').hide();
-        if(data == "Success"){
-            $("#modal-status-alert-title").html("Glue File System 생성 완료");
-            $("#modal-status-alert-body").html("Glue File System 생성을 완료하였습니다.");
+        $("#modal-status-alert-title").html("Glue File System 생성 실패");
+        $("#modal-status-alert-body").html("Glue File System 생성을 실패하였습니다.");
+    
+        fetch('https://10.10.5.11:8080/api/v1/gluefs/'+gluefs_id,{
+            method: 'POST',
+            headers: {
+                'accept': 'application/json',
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        }).then(res => res.json()).then(data => {
+            $('#div-modal-spinner').hide();
+            if(data == "Success"){
+                $("#modal-status-alert-title").html("Glue File System 생성 완료");
+                $("#modal-status-alert-body").html("Glue File System 생성을 완료하였습니다.");
+                $('#div-modal-status-alert').show();
+                gluefsList();
+                createLoggerInfo("gluefs create success");
+            }else{
+                $('#div-modal-status-alert').show();
+            }
+        }).catch(function(data){
+            $('#div-modal-spinner').hide();
             $('#div-modal-status-alert').show();
-            gluefsList();
-            createLoggerInfo("gluefs create success");
-        }else{
-            $('#div-modal-status-alert').show();
-        }
-    }).catch(function(data){
-        $('#div-modal-spinner').hide();
-        $('#div-modal-status-alert').show();
-        createLoggerInfo("gluefs create error : "+ data);
-        console.log('button-execution-modal-create-gluefs : '+data);
-    });
+            createLoggerInfo("gluefs create error : "+ data);
+            console.log('button-execution-modal-create-gluefs : '+data);
+        });
+    }
 });
 /**  glue fs create 관련 action end */
 
@@ -208,6 +210,7 @@ function gluefsSubvolumeGroupList(gluefs_name, gluefs_data_pool){
         }
     }).then(res => res.json()).then(data => {
         if(data != null && data.length != 0){
+            $('#gluefs-subvolume-group-list tr').remove();
             for(var i=0; i < data.length; i++){
                 let insert_tr = "";
 
@@ -271,45 +274,47 @@ $('#button-cancel-modal-create-gluefs-subvolume-group').on('click', function(){
 });
 
 $('#button-execution-modal-create-gluefs-subvolume-group').on('click', function(){
-    var vol_name = $('#gluefs-select-id').val();
-    var size = $('#form-input-glue-fs-subvolume-group-size').val();
-    var group_name = $('#form-input-glue-fs-subvolume-group-name').val();
-    var data_pool_name = $('#gluefs-select-data-pool').val();
-    var mode = 777
-
-    var body_val = "vol_name="+vol_name+"&group_name="+group_name+"&size="+size+"&data_pool_name="+data_pool_name+"&mode="+mode
+    if(gluefsSubvolumueGroupCreateValidateCheck()){
+        var vol_name = $('#gluefs-select-id').val();
+        var size = $('#form-input-glue-fs-subvolume-group-size').val();
+        var group_name = $('#form-input-glue-fs-subvolume-group-name').val();
+        var data_pool_name = $('#gluefs-select-data-pool').val();
+        var mode = 777
     
-    $('#div-modal-create-gluefs-subvolume-group').hide();
-    $('#div-modal-spinner-header-txt').text('Glue FS Subvolume Group을 생성하고 있습니다.');
-    $('#div-modal-spinner').show();
-
-    $("#modal-status-alert-title").html("Glue FS Subvolume Group 생성 실패");
-    $("#modal-status-alert-body").html("Glue FS Subvolume Group 생성을 실패하였습니다.");
-
-    fetch('https://10.10.5.11:8080/api/v1/gluefs/subvolume/group',{
-        method: 'POST',
-        headers: {
-            'accept': 'application/json',
-            'Content-Type': 'application/x-www-form-urlencoded'
-        },
-        body: body_val
-    }).then(res => res.json()).then(data => {
-        $('#div-modal-spinner').hide();
-        if(data == "Success"){
-            $("#modal-status-alert-title").html("Glue FS Subvolume Group 생성 완료");
-            $("#modal-status-alert-body").html("Glue FS Subvolume Group 생성을 완료하였습니다.");
+        var body_val = "vol_name="+vol_name+"&group_name="+group_name+"&size="+size+"&data_pool_name="+data_pool_name+"&mode="+mode
+        
+        $('#div-modal-create-gluefs-subvolume-group').hide();
+        $('#div-modal-spinner-header-txt').text('Glue FS Subvolume Group을 생성하고 있습니다.');
+        $('#div-modal-spinner').show();
+    
+        $("#modal-status-alert-title").html("Glue FS Subvolume Group 생성 실패");
+        $("#modal-status-alert-body").html("Glue FS Subvolume Group 생성을 실패하였습니다.");
+    
+        fetch('https://10.10.5.11:8080/api/v1/gluefs/subvolume/group',{
+            method: 'POST',
+            headers: {
+                'accept': 'application/json',
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: body_val
+        }).then(res => res.json()).then(data => {
+            $('#div-modal-spinner').hide();
+            if(data == "Success"){
+                $("#modal-status-alert-title").html("Glue FS Subvolume Group 생성 완료");
+                $("#modal-status-alert-body").html("Glue FS Subvolume Group 생성을 완료하였습니다.");
+                $('#div-modal-status-alert').show();
+                gluefsSubvolumeGroupList(vol_name, data_pool_name);
+                createLoggerInfo("gluefs subvolume group create success");
+            }else{
+                $('#div-modal-status-alert').show();
+            }
+        }).catch(function(data){
+            $('#div-modal-spinner').hide();
             $('#div-modal-status-alert').show();
-            gluefsSubvolumeGroupList(vol_name, data_pool_name);
-            createLoggerInfo("gluefs subvolume group create success");
-        }else{
-            $('#div-modal-status-alert').show();
-        }
-    }).catch(function(data){
-        $('#div-modal-spinner').hide();
-        $('#div-modal-status-alert').show();
-        createLoggerInfo("gluefs subvolume group create error : "+ data);
-        console.log('button-execution-modal-create-gluefs-subvolume-group : '+data);
-    });
+            createLoggerInfo("gluefs subvolume group create error : "+ data);
+            console.log('button-execution-modal-create-gluefs-subvolume-group : '+data);
+        });
+    }
 });
 /** glue fs subvolume group create 관련 action end */
 
@@ -329,44 +334,46 @@ $('#button-cancel-modal-update-gluefs-subvolume-group').on('click', function(){
 });
 
 $('#button-execution-modal-update-gluefs-subvolume-group').on('click', function(){
-    var vol_name = $('#gluefs-select-id').val();
-    var data_pool_name = $('#gluefs-select-data-pool').val();
-    var group_name= $('#form-input-update-glue-fs-subvolume-group-name').val();
-    var new_size = $('#form-input-update-glue-fs-subvolume-group-size').val();
-
-    var body_val = "vol_name="+vol_name+"&group_name="+group_name+"&new_size="+new_size
+    if(gluefsSubvolumueGroupUpdateValidateCheck()){
+        var vol_name = $('#gluefs-select-id').val();
+        var data_pool_name = $('#gluefs-select-data-pool').val();
+        var group_name= $('#form-input-update-glue-fs-subvolume-group-name').val();
+        var new_size = $('#form-input-update-glue-fs-subvolume-group-size').val();
     
-    $('#div-modal-update-gluefs-subvolume-group').hide();
-    $('#div-modal-spinner-header-txt').text('Glue FS Subvolume Group을 생성하고 있습니다.');
-    $('#div-modal-spinner').show();
-
-    $("#modal-status-alert-title").html("Glue FS Subvolume Group 생성 실패");
-    $("#modal-status-alert-body").html("Glue FS Subvolume Group 생성을 실패하였습니다.");
-
-    fetch('https://10.10.5.11:8080/api/v1/gluefs/subvolume/group',{
-        method: 'PUT',
-        headers: {
-            'accept': 'application/json',
-            'Content-Type': 'application/x-www-form-urlencoded'
-        },
-        body: body_val
-    }).then(res => res.json()).then(data => {
-        $('#div-modal-spinner').hide();
-        if(data == "Success"){
-            $("#modal-status-alert-title").html("Glue FS Subvolume Group 생성 완료");
-            $("#modal-status-alert-body").html("Glue FS Subvolume Group 생성을 완료하였습니다.");
+        var body_val = "vol_name="+vol_name+"&group_name="+group_name+"&new_size="+new_size
+        
+        $('#div-modal-update-gluefs-subvolume-group').hide();
+        $('#div-modal-spinner-header-txt').text('Glue FS Subvolume Group을 생성하고 있습니다.');
+        $('#div-modal-spinner').show();
+    
+        $("#modal-status-alert-title").html("Glue FS Subvolume Group 생성 실패");
+        $("#modal-status-alert-body").html("Glue FS Subvolume Group 생성을 실패하였습니다.");
+    
+        fetch('https://10.10.5.11:8080/api/v1/gluefs/subvolume/group',{
+            method: 'PUT',
+            headers: {
+                'accept': 'application/json',
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: body_val
+        }).then(res => res.json()).then(data => {
+            $('#div-modal-spinner').hide();
+            if(data == "Success"){
+                $("#modal-status-alert-title").html("Glue FS Subvolume Group 생성 완료");
+                $("#modal-status-alert-body").html("Glue FS Subvolume Group 생성을 완료하였습니다.");
+                $('#div-modal-status-alert').show();
+                gluefsSubvolumeGroupList(vol_name, data_pool_name);
+                createLoggerInfo("gluefs subvolume group update success");
+            }else{
+                $('#div-modal-status-alert').show();
+            }
+        }).catch(function(data){
+            $('#div-modal-spinner').hide();
             $('#div-modal-status-alert').show();
-            gluefsSubvolumeGroupList(vol_name, data_pool_name);
-            createLoggerInfo("gluefs subvolume group update success");
-        }else{
-            $('#div-modal-status-alert').show();
-        }
-    }).catch(function(data){
-        $('#div-modal-spinner').hide();
-        $('#div-modal-status-alert').show();
-        createLoggerInfo("gluefs subvolume group update error : "+ data);
-        console.log('button-execution-modal-update-gluefs-subvolume-group : '+data);
-    });
+            createLoggerInfo("gluefs subvolume group update error : "+ data);
+            console.log('button-execution-modal-update-gluefs-subvolume-group : '+data);
+        });
+    }
 });
 /** glue fs subvolume group update 관련 action end */
 /** glue fs subvolume group delete 관련 action start */
@@ -429,4 +436,72 @@ $('#button-execution-modal-remove-gluefs-subvolume-group').on('click', function(
 // glue fs 생성 입력값 초기화
 function gluefsCreateInitInputValue(){
     $('#form-input-glue-fs-name').val("");
+}
+
+// glue fs subvolume group 생성 입력값 초기화
+function gluefsSubvolumeGroupCreateInitInputValue(){
+    $('#form-input-glue-fs-subvolume-group-name').val("");
+    $('#form-input-glue-fs-subvolume-group-size').val("");
+}
+
+function gluefsValidateCheck(){
+    var validate_check = true;
+
+    var gluefs_id = $('#form-input-glue-fs-name').val();
+
+    if (gluefs_id == "") {
+        alert("GlueFS 이름를 입력해주세요.");
+        validate_check = false;
+    } else if (!nameCheck(gluefs_id)) {
+        alert("GlueFS 이름 생성 규칙은 영문, 숫자 특수문자 '.','-','_' 만 입력 가능하고 영문으로 시작해야 합니다.");
+        validate_check = false;
+    }
+ 
+    return validate_check;
+}
+
+function gluefsSubvolumueGroupCreateValidateCheck(){
+    var validate_check = true;
+
+    var group_name = $('#form-input-glue-fs-subvolume-group-name').val();
+    var size = $('#form-input-glue-fs-subvolume-group-size').val();
+    
+    if (group_name == "") {
+        alert("Group 이름을 입력해주세요.");
+        validate_check = false;
+    } else if (!pathNameCheck(group_name)) {
+        alert("Group 이름 생성 규칙은 영문, 숫자 특수문자 '.','-','_' 만 입력 가능합니다.");
+        validate_check = false;
+    } else if (size == "") {
+        alert("용량을 입력해주세요.");
+        validate_check = false;
+    } else if (!numberCheck(size)) {
+        alert("숫자만 입력해주세요.");
+        validate_check = false;
+    }
+ 
+    return validate_check;
+}
+
+function gluefsSubvolumueGroupUpdateValidateCheck(){
+    var validate_check = true;
+
+    var group_name= $('#form-input-update-glue-fs-subvolume-group-name').val();
+    var size = $('#form-input-update-glue-fs-subvolume-group-size').val();
+    
+    if (group_name == "") {
+        alert("Group 이름을 입력해주세요.");
+        validate_check = false;
+    } else if (!pathNameCheck(group_name)) {
+        alert("Group 이름 생성 규칙은 영문, 숫자 특수문자 '.','-','_' 만 입력 가능합니다.");
+        validate_check = false;
+    } else if (size == "") {
+        alert("용량을 입력해주세요.");
+        validate_check = false;
+    } else if (!numberCheck(size)) {
+        alert("용량에 숫자만 입력해주세요.");
+        validate_check = false;
+    }
+ 
+    return validate_check;
 }

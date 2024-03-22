@@ -100,54 +100,56 @@ $('#button-cancel-modal-create-nfs-cluster').on('click', function(){
 });
 
 $('#button-execution-modal-create-nfs-cluster').on('click', function(){
-    var body_val = "";
-    var nfs_cluster_id = $('#form-input-nfs-cluster-id').val();
-    var cnt=0
-    $('input[type=checkbox][name="glue-hosts-list"]').each(function() {
-        if(this.checked){
-            if(cnt==0){
-                body_val = "hostname="+this.value
-            }else{
-                body_val += "&hostname="+this.value
+    if(nfsServiceCreateValidateCheck()){
+        var body_val = "";
+        var nfs_cluster_id = $('#form-input-nfs-cluster-id').val();
+        var cnt=0
+        $('input[type=checkbox][name="glue-hosts-list"]').each(function() {
+            if(this.checked){
+                if(cnt==0){
+                    body_val = "hostname="+this.value
+                }else{
+                    body_val += "&hostname="+this.value
+                }
+                cnt++
             }
-            cnt++
-        }
-    });
-
-    var nfs_cluster_port = $('#form-input-nfs-cluster-port').val();
+        });
     
-    $('#div-modal-create-nfs-cluster').hide();
-    $('#div-modal-spinner-header-txt').text('NFS Cluster를 생성하고 있습니다.');
-    $('#div-modal-spinner').show();
-
-    $("#modal-status-alert-title").html("NFS Cluster 생성 실패");
-    $("#modal-status-alert-body").html("NFS Cluster 생성을 실패하였습니다.");
-
-    fetch('https://10.10.5.11:8080/api/v1/nfs/'+nfs_cluster_id+'/'+nfs_cluster_port,{
-        method: 'POST',
-        headers: {
-            'accept': 'application/json',
-            'Content-Type': 'application/x-www-form-urlencoded'
-        },
-        body: body_val
-    }).then(res => res.json()).then(data => {
-        $('#div-modal-spinner').hide();
-        if(data == "Success"){
-            $("#modal-status-alert-title").html("NFS Cluster 생성 완료");
-            $("#modal-status-alert-body").html("NFS Cluster 생성을 완료하였습니다.");
+        var nfs_cluster_port = $('#form-input-nfs-cluster-port').val();
+        
+        $('#div-modal-create-nfs-cluster').hide();
+        $('#div-modal-spinner-header-txt').text('NFS Cluster를 생성하고 있습니다.');
+        $('#div-modal-spinner').show();
+    
+        $("#modal-status-alert-title").html("NFS Cluster 생성 실패");
+        $("#modal-status-alert-body").html("NFS Cluster 생성을 실패하였습니다.");
+    
+        fetch('https://10.10.5.11:8080/api/v1/nfs/'+nfs_cluster_id+'/'+nfs_cluster_port,{
+            method: 'POST',
+            headers: {
+                'accept': 'application/json',
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: body_val
+        }).then(res => res.json()).then(data => {
+            $('#div-modal-spinner').hide();
+            if(data == "Success"){
+                $("#modal-status-alert-title").html("NFS Cluster 생성 완료");
+                $("#modal-status-alert-body").html("NFS Cluster 생성을 완료하였습니다.");
+                $('#div-modal-status-alert').show();
+                nfsClusterList();
+                nfsExportList();
+                createLoggerInfo("nfs cluster create success");
+            }else{
+                $('#div-modal-status-alert').show();
+            }
+        }).catch(function(data){
+            $('#div-modal-spinner').hide();
             $('#div-modal-status-alert').show();
-            nfsClusterList();
-            nfsExportList();
-            createLoggerInfo("nfs cluster create success");
-        }else{
-            $('#div-modal-status-alert').show();
-        }
-    }).catch(function(data){
-        $('#div-modal-spinner').hide();
-        $('#div-modal-status-alert').show();
-        createLoggerInfo("nfs cluster create error : "+ data);
-        console.log('button-execution-modal-create-nfs-cluster : '+data);
-    });
+            createLoggerInfo("nfs cluster create error : "+ data);
+            console.log('button-execution-modal-create-nfs-cluster : '+data);
+        });
+    }
 });
 /** nfs cluster create 관련 action end */
 
@@ -213,9 +215,11 @@ function nfsExportList(){
     }).then(res => res.json()).then(data => {
         if(data.length != 0){
             $('#nfs-export-list tr').remove();
+            console.log(1111)
+                console.log(data)
             for(var i=0; i < data.length; i++){
                 let insert_tr = "";
-
+                
                 insert_tr += '<tr role="row">'
                 insert_tr += '    <td role="cell" data-label="내보내기 경로" id="nfs-export-name">'+data[i].pseudo+'</td>';
                 insert_tr += '    <td role="cell" data-label="클러스터 명" id="nfs-export-name">'+data[i].cluster_id+'</td>';
@@ -231,7 +235,7 @@ function nfsExportList(){
                 insert_tr += '            </button>';
                 insert_tr += '            <ul class="pf-c-dropdown__menu pf-m-align-right" aria-labelledby="card-action-nfs-export'+i+'" id="dropdown-menu-card-action-nfs-export'+i+'">';
                 insert_tr += '                <li>';
-                insert_tr += '                    <button class="pf-c-dropdown__menu-item pf-m-enabled" type="button" id="menu-item-nfs-export-edit" onclick=\'nfsExportEdit("'+data[i].cluster_id+'","'+data[i].pseudo+'")\' >NFS Export 수정</button>';
+                insert_tr += '                    <button class="pf-c-dropdown__menu-item pf-m-enabled" type="button" id="menu-item-nfs-export-edit" onclick=\'nfsExportEdit("'+data[i].cluster_id+'","'+data[i].export_id+'")\' >NFS Export 수정</button>';
                 insert_tr += '                </li>';
                 insert_tr += '                <li>';
                 insert_tr += '                    <button class="pf-c-dropdown__menu-item pf-m-enabled" type="button" id="menu-item-nfs-export-remove" onclick=\'nfsExportDelete("'+data[i].export_id+'","'+data[i].pseudo+'","'+data[i].cluster_id+'")\' >NFS Export 삭제</button>';
@@ -336,54 +340,56 @@ $('#button-cancel-modal-create-nfs-export').on('click', function(){
 });
 
 $('#button-execution-modal-create-nfs-export').on('click', function(){
-    var pseudo = $('#form-input-nfs-export-pseudo').val();
-    var nfs_cluster_id = $('#form-select-nfs-cluster-name option:selected').val();
-    var fs_name = $('#form-select-nfs-export-gluefs-name option:selected').val();
-    var path = $('#form-select-nfs-export-gluefs-path option:selected').val();
-    var access_type = $('#form-select-nfs-export-access-type').val();
-    var squash = $('#form-select-nfs-export-squash-type').val();
-    var storage_name = $('#form-select-storage-type').val();
-    var transports = "TCP"
-
-    var body_val = "access_type="+access_type+"&fs_name="+fs_name+"&path="+path+"&pseudo="+pseudo+"&squash="+squash+"&storage_name="+storage_name+"&transports="+transports
-
-    $('#div-modal-create-nfs-export').hide();
-    $('#div-modal-spinner-header-txt').text('NFS Export를 생성하고 있습니다.');
-    $('#div-modal-spinner').show();
-
-    $("#modal-status-alert-title").html("NFS Export 생성 실패");
-    $("#modal-status-alert-body").html("NFS Export 생성을 실패하였습니다.");
-
-    fetch('https://10.10.5.11:8080/api/v1/nfs/export/'+nfs_cluster_id,{
-        method: 'POST',
-        headers: {
-            'accept': 'application/json',
-            'Content-Type': 'application/x-www-form-urlencoded'
-        },
-        body: body_val
-    }).then(res => res.json()).then(data => {
-        $('#div-modal-spinner').hide();
-        if(data == "Success"){
-            $("#modal-status-alert-title").html("NFS Export 생성 완료");
-            $("#modal-status-alert-body").html("NFS Export 생성을 완료하였습니다.");
+    if(nfsExportCreateValidateCheck()){
+        var pseudo = $('#form-input-nfs-export-pseudo').val();
+        var nfs_cluster_id = $('#form-select-nfs-cluster-name option:selected').val();
+        var fs_name = $('#form-select-nfs-export-gluefs-name option:selected').val();
+        var path = $('#form-select-nfs-export-gluefs-path option:selected').val();
+        var access_type = $('#form-select-nfs-export-access-type').val();
+        var squash = $('#form-select-nfs-export-squash-type').val();
+        var storage_name = $('#form-select-storage-type').val();
+        var transports = "TCP"
+    
+        var body_val = "access_type="+access_type+"&fs_name="+fs_name+"&path="+path+"&pseudo="+pseudo+"&squash="+squash+"&storage_name="+storage_name+"&transports="+transports
+    
+        $('#div-modal-create-nfs-export').hide();
+        $('#div-modal-spinner-header-txt').text('NFS Export를 생성하고 있습니다.');
+        $('#div-modal-spinner').show();
+    
+        $("#modal-status-alert-title").html("NFS Export 생성 실패");
+        $("#modal-status-alert-body").html("NFS Export 생성을 실패하였습니다.");
+    
+        fetch('https://10.10.5.11:8080/api/v1/nfs/export/'+nfs_cluster_id,{
+            method: 'POST',
+            headers: {
+                'accept': 'application/json',
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: body_val
+        }).then(res => res.json()).then(data => {
+            $('#div-modal-spinner').hide();
+            if(data == "Success"){
+                $("#modal-status-alert-title").html("NFS Export 생성 완료");
+                $("#modal-status-alert-body").html("NFS Export 생성을 완료하였습니다.");
+                $('#div-modal-status-alert').show();
+                nfsClusterList();
+                nfsExportList();
+                createLoggerInfo("nfs export create success");
+            }else{
+                $('#div-modal-status-alert').show();
+            }
+        }).catch(function(data){
+            $('#div-modal-spinner').hide();
             $('#div-modal-status-alert').show();
-            nfsClusterList();
-            nfsExportList();
-            createLoggerInfo("nfs export create success");
-        }else{
-            $('#div-modal-status-alert').show();
-        }
-    }).catch(function(data){
-        $('#div-modal-spinner').hide();
-        $('#div-modal-status-alert').show();
-        createLoggerInfo("nfs export create error : "+ data);
-        console.log('button-execution-modal-create-nfs-export : '+data);
-    });
+            createLoggerInfo("nfs export create error : "+ data);
+            console.log('button-execution-modal-create-nfs-export : '+data);
+        });
+    }
 });
 /** nfs export create 관련 action end */
 
 /** nfs export update 관련 action start */
-function nfsExportEdit(cluster_id, pseudo){
+function nfsExportEdit(cluster_id, export_id){
     fetch('https://10.10.5.11:8080/api/v1/nfs/export?cluster_id='+cluster_id,{
         method: 'GET',
         headers: {
@@ -393,7 +399,8 @@ function nfsExportEdit(cluster_id, pseudo){
     }).then(res => res.json()).then(data => {
         if(data.length != 0){
             for(var i=0; i < data.length; i++){
-                if(data[i].pseudo == pseudo){
+                if(data[i].export_id == export_id){
+                    $('#form-input-update-nfs-export-id').val(data[i].export_id);
                     $('#form-input-update-nfs-export-pseudo').val(data[i].pseudo);
                     $('#form-select-update-nfs-cluster-name option:selected').val();
                     $('#form-select-update-nfs-export-gluefs-name option:selected').val(data[i].fsal.fs_name);
@@ -424,6 +431,7 @@ $('#button-cancel-modal-update-nfs-export').on('click', function(){
 });
 
 $('#button-execution-modal-update-nfs-export').on('click', function(){
+    var export_id = $('#form-input-update-nfs-export-id').val();
     var pseudo = $('#form-input-update-nfs-export-pseudo').val();
     var nfs_cluster_id = $('#form-select-update-nfs-cluster-name option:selected').val();
     var fs_name = $('#form-select-update-nfs-export-gluefs-name option:selected').val();
@@ -433,7 +441,7 @@ $('#button-execution-modal-update-nfs-export').on('click', function(){
     var storage_name = $('#form-select-update-storage-type').val();
     var transports = "TCP"
 
-    var body_val = "access_type="+access_type+"&fs_name="+fs_name+"&path="+path+"&pseudo="+pseudo+"&squash="+squash+"&storage_name="+storage_name+"&transports="+transports
+    var body_val = "export_id="+export_id+"&access_type="+access_type+"&fs_name="+fs_name+"&path="+path+"&pseudo="+pseudo+"&squash="+squash+"&storage_name="+storage_name+"&transports="+transports
     
     $('#div-modal-update-nfs-export').hide();
     $('#div-modal-spinner-header-txt').text('NFS Export를 수정하고 있습니다.');
@@ -509,4 +517,62 @@ function nfsExportUpdateInitInputValue(){
     
     $('#form-select-update-nfs-export-access-type').val("RW");
     $('#form-select-update-nfs-export-squash-type').val("no_root_squash");
+}
+
+function nfsServiceCreateValidateCheck(){
+    var validate_check = true;
+
+    var nfs_cluster_id = $('#form-input-nfs-cluster-id').val();
+    var host_cnt = $('input[type=checkbox][name="glue-hosts-list"]:checked').length
+    var nfs_cluster_port = $('#form-input-nfs-cluster-port').val();
+
+    if (nfs_cluster_id == "") {
+        alert("NFS 클러스터 이름를 입력해주세요.");
+        validate_check = false;
+    } else if (!nameCheck(nfs_cluster_id)) {
+        alert("NFS 클러스터 이름 생성 규칙은 영문, 숫자 특수문자 '.','-','_' 만 입력 가능하고 영문으로 시작해야 합니다.");
+        validate_check = false;
+    } else if (host_cnt == 0) {
+        alert("배치 호스트를 선택해주세요.");
+        validate_check = false;
+    } else if (nfs_cluster_port == "") {
+        alert("포트 번호을 입력해주세요.");
+        validate_check = false;
+    } else if (!numberCheck(nfs_cluster_port)) {
+        alert("포트 번호는 숫자만 입력해주세요.");
+        validate_check = false;
+    } else if (nfs_cluster_port < 0 || nfs_cluster_port > 65535) {
+        alert("포트 번호는 0부터 65535까지 입력 가능합니다.");
+        validate_check = false;
+    }
+ 
+    return validate_check;
+}
+
+function nfsExportCreateValidateCheck(){
+    var validate_check = true;
+
+    var pseudo = $('#form-input-nfs-export-pseudo').val();
+    var nfs_cluster_id = $('#form-select-nfs-cluster-name option:selected').val();
+    var fs_name = $('#form-select-nfs-export-gluefs-name option:selected').val();
+    var path = $('#form-select-nfs-export-gluefs-path option:selected').val();
+    
+    if (pseudo == "") {
+        alert("내보내기 경로를 입력해주세요.");
+        validate_check = false;
+    } else if (!pseudoCheck(pseudo)) {
+        alert("내보내기 경로 생성 규칙은 '/'로 시작하고 영문, 숫자만 입력 가능합니다.");
+        validate_check = false;
+    } else if (nfs_cluster_id == "") {
+        alert("NFS 클러스터 이름을 선택해주세요.");
+        validate_check = false;
+    } else if (fs_name == "") {
+        alert("GlueFS 이름을 선택해주세요.");
+        validate_check = false;
+    } else if (path == undefined || path == "") {
+        alert("GlueFS 경로를 선택해주세요.");
+        validate_check = false;
+    }
+ 
+    return validate_check;
 }

@@ -1372,11 +1372,11 @@ $('#button-glue-hosts-list-setting, #button-ingress-glue-hosts-list-setting, #bu
 });
 
 // iscsi portal 리스트 기능
-$('#button-iscsi-portal-list-setting').on('click', function(e){
+$('#button-iscsi-portal-list-setting, #button-update-iscsi-portal-list-setting').on('click', function(e){
     $('#'+e.target.parentElement.children[2].id).toggle();
 });
 
-$('#button-iscsi-image-list-setting').on('click', function(e){
+$('#button-iscsi-image-list-setting, #button-update-iscsi-image-list-setting').on('click', function(e){
     $('#'+e.target.parentElement.children[2].id).toggle();
 });
 
@@ -1650,6 +1650,8 @@ function setGlueFsVolumeGroupSelectBox(gluefs_name, path_select_box_id, selected
                     }
                 }
             }
+        } else {
+            el += '<option value="/">/</option>';
         }
         $('#'+path_select_box_id).append(el);
         createLoggerInfo("setGlueFsVolumeGroupSelectBox success");
@@ -1717,8 +1719,8 @@ function setNfsClusterNameSelectBox(select_box_id){
     });
 }
 
-function setPoolSelectBox(select_box_id){
-    fetch('https://10.10.5.11:8080/api/v1/pool?pool_name=rbd',{
+function setPoolSelectBox(select_box_id, selected_pool_id){
+    fetch('https://10.10.5.11:8080/api/v1/pool?pool_type=rbd',{
         method: 'GET',
         headers: {
             'accept': 'application/json',
@@ -1729,9 +1731,15 @@ function setPoolSelectBox(select_box_id){
         var el ='';
         el += '<option value="" selected>선택하십시오.</option>';
 
-        if(data.length != 0){
-            for(var i=0; i < data.length; i++){
+        for(var i=0; i < data.length; i++){
+            if(selected_pool_id == null){
+                el += '<option value="'+data[i]+'">'+data[i]+'</option>';
+            } else {
+                if(selected_pool_id != data[i]){
                     el += '<option value="'+data[i]+'">'+data[i]+'</option>';
+                }else{
+                    el += '<option value="'+data[i]+'" selected>'+data[i]+'</option>';
+                }
             }
         }
 
@@ -1742,188 +1750,187 @@ function setPoolSelectBox(select_box_id){
     });
 }
 
-function setIscsiPortalCheckbox(div_id, form_input_id, selectHosts){
-    // 선택된 포탈이 없으면 새창으로 세팅 
-    if(selectHosts==null){
-        //호스트 리스트 불러와서
-        fetch('https://10.10.5.11:8080/api/v1/glue/hosts',{
-            method: 'GET'
-        }).then(res => res.json()).then(data => {
-            $('#'+div_id+' fieldset').remove();
-            let insert_tr = "";
-            insert_tr += '<fieldset class="pf-c-select__menu-fieldset" aria-label="Select input">';
-            for(var i=0; i < data.length; i++){
-                insert_tr += '    <label class="pf-c-check pf-c-select__menu-item">';
-                insert_tr += '        <input class="pf-c-check__input" type="checkbox" id="iscsi-portal-list-"'+i+'" name="iscsi-portal-list" value="'+data[i].hostname+':'+data[i].ip_address+'"/>';
-                insert_tr += '        <span class="pf-c-check__label">'+data[i].hostname+':'+data[i].ip_address+'</span>';
-                insert_tr += '    </label>';
-                insert_tr += '    <label class="pf-c-check pf-c-select__menu-item">';
-                insert_tr += '        <input class="pf-c-check__input" type="checkbox" id="iscsi-portal-list-"'+i+'" name="iscsi-portal-list" value="'+data[i].hostname+':'+data[i].addr+'"/>';
-                insert_tr += '        <span class="pf-c-check__label">'+data[i].hostname+':'+data[i].addr+'</span>';
-                insert_tr += '    </label>';
-            }
-            insert_tr += '</fieldset>';
-            $("#"+div_id).append(insert_tr);
-
-            if(form_input_id!=null){
-                // iscis portal 리스트 기능
-                $('input[name=iscsi-portal-list]').on('click', function(){
-                    var cnt = 0;
-                    var el = "";
-                    $('input[type=checkbox][name="iscsi-portal-list"]').each(function() {
-                        if(this.checked){
-                            if(cnt==0){
-                                el = this.value
-                            }else{
-                                el += ", "+this.value
-                            }
-                            cnt++
-                        }
-                    });
-                    $('#'+form_input_id).val(el);
-                });
-            }
-        }).catch(function(data){
-            createLoggerInfo("iscis portal cleckbox 세팅 에러 : "+data);
-            console.log("iscis portal cleckbox 세팅 에러 : "+data);
-        });
-    }else{
-
-    }
-}
-
-function setIscsiPortalCheckbox(div_id, form_input_id, selectHosts){
-    // 선택된 포탈이 없으면 새창으로 세팅 
-    if(selectHosts==null){
-        //호스트 리스트 불러와서
-        fetch('https://10.10.5.11:8080/api/v1/glue/hosts',{
-            method: 'GET'
-        }).then(res => res.json()).then(data => {
-            $('#'+div_id+' fieldset').remove();
-            let insert_tr = "";
-            insert_tr += '<fieldset class="pf-c-select__menu-fieldset" aria-label="Select input">';
-            for(var i=0; i < data.length; i++){
-                insert_tr += '    <label class="pf-c-check pf-c-select__menu-item">';
-                insert_tr += '        <input class="pf-c-check__input" type="checkbox" id="iscsi-portal-list-"'+i+'" name="iscsi-portal-list" value="'+data[i].hostname+':'+data[i].ip_address+'"/>';
-                insert_tr += '        <span class="pf-c-check__label">'+data[i].hostname+':'+data[i].ip_address+'</span>';
-                insert_tr += '    </label>';
-                insert_tr += '    <label class="pf-c-check pf-c-select__menu-item">';
-                insert_tr += '        <input class="pf-c-check__input" type="checkbox" id="iscsi-portal-list-"'+i+'" name="iscsi-portal-list" value="'+data[i].hostname+':'+data[i].addr+'"/>';
-                insert_tr += '        <span class="pf-c-check__label">'+data[i].hostname+':'+data[i].addr+'</span>';
-                insert_tr += '    </label>';
-            }
-            insert_tr += '</fieldset>';
-            $("#"+div_id).append(insert_tr);
-
-            if(form_input_id!=null){
-                // iscis portal 리스트 기능
-                $('input[name=iscsi-portal-list]').on('click', function(){
-                    var cnt = 0;
-                    var el = "";
-                    $('input[type=checkbox][name="iscsi-portal-list"]').each(function() {
-                        if(this.checked){
-                            if(cnt==0){
-                                el = this.value
-                            }else{
-                                el += ", "+this.value
-                            }
-                            cnt++
-                        }
-                    });
-                    $('#'+form_input_id).val(el);
-                });
-            }
-        }).catch(function(data){
-            createLoggerInfo("iscis portal cleckbox 세팅 에러 : "+data);
-            console.log("iscis portal cleckbox 세팅 에러 : "+data);
-        });
-    }else{
-
-    }
-}
-
-function setImageSelectBox2(rbd_pool_name, path_select_box_id){
-    if(rbd_pool_name == ""){
-        $('#'+path_select_box_id).empty();
-        var el ='';
-        el += '<option value="" selected>선택하십시오.</option>';
-        $('#'+path_select_box_id).append(el);
-        return
-    }
-    fetch('https://10.10.5.11:8080/api/v1/image?pool_name='+rbd_pool_name,{
-        method: 'GET',
-        headers: {
-            'accept': 'application/json',
-            'Content-Type': 'application/x-www-form-urlencoded'
-        }
+function setIscsiPortalCheckbox(div_id, form_input_id, portals_json){
+    //호스트 리스트 불러와서
+    fetch('https://10.10.5.11:8080/api/v1/glue/hosts',{
+        method: 'GET'
     }).then(res => res.json()).then(data => {
-        $('#'+path_select_box_id).empty();
-        var el ='';
-        el += '<option value="" selected>선택하십시오.</option>';
-        if(data.length != 0){
-            // 초기화
-            for(var i = 0 ; i < data.length ; i ++ ){
-                if(data[i].lock_type == undefined && data[i].protected == undefined && data[i].parent == undefined){
-                    el += '<option value="'+data[i].image+'">'+data[i].image+'</option>';
+        $('#'+div_id+' fieldset').remove();
+        let insert_tr = "";
+        insert_tr += '<fieldset class="pf-c-select__menu-fieldset" aria-label="Select input">';
+        if(portals_json==null){
+            for(var i=0; i < data.length; i++){
+                insert_tr += '    <label class="pf-c-check pf-c-select__menu-item">';
+                insert_tr += '        <input class="pf-c-check__input" type="checkbox" id="iscsi-portal-list-"'+i+'" name="iscsi-portal-list" value="'+data[i].hostname+':'+data[i].ip_address+'"/>';
+                insert_tr += '        <span class="pf-c-check__label">'+data[i].hostname+':'+data[i].ip_address+'</span>';
+                insert_tr += '    </label>';
+                insert_tr += '    <label class="pf-c-check pf-c-select__menu-item">';
+                insert_tr += '        <input class="pf-c-check__input" type="checkbox" id="iscsi-portal-list-"'+i+'" name="iscsi-portal-list" value="'+data[i].hostname+':'+data[i].addr+'"/>';
+                insert_tr += '        <span class="pf-c-check__label">'+data[i].hostname+':'+data[i].addr+'</span>';
+                insert_tr += '    </label>';
+            }
+        }else{
+            
+            for(var i=0; i < data.length; i++){
+                var ip_address_boolon = false;
+                var addr_boolon = false;
+
+                for(var j=0; j < portals_json.length; j++){
+                    if(portals_json[j].ip == data[i].ip_address){
+                        ip_address_boolon = true;
+                    }
+                    if(portals_json[j].ip == data[i].addr){
+                        addr_boolon = true;
+                    }
+                }
+                
+                if(!ip_address_boolon){
+                    insert_tr += '    <label class="pf-c-check pf-c-select__menu-item">';
+                    insert_tr += '        <input class="pf-c-check__input" type="checkbox" id="iscsi-portal-list-"'+i+'" name="iscsi-portal-list" value="'+data[i].hostname+':'+data[i].ip_address+'"/>';
+                    insert_tr += '        <span class="pf-c-check__label">'+data[i].hostname+':'+data[i].ip_address+'</span>';
+                    insert_tr += '    </label>';
+                }else{
+                    insert_tr += '    <label class="pf-c-check pf-c-select__menu-item">';
+                    insert_tr += '        <input class="pf-c-check__input" type="checkbox" id="iscsi-portal-list-"'+i+'" name="iscsi-portal-list" value="'+data[i].hostname+':'+data[i].ip_address+'" checked/>';
+                    insert_tr += '        <span class="pf-c-check__label">'+data[i].hostname+':'+data[i].ip_address+'</span>';
+                    insert_tr += '    </label>';
+                }
+
+                if(!addr_boolon){
+                    insert_tr += '    <label class="pf-c-check pf-c-select__menu-item">';
+                    insert_tr += '        <input class="pf-c-check__input" type="checkbox" id="iscsi-portal-list-"'+i+'" name="iscsi-portal-list" value="'+data[i].hostname+':'+data[i].addr+'"/>';
+                    insert_tr += '        <span class="pf-c-check__label">'+data[i].hostname+':'+data[i].addr+'</span>';
+                    insert_tr += '    </label>';
+                }else{
+                    insert_tr += '    <label class="pf-c-check pf-c-select__menu-item">';
+                    insert_tr += '        <input class="pf-c-check__input" type="checkbox" id="iscsi-portal-list-"'+i+'" name="iscsi-portal-list" value="'+data[i].hostname+':'+data[i].addr+'" checked/>';
+                    insert_tr += '        <span class="pf-c-check__label">'+data[i].hostname+':'+data[i].addr+'</span>';
+                    insert_tr += '    </label>';
                 }
             }
+
+            //form_input_id 세팅
+            var el = "";
+            for(var i=0; i < portals_json.length; i++){
+                if(i==0){
+                    el += portals_json[i].host+":"+portals_json[i].ip
+                }else{
+                    el += ", "+portals_json[i].host+":"+portals_json[i].ip
+                }
+                
+            }
+            $('#'+form_input_id).val(el);
         }
-        $('#'+path_select_box_id).append(el);
-        createLoggerInfo("setImageSelectBox success");
+
+        insert_tr += '</fieldset>';
+        $("#"+div_id).append(insert_tr);
+
+        if(form_input_id!=null){
+            // iscis portal 리스트 기능
+            $('input[name=iscsi-portal-list]').on('click', function(){
+                var cnt = 0;
+                var el = "";
+                $('input[type=checkbox][name="iscsi-portal-list"]').each(function() {
+                    if(this.checked){
+                        if(cnt==0){
+                            el = this.value
+                        }else{
+                            el += ", "+this.value
+                        }
+                        cnt++
+                    }
+                });
+                $('#'+form_input_id).val(el);
+            });
+        }
     }).catch(function(data){
-        console.log("setImageSelectBox error : "+data);
+        createLoggerInfo("iscis portal cleckbox 세팅 에러 : "+data);
+        console.log("iscis portal cleckbox 세팅 에러 : "+data);
     });
 }
 
+function setImageSelectBox(div_id, form_input_id, disks_json){
+    //호스트 리스트 불러와서
+    fetch('https://10.10.5.11:8080/api/v1/image',{
+        method: 'GET'
+    }).then(res => res.json()).then(data => {
+        $('#'+div_id+' fieldset').remove();
+        let insert_tr = "";
+        insert_tr += '<fieldset class="pf-c-select__menu-fieldset" aria-label="Select input">';
+        
+        if(data.length > 4){
+            div_id
+            $("#"+div_id).css('height', '200px'); 
+            $("#"+div_id).css('overflow', 'auto');
+        
+        }
 
-function setImageSelectBox(div_id, form_input_id, selectHosts){
-    // 선택된 포탈이 없으면 새창으로 세팅 
-    if(selectHosts==null){
-        //호스트 리스트 불러와서
-        fetch('https://10.10.5.11:8080/api/v1/image',{
-            method: 'GET'
-        }).then(res => res.json()).then(data => {
-            $('#'+div_id+' fieldset').remove();
-            let insert_tr = "";
-            insert_tr += '<fieldset class="pf-c-select__menu-fieldset" aria-label="Select input">';
-            
-            if(data.length > 4){
-                div_id
-                $("#"+div_id).css('height', '200px'); 
-                $("#"+div_id).css('overflow', 'auto');
-            }
+        if(disks_json==null){
             for(var i=0; i < data.length; i++){
                 insert_tr += '    <label class="pf-c-check pf-c-select__menu-item">';
                 insert_tr += '        <input class="pf-c-check__input" type="checkbox" id="iscsi-image-list-"'+i+'" name="iscsi-image-list" value="'+data[i]+'"/>';
                 insert_tr += '        <span class="pf-c-check__label">'+data[i]+'</span>';
                 insert_tr += '    </label>';
             }
-            insert_tr += '</fieldset>';
-            $("#"+div_id).append(insert_tr);
+        }else{
+            for(var i=0; i < data.length; i++){
+                var disk_boolon = false;
 
-            if(form_input_id!=null){
-                // iscis portal 리스트 기능
-                $('input[name=iscsi-image-list]').on('click', function(){
-                    var cnt = 0;
-                    var el = "";
-                    $('input[type=checkbox][name="iscsi-image-list"]').each(function() {
-                        if(this.checked){
-                            if(cnt==0){
-                                el = this.value
-                            }else{
-                                el += ", "+this.value
-                            }
-                            cnt++
-                        }
-                    });
-                    $('#'+form_input_id).val(el);
-                });
+                for(var j=0; j < disks_json.length; j++){
+                    var disk_split = data[i].split("/");
+                    if(disks_json[j].pool == disk_split[0] && disks_json[j].image == disk_split[1]){
+                        disk_boolon = true;
+                    }
+                }
+                
+                if(!disk_boolon){
+                    insert_tr += '    <label class="pf-c-check pf-c-select__menu-item">';
+                    insert_tr += '        <input class="pf-c-check__input" type="checkbox" id="iscsi-image-list-"'+i+'" name="iscsi-image-list" value="'+data[i]+'"/>';
+                    insert_tr += '        <span class="pf-c-check__label">'+data[i]+'</span>';
+                    insert_tr += '    </label>';
+                }else{
+                    insert_tr += '    <label class="pf-c-check pf-c-select__menu-item">';
+                    insert_tr += '        <input class="pf-c-check__input" type="checkbox" id="iscsi-image-list-"'+i+'" name="iscsi-image-list" value="'+data[i]+'" checked/>';
+                    insert_tr += '        <span class="pf-c-check__label">'+data[i]+'</span>';
+                    insert_tr += '    </label>';
+                }
             }
-        }).catch(function(data){
-            createLoggerInfo("iscis portal cleckbox 세팅 에러 : "+data);
-            console.log("iscis portal cleckbox 세팅 에러 : "+data);
-        });
-    }else{
+            //form_input_id 세팅
+            var el = "";
+            for(var i=0; i < disks_json.length; i++){
+                if(i==0){
+                    el += disks_json[i].pool+"/"+disks_json[i].image
+                }else{
+                    el += ", "+disks_json[i].pool+"/"+disks_json[i].image
+                }
+            }
+            $('#'+form_input_id).val(el);
+        }
+        
+        insert_tr += '</fieldset>';
+        $("#"+div_id).append(insert_tr);
 
-    }
+        if(form_input_id!=null){
+            // iscis portal 리스트 기능
+            $('input[name=iscsi-image-list]').on('click', function(){
+                var cnt = 0;
+                var el = "";
+                $('input[type=checkbox][name="iscsi-image-list"]').each(function() {
+                    if(this.checked){
+                        if(cnt==0){
+                            el = this.value
+                        }else{
+                            el += ", "+this.value
+                        }
+                        cnt++
+                    }
+                });
+                $('#'+form_input_id).val(el);
+            });
+        }
+    }).catch(function(data){
+        createLoggerInfo("iscis portal cleckbox 세팅 에러 : "+data);
+        console.log("iscis portal cleckbox 세팅 에러 : "+data);
+    });
+
 }

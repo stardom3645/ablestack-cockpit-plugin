@@ -2,7 +2,8 @@
     <main class="pf-c-page__main" tabindex="-1" id="main-content-card-glue-view">
         <!-- ui 영역 시작 -->
         
-        <section class="pf-c-page__main-section pf-m-light" style="height: 70px;">
+        <!-- <section class="pf-c-page__main-section pf-m-light" style="height: 70px;"> -->
+        <section class="pf-c-page__main-section pf-m-light">
             <!-- <div class="pf-c-alert__action-group pf-m-">
                 <button style="font-size: 0.83rem;" class="pf-c-button pf-m-secondary pf-m-inline" id="button-glue-api-server-connect" aria-disabled="false" type="button" data-ouia-safe="true" >GlueAPI 서버 연결</button>
                 <button style="font-size: 0.83rem;" class="pf-c-button pf-m-secondary pf-m-inline" id="button-storage-dashboard-connect" aria-disabled="false" type="button" data-ouia-safe="true" >스토리지센터 대시보드 연결</button>
@@ -11,6 +12,7 @@
             </div> -->
 
             <!-- <div class="pf-c-tabs pf-m-scrollable" id="overflow-beginning-of-list"> -->
+            <div class="pf-c-card__title"><h2 style="font-size: 25px;">ABLESTACK Glue 스토리지 서비스</h2></div>
             <div class="pf-c-tabs">
                 <button class="pf-c-tabs__scroll-button" type="button" disabled aria-label="Scroll left">
                     <i class="fas fa-angle-left" aria-hidden="true"></i>
@@ -1486,7 +1488,7 @@
         </div>
     </div>
 </div>
-<!-- nfs cluster 생성 : Modal 영역 끝 -->
+<!-- nfs export 생성 : Modal 영역 끝 -->
 
 <!-- nfs export 수정 : Modal 영역 시작 -->
 <div id="div-modal-update-nfs-export" class="pf-c-backdrop" style="display:none">
@@ -1517,7 +1519,7 @@
                             </label>
                         </div>
                         <div class="pf-c-dropdown">
-                            <select class="pf-c-form-control" style="width:50%" id="form-select-update-nfs-cluster-name" name="form-select-update-nfs-cluster-name" disabled>
+                            <select class="pf-c-form-control" style="width:50%" id="form-select-update-nfs-cluster-name" name="form-select-update-nfs-cluster-name">
                                 <option value="" selected>선택하십시오.</option>
                             </select>
                         </div>
@@ -1598,10 +1600,11 @@
                 <button id="button-execution-modal-update-nfs-export" aria-disabled="false" class="pf-c-button pf-m-primary" type="button" data-ouia-safe="true">실행</button>
                 <button id="button-cancel-modal-update-nfs-export" aria-disabled="false" class="pf-c-button pf-m-link" type="button" data-ouia-safe="true">취소</button>
             </footer>
+            <input type="text" id="form-input-update-nfs-export-id" name="form-input-update-nfs-export-id" value="" style="display:none" disabled/>
         </div>
     </div>
 </div>
-<!-- nfs cluster 생성 : Modal 영역 끝 -->
+<!-- nfs cluster 수정 : Modal 영역 끝 -->
 
 <!-- nfs export 삭제 : Modal 영역 시작 -->
 <div id="div-modal-remove-nfs-export" class="pf-c-backdrop" style="display:none">
@@ -2059,6 +2062,87 @@
     </div>
 </div>
 <!-- iscsi target 생성 : Modal 영역 끝 -->
+<!-- iscsi target 수정 : Modal 영역 시작 -->
+<div id="div-modal-update-iscsi-target" class="pf-c-backdrop" style="display:none">
+    <div class="pf-l-bullseye">
+        <div class="pf-c-modal-box pf-m-sm" role="dialog" aria-modal="true" aria-label="Update iSCSI Target">
+            <button id="button-close-modal-update-iscsi-target" aria-disabled="false" aria-label="Close" class="pf-c-button pf-m-plain" type="button">
+                <i class="fas fa-times" aria-hidden="true"></i>
+            </button>
+            <header class="pf-c-modal-box__header"><h1 class="pf-c-modal-box__title"><span class="pf-c-modal-box__title-text">iSCSI Target 수정</span></h1></header>
+            <form novalidate class="pf-c-form pf-m-horizontal" style="margin-left:15px;margin-top:10px">
+                <section class="pf-c-form__section">
+                    <div class="pf-c-form__group">
+                        <div class="pf-c-form__group-label" style="margin-left: 20px;">
+                            <label class="pf-c-form__label" for="form-input-update-iqn-id" style="margin-left: 10px;width: 120px;">
+                                <span class="pf-c-form__label-text">IQN</span>
+                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                            </label>
+                        </div>
+                        <div class="pf-c-form__group-control">
+                            <input class="pf-c-form-control" style="width:80%" type="text" id="form-input-update-iqn-id" name="form-input-update-iqn-id"/>
+                        </div>
+                    </div>
+                    <div class="pf-c-form__group">
+                        <div class="pf-c-form__group-label" style="margin-left: 20px;">
+                            <label class="pf-c-form__label" for="button-update-iscsi-portal-list-setting" style="margin-left: 10px;width: 120px;">
+                                <span class="pf-c-form__label-text">포탈</span>
+                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                            </label>
+                        </div>
+                        <div class="pf-c-form__group-control">
+                            <div class="pf-c-select pf-m-expanded">
+                                <input class="pf-c-form-control" type="text" style="width:60%" id="form-input-update-iscsi-portal" name="form-input-update-iscsi-portal" disabled/>
+                                <button class="pf-c-select__toggle" type="button" style="width: 60%;" id="button-update-iscsi-portal-list-setting" aria-haspopup="true" aria-expanded="true" aria-labelledby="select-checkbox-expanded-toggle">
+                                    <div class="pf-c-select__toggle-wrapper">
+                                        <span class="pf-c-select__toggle-text">선택하십시오.</span>
+                                    </div>
+                                    <span class="pf-c-select__toggle-arrow">
+                                        <i class="fas fa-times" aria-hidden="true"></i>
+                                        <i class="fas fa-caret-down" aria-hidden="true"></i>
+                                    </span>
+                                </button>
+                                <!-- <div class="pf-c-select__menu" style="min-width: 60%;height: 250px;overflow: auto;"> -->
+                                <div class="pf-c-select__menu" style="min-width: 60%;display: none;" id="div-update-iscsi-portal-list">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pf-c-form__group" id="div-target-image-name">
+                        <div class="pf-c-form__group-label" style="margin-left: 20px;">
+                            <label class="pf-c-form__label" for="button-update-iscsi-image-list-setting" style="margin-left: 10px;width: 120px;">
+                                <span class="pf-c-form__label-text">이미지</span>
+                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                            </label>
+                        </div>
+                        <div class="pf-c-form__group-control">
+                            <div class="pf-c-select pf-m-expanded">
+                                <input class="pf-c-form-control" type="text" style="width:60%" id="form-input-update-iscsi-image" name="form-input-update-iscsi-image" disabled/>
+                                <button class="pf-c-select__toggle" type="button" style="width: 60%;" id="button-update-iscsi-image-list-setting" aria-haspopup="true" aria-expanded="true" aria-labelledby="select-checkbox-expanded-toggle">
+                                    <div class="pf-c-select__toggle-wrapper">
+                                        <span class="pf-c-select__toggle-text">선택하십시오.</span>
+                                    </div>
+                                    <span class="pf-c-select__toggle-arrow">
+                                        <i class="fas fa-times" aria-hidden="true"></i>
+                                        <i class="fas fa-caret-down" aria-hidden="true"></i>
+                                    </span>
+                                </button>
+                                <!-- <div class="pf-c-select__menu" style="min-width: 60%;height: 250px;overflow: auto;"> -->
+                                <div class="pf-c-select__menu" style="min-width: 60%;display: none;" id="div-update-iscsi-image-list">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </form>
+            <footer class="pf-c-modal-box__footer">
+                <button id="button-execution-modal-update-iscsi-target" aria-disabled="false" class="pf-c-button pf-m-primary" type="button" data-ouia-safe="true">실행</button>
+                <button id="button-cancel-modal-update-iscsi-target" aria-disabled="false" class="pf-c-button pf-m-link" type="button" data-ouia-safe="true">취소</button>
+            </footer>
+        </div>
+    </div>
+</div>
+<!-- iscsi target 수정 : Modal 영역 끝 -->
 <!-- iscsi target 삭제 : Modal 영역 시작 -->
 <div id="div-modal-remove-iscsi-target" class="pf-c-backdrop" style="display:none">
     <div class="pf-l-bullseye">
@@ -2419,5 +2503,6 @@
 <script src="./src/features/glue/ingress.js"></script>
 <script src="./src/features/glue/iscsi.js"></script>
 <script src="./src/features/glue/smb.js"></script>
+<script src="./src/common/validation.js"></script>
 <script src="./src/common/logger.js"></script>
 <!-- 해당 페이지에 필요한 javascript 파일 추가 영역 끝 -->

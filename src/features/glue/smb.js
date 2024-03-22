@@ -113,47 +113,49 @@ $('#button-cancel-modal-create-smb-service').on('click', function(){
 });
 
 $('#button-execution-modal-create-smb-service').on('click', function(){
-    var hostname = $('#form-input-smb-hostname').val();
-    var folder_name = $('#form-input-smb-share-folder-name').val();
-    var path = $('#form-input-smb-actual-shared-path').val();
-    var username = $('#form-input-smb-user-name').val();
-    var password = $('#form-input-smb-user-password').val();
-    var fs_name = $('#form-select-smb-gluefs-name option:selected').val();
-    var volume_path = $('#form-select-smb-gluefs-path option:selected').val();
-
-    var body_val = "hostname="+hostname+"&folder_name="+folder_name+"&path="+path+"&username="+username+"&password="+password+"&fs_name="+fs_name+"&volume_path="+volume_path
+    if(smbServiceCreateValidateCheck()){
+        var hostname = $('#form-input-smb-hostname').val();
+        var folder_name = $('#form-input-smb-share-folder-name').val();
+        var path = $('#form-input-smb-actual-shared-path').val();
+        var username = $('#form-input-smb-user-name').val();
+        var password = $('#form-input-smb-user-password').val();
+        var fs_name = $('#form-select-smb-gluefs-name option:selected').val();
+        var volume_path = $('#form-select-smb-gluefs-path option:selected').val();
     
-    $('#div-modal-create-smb-service').hide();
-    $('#div-modal-spinner-header-txt').text('SMB Service를 생성하고 있습니다.');
-    $('#div-modal-spinner').show();
-
-    $("#modal-status-alert-title").html("SMB Service 생성 실패");
-    $("#modal-status-alert-body").html("SMB Service 생성을 실패하였습니다.");
-
-    fetch('https://10.10.5.11:8080/api/v1/smb',{
-        method: 'POST',
-        headers: {
-            'accept': 'application/json',
-            'Content-Type': 'application/x-www-form-urlencoded'
-        },
-        body: body_val
-    }).then(res => res.json()).then(data => {
-        $('#div-modal-spinner').hide();
-        if(data == "Success"){
-            $("#modal-status-alert-title").html("SMB Service 생성 완료");
-            $("#modal-status-alert-body").html("SMB Service 생성을 완료하였습니다.");
+        var body_val = "hostname="+hostname+"&folder_name="+folder_name+"&path="+path+"&username="+username+"&password="+password+"&fs_name="+fs_name+"&volume_path="+volume_path
+        
+        $('#div-modal-create-smb-service').hide();
+        $('#div-modal-spinner-header-txt').text('SMB Service를 생성하고 있습니다.');
+        $('#div-modal-spinner').show();
+    
+        $("#modal-status-alert-title").html("SMB Service 생성 실패");
+        $("#modal-status-alert-body").html("SMB Service 생성을 실패하였습니다.");
+    
+        fetch('https://10.10.5.11:8080/api/v1/smb',{
+            method: 'POST',
+            headers: {
+                'accept': 'application/json',
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: body_val
+        }).then(res => res.json()).then(data => {
+            $('#div-modal-spinner').hide();
+            if(data == "Success"){
+                $("#modal-status-alert-title").html("SMB Service 생성 완료");
+                $("#modal-status-alert-body").html("SMB Service 생성을 완료하였습니다.");
+                $('#div-modal-status-alert').show();
+                smbServiceList();
+                createLoggerInfo("SMB Service create success");
+            }else{
+                $('#div-modal-status-alert').show();
+            }
+        }).catch(function(data){
+            $('#div-modal-spinner').hide();
             $('#div-modal-status-alert').show();
-            smbServiceList();
-            createLoggerInfo("SMB Service create success");
-        }else{
-            $('#div-modal-status-alert').show();
-        }
-    }).catch(function(data){
-        $('#div-modal-spinner').hide();
-        $('#div-modal-status-alert').show();
-        createLoggerInfo("SMB Service create error : "+ data);
-        console.log('button-execution-modal-create-smb-service : '+data);
-    });
+            createLoggerInfo("SMB Service create error : "+ data);
+            console.log('button-execution-modal-create-smb-service : '+data);
+        });
+    }
 });
 /** SMB Service create 관련 action end */
 
@@ -260,44 +262,46 @@ $('#button-cancel-modal-create-smb-user').on('click', function(){
 });
 
 $('#button-execution-modal-create-smb-user').on('click', function(){
-    var hostname = $('#form-input-smb-create-user-hostname').val();
-    var username = $('#form-input-smb-create-user-name').val();
-    var password = $('#form-input-smb-create-user-password').val();
-
+    if(smbUserCreateValidateCheck()){
+        var hostname = $('#form-input-smb-create-user-hostname').val();
+        var username = $('#form-input-smb-create-user-name').val();
+        var password = $('#form-input-smb-create-user-password').val();
     
-    var body_val = "hostname="+hostname+"&username="+username+"&password="+password    
+        
+        var body_val = "hostname="+hostname+"&username="+username+"&password="+password    
+        
+        $('#div-modal-create-smb-user').hide();
+        $('#div-modal-spinner-header-txt').text('SMB User를 생성하고 있습니다.');
+        $('#div-modal-spinner').show();
     
-    $('#div-modal-create-smb-user').hide();
-    $('#div-modal-spinner-header-txt').text('SMB User를 생성하고 있습니다.');
-    $('#div-modal-spinner').show();
-
-    $("#modal-status-alert-title").html("SMB User 생성 실패");
-    $("#modal-status-alert-body").html("SMB User 생성을 실패하였습니다.");
-
-    fetch('https://10.10.5.11:8080/api/v1/smb/user',{
-        method: 'POST',
-        headers: {
-            'accept': 'application/json',
-            'Content-Type': 'application/x-www-form-urlencoded'
-        },
-        body: body_val
-    }).then(res => res.json()).then(data => {
-        $('#div-modal-spinner').hide();
-        if(data == "Success"){
-            $("#modal-status-alert-title").html("SMB User 생성 완료");
-            $("#modal-status-alert-body").html("SMB User 생성을 완료하였습니다.");
+        $("#modal-status-alert-title").html("SMB User 생성 실패");
+        $("#modal-status-alert-body").html("SMB User 생성을 실패하였습니다.");
+    
+        fetch('https://10.10.5.11:8080/api/v1/smb/user',{
+            method: 'POST',
+            headers: {
+                'accept': 'application/json',
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: body_val
+        }).then(res => res.json()).then(data => {
+            $('#div-modal-spinner').hide();
+            if(data == "Success"){
+                $("#modal-status-alert-title").html("SMB User 생성 완료");
+                $("#modal-status-alert-body").html("SMB User 생성을 완료하였습니다.");
+                $('#div-modal-status-alert').show();
+                smbServiceList();
+                createLoggerInfo("SMB User create success");
+            }else{
+                $('#div-modal-status-alert').show();
+            }
+        }).catch(function(data){
+            $('#div-modal-spinner').hide();
             $('#div-modal-status-alert').show();
-            smbServiceList();
-            createLoggerInfo("SMB User create success");
-        }else{
-            $('#div-modal-status-alert').show();
-        }
-    }).catch(function(data){
-        $('#div-modal-spinner').hide();
-        $('#div-modal-status-alert').show();
-        createLoggerInfo("SMB User create error : "+ data);
-        console.log('button-execution-modal-create-smb-user : '+data);
-    });
+            createLoggerInfo("SMB User create error : "+ data);
+            console.log('button-execution-modal-create-smb-user : '+data);
+        });
+    }
 });
 /** SMB User create 관련 action end */
 
@@ -323,42 +327,44 @@ $('#button-cancel-modal-update-smb-user').on('click', function(){
 });
 
 $('#button-execution-modal-update-smb-user').on('click', function(){
-    var hostname = $('#smb-update-user-hostname').val();
-    var username = $('select#form-select-update-smb-user option:checked').val();
-    var password = $('#form-input-update-smb-user-password').val();
-
-    var body_val = "hostname="+hostname+"&username="+username+"&password="+password
-
-    $('#div-modal-update-smb-user').hide();
-    $('#div-modal-spinner-header-txt').text('SMB User 비밀번호를 변경하고 있습니다.');
-    $('#div-modal-spinner').show();
-
-    $("#modal-status-alert-title").html("SMB User 비밀번호 변경 실패");
-    $("#modal-status-alert-body").html("SMB User 비밀번호 변경을 실패하였습니다.");
-    fetch('https://10.10.5.11:8080/api/v1/smb/user',{
-        method: 'PUT',
-        headers: {
-            'accept': 'application/json',
-            'Content-Type': 'application/x-www-form-urlencoded'
-        },
-        body: body_val
-    }).then(res => res.json()).then(data => {
-        $('#div-modal-spinner').hide();
-        if(data == "Success"){
-            $("#modal-status-alert-title").html("SMB User 비밀번호 변경 완료");
-            $("#modal-status-alert-body").html("SMB User 비밀번호 변경을 완료하였습니다.");
+    if(smbUserUpdateValidateCheck()){
+        var hostname = $('#smb-update-user-hostname').val();
+        var username = $('select#form-select-update-smb-user option:checked').val();
+        var password = $('#form-input-update-smb-user-password').val();
+    
+        var body_val = "hostname="+hostname+"&username="+username+"&password="+password
+    
+        $('#div-modal-update-smb-user').hide();
+        $('#div-modal-spinner-header-txt').text('SMB User 비밀번호를 변경하고 있습니다.');
+        $('#div-modal-spinner').show();
+    
+        $("#modal-status-alert-title").html("SMB User 비밀번호 변경 실패");
+        $("#modal-status-alert-body").html("SMB User 비밀번호 변경을 실패하였습니다.");
+        fetch('https://10.10.5.11:8080/api/v1/smb/user',{
+            method: 'PUT',
+            headers: {
+                'accept': 'application/json',
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: body_val
+        }).then(res => res.json()).then(data => {
+            $('#div-modal-spinner').hide();
+            if(data == "Success"){
+                $("#modal-status-alert-title").html("SMB User 비밀번호 변경 완료");
+                $("#modal-status-alert-body").html("SMB User 비밀번호 변경을 완료하였습니다.");
+                $('#div-modal-status-alert').show();
+                smbServiceList();
+                createLoggerInfo("SMB User update success");
+            }else{
+                $('#div-modal-status-alert').show();
+            }
+        }).catch(function(data){
+            $('#div-modal-spinner').hide();
             $('#div-modal-status-alert').show();
-            smbServiceList();
-            createLoggerInfo("SMB User update success");
-        }else{
-            $('#div-modal-status-alert').show();
-        }
-    }).catch(function(data){
-        $('#div-modal-spinner').hide();
-        $('#div-modal-status-alert').show();
-        createLoggerInfo("SMB User update error : "+ data);
-        console.log('button-execution-modal-update-smb-user : '+data);
-    });
+            createLoggerInfo("SMB User update error : "+ data);
+            console.log('button-execution-modal-update-smb-user : '+data);
+        });
+    }
 });
 /** SMB User update 관련 action end */
 
@@ -383,38 +389,40 @@ $('#button-cancel-modal-remove-smb-user').on('click', function(){
 });
 
 $('#button-execution-modal-remove-smb-user').on('click', function(){
-    var hostname = $('#smb-remove-user-hostname').val()
-    var username = $('select#form-select-remove-smb-user option:checked').val();
+    if(smbUserDeleteValidateCheck()){
+        var hostname = $('#smb-remove-user-hostname').val()
+        var username = $('select#form-select-remove-smb-user option:checked').val();
+        
+        $('#div-modal-remove-smb-user').hide();
+        $('#div-modal-spinner-header-txt').text('SMB User를 삭제하고 있습니다.');
+        $('#div-modal-spinner').show();
     
-    $('#div-modal-remove-smb-user').hide();
-    $('#div-modal-spinner-header-txt').text('SMB User를 삭제하고 있습니다.');
-    $('#div-modal-spinner').show();
-
-    $("#modal-status-alert-title").html("SMB User 삭제 실패");
-    $("#modal-status-alert-body").html("SMB User 삭제를 실패하였습니다.");
-    fetch('https://10.10.5.11:8080/api/v1/smb/user?hostname='+hostname+'&username='+username,{
-        method: 'DELETE',
-        headers: {
-            'accept': 'application/json',
-            'Content-Type': 'application/x-www-form-urlencoded'
-        }
-    }).then(res => res.json()).then(data => {
-        $('#div-modal-spinner').hide();
-        if(data == "Success"){
-            $("#modal-status-alert-title").html("SMB User 삭제 완료");
-            $("#modal-status-alert-body").html("SMB User 삭제를 완료하였습니다.");
+        $("#modal-status-alert-title").html("SMB User 삭제 실패");
+        $("#modal-status-alert-body").html("SMB User 삭제를 실패하였습니다.");
+        fetch('https://10.10.5.11:8080/api/v1/smb/user?hostname='+hostname+'&username='+username,{
+            method: 'DELETE',
+            headers: {
+                'accept': 'application/json',
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        }).then(res => res.json()).then(data => {
+            $('#div-modal-spinner').hide();
+            if(data == "Success"){
+                $("#modal-status-alert-title").html("SMB User 삭제 완료");
+                $("#modal-status-alert-body").html("SMB User 삭제를 완료하였습니다.");
+                $('#div-modal-status-alert').show();
+                smbServiceList();
+                createLoggerInfo("SMB User remove success");
+            }else{
+                $('#div-modal-status-alert').show();
+            }
+        }).catch(function(data){
+            $('#div-modal-spinner').hide();
             $('#div-modal-status-alert').show();
-            smbServiceList();
-            createLoggerInfo("SMB User remove success");
-        }else{
-            $('#div-modal-status-alert').show();
-        }
-    }).catch(function(data){
-        $('#div-modal-spinner').hide();
-        $('#div-modal-status-alert').show();
-        createLoggerInfo("SMB User remove error : "+ data);
-        console.log('button-execution-modal-remove-smb-user : '+data);
-    });
+            createLoggerInfo("SMB User remove error : "+ data);
+            console.log('button-execution-modal-remove-smb-user : '+data);
+        });
+    }
 });
 /** SMB User delete 관련 action end */
 
@@ -443,5 +451,103 @@ function smbUserPasswordUpdateInitInputValue(){
     $('#form-input-update-smb-user-password-confirm').val("");
 }
 
+function smbServiceCreateValidateCheck(){
+    var validate_check = true;
+    
+    var folder_name = $('#form-input-smb-share-folder-name').val();
+    var username = $('#form-input-smb-user-name').val();
+    var password = $('#form-input-smb-user-password').val();
+    var fs_name = $('#form-select-smb-gluefs-name option:selected').val();
+    var volume_path = $('#form-select-smb-gluefs-path option:selected').val();
 
+    if (folder_name == "") {
+        alert("SMB 공유 폴더 명을 입력해주세요.");
+        validate_check = false;
+    } else if(!nameCheck(folder_name)) {
+        alert("SMB 공유 폴더 명 생성 규칙은 영문, 숫자 특수문자 '.','-','_' 만 입력 가능합니다.");
+        validate_check = false;
+    } else if (username == "") {
+        alert("사용자 이름을 입력해주세요.");
+        validate_check = false;
+    } else if (!nameCheck(username)) {
+        alert("사용자 이름 생성 규칙은 영문, 숫자 특수문자 '.','-','_' 만 입력 가능하고 영문으로 시작해야 합니다.");
+        validate_check = false;
+    } else if (unavailableIdCheck(username)) {
+        alert(username+" 은(는) 사용할 수 없는 사용자 명입니다.");
+        validate_check = false;
+    } else if (password == "") {
+        alert("비밀번호를 입력해주세요.");
+        validate_check = false;
+    } else if (fs_name == "") {
+        alert("GlueFS 이름을 선택해주세요.");
+        validate_check = false;
+    } else if (volume_path == undefined || volume_path == "") {
+        alert("GlueFS 경로를 선택해주세요.");
+        validate_check = false;
+    }
+ 
+    return validate_check;
+}
 
+function smbUserCreateValidateCheck(){
+    var validate_check = true;
+
+    var username = $('#form-input-smb-create-user-name').val();
+    var password = $('#form-input-smb-create-user-password').val();
+
+    if (username == "") {
+        alert("사용자 이름을 입력해주세요.");
+        validate_check = false;
+    } else if (!nameCheck(username)) {
+        alert("사용자 이름 생성 규칙은 영문, 숫자 특수문자 '.','-','_' 만 입력 가능하고 영문으로 시작해야 합니다.");
+        validate_check = false;
+    } else if (unavailableIdCheck(username)) {
+        alert(username+" 은(는) 사용할 수 없는 사용자 명입니다.");
+        validate_check = false;
+    }  else if (password == "") {
+        alert("비밀번호를 입력해주세요.");
+        validate_check = false;
+    } 
+ 
+    return validate_check;
+}
+
+function smbUserUpdateValidateCheck(){
+    var validate_check = true;
+
+    var username = $('select#form-select-update-smb-user option:checked').val();
+    var password = $('#form-input-update-smb-user-password').val();
+    var password_confirm = $('#form-input-update-smb-user-password-confirm').val();
+
+    if (username == "") {
+        alert("사용자를 선택해주세요.");
+        validate_check = false;
+    } else if (!nameCheck(username)) {
+        alert("사용자 이름 생성 규칙은 영문, 숫자 특수문자 '.','-','_' 만 입력 가능하고 영문으로 시작해야 합니다.");
+        validate_check = false;
+    } else if (password == "") {
+        alert("비밀번호를 입력해주세요.");
+        validate_check = false;
+    } else if (password_confirm == "") {
+        alert("비밀번호 확인을 입력해주세요.");
+        validate_check = false;
+    } else if (password != password_confirm) {
+        alert("비밀번호가 일치하지 않습니다.");
+        validate_check = false;
+    } 
+ 
+    return validate_check;
+}
+
+function smbUserDeleteValidateCheck(){
+    var validate_check = true;
+
+    var username = $('select#form-select-remove-smb-user option:checked').val();
+
+    if (username == "") {
+        alert("사용자를 선택해주세요.");
+        validate_check = false;
+    }
+
+    return validate_check;
+}
