@@ -48,6 +48,11 @@
                             <span class="pf-c-tabs__item-text">SMB</span>
                         </button>
                     </li>
+                    <li class="pf-c-tabs__item">
+                        <button type="button" class="pf-c-tabs__link" id="button-tab-object-gateway">
+                            <span class="pf-c-tabs__item-text">SMB</span>
+                        </button>
+                    </li>
                 </ul>
                 <button class="pf-c-tabs__scroll-button" type="button" aria-label="Scroll right">
                     <i class="fas fa-angle-right" aria-hidden="true"></i>
@@ -79,6 +84,23 @@
         <!-- 상태를 보여주기 위한 레이아웃 시작 -->
         <section class="pf-c-page__main-section">
             <div class="pf-l-grid pf-m-gutter">
+                <div class="pf-l-grid__item pf-m-12-col">
+                    <div class="pf-l-grid pf-m-gutter">
+                        <!-- glue vm 카드 영역 시작-->
+                        <div class="pf-l-grid__item pf-m-12-col">
+                            <div class="pf-c-card pf-m-hoverable pf-m-compact">
+                                <div class="pf-c-card__body" id="card-help-content-status">
+                                    <div class="pf-c-helper-text">
+                                        <div class="pf-c-helper-text__item">
+                                            <i class="fas fa-info-circle" style="color: #2b9af3; margin-right: 5px;" aria-hidden="true"></i><span class="pf-c-helper-text__item-text">기능 설명</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- glue vm 카드 영역 끝-->
+                    </div>
+                </div>
                 <div class="pf-l-grid__item pf-m-12-col" id="div-glue-vm-card" hidden>
                     <div class="pf-l-grid pf-m-gutter">
                         <!-- glue vm 카드 영역 시작-->
@@ -572,7 +594,7 @@
                                             <tbody role="rowgroup" id="iscsi-target-list">
                                                 <!-- <tr role="row">
                                                     <td role="cell" data-label="IQN" id="target_iqn">iqn.2020-11.com.ablecloud:11</td>
-                                                    <td role="cell" data-label="포탈" id="portals">gwvm:10.10.5.11</td>
+                                                    <td role="cell" data-label="포탈" id="portals">gwvm:10.10.2.11</td>
                                                     <td role="cell" data-label="디스크 정보" id="disks">rbd/mcjeong</td>
                                                     <td role="cell" data-label="디스크 정보" id="num_sessions">0</td>
                                                     <td class="pf-c-table__icon" role="cell" data-label="편집">
@@ -657,6 +679,122 @@
                             </div>
                         </div>
                         <!-- SMB 서비스 카드 영역 끝-->
+                    </div>
+                </div>
+                
+
+
+
+
+                <div class="pf-l-grid__item pf-m-12-col" id="div-object-gateway-card" hidden>
+                    <div class="pf-l-grid pf-m-gutter">
+                        <!-- Object Gateway 카드 영역 시작-->
+                        <div class="pf-l-grid__item pf-m-12col">
+                            <div class="pf-c-card pf-m-hoverable pf-m-compact" id="card-object-gateway-status">
+                                <div class="pf-c-card__header">
+                                    <div class="pf-c-card__title" id="card-object-gateway-status-title">Object Gateway</div>
+                                    &nbsp;<i class="pf-icon-help" aria-hidden="true" id="icon-help-object-gateway" name="icon-help-action"></i>
+                                    <div class="pf-c-card__actions">
+                                        <button style="font-size: 0.83rem;" class="pf-c-button pf-m-secondary pf-m-inline" id="button-object-gateway-search" aria-disabled="false" type="button" data-ouia-safe="true" ><i class="fas fa-fw fa-redo" aria-hidden="true"></i></button>
+                                        <button style="font-size: 0.83rem;" class="pf-c-button pf-m-secondary pf-m-inline" id="button-object-gateway-create" aria-disabled="false" type="button" data-ouia-safe="true" >추가</button>
+                                    </div>
+                                </div>
+                                <div class="pf-c-card__body">
+                                    <dl class="pf-c-description-list pf-m-horizontal" style="--pf-c-description-list--RowGap: 10px;">
+                                        <table class="pf-c-table pf-m-compact pf-m-grid-lg" role="grid" aria-label="This is a compact table example">
+                                            <thead>
+                                                <tr role="row">
+                                                    <th role="columnheader" scope="col">이름</th>
+                                                    <th role="columnheader" scope="col">호스트 명</th>
+                                                    <th role="columnheader" scope="col">PORT</th>
+                                                    <th class="pf-c-table__icon" style="width:10%" role="columnheader" scope="col"></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody role="rowgroup" id="object-gateway-list">
+                                                <tr role="row">
+                                                    <td role="cell" data-label="이름">ogject gateway</td>
+                                                    <td role="cell" data-label="호스트 명">gwvm</td>
+                                                    <td role="cell" data-label="PORT">2049</td>
+                                                    <td class="pf-c-table__icon" role="cell" data-label="편집">
+                                                        <div class="pf-c-dropdown">
+                                                            <button class="pf-c-dropdown__toggle pf-m-plain" id="card-action-object-gateway" aria-expanded="false" type="button" aria-label="Actions">
+                                                                <i class="fas fa-ellipsis-v" aria-hidden="true"></i>
+                                                            </button>
+                                                            <ul class="pf-c-dropdown__menu pf-m-align-right" aria-labelledby="card-action-object-gateway" id="dropdown-menu-card-action-object-gateway">
+                                                                <li>
+                                                                    <button class="pf-c-dropdown__menu-item pf-m-enabled" type="button" id="menu-item-object-gateway-remove" >Object Gateway 삭제</button>
+                                                                </li>
+                                                            </ul>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </dl>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Object Gateway 카드 영역 끝-->
+                    </div>
+                </div>
+                <div class="pf-l-grid__item pf-m-12-col" id="div-object-gateway-user-card" hidden>
+                    <div class="pf-l-grid pf-m-gutter">
+                        <!-- Object Gateway User 영역 시작-->
+                        <div class="pf-l-grid__item pf-m-12col">
+                            <div class="pf-c-card pf-m-hoverable pf-m-compact" id="card-object-gateway-user-status">
+                                <div class="pf-c-card__header">
+                                    <div class="pf-c-card__title" id="card-object-gateway-user-status-title">Object Gateway User</div>
+                                    &nbsp;<i class="pf-icon-help" aria-hidden="true" id="icon-help-object-gateway-user" name="icon-help-action"></i>
+                                    <div class="pf-c-card__actions">
+                                        <button style="font-size: 0.83rem;" class="pf-c-button pf-m-secondary pf-m-inline" id="button-object-gateway-user-search" aria-disabled="false" type="button" data-ouia-safe="true" ><i class="fas fa-fw fa-redo" aria-hidden="true"></i></button>
+                                        <button style="font-size: 0.83rem;" class="pf-c-button pf-m-secondary pf-m-inline" id="button-object-gateway-user-create" aria-disabled="false" type="button" data-ouia-safe="true" >추가</button>
+                                    </div>
+                                </div>
+                                <div class="pf-c-card__body">
+                                    <dl class="pf-c-description-list pf-m-horizontal" style="--pf-c-description-list--RowGap: 10px;">
+                                        <table class="pf-c-table pf-m-compact pf-m-grid-lg" role="grid" aria-label="This is a compact table example">
+                                            <thead>
+                                                <tr role="row">
+                                                    <th role="columnheader" scope="col">사용자 이름</th>
+                                                    <th role="columnheader" scope="col">전체 이름</th>
+                                                    <th role="columnheader" scope="col">일시중단</th>
+                                                    <th role="columnheader" scope="col">최대 버킷</th>
+                                                    <th role="columnheader" scope="col">용량 제한</th>
+                                                    <th role="columnheader" scope="col">오브젝트 제한</th>
+                                                    <th class="pf-c-table__icon" style="width:10%" role="columnheader" scope="col"></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody role="rowgroup" id="object-gateway-user-list">
+                                                <tr role="row">
+                                                    <td role="cell" data-label="사용자 이름">user</td>
+                                                    <td role="cell" data-label="전체 이름">user full name</td>
+                                                    <td role="cell" data-label="일시중단"></td>
+                                                    <td role="cell" data-label="최대 버킷">1000</td>
+                                                    <td role="cell" data-label="용량 제한">제한 없음</td>
+                                                    <td role="cell" data-label="오브젝트 제한">제한 없음</td>
+                                                    <td class="pf-c-table__icon" role="cell" data-label="편집">
+                                                        <div class="pf-c-dropdown">
+                                                            <button class="pf-c-dropdown__toggle pf-m-plain" id="card-action-object-gateway-user" aria-expanded="false" type="button" aria-label="Actions">
+                                                                <i class="fas fa-ellipsis-v" aria-hidden="true"></i>
+                                                            </button>
+                                                            <ul class="pf-c-dropdown__menu pf-m-align-right" aria-labelledby="card-action-object-gateway-user" id="dropdown-menu-card-action-object-gateway-user">
+                                                                <li>
+                                                                    <button class="pf-c-dropdown__menu-item pf-m-enabled" type="button" id="menu-item-object-gateway-user-edit" >User 편집</button>
+                                                                </li>
+                                                                <li>
+                                                                    <button class="pf-c-dropdown__menu-item pf-m-enabled" type="button" id="menu-item-object-gateway-user-remove" >User 삭제</button>
+                                                                </li>
+                                                            </ul>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </dl>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Object Gateway User 카드 영역 끝-->
                     </div>
                 </div>
             </div>

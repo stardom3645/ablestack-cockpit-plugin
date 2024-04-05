@@ -8,7 +8,7 @@
 function smbServiceList(){
     //조회
     $('#button-smb-service-search').html("<svg class='pf-c-spinner pf-m-md' role='progressbar' aria-valuetext='Loading...' viewBox='0 0 100 100' ><circle class='pf-c-spinner__path' cx='50' cy='50' r='45' fill='none'></circle></svg>");
-    fetch('https://10.10.5.11:8080/api/v1/smb',{
+    fetch('https://10.10.2.11:8080/api/v1/smb',{
         method: 'GET',
         headers: {
             'accept': 'application/json',
@@ -131,7 +131,7 @@ $('#button-execution-modal-create-smb-service').on('click', function(){
         $("#modal-status-alert-title").html("SMB Service 생성 실패");
         $("#modal-status-alert-body").html("SMB Service 생성을 실패하였습니다.");
     
-        fetch('https://10.10.5.11:8080/api/v1/smb',{
+        fetch('https://10.10.2.11:8080/api/v1/smb',{
             method: 'POST',
             headers: {
                 'accept': 'application/json',
@@ -187,7 +187,7 @@ $('#button-execution-modal-remove-smb-service').on('click', function(){
 
     $("#modal-status-alert-title").html("SMB Service 삭제 실패");
     $("#modal-status-alert-body").html("SMB Service 삭제를 실패하였습니다.");
-    fetch('https://10.10.5.11:8080/api/v1/smb?hostname='+hostname,{
+    fetch('https://10.10.2.11:8080/api/v1/smb?hostname='+hostname,{
         method: 'DELETE',
         headers: {
             'accept': 'application/json',
@@ -277,7 +277,7 @@ $('#button-execution-modal-create-smb-user').on('click', function(){
         $("#modal-status-alert-title").html("SMB User 생성 실패");
         $("#modal-status-alert-body").html("SMB User 생성을 실패하였습니다.");
     
-        fetch('https://10.10.5.11:8080/api/v1/smb/user',{
+        fetch('https://10.10.2.11:8080/api/v1/smb/user',{
             method: 'POST',
             headers: {
                 'accept': 'application/json',
@@ -340,7 +340,7 @@ $('#button-execution-modal-update-smb-user').on('click', function(){
     
         $("#modal-status-alert-title").html("SMB User 비밀번호 변경 실패");
         $("#modal-status-alert-body").html("SMB User 비밀번호 변경을 실패하였습니다.");
-        fetch('https://10.10.5.11:8080/api/v1/smb/user',{
+        fetch('https://10.10.2.11:8080/api/v1/smb/user',{
             method: 'PUT',
             headers: {
                 'accept': 'application/json',
@@ -399,7 +399,7 @@ $('#button-execution-modal-remove-smb-user').on('click', function(){
     
         $("#modal-status-alert-title").html("SMB User 삭제 실패");
         $("#modal-status-alert-body").html("SMB User 삭제를 실패하였습니다.");
-        fetch('https://10.10.5.11:8080/api/v1/smb/user?hostname='+hostname+'&username='+username,{
+        fetch('https://10.10.2.11:8080/api/v1/smb/user?hostname='+hostname+'&username='+username,{
             method: 'DELETE',
             headers: {
                 'accept': 'application/json',

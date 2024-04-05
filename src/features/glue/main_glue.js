@@ -113,7 +113,7 @@ $('#card-action-storage-cluster-iscsi-status').on('click', function(){
 
 /** 스토리지 서비스 구성 관련 action start */
 $('#button-glue-api-server-connect').on('click', function(){
-    window.open("https://10.10.5.11:8080/swagger/index.html");
+    window.open("https://10.10.2.11:8080/swagger/index.html");
 });
 
 /** 스토리지 서비스 구성 관련 action start */
@@ -227,6 +227,8 @@ $('i[name=icon-help-action]').on('click',function(e){
     $('#div-modal-help').show();
 })
 // help 팝업 이벤트 처리 끝
+
+
 
 // div-modal-alert-button-confirm 클릭시
 $('#modal-help-button-confirm, #modal-help-button-close1').on('click',function(){
@@ -616,73 +618,62 @@ $('#button-execution-modal-delete').on('click',function(){
     }
 });
 
+// function iscsiCheckInfo(type){
+//     $('#iscsi-status').html("상태 체크 중 &bull;&bull;&bull;&nbsp;&nbsp;&nbsp;<svg class='pf-c-spinner pf-m-md' role='progressbar' aria-valuetext='Loading...' viewBox='0 0 100 100' ><circle class='pf-c-spinner__path' cx='50' cy='50' r='45' fill='none'></circle></svg>");
+//     $("#iscsi-color").attr('class','pf-c-label pf-m-orange');
+//     $("#iscsi-icon").attr('class','fas fa-fw fa-exclamation-triangle');
 
+//     var session = localStorage.getItem('iscsi');
 
+//     cockpit.spawn(['python3', pluginpath + '/python/glue/iscsi.py', 'status']).then(function(data){
+//         var retVal = JSON.parse(data);
+//         var retVal_val = JSON.parse(retVal.val);
+//         if(retVal_val[0].status.running == "1"){
+//             cockpit.spawn(['python3', pluginpath + '/python/glue/iscsi.py', 'list']).then(function(data){
+//                 var retVal = JSON.parse(data);
+//                 var retVal_val = JSON.parse(retVal.val);
+//                 if(retVal.code == 200){
 
+//                     cockpit.spawn(['python3', pluginpath + '/python/glue/iscsi.py', 'image']).then(function(data){
+//                         var image = JSON.parse(data);
+//                         var image_val = JSON.parse(image.val);
+//                         console.log(image_val);
+//                         if(image.code == 200){
+//                             if(type == 'delete'){
+//                                 $('#iscsi-tbody tr').remove();
+//                                 $('#iscsi-tbody').html('<tbody role="rowgroup" id="iscsi-tbody"></tbody>');
+//                             }
+//                             for(var i = 0; i < retVal_val.length; i++){
+//                                 $('#iscsi-tbody').append('<tr role="row"><td role="cell" data-label="대상">'+ retVal_val[i].target_iqn+'</td>'
+//                                                           + '<td role="cell" data-label="포털">'+ retVal_val[i].portals[0].ip+ '</td>'
+//                                                           + '<td role="cell" data-label="이미지">'+ image_val[0].value[0].name+ '</td>'
+//                                                           + '<td role="cell" data-label="크기">'+ Byte(image_val[0].value[0].size)+ '</td>'
+//                                                           + '<td class="pf-c-table__icon" role="cell" data-label="편집"><button class="pf-c-dropdown__toggle pf-m-plain" id="iscsi-edit" aria-expanded="false" type="button" aria-label="Actions"><i class="fas fa-edit"></i></td>'
+//                                                           + '<td class="pf-c-table__icon" role="cell" data-label="삭제"><button class="pf-c-dropdown__toggle pf-m-plain" id="iscsi-delete" aria-expanded="false" type="button" aria-label="Actions"><i class="fas fa-trash"></i></td></tr>');
+//                             }
+//                             $('#iscsi-status').text("Health OK");
+//                             $('#iscsi-color').attr('class','pf-c-label pf-m-green');
+//                             $('#iscsi-icon').attr('class','fas fa-fw fas fa-fw fa-check-circle');
 
-
-
-
-
-
-
-function iscsiCheckInfo(type){
-    $('#iscsi-status').html("상태 체크 중 &bull;&bull;&bull;&nbsp;&nbsp;&nbsp;<svg class='pf-c-spinner pf-m-md' role='progressbar' aria-valuetext='Loading...' viewBox='0 0 100 100' ><circle class='pf-c-spinner__path' cx='50' cy='50' r='45' fill='none'></circle></svg>");
-    $("#iscsi-color").attr('class','pf-c-label pf-m-orange');
-    $("#iscsi-icon").attr('class','fas fa-fw fa-exclamation-triangle');
-
-    var session = localStorage.getItem('iscsi');
-
-    cockpit.spawn(['python3', pluginpath + '/python/glue/iscsi.py', 'status']).then(function(data){
-        var retVal = JSON.parse(data);
-        var retVal_val = JSON.parse(retVal.val);
-        return
-        if(retVal_val[0].status.running == "1"){
-            cockpit.spawn(['python3', pluginpath + '/python/glue/iscsi.py', 'list']).then(function(data){
-                var retVal = JSON.parse(data);
-                var retVal_val = JSON.parse(retVal.val);
-                if(retVal.code == 200){
-
-                    cockpit.spawn(['python3', pluginpath + '/python/glue/iscsi.py', 'image']).then(function(data){
-                        var image = JSON.parse(data);
-                        var image_val = JSON.parse(image.val);
-                        console.log(image_val);
-                        if(image.code == 200){
-                            if(type == 'delete'){
-                                $('#iscsi-tbody tr').remove();
-                                $('#iscsi-tbody').html('<tbody role="rowgroup" id="iscsi-tbody"></tbody>');
-                            }
-                            for(var i = 0; i < retVal_val.length; i++){
-                                $('#iscsi-tbody').append('<tr role="row"><td role="cell" data-label="대상">'+ retVal_val[i].target_iqn+'</td>'
-                                                          + '<td role="cell" data-label="포털">'+ retVal_val[i].portals[0].ip+ '</td>'
-                                                          + '<td role="cell" data-label="이미지">'+ image_val[0].value[0].name+ '</td>'
-                                                          + '<td role="cell" data-label="크기">'+ Byte(image_val[0].value[0].size)+ '</td>'
-                                                          + '<td class="pf-c-table__icon" role="cell" data-label="편집"><button class="pf-c-dropdown__toggle pf-m-plain" id="iscsi-edit" aria-expanded="false" type="button" aria-label="Actions"><i class="fas fa-edit"></i></td>'
-                                                          + '<td class="pf-c-table__icon" role="cell" data-label="삭제"><button class="pf-c-dropdown__toggle pf-m-plain" id="iscsi-delete" aria-expanded="false" type="button" aria-label="Actions"><i class="fas fa-trash"></i></td></tr>');
-                            }
-                            $('#iscsi-status').text("Health OK");
-                            $('#iscsi-color').attr('class','pf-c-label pf-m-green');
-                            $('#iscsi-icon').attr('class','fas fa-fw fas fa-fw fa-check-circle');
-
-                        }
-                    })
-                }
-            })
-        }
-        else{
-            if(session == "stop"){
-                $('#iscsi-status').text("Stop");
-                $('#iscsi-color').attr('class','pf-c-label pf-m-red');
-                $('#iscsi-icon').attr('class','fas fa-fw fa-exclamation-triangle');
-            }
-            else{
-                $('#iscsi-status').text("Health Err");
-                $('#iscsi-color').attr('class','pf-c-label pf-m-red');
-                $('#iscsi-icon').attr('class','fas fa-fw fa-exclamation-triangle');
-            }
-        }
-    });
-}
+//                         }
+//                     })
+//                 }
+//             })
+//         }
+//         else{
+//             if(session == "stop"){
+//                 $('#iscsi-status').text("Stop");
+//                 $('#iscsi-color').attr('class','pf-c-label pf-m-red');
+//                 $('#iscsi-icon').attr('class','fas fa-fw fa-exclamation-triangle');
+//             }
+//             else{
+//                 $('#iscsi-status').text("Health Err");
+//                 $('#iscsi-color').attr('class','pf-c-label pf-m-red');
+//                 $('#iscsi-icon').attr('class','fas fa-fw fa-exclamation-triangle');
+//             }
+//         }
+//     });
+// }
 /**
  * Meathod Name : sambaCheckInfo
  * Date Created : 2023.06.02
@@ -692,80 +683,80 @@ function iscsiCheckInfo(type){
  * Return  : 없음
  * History  : 2023.05.31 최초 작성
  */
-function sambaCheckInfo(){
-    var action = localStorage.getItem('smb');
+// function sambaCheckInfo(){
+//     var action = localStorage.getItem('smb');
 
-    $('#smb-status').html("상태 체크 중 &bull;&bull;&bull;&nbsp;&nbsp;&nbsp;<svg class='pf-c-spinner pf-m-md' role='progressbar' aria-valuetext='Loading...' viewBox='0 0 100 100' ><circle class='pf-c-spinner__path' cx='50' cy='50' r='45' fill='none'></circle></svg>");
-    $("#smb-color").attr('class','pf-c-label pf-m-orange');
-    $("#smb-icon").attr('class','fas fa-fw fa-exclamation-triangle');
+//     $('#smb-status').html("상태 체크 중 &bull;&bull;&bull;&nbsp;&nbsp;&nbsp;<svg class='pf-c-spinner pf-m-md' role='progressbar' aria-valuetext='Loading...' viewBox='0 0 100 100' ><circle class='pf-c-spinner__path' cx='50' cy='50' r='45' fill='none'></circle></svg>");
+//     $("#smb-color").attr('class','pf-c-label pf-m-orange');
+//     $("#smb-icon").attr('class','fas fa-fw fa-exclamation-triangle');
 
-    cockpit.spawn(['python3', pluginpath + '/python/glue/smb.py','detail']).then(function(data){
-        var retVal_detail = JSON.parse(data);
-        if(retVal_detail.code == 200){
-            cockpit.spawn(['python3', pluginpath + '/python/glue/smb.py','status', '-sn','smb']).then(function(data){
-                var retVal_status = JSON.parse(data);
-                if(retVal_status.code == 500){
-                    if(action == 'stop'){
-                        ServiceQuota('smb');
+//     cockpit.spawn(['python3', pluginpath + '/python/glue/smb.py','detail']).then(function(data){
+//         var retVal_detail = JSON.parse(data);
+//         if(retVal_detail.code == 200){
+//             cockpit.spawn(['python3', pluginpath + '/python/glue/smb.py','status', '-sn','smb']).then(function(data){
+//                 var retVal_status = JSON.parse(data);
+//                 if(retVal_status.code == 500){
+//                     if(action == 'stop'){
+//                         ServiceQuota('smb');
 
-                        $('#smb-path').text("/fs");
-                        $('#smb-mount-path').text("/smb");
-                        $('#smb-access-ip').text(retVal_detail.val.ip_address);
-                        $('#smb-status').text("Stop");
-                        $('#smb-color').attr('class','pf-c-label pf-m-red');
-                        $('#smb-icon').attr('class','fas fa-fw fa-exclamation-triangle');
-                        $('#smb-edit').attr('class','pf-c-dropdown__toggle pf-m-plain pf-m-enabled');
-                        $('#menu-item-set-smb-construction').hide();
-                        $('#menu-item-set-smb-delete').show();
-                    }
-                    else{
-                        cleanSambaInfo();
-                        $('#smb-status').text("Health Err");
-                        $('#smb-color').attr('class','pf-c-label pf-m-red');
-                        $('#smb-icon').attr('class','fas fa-fw fa-exclamation-triangle');
-                        $('#smb-edit').attr('class','pf-c-dropdown__toggle pf-m-plain pf-m-disabled');
-                        $("#form-select-file-system-service-control option[value=smb]").hide();
-                        $('#menu-item-set-smb-construction').show();
-                        $('#menu-item-set-smb-delete').hide();
-                    }
-                }
-                else{
-                    ServiceQuota('smb');
+//                         $('#smb-path').text("/fs");
+//                         $('#smb-mount-path').text("/smb");
+//                         $('#smb-access-ip').text(retVal_detail.val.ip_address);
+//                         $('#smb-status').text("Stop");
+//                         $('#smb-color').attr('class','pf-c-label pf-m-red');
+//                         $('#smb-icon').attr('class','fas fa-fw fa-exclamation-triangle');
+//                         $('#smb-edit').attr('class','pf-c-dropdown__toggle pf-m-plain pf-m-enabled');
+//                         $('#menu-item-set-smb-construction').hide();
+//                         $('#menu-item-set-smb-delete').show();
+//                     }
+//                     else{
+//                         cleanSambaInfo();
+//                         $('#smb-status').text("Health Err");
+//                         $('#smb-color').attr('class','pf-c-label pf-m-red');
+//                         $('#smb-icon').attr('class','fas fa-fw fa-exclamation-triangle');
+//                         $('#smb-edit').attr('class','pf-c-dropdown__toggle pf-m-plain pf-m-disabled');
+//                         $("#form-select-file-system-service-control option[value=smb]").hide();
+//                         $('#menu-item-set-smb-construction').show();
+//                         $('#menu-item-set-smb-delete').hide();
+//                     }
+//                 }
+//                 else{
+//                     ServiceQuota('smb');
 
-                    $('#smb-path').text("/fs");
-                    $('#smb-mount-path').text("/smb");
-                    $('#smb-access-ip').text(retVal_detail.val.ip_address);
-                    $('#smb-status').text("Health OK");
-                    $('#smb-color').attr('class','pf-c-label pf-m-green');
-                    $('#smb-icon').attr('class','fas fa-fw fas fa-fw fa-check-circle');
-                    $('#smb-edit').attr('class','pf-c-dropdown__toggle pf-m-plain pf-m-enabled');
-                    $('#menu-item-set-smb-construction').hide();
-                    $('#menu-item-set-smb-delete').show();
-                }
-            }).catch(function(){
-                createLoggerInfo("SMB status 조회 실패");
-            });
-        }
-        else{
-            $('#smb-status').text("Health Err");
-            $('#smb-color').attr('class','pf-c-label pf-m-red');
-            $('#smb-icon').attr('class','fas fa-fw fa-exclamation-triangle');
-            $('#smb-edit').attr('class','pf-c-dropdown__toggle pf-m-plain pf-m-disabled');
-            $("#form-select-file-system-service-control option[value=smb]").hide();
-            $('#menu-item-set-smb-construction').show();
-            $('#menu-item-set-smb-delete').hide();
-            cleanSambaInfo();
-        }
-    }).catch(function(){
-        createLoggerInfo("SMB detail 조회 실패");
-    });
-}
-function cleanSambaInfo(){
-    $('#smb-path').text("N/A");
-    $('#smb-mount-path').text("N/A");
-    $('#smb-access-ip').text("N/A");
-    $('#smb-usage').text("N/A");
-}
+//                     $('#smb-path').text("/fs");
+//                     $('#smb-mount-path').text("/smb");
+//                     $('#smb-access-ip').text(retVal_detail.val.ip_address);
+//                     $('#smb-status').text("Health OK");
+//                     $('#smb-color').attr('class','pf-c-label pf-m-green');
+//                     $('#smb-icon').attr('class','fas fa-fw fas fa-fw fa-check-circle');
+//                     $('#smb-edit').attr('class','pf-c-dropdown__toggle pf-m-plain pf-m-enabled');
+//                     $('#menu-item-set-smb-construction').hide();
+//                     $('#menu-item-set-smb-delete').show();
+//                 }
+//             }).catch(function(){
+//                 createLoggerInfo("SMB status 조회 실패");
+//             });
+//         }
+//         else{
+//             $('#smb-status').text("Health Err");
+//             $('#smb-color').attr('class','pf-c-label pf-m-red');
+//             $('#smb-icon').attr('class','fas fa-fw fa-exclamation-triangle');
+//             $('#smb-edit').attr('class','pf-c-dropdown__toggle pf-m-plain pf-m-disabled');
+//             $("#form-select-file-system-service-control option[value=smb]").hide();
+//             $('#menu-item-set-smb-construction').show();
+//             $('#menu-item-set-smb-delete').hide();
+//             cleanSambaInfo();
+//         }
+//     }).catch(function(){
+//         createLoggerInfo("SMB detail 조회 실패");
+//     });
+// }
+// function cleanSambaInfo(){
+//     $('#smb-path').text("N/A");
+//     $('#smb-mount-path').text("N/A");
+//     $('#smb-access-ip').text("N/A");
+//     $('#smb-usage').text("N/A");
+// }
 /**
  * Meathod Name : gluefsCheckInfo
  * Date Created : 2023.06.02
@@ -775,86 +766,86 @@ function cleanSambaInfo(){
  * Return  : 없음
  * History  : 2023.05.31 최초 작성
  */
-function gluefsCheckInfo(){
-    $('#gluefs-status').html("상태 체크 중 &bull;&bull;&bull;&nbsp;&nbsp;&nbsp;<svg class='pf-c-spinner pf-m-md' role='progressbar' aria-valuetext='Loading...' viewBox='0 0 100 100' ><circle class='pf-c-spinner__path' cx='50' cy='50' r='45' fill='none'></circle></svg>");
-    $("#gluefs-color").attr('class','pf-c-label pf-m-orange');
-    $("#gluefs-icon").attr('class','fas fa-fw fa-exclamation-triangle');
+// function gluefsCheckInfo(){
+//     $('#gluefs-status').html("상태 체크 중 &bull;&bull;&bull;&nbsp;&nbsp;&nbsp;<svg class='pf-c-spinner pf-m-md' role='progressbar' aria-valuetext='Loading...' viewBox='0 0 100 100' ><circle class='pf-c-spinner__path' cx='50' cy='50' r='45' fill='none'></circle></svg>");
+//     $("#gluefs-color").attr('class','pf-c-label pf-m-orange');
+//     $("#gluefs-icon").attr('class','fas fa-fw fa-exclamation-triangle');
 
-    cockpit.spawn(['python3', pluginpath + '/python/glue/gluefs.py','status']).then(function(data){
-        var retVal = JSON.parse(data);
-        var retVal_code_status = JSON.parse(retVal.code);
-        var retVal_val_status = JSON.parse(retVal.val);
-        if(retVal_code_status == 200){
-            if(retVal_val_status[0] == undefined){
-                cleanGluefsInfo();
-                $('#gluefs-status').text("Health Err");
-                $('#gluefs-color').attr('class','pf-c-label pf-m-red');
-                $('#gluefs-icon').attr('class','fas fa-fw fa-exclamation-triangle');
-                $('#gluefs-edit').attr('class','pf-c-dropdown__toggle pf-m-plain pf-m-disabled');
-                $("#form-select-file-system-service-control option[value=gluefs]").hide();
-                $('#menu-item-set-gluefs-construction').show();
-                $('#menu-item-set-gluefs-delete').hide();
-            }
-            else{
-                cockpit.spawn(['python3', pluginpath + '/python/glue/gluefs.py','detail']).then(function(data){
-                    var retVal = JSON.parse(data);
-                    var retVal_code_detail = JSON.parse(retVal.code);
-                    var retVal_val_detail = JSON.parse(retVal.val);
-                    console.log(retVal_val_detail);
-                    if(retVal_code_detail == 200){
-                        gwvmEtcHostIp('gluefs');
-                        ServiceQuota('gluefs');
-                            if(retVal_val_status[0].status.running == 2){
+//     cockpit.spawn(['python3', pluginpath + '/python/glue/gluefs.py','status']).then(function(data){
+//         var retVal = JSON.parse(data);
+//         var retVal_code_status = JSON.parse(retVal.code);
+//         var retVal_val_status = JSON.parse(retVal.val);
+//         if(retVal_code_status == 200){
+//             if(retVal_val_status[0] == undefined){
+//                 cleanGluefsInfo();
+//                 $('#gluefs-status').text("Health Err");
+//                 $('#gluefs-color').attr('class','pf-c-label pf-m-red');
+//                 $('#gluefs-icon').attr('class','fas fa-fw fa-exclamation-triangle');
+//                 $('#gluefs-edit').attr('class','pf-c-dropdown__toggle pf-m-plain pf-m-disabled');
+//                 $("#form-select-file-system-service-control option[value=gluefs]").hide();
+//                 $('#menu-item-set-gluefs-construction').show();
+//                 $('#menu-item-set-gluefs-delete').hide();
+//             }
+//             else{
+//                 cockpit.spawn(['python3', pluginpath + '/python/glue/gluefs.py','detail']).then(function(data){
+//                     var retVal = JSON.parse(data);
+//                     var retVal_code_detail = JSON.parse(retVal.code);
+//                     var retVal_val_detail = JSON.parse(retVal.val);
+//                     console.log(retVal_val_detail);
+//                     if(retVal_code_detail == 200){
+//                         gwvmEtcHostIp('gluefs');
+//                         ServiceQuota('gluefs');
+//                             if(retVal_val_status[0].status.running == 2){
 
-                                $('#gluefs-mount-path').text("/gluefs");
-                                $('#gluefs-status').text("Health OK");
-                                $('#gluefs-color').attr('class','pf-c-label pf-m-green');
-                                $('#gluefs-icon').attr('class','fas fa-fw fas fa-fw fa-check-circle');
-                                $('#gluefs-edit').attr('class','pf-c-dropdown__toggle pf-m-plain pf-m-enabled');
-                                $('#menu-item-set-gluefs-construction').hide();
-                                $('#menu-item-set-gluefs-delete').show();
-                            }
-                            else {
+//                                 $('#gluefs-mount-path').text("/gluefs");
+//                                 $('#gluefs-status').text("Health OK");
+//                                 $('#gluefs-color').attr('class','pf-c-label pf-m-green');
+//                                 $('#gluefs-icon').attr('class','fas fa-fw fas fa-fw fa-check-circle');
+//                                 $('#gluefs-edit').attr('class','pf-c-dropdown__toggle pf-m-plain pf-m-enabled');
+//                                 $('#menu-item-set-gluefs-construction').hide();
+//                                 $('#menu-item-set-gluefs-delete').show();
+//                             }
+//                             else {
 
-                                $('#gluefs-mount-path').text("/gluefs");
-                                $('#gluefs-status').text("Stop");
-                                $('#gluefs-color').attr('class','pf-c-label pf-m-red');
-                                $('#gluefs-icon').attr('class','fas fa-fw fa-exclamation-triangle');
-                                $('#gluefs-edit').attr('class','pf-c-dropdown__toggle pf-m-plain pf-m-enabled');
-                                $('#menu-item-set-gluefs-construction').hide();
-                                $('#menu-item-set-gluefs-delete').show();
-                            }
-                    }
-                    else{
-                        cleanGluefsInfo();
-                        $('#gluefs-status').text("Health Err");
-                        $('#gluefs-color').attr('class','pf-c-label pf-m-red');
-                        $('#gluefs-icon').attr('class','fas fa-fw fa-exclamation-triangle');
-                        $('#gluefs-edit').attr('class','pf-c-dropdown__toggle pf-m-plain pf-m-disabled');
-                        $("#form-select-file-system-service-control option[value=gluefs]").hide();
-                        $('#menu-item-set-gluefs-construction').show();
-                        $('#menu-item-set-gluefs-delete').hide();
-                    }
-                }).catch(function(){
-                    createLoggerInfo("GlueFS status 조회 실패");
-                });
-            }
-        }
-        else{
-            cleanGluefsInfo();
-            $('#gluefs-status').text("Health Err");
-            $('#gluefs-color').attr('class','pf-c-label pf-m-red');
-            $('#gluefs-icon').attr('class','fas fa-fw fa-exclamation-triangle');
-            $('#gluefs-edit').attr('class','pf-c-dropdown__toggle pf-m-plain pf-m-disabled');
-            $("#form-select-file-system-service-control option[value=gluefs]").hide();
-            $('#menu-item-set-gluefs-construction').show();
-            $('#menu-item-set-gluefs-delete').hide();
+//                                 $('#gluefs-mount-path').text("/gluefs");
+//                                 $('#gluefs-status').text("Stop");
+//                                 $('#gluefs-color').attr('class','pf-c-label pf-m-red');
+//                                 $('#gluefs-icon').attr('class','fas fa-fw fa-exclamation-triangle');
+//                                 $('#gluefs-edit').attr('class','pf-c-dropdown__toggle pf-m-plain pf-m-enabled');
+//                                 $('#menu-item-set-gluefs-construction').hide();
+//                                 $('#menu-item-set-gluefs-delete').show();
+//                             }
+//                     }
+//                     else{
+//                         cleanGluefsInfo();
+//                         $('#gluefs-status').text("Health Err");
+//                         $('#gluefs-color').attr('class','pf-c-label pf-m-red');
+//                         $('#gluefs-icon').attr('class','fas fa-fw fa-exclamation-triangle');
+//                         $('#gluefs-edit').attr('class','pf-c-dropdown__toggle pf-m-plain pf-m-disabled');
+//                         $("#form-select-file-system-service-control option[value=gluefs]").hide();
+//                         $('#menu-item-set-gluefs-construction').show();
+//                         $('#menu-item-set-gluefs-delete').hide();
+//                     }
+//                 }).catch(function(){
+//                     createLoggerInfo("GlueFS status 조회 실패");
+//                 });
+//             }
+//         }
+//         else{
+//             cleanGluefsInfo();
+//             $('#gluefs-status').text("Health Err");
+//             $('#gluefs-color').attr('class','pf-c-label pf-m-red');
+//             $('#gluefs-icon').attr('class','fas fa-fw fa-exclamation-triangle');
+//             $('#gluefs-edit').attr('class','pf-c-dropdown__toggle pf-m-plain pf-m-disabled');
+//             $("#form-select-file-system-service-control option[value=gluefs]").hide();
+//             $('#menu-item-set-gluefs-construction').show();
+//             $('#menu-item-set-gluefs-delete').hide();
 
-        }
-    }).catch(function(){
-        createLoggerInfo("GlueFS detail 조회 실패");
-    });
-}
+//         }
+//     }).catch(function(){
+//         createLoggerInfo("GlueFS detail 조회 실패");
+//     });
+// }
 /**
  * Meathod Name : cleanGluefsInfo
  * Date Created : 2023.06.02
@@ -864,12 +855,12 @@ function gluefsCheckInfo(){
  * Return  : 없음
  * History  : 2023.05.31 최초 작성
  */
-function cleanGluefsInfo(){
-    $('#gluefs-path').text("N/A");
-    $('#gluefs-mount-path').text("N/A");
-    $('#gluefs-access-ip').text("N/A");
-    $('#gluefs-usage').text("N/A");
-}
+// function cleanGluefsInfo(){
+//     $('#gluefs-path').text("N/A");
+//     $('#gluefs-mount-path').text("N/A");
+//     $('#gluefs-access-ip').text("N/A");
+//     $('#gluefs-usage').text("N/A");
+// }
 /**
  * Meathod Name : nfsCheckInfo
  * Date Created : 2023.06.02
@@ -879,90 +870,90 @@ function cleanGluefsInfo(){
  * Return  : 없음
  * History  : 2023.05.31 최초 작성
  */
-function nfsCheckInfo(){
-    $('#nfs-status').html("상태 체크 중 &bull;&bull;&bull;&nbsp;&nbsp;&nbsp;<svg class='pf-c-spinner pf-m-md' role='progressbar' aria-valuetext='Loading...' viewBox='0 0 100 100' ><circle class='pf-c-spinner__path' cx='50' cy='50' r='45' fill='none'></circle></svg>");
-    $("#nfs-color").attr('class','pf-c-label pf-m-orange');
-    $("#nfs-icon").attr('class','fas fa-fw fa-exclamation-triangle');
+// function nfsCheckInfo(){
+//     $('#nfs-status').html("상태 체크 중 &bull;&bull;&bull;&nbsp;&nbsp;&nbsp;<svg class='pf-c-spinner pf-m-md' role='progressbar' aria-valuetext='Loading...' viewBox='0 0 100 100' ><circle class='pf-c-spinner__path' cx='50' cy='50' r='45' fill='none'></circle></svg>");
+//     $("#nfs-color").attr('class','pf-c-label pf-m-orange');
+//     $("#nfs-icon").attr('class','fas fa-fw fa-exclamation-triangle');
 
-    cockpit.spawn(['python3', pluginpath + '/python/glue/nfs.py','status']).then(function(data){
-        var retVal = JSON.parse(data);
-        var retVal_code_status = JSON.parse(retVal.code);
-        var retVal_val_status = JSON.parse(retVal.val);
+//     cockpit.spawn(['python3', pluginpath + '/python/glue/nfs.py','status']).then(function(data){
+//         var retVal = JSON.parse(data);
+//         var retVal_code_status = JSON.parse(retVal.code);
+//         var retVal_val_status = JSON.parse(retVal.val);
 
-        if(retVal_code_status == 200){
-            if(retVal_val_status[0] == undefined){
-                cleanNfsInfo();
-                $('#nfs-status').text("Health Err");
-                $('#nfs-color').attr('class','pf-c-label pf-m-red');
-                $('#nfs-icon').attr('class','fas fa-fw fa-exclamation-triangle');
-                $('#nfs-edit').attr('class','pf-c-dropdown__toggle pf-m-plain pf-m-disabled');
-                $("#form-select-file-system-service-control option[value=nfs]").hide();
-                $('#menu-item-set-nfs-construction').show();
-                $('#menu-item-set-nfs-delete').hide();
-            }
-            else{
-                cockpit.spawn(['python3', pluginpath + '/python/glue/nfs.py','detail']).then(function(data){
-                    var retVal = JSON.parse(data);
-                    var retVal_code_detail = JSON.parse(retVal.code);
-                    var retVal_val_detail = JSON.parse(retVal.val);
-                    console.log(retVal_val_detail);
+//         if(retVal_code_status == 200){
+//             if(retVal_val_status[0] == undefined){
+//                 cleanNfsInfo();
+//                 $('#nfs-status').text("Health Err");
+//                 $('#nfs-color').attr('class','pf-c-label pf-m-red');
+//                 $('#nfs-icon').attr('class','fas fa-fw fa-exclamation-triangle');
+//                 $('#nfs-edit').attr('class','pf-c-dropdown__toggle pf-m-plain pf-m-disabled');
+//                 $("#form-select-file-system-service-control option[value=nfs]").hide();
+//                 $('#menu-item-set-nfs-construction').show();
+//                 $('#menu-item-set-nfs-delete').hide();
+//             }
+//             else{
+//                 cockpit.spawn(['python3', pluginpath + '/python/glue/nfs.py','detail']).then(function(data){
+//                     var retVal = JSON.parse(data);
+//                     var retVal_code_detail = JSON.parse(retVal.code);
+//                     var retVal_val_detail = JSON.parse(retVal.val);
+//                     console.log(retVal_val_detail);
 
-                    if(retVal_code_detail == 200){
-                        gwvmEtcHostIp('nfs');
-                        ServiceQuota('nfs');
-                            if(retVal_val_status[0].status.running == 1){
+//                     if(retVal_code_detail == 200){
+//                         gwvmEtcHostIp('nfs');
+//                         ServiceQuota('nfs');
+//                             if(retVal_val_status[0].status.running == 1){
 
-                                $('#nfs-path').text("/fs");
-                                $('#nfs-mount-path').text(retVal_val_detail.path);
-                                $('#nfs-status').text("Health OK");
-                                $('#nfs-color').attr('class','pf-c-label pf-m-green');
-                                $('#nfs-icon').attr('class','fas fa-fw fas fa-fw fa-check-circle');
-                                $('#nfs-edit').attr('class','pf-c-dropdown__toggle pf-m-plain pf-m-enabled');
-                                $('#menu-item-set-nfs-construction').hide();
-                                $('#menu-item-set-nfs-delete').show();
-                            }
-                            else{
+//                                 $('#nfs-path').text("/fs");
+//                                 $('#nfs-mount-path').text(retVal_val_detail.path);
+//                                 $('#nfs-status').text("Health OK");
+//                                 $('#nfs-color').attr('class','pf-c-label pf-m-green');
+//                                 $('#nfs-icon').attr('class','fas fa-fw fas fa-fw fa-check-circle');
+//                                 $('#nfs-edit').attr('class','pf-c-dropdown__toggle pf-m-plain pf-m-enabled');
+//                                 $('#menu-item-set-nfs-construction').hide();
+//                                 $('#menu-item-set-nfs-delete').show();
+//                             }
+//                             else{
 
-                                $('#nfs-path').text("/fs");
-                                $('#nfs-mount-path').text(retVal_val_detail.path);
-                                $('#nfs-status').text("Stop");
-                                $('#nfs-color').attr('class','pf-c-label pf-m-red');
-                                $('#nfs-icon').attr('class','fas fa-fw fa-exclamation-triangle');
-                                $('#nfs-edit').attr('class','pf-c-dropdown__toggle pf-m-plain pf-m-enabled');
-                                $('#menu-item-set-nfs-construction').hide();
-                                $('#menu-item-set-nfs-delete').show();
-                            }
-                    }
-                    else{
-                        cleanNfsInfo();
-                        $('#nfs-status').text("Health Err");
-                        $('#nfs-color').attr('class','pf-c-label pf-m-red');
-                        $('#nfs-icon').attr('class','fas fa-fw fa-exclamation-triangle');
-                        $('#nfs-edit').attr('class','pf-c-dropdown__toggle pf-m-plain pf-m-disabled');
-                        $("#form-select-file-system-service-control option[value=nfs]").hide();
-                        $('#menu-item-set-nfs-construction').show();
-                        $('#menu-item-set-nfs-delete').hide();
-                    }
-                }).catch(function(){
-                    createLoggerInfo("NFS status 조회 실패");
-                });
-            }
-        }
-        else{
-            cleanNfsInfo();
-            $('#nfs-status').text("Health Err");
-            $('#nfs-color').attr('class','pf-c-label pf-m-red');
-            $('#nfs-icon').attr('class','fas fa-fw fa-exclamation-triangle');
-            $('#nfs-edit').attr('class','pf-c-dropdown__toggle pf-m-plain pf-m-disabled');
-            $("#form-select-file-system-service-control option[value=nfs]").hide();
-            $('#menu-item-set-nfs-construction').show();
-            $('#menu-item-set-nfs-delete').hide();
-        }
-    }).catch(function(){
-        createLoggerInfo("NFS detail 조회 실패");
-    });
+//                                 $('#nfs-path').text("/fs");
+//                                 $('#nfs-mount-path').text(retVal_val_detail.path);
+//                                 $('#nfs-status').text("Stop");
+//                                 $('#nfs-color').attr('class','pf-c-label pf-m-red');
+//                                 $('#nfs-icon').attr('class','fas fa-fw fa-exclamation-triangle');
+//                                 $('#nfs-edit').attr('class','pf-c-dropdown__toggle pf-m-plain pf-m-enabled');
+//                                 $('#menu-item-set-nfs-construction').hide();
+//                                 $('#menu-item-set-nfs-delete').show();
+//                             }
+//                     }
+//                     else{
+//                         cleanNfsInfo();
+//                         $('#nfs-status').text("Health Err");
+//                         $('#nfs-color').attr('class','pf-c-label pf-m-red');
+//                         $('#nfs-icon').attr('class','fas fa-fw fa-exclamation-triangle');
+//                         $('#nfs-edit').attr('class','pf-c-dropdown__toggle pf-m-plain pf-m-disabled');
+//                         $("#form-select-file-system-service-control option[value=nfs]").hide();
+//                         $('#menu-item-set-nfs-construction').show();
+//                         $('#menu-item-set-nfs-delete').hide();
+//                     }
+//                 }).catch(function(){
+//                     createLoggerInfo("NFS status 조회 실패");
+//                 });
+//             }
+//         }
+//         else{
+//             cleanNfsInfo();
+//             $('#nfs-status').text("Health Err");
+//             $('#nfs-color').attr('class','pf-c-label pf-m-red');
+//             $('#nfs-icon').attr('class','fas fa-fw fa-exclamation-triangle');
+//             $('#nfs-edit').attr('class','pf-c-dropdown__toggle pf-m-plain pf-m-disabled');
+//             $("#form-select-file-system-service-control option[value=nfs]").hide();
+//             $('#menu-item-set-nfs-construction').show();
+//             $('#menu-item-set-nfs-delete').hide();
+//         }
+//     }).catch(function(){
+//         createLoggerInfo("NFS detail 조회 실패");
+//     });
 
-}
+// }
 /**
  * Meathod Name : ServiceQuota
  * Date Created : 2023.09.05
@@ -972,33 +963,33 @@ function nfsCheckInfo(){
  * Return  : 없음
  * History  : 2023.09.05 최초 작성
  */
-function ServiceQuota(type){
+// function ServiceQuota(type){
 
-    if (type == 'smb'){
-        cockpit.spawn(['python3', pluginpath + '/python/glue/smb.py','smb-quota']).then(function(data){
-            var retVal = JSON.parse(data);
-            if(retVal.code == 200){
-                $('#smb-usage').text(retVal.val.usage+"B/"+Byte(retVal.val.quota));
+//     if (type == 'smb'){
+//         cockpit.spawn(['python3', pluginpath + '/python/glue/smb.py','smb-quota']).then(function(data){
+//             var retVal = JSON.parse(data);
+//             if(retVal.code == 200){
+//                 $('#smb-usage').text(retVal.val.usage+"B/"+Byte(retVal.val.quota));
 
-            }
-        });
-    }else if(type == 'gluefs'){
-        cockpit.spawn(['python3', pluginpath + '/python/glue/gluefs.py', 'gluefs-quota']).then(function(data){
-            var retVal = JSON.parse(data);
-            if(retVal.code == 200){
-                $('#gluefs-usage').text(retVal.val.usage+"B/"+Byte(retVal.val.quota));
-                $('#gluefs-path').text(retVal.val.fs_path);
-            }
-        });
-    }else if(type == 'nfs'){
-        cockpit.spawn(['python3', pluginpath + '/python/glue/nfs.py', 'nfs-quota']).then(function(data){
-            var retVal = JSON.parse(data);
-            if(retVal.code == 200){
-                $('#nfs-usage').text(retVal.val.usage+"B/"+Byte(retVal.val.quota));
-            }
-        });
-    }
-}
+//             }
+//         });
+//     }else if(type == 'gluefs'){
+//         cockpit.spawn(['python3', pluginpath + '/python/glue/gluefs.py', 'gluefs-quota']).then(function(data){
+//             var retVal = JSON.parse(data);
+//             if(retVal.code == 200){
+//                 $('#gluefs-usage').text(retVal.val.usage+"B/"+Byte(retVal.val.quota));
+//                 $('#gluefs-path').text(retVal.val.fs_path);
+//             }
+//         });
+//     }else if(type == 'nfs'){
+//         cockpit.spawn(['python3', pluginpath + '/python/glue/nfs.py', 'nfs-quota']).then(function(data){
+//             var retVal = JSON.parse(data);
+//             if(retVal.code == 200){
+//                 $('#nfs-usage').text(retVal.val.usage+"B/"+Byte(retVal.val.quota));
+//             }
+//         });
+//     }
+// }
 /**
  * Meathod Name : gwvmEtcHostIp
  * Date Created : 2023.08.30
@@ -1008,16 +999,16 @@ function ServiceQuota(type){
  * Return  : 없음
  * History  : 2023.08.30 최초 작성
  */
-function gwvmEtcHostIp(type){
-     cockpit.spawn(['grep','gwvm-mngt','/etc/hosts']).then(function(data){
-        var ip = data.split('\t');
-            if(type == 'gluefs'){
-                $('#gluefs-access-ip').text(ip[0]);
-            }else if(type == 'nfs'){
-                $('#nfs-access-ip').text(ip[0]);
-            }
-    });
-}
+// function gwvmEtcHostIp(type){
+//      cockpit.spawn(['grep','gwvm-mngt','/etc/hosts']).then(function(data){
+//         var ip = data.split('\t');
+//             if(type == 'gluefs'){
+//                 $('#gluefs-access-ip').text(ip[0]);
+//             }else if(type == 'nfs'){
+//                 $('#nfs-access-ip').text(ip[0]);
+//             }
+//     });
+// }
 /**
  * Meathod Name : cleanNfsInfo
  * Date Created : 2023.08.30
@@ -1027,12 +1018,12 @@ function gwvmEtcHostIp(type){
  * Return  : 없음
  * History  : 2023.08.30 최초 작성
  */
-function cleanNfsInfo(){
-    $('#nfs-path').text("N/A");
-    $('#nfs-mount-path').text("N/A");
-    $('#nfs-access-ip').text("N/A");
-    $('#nfs-usage').text("N/A");
-}
+// function cleanNfsInfo(){
+//     $('#nfs-path').text("N/A");
+//     $('#nfs-mount-path').text("N/A");
+//     $('#nfs-access-ip').text("N/A");
+//     $('#nfs-usage').text("N/A");
+// }
 /**
  * Meathod Name : Byte
  * Date Created : 2023.08.30
@@ -1108,13 +1099,13 @@ function gwvmInfoSet(){
     $("#gwvm-cluster-icon").attr('class','fas fa-fw fa-exclamation-triangle');
     
     //디테일 정보 가져오기
-    fetch('https://10.10.5.11:8080/api/v1/gwvm/detail/cell',{
+    fetch('https://10.10.2.11:8080/api/v1/gwvm/detail/cell',{
         method: 'GET'
     }).then(res => res.json()).then(data => {
         var retDetailVal = JSON.parse(data.Message);
         console.log(retDetailVal)
         if (retDetailVal.code == "200" || retDetailVal.val["role"] == 'Running') {
-            fetch('https://10.10.5.11:8080/api/v1/gwvm/cell',{
+            fetch('https://10.10.2.11:8080/api/v1/gwvm/cell',{
                 method: 'GET'
             }).then(res => res.json()).then(data => {
                 var retVal = JSON.parse(data.Message);
@@ -1324,7 +1315,7 @@ $('#button-storage-dashboard-connect').on('click', function(){
  * History  : 2024.02.22 최초 작성
  */
 function glueVmList(){
-    fetch('https://10.10.5.11:8080/api/v1/glue/hosts',{
+    fetch('https://10.10.2.11:8080/api/v1/glue/hosts',{
         method: 'GET'
     }).then(res => res.json()).then(data => {
         $('#glue-vm-list tr').remove();
@@ -1461,36 +1452,73 @@ function topTabAction(button_id){
     //본문 영역 숨기기 끝
     switch (button_id) {
         case 'button-tab-glue-vm':
+            $('div[name="div-help-content"]').remove();
+            setHelpInfoContent("Glue 가상머신","Glue 스토리지 클러스터를 구성하는 Glue 가상머신 상태 정보와 IP 정보를 확인할 수 있습니다. 해당 Glue 가상머신을 통해 다양한 스토리지 서비스를 제공합니다.")
+            setHelpInfoContent("게이트웨이 가상머신","스토리지 서비스 게이트웨이 전용 가상머신이며, 선택적으로 해당 가상머신을 구성하여 사용할 수 있습니다.")
             $('#div-gwvm-card').show();
             $('#div-glue-vm-card').show();
             break;
         case 'button-tab-gluefs':
+            $('div[name="div-help-content"]').remove();
+            setHelpInfoContent("Glue File System","Glue 파일 시스템( GlueFS )은 Glue의 분산 객체 저장소인 RADOS 위에 구축된 POSIX 호환 파일 시스템입니다. Glue FS는 공유 홈 디렉터리, HPC 스크래치 공간, 분산 워크플로 공유 스토리지와 같은 다양한 애플리케이션을 위한 다용도 고가용성 고성능 파일 저장소를 제공합니다.")
+            setHelpInfoContent("Glue FS Subvolume Group","GlueFS(Glue File System) 하위 볼륨 그룹을 생성, 조회, 절대 경로 가져오기 및 제거할 수 있습니다. Glue FS의 하위 그룹을 생성하여 효율적으로 GlueFS의 그룹 및 경로(/volumes/볼륨 그룹)를 관리할 수 있습니다.")
             gluefsList();
             $('#div-glue-fs-card').show();
             break;
         case 'button-tab-nfs':
+            $('div[name="div-help-content"]').remove();
+            setHelpInfoContent("NFS Cluster","Glue 가상머신을 클러스터링 하여 NFS 서비스를 제공하는 클러스터를 생성할 수 있습니다. 사용자는 해당 IP와 포트를 통해 NFS에 접근할 수 있습니다.")
+            setHelpInfoContent("NFS Export","NFS Export의 내보내기 경로, GlueFS, 프로토콜, 접근타입, Squash를 설정 및 관리할 수 있습니다.")
             nfsClusterList();
             nfsExportList();
             $('#div-nfs-cluster-card').show();
             $('#div-nfs-export-card').show();
             break;
         case 'button-tab-ingress':
+            $('div[name="div-help-content"]').remove();
+            setHelpInfoContent("INGRESS Service","NFS 서비스에 대한 INGRESS 서비스를 배포하면 가상 IP를 통해 안적적 접근이 가능하고, SCVM 장애 발생시 SCVM간 페일오버가 가능합니다.")
             ingressList();
             $('#div-ingress-card').show();
             break;
         case 'button-tab-iscsi':
+            $('div[name="div-help-content"]').remove();
+            setHelpInfoContent("iSCSI Service","iSCSI 게이트웨이 서비스는 RBD(RADOS 블록 장치) 이미지를 SCSI 디스크로 내보내는 HA(고가용성) iSCSI Target을 제공합니다. iSCSI 프로토콜을 사용하면 클라이언트(이니시에이터)가 TCP/IP 네트워크를 통해 스토리지 장치(대상)에 SCSI 명령을 보낼 수 있으므로 클라이언트가 Glue 블록 스토리지에 액세스할 수 있습니다.")
+            setHelpInfoContent("iSCSI Target","iSCSI Target을 생성하고 관리할 수 있습니다.")
             iscsiServiceList();
             iscsiTargetList();
             $('#div-iscsi-service-card').show();
             $('#div-iscsi-target-card').show();
             break;
         case 'button-tab-smb':
+            $('div[name="div-help-content"]').remove();
+            setHelpInfoContent("SMB Service","Glue 가상머신 별 SMB 서비스를 제공 및 활성화 하고 관리할 수 있습니다. 또한 사용자 정보를 관리할 수 있습니다.")
             smbServiceList();
             $('#div-smb-service-card').show();
+            break;
+        case 'button-tab-object-gateway':
+            $('div[name="div-help-content"]').remove();
+            setHelpInfoContent("Object Gateway","Object Gateway는 Glue 위에 구축된 객체 스토리지 인터페이스입니다. 애플리케이션과 Glue Storage Cluster 사이에 RESTful 게이트웨이를 제공합니다. Glue Object Storage는 S3과 Swift 두 가지 RESTful API와 호환되는 인터페이스로 객체 스토리지 기능을 제공합니다.")
+            // smbServiceList();
+            $('#div-object-gateway-card').show();
+            $('#div-object-gateway-user-card').show();
             break;
         default:
             alert( "탭을 잘못 선택했습니다." );
     }
+}
+
+function setHelpInfoContent(title, contnet){
+    let insert_tr = "";
+    insert_tr += '<div class="pf-c-helper-text__item" style="color:#6a6e73;margin-left: 10px;" name="div-help-content">';
+    insert_tr += '    <span class="pf-c-helper-text__item-icon">';
+    insert_tr += '        <i class="fas fa-fw fa-minus" style="font-size: 0.5rem;" aria-hidden="true"></i>';
+    insert_tr += '    </span>';
+    insert_tr += '    <span class="pf-c-helper-text__item-text">'+title+'</span>';
+    insert_tr += '</div>';
+    insert_tr += '<div class="pf-c-helper-text__item" style="color:#6a6e73;margin-left: 23px;" name="div-help-content">';
+    insert_tr += '    <span class="pf-c-helper-text__item-text">'+contnet+'</span>';
+    insert_tr += '</div>';
+    $('#card-help-content-status').append(insert_tr);
 }
 
 $('#ul-top-tab-list').on('click', function(e){
@@ -1505,15 +1533,16 @@ $('#ul-top-tab-list').on('click', function(e){
 
 
 function setSelectHostsCheckbox(div_id, form_input_id, selectHosts){
+    $('fieldset[name="fieldset-glue-host-list"]').remove();
     // 호스트 선택된 호스트가 없으면 새창으로 세팅 
     if(selectHosts==null){
         //호스트 리스트 불러와서
-        fetch('https://10.10.5.11:8080/api/v1/glue/hosts',{
+        fetch('https://10.10.2.11:8080/api/v1/glue/hosts',{
             method: 'GET'
         }).then(res => res.json()).then(data => {
             $('#'+div_id+' fieldset').remove();
             let insert_tr = "";
-            insert_tr += '<fieldset class="pf-c-select__menu-fieldset" aria-label="Select input">';
+            insert_tr += '<fieldset class="pf-c-select__menu-fieldset" aria-label="Select input" name="fieldset-glue-host-list">';
             for(var i=0; i < data.length; i++){
                 insert_tr += '    <label class="pf-c-check pf-c-select__menu-item">';
                 insert_tr += '        <input class="pf-c-check__input" type="checkbox" id="glue-host-list-"'+i+'" name="glue-hosts-list" value="'+data[i].hostname+'"/>';
@@ -1570,7 +1599,7 @@ function setSmbUserSelectBox(select_box_id, data){
 }
 
 function setGlueFsSelectBox(fs_select_box_id, path_select_box_id, selected_gluefs_id){
-    fetch('https://10.10.5.11:8080/api/v1/gluefs',{
+    fetch('https://10.10.2.11:8080/api/v1/gluefs',{
         method: 'GET',
         headers: {
             'accept': 'application/json',
@@ -1616,7 +1645,7 @@ function setGlueFsVolumeGroupSelectBox(gluefs_name, path_select_box_id, selected
         $('#'+path_select_box_id).append(el);
         return
     }
-    fetch('https://10.10.5.11:8080/api/v1/gluefs/subvolume/group?vol_name='+gluefs_name,{
+    fetch('https://10.10.2.11:8080/api/v1/gluefs/subvolume/group?vol_name='+gluefs_name,{
         method: 'GET',
         headers: {
             'accept': 'application/json',
@@ -1661,7 +1690,7 @@ function setGlueFsVolumeGroupSelectBox(gluefs_name, path_select_box_id, selected
 }
 
 function setNfsClusterSelectBox(select_box_id, selected_cluster_id){
-    fetch('https://10.10.5.11:8080/api/v1/nfs',{
+    fetch('https://10.10.2.11:8080/api/v1/nfs',{
         method: 'GET',
         headers: {
             'accept': 'application/json',
@@ -1695,7 +1724,7 @@ function setNfsClusterSelectBox(select_box_id, selected_cluster_id){
 }
 
 function setNfsClusterNameSelectBox(select_box_id){
-    fetch('https://10.10.5.11:8080/api/v1/service?service_type=nfs',{
+    fetch('https://10.10.2.11:8080/api/v1/service?service_type=nfs',{
         method: 'GET',
         headers: {
             'accept': 'application/json',
@@ -1720,7 +1749,7 @@ function setNfsClusterNameSelectBox(select_box_id){
 }
 
 function setPoolSelectBox(select_box_id, selected_pool_id){
-    fetch('https://10.10.5.11:8080/api/v1/pool?pool_type=rbd',{
+    fetch('https://10.10.2.11:8080/api/v1/pool?pool_type=rbd',{
         method: 'GET',
         headers: {
             'accept': 'application/json',
@@ -1752,7 +1781,7 @@ function setPoolSelectBox(select_box_id, selected_pool_id){
 
 function setIscsiPortalCheckbox(div_id, form_input_id, portals_json){
     //호스트 리스트 불러와서
-    fetch('https://10.10.5.11:8080/api/v1/glue/hosts',{
+    fetch('https://10.10.2.11:8080/api/v1/glue/hosts',{
         method: 'GET'
     }).then(res => res.json()).then(data => {
         $('#'+div_id+' fieldset').remove();
@@ -1851,7 +1880,7 @@ function setIscsiPortalCheckbox(div_id, form_input_id, portals_json){
 
 function setImageSelectBox(div_id, form_input_id, disks_json){
     //호스트 리스트 불러와서
-    fetch('https://10.10.5.11:8080/api/v1/image',{
+    fetch('https://10.10.2.11:8080/api/v1/image',{
         method: 'GET'
     }).then(res => res.json()).then(data => {
         $('#'+div_id+' fieldset').remove();

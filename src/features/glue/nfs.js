@@ -8,7 +8,7 @@
 function nfsClusterList(){
     //조회
     $('#button-nfs-cluster-search').html("<svg class='pf-c-spinner pf-m-md' role='progressbar' aria-valuetext='Loading...' viewBox='0 0 100 100' ><circle class='pf-c-spinner__path' cx='50' cy='50' r='45' fill='none'></circle></svg>");
-    fetch('https://10.10.5.11:8080/api/v1/nfs',{
+    fetch('https://10.10.2.11:8080/api/v1/nfs',{
         method: 'GET',
         headers: {
             'accept': 'application/json',
@@ -124,7 +124,7 @@ $('#button-execution-modal-create-nfs-cluster').on('click', function(){
         $("#modal-status-alert-title").html("NFS Cluster 생성 실패");
         $("#modal-status-alert-body").html("NFS Cluster 생성을 실패하였습니다.");
     
-        fetch('https://10.10.5.11:8080/api/v1/nfs/'+nfs_cluster_id+'/'+nfs_cluster_port,{
+        fetch('https://10.10.2.11:8080/api/v1/nfs/'+nfs_cluster_id+'/'+nfs_cluster_port,{
             method: 'POST',
             headers: {
                 'accept': 'application/json',
@@ -176,7 +176,7 @@ $('#button-execution-modal-remove-nfs-cluster').on('click', function(){
     $("#modal-status-alert-title").html("NFS Cluster 삭제 실패");
     $("#modal-status-alert-body").html("NFS Cluster 삭제를 실패하였습니다.");
 
-    fetch('https://10.10.5.11:8080/api/v1/nfs/'+nfs_cluster_id,{
+    fetch('https://10.10.2.11:8080/api/v1/nfs/'+nfs_cluster_id,{
         method: 'DELETE',
         headers: {
             'accept': 'application/json',
@@ -206,7 +206,7 @@ $('#button-execution-modal-remove-nfs-cluster').on('click', function(){
 function nfsExportList(){
     //조회
     $('#button-nfs-export-search').html("<svg class='pf-c-spinner pf-m-md' role='progressbar' aria-valuetext='Loading...' viewBox='0 0 100 100' ><circle class='pf-c-spinner__path' cx='50' cy='50' r='45' fill='none'></circle></svg>");
-    fetch('https://10.10.5.11:8080/api/v1/nfs/export',{
+    fetch('https://10.10.2.11:8080/api/v1/nfs/export',{
         method: 'GET',
         headers: {
             'accept': 'application/json',
@@ -297,7 +297,7 @@ $('#button-execution-modal-remove-nfs-export').on('click', function(){
     $("#modal-status-alert-title").html("NFS Export 삭제 실패");
     $("#modal-status-alert-body").html("NFS Export 삭제를 실패하였습니다.");
 
-    fetch('https://10.10.5.11:8080/api/v1/nfs/export/'+nfs_cluster_id+"/"+nfs_export_id,{
+    fetch('https://10.10.2.11:8080/api/v1/nfs/export/'+nfs_cluster_id+"/"+nfs_export_id,{
         method: 'DELETE',
         headers: {
             'accept': 'application/json',
@@ -359,7 +359,7 @@ $('#button-execution-modal-create-nfs-export').on('click', function(){
         $("#modal-status-alert-title").html("NFS Export 생성 실패");
         $("#modal-status-alert-body").html("NFS Export 생성을 실패하였습니다.");
     
-        fetch('https://10.10.5.11:8080/api/v1/nfs/export/'+nfs_cluster_id,{
+        fetch('https://10.10.2.11:8080/api/v1/nfs/export/'+nfs_cluster_id,{
             method: 'POST',
             headers: {
                 'accept': 'application/json',
@@ -390,7 +390,7 @@ $('#button-execution-modal-create-nfs-export').on('click', function(){
 
 /** nfs export update 관련 action start */
 function nfsExportEdit(cluster_id, export_id){
-    fetch('https://10.10.5.11:8080/api/v1/nfs/export?cluster_id='+cluster_id,{
+    fetch('https://10.10.2.11:8080/api/v1/nfs/export?cluster_id='+cluster_id,{
         method: 'GET',
         headers: {
             'accept': 'application/json',
@@ -452,7 +452,7 @@ $('#button-execution-modal-update-nfs-export').on('click', function(){
 
     console.log(1111)
     console.log(body_val);
-    fetch('https://10.10.5.11:8080/api/v1/nfs/export/'+nfs_cluster_id,{
+    fetch('https://10.10.2.11:8080/api/v1/nfs/export/'+nfs_cluster_id,{
         method: 'PUT',
         headers: {
             'accept': 'application/json',

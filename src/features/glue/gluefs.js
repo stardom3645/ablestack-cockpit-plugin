@@ -9,7 +9,7 @@ function gluefsList(){
     //조회
     $('#gluefs-subvolume-group-list tr').remove();
     $('#button-gluefs-search').html("<svg class='pf-c-spinner pf-m-md' role='progressbar' aria-valuetext='Loading...' viewBox='0 0 100 100' ><circle class='pf-c-spinner__path' cx='50' cy='50' r='45' fill='none'></circle></svg>");
-    fetch('https://10.10.5.11:8080/api/v1/gluefs',{
+    fetch('https://10.10.2.11:8080/api/v1/gluefs',{
         method: 'GET',
         headers: {
             'accept': 'application/json',
@@ -117,7 +117,7 @@ $('#button-execution-modal-create-gluefs').on('click', function(){
         $("#modal-status-alert-title").html("Glue File System 생성 실패");
         $("#modal-status-alert-body").html("Glue File System 생성을 실패하였습니다.");
     
-        fetch('https://10.10.5.11:8080/api/v1/gluefs/'+gluefs_id,{
+        fetch('https://10.10.2.11:8080/api/v1/gluefs/'+gluefs_id,{
             method: 'POST',
             headers: {
                 'accept': 'application/json',
@@ -168,7 +168,7 @@ $('#button-execution-modal-remove-gluefs').on('click', function(){
     $("#modal-status-alert-title").html("Glue File System 삭제 실패");
     $("#modal-status-alert-body").html("Glue File System 삭제를 실패하였습니다.");
 
-    fetch('https://10.10.5.11:8080/api/v1/gluefs/'+gluefs_id,{
+    fetch('https://10.10.2.11:8080/api/v1/gluefs/'+gluefs_id,{
         method: 'DELETE',
         headers: {
             'accept': 'application/json',
@@ -202,7 +202,7 @@ function gluefsSubvolumeGroupList(gluefs_name, gluefs_data_pool){
     $('#gluefs-select-id').val(gluefs_name);
     $('#gluefs-select-data-pool').val(gluefs_data_pool);
 
-    fetch('https://10.10.5.11:8080/api/v1/gluefs/subvolume/group?vol_name='+gluefs_name,{
+    fetch('https://10.10.2.11:8080/api/v1/gluefs/subvolume/group?vol_name='+gluefs_name,{
         method: 'GET',
         headers: {
             'accept': 'application/json',
@@ -290,7 +290,7 @@ $('#button-execution-modal-create-gluefs-subvolume-group').on('click', function(
         $("#modal-status-alert-title").html("Glue FS Subvolume Group 생성 실패");
         $("#modal-status-alert-body").html("Glue FS Subvolume Group 생성을 실패하였습니다.");
     
-        fetch('https://10.10.5.11:8080/api/v1/gluefs/subvolume/group',{
+        fetch('https://10.10.2.11:8080/api/v1/gluefs/subvolume/group',{
             method: 'POST',
             headers: {
                 'accept': 'application/json',
@@ -349,7 +349,7 @@ $('#button-execution-modal-update-gluefs-subvolume-group').on('click', function(
         $("#modal-status-alert-title").html("Glue FS Subvolume Group 생성 실패");
         $("#modal-status-alert-body").html("Glue FS Subvolume Group 생성을 실패하였습니다.");
     
-        fetch('https://10.10.5.11:8080/api/v1/gluefs/subvolume/group',{
+        fetch('https://10.10.2.11:8080/api/v1/gluefs/subvolume/group',{
             method: 'PUT',
             headers: {
                 'accept': 'application/json',
@@ -407,7 +407,7 @@ $('#button-execution-modal-remove-gluefs-subvolume-group').on('click', function(
     $("#modal-status-alert-title").html("Glue FS Subvolume Group 삭제 실패");
     $("#modal-status-alert-body").html("Glue FS Subvolume Group 삭제를 실패하였습니다.");
 
-    fetch('https://10.10.5.11:8080/api/v1/gluefs/subvolume/group?vol_name='+vol_name+'&group_name='+group_name,{
+    fetch('https://10.10.2.11:8080/api/v1/gluefs/subvolume/group?vol_name='+vol_name+'&group_name='+group_name,{
         method: 'DELETE',
         headers: {
             'accept': 'application/json',
