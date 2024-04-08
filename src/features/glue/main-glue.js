@@ -1,8 +1,8 @@
 /**
- * File Name : main_glue.js
+ * File Name : main-glue.js
  * Date Created : 2023.04.25
  * Writer  :배태주
- * Description : main_glue.html에서 발생하는 이벤트 처리를 위한 JavaScript
+ * Description : main-glue.html에서 발생하는 이벤트 처리를 위한 JavaScript
  **/
 
 // document.ready 영역 시작
@@ -1357,8 +1357,8 @@ function glueVmList(){
     });
 }
 
-// glue 호스트 리스트 기능
-$('#button-glue-hosts-list-setting, #button-ingress-glue-hosts-list-setting, #button-iscsi-glue-hosts-list-setting').on('click', function(e){
+// glue 배치 호스트 리스트 기능
+$('#button-glue-hosts-list-setting, #button-ingress-glue-hosts-list-setting, #button-iscsi-glue-hosts-list-setting, #button-object-gateway-glue-hosts-list-setting').on('click', function(e){
     $('#'+e.target.parentElement.children[2].id).toggle();
 });
 
@@ -1448,6 +1448,8 @@ function topTabAction(button_id){
     $('#div-iscsi-service-card').hide();
     $('#div-iscsi-target-card').hide();
     $('#div-smb-service-card').hide();
+    $('#div-object-gateway-card').hide();
+    $('#div-object-gateway-user-card').hide();
 
     //본문 영역 숨기기 끝
     switch (button_id) {
@@ -1498,7 +1500,7 @@ function topTabAction(button_id){
         case 'button-tab-object-gateway':
             $('div[name="div-help-content"]').remove();
             setHelpInfoContent("Object Gateway","Object Gateway는 Glue 위에 구축된 객체 스토리지 인터페이스입니다. 애플리케이션과 Glue Storage Cluster 사이에 RESTful 게이트웨이를 제공합니다. Glue Object Storage는 S3과 Swift 두 가지 RESTful API와 호환되는 인터페이스로 객체 스토리지 기능을 제공합니다.")
-            // smbServiceList();
+            objectGatewayList();
             $('#div-object-gateway-card').show();
             $('#div-object-gateway-user-card').show();
             break;
@@ -1545,7 +1547,7 @@ function setSelectHostsCheckbox(div_id, form_input_id, selectHosts){
             insert_tr += '<fieldset class="pf-c-select__menu-fieldset" aria-label="Select input" name="fieldset-glue-host-list">';
             for(var i=0; i < data.length; i++){
                 insert_tr += '    <label class="pf-c-check pf-c-select__menu-item">';
-                insert_tr += '        <input class="pf-c-check__input" type="checkbox" id="glue-host-list-"'+i+'" name="glue-hosts-list" value="'+data[i].hostname+'"/>';
+                insert_tr += '        <input class="pf-c-check__input" type="checkbox" name="glue-hosts-list" value="'+data[i].hostname+'"/>';
                 insert_tr += '        <span class="pf-c-check__label">'+data[i].hostname+'</span>';
                 insert_tr += '    </label>';
             }

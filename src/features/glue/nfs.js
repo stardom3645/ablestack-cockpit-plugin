@@ -213,10 +213,8 @@ function nfsExportList(){
             'Content-Type': 'application/x-www-form-urlencoded'
         }
     }).then(res => res.json()).then(data => {
-        if(data.length != 0){
+        if(data != null && data.length != 0){
             $('#nfs-export-list tr').remove();
-            console.log(1111)
-                console.log(data)
             for(var i=0; i < data.length; i++){
                 let insert_tr = "";
                 
@@ -270,7 +268,7 @@ $('#button-nfs-export-search').on('click', function(){
 function nfsExportDelete(export_id, pseudo, cluster_id){
     $('#div-modal-remove-nfs-export').show();
     $('#nfs-export-id').val(export_id);
-    $('#nfs-cluster-id').val(cluster_id);
+    $('#export-nfs-cluster-id').val(cluster_id);
     $('#nfs-export-text').text('선택하신 '+pseudo+" : "+cluster_id+' 을(를) 삭제하시겠습니까?');
 }
 
@@ -288,7 +286,7 @@ $('#button-cancel-modal-remove-nfs-export').on('click', function(){
 
 $('#button-execution-modal-remove-nfs-export').on('click', function(){
     var nfs_export_id = $('#nfs-export-id').val()
-    var nfs_cluster_id = $('#nfs-cluster-id').val()
+    var nfs_cluster_id = $('#export-nfs-cluster-id').val()
     
     $('#div-modal-remove-nfs-export').hide();
     $('#div-modal-spinner-header-txt').text('NFS Export를 삭제하고 있습니다.');

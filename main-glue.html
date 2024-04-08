@@ -50,7 +50,7 @@
                     </li>
                     <li class="pf-c-tabs__item">
                         <button type="button" class="pf-c-tabs__link" id="button-tab-object-gateway">
-                            <span class="pf-c-tabs__item-text">SMB</span>
+                            <span class="pf-c-tabs__item-text">OBJECT GATEWAY</span>
                         </button>
                     </li>
                 </ul>
@@ -711,7 +711,7 @@
                                                 </tr>
                                             </thead>
                                             <tbody role="rowgroup" id="object-gateway-list">
-                                                <tr role="row">
+                                                <!-- <tr role="row">
                                                     <td role="cell" data-label="이름">ogject gateway</td>
                                                     <td role="cell" data-label="호스트 명">gwvm</td>
                                                     <td role="cell" data-label="PORT">2049</td>
@@ -727,7 +727,7 @@
                                                             </ul>
                                                         </div>
                                                     </td>
-                                                </tr>
+                                                </tr> -->
                                             </tbody>
                                         </table>
                                     </dl>
@@ -1760,7 +1760,7 @@
                 <button id="button-cancel-modal-remove-nfs-export" aria-disabled="false" class="pf-c-button pf-m-link" type="button" data-ouia-safe="true">취소</button>
             </footer>
             <input type="text" id="nfs-export-id" name="nfs-export-id" value="" style="display:none" disabled/>
-            <input type="text" id="nfs-cluster-id" name="nfs-cluster-id" value="" style="display:none" disabled/>
+            <input type="text" id="export-nfs-cluster-id" name="export-nfs-cluster-id" value="" style="display:none" disabled/>
         </div>
     </div>
 </div>
@@ -1876,7 +1876,6 @@
     </div>
 </div>
 <!-- ingress 생성 : Modal 영역 끝 -->
-
 <!-- ingress 삭제 : Modal 영역 시작 -->
 <div id="div-modal-remove-ingress" class="pf-c-backdrop" style="display:none">
     <div class="pf-l-bullseye">
@@ -2604,8 +2603,133 @@
     </div>
 </div>
 <!-- smb user 삭제 : Modal 영역 끝 -->
-
-
+<!-- object gateway 삭제 : Modal 영역 시작 -->
+<div id="div-modal-remove-object-gateway" class="pf-c-backdrop" style="display:none">
+    <div class="pf-l-bullseye">
+        <div class="pf-c-modal-box pf-m-sm" role="dialog" aria-modal="true" aria-label="Remove Object Gateway">
+            <button id="button-close-modal-remove-object-gateway" aria-disabled="false" aria-label="Close" class="pf-c-button pf-m-plain" type="button">
+                <i class="fas fa-times" aria-hidden="true"></i>
+            </button>
+            <header class="pf-c-modal-box__header"><h1 class="pf-c-modal-box__title"><span class="pf-c-modal-box__title-text">NFS Cluster 삭제</span></h1></header>
+            <div class="pf-c-modal-box__body">
+                <div id="object-gateway-text"></div>
+            </div>
+            <footer class="pf-c-modal-box__footer">
+                <button id="button-execution-modal-remove-object-gateway" aria-disabled="false" class="pf-c-button pf-m-primary" type="button" data-ouia-safe="true">실행</button>
+                <button id="button-cancel-modal-remove-object-gateway" aria-disabled="false" class="pf-c-button pf-m-link" type="button" data-ouia-safe="true">취소</button>
+            </footer>
+            <input type="text" id="object-gateway-id" name="object-gateway-id-id" value="" style="display:none" disabled/>
+        </div>
+    </div>
+</div>
+<!-- object gateway 삭제 : Modal 영역 끝 -->
+<!-- object gateway 생성 : Modal 영역 시작 -->
+<div id="div-modal-create-object-gateway" class="pf-c-backdrop" style="display:none">
+    <div class="pf-l-bullseye">
+        <div class="pf-c-modal-box pf-m-sm" role="dialog" aria-modal="true" aria-label="Create Object Gateway">
+            <button id="button-close-modal-create-object-gateway" aria-disabled="false" aria-label="Close" class="pf-c-button pf-m-plain" type="button">
+                <i class="fas fa-times" aria-hidden="true"></i>
+            </button>
+            <header class="pf-c-modal-box__header"><h1 class="pf-c-modal-box__title"><span class="pf-c-modal-box__title-text">Object Gateway 생성</span></h1></header>
+            <form novalidate class="pf-c-form pf-m-horizontal" style="margin-left:15px;margin-top:10px">
+                <section class="pf-c-form__section">
+                    <div class="pf-c-form__group">
+                        <div class="pf-c-form__group-label" style="margin-left: 15px;">
+                            <label class="pf-c-form__label" for="form-input-object-gateway-id" style="margin-left: 10px;width: 120px;">
+                                <span class="pf-c-form__label-text">이름</span>
+                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                            </label>
+                        </div>
+                        <div class="pf-c-form__group-control">
+                            <input class="pf-c-form-control" style="width:50%" type="text" id="form-input-object-gateway-id" name="form-input-object-gateway-id"/>
+                        </div>
+                    </div>
+                    <div class="pf-c-form__group">
+                        <div class="pf-c-form__group-label" style="margin-left: 20px;">
+                            <label class="pf-c-form__label" for="button-object-gateway-glue-hosts-list-setting" style="margin-left: 10px;width: 120px;">
+                                <span class="pf-c-form__label-text">배치 호스트</span>
+                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                            </label>
+                        </div>
+                        <div class="pf-c-form__group-control">
+                            <div class="pf-c-select pf-m-expanded">
+                                <input class="pf-c-form-control" type="text" style="width:60%" id="form-input-object-gateway-placement-hosts" name="form-input-object-gateway-placement-hosts" disabled/>
+                                <button class="pf-c-select__toggle" type="button" style="width: 60%;" id="button-object-gateway-glue-hosts-list-setting" aria-haspopup="true" aria-expanded="true" aria-labelledby="select-checkbox-expanded-toggle">
+                                    <div class="pf-c-select__toggle-wrapper">
+                                        <span class="pf-c-select__toggle-text">선택하십시오.</span>
+                                    </div>
+                                    <span class="pf-c-select__toggle-arrow">
+                                        <i class="fas fa-times" aria-hidden="true"></i>
+                                        <i class="fas fa-caret-down" aria-hidden="true"></i>
+                                    </span>
+                                </button>
+                                <!-- <div class="pf-c-select__menu" style="min-width: 60%;height: 250px;overflow: auto;"> -->
+                                <div class="pf-c-select__menu" style="min-width: 60%;display: none;" id="div-object-gateway-hosts-list">
+                                    <!-- <fieldset class="pf-c-select__menu-fieldset" aria-label="Select input">
+                                        <label class="pf-c-check pf-c-select__menu-item" for="glue-host-list-1">
+                                            <input class="pf-c-check__input" type="checkbox" id="glue-host-list-1" name="glue-hosts-list" value="scvm1"/>
+                                            <span class="pf-c-check__label">scvm1</span>
+                                        </label>
+                                        <label class="pf-c-check pf-c-select__menu-item" for="glue-host-list-2">
+                                            <input class="pf-c-check__input" type="checkbox" id="glue-host-list-2" name="glue-hosts-list" value="scvm2"/>
+                                            <span class="pf-c-check__label">scvm2</span>
+                                        </label>
+                                        <label class="pf-c-check pf-c-select__menu-item" for="glue-host-list-3">
+                                            <input class="pf-c-check__input" type="checkbox" id="glue-host-list-3" name="glue-hosts-list" value="scvm3"/>
+                                            <span class="pf-c-check__label">scvm3</span>
+                                        </label>
+                                        <label class="pf-c-check pf-c-select__menu-item" for="glue-host-list-4">
+                                            <input class="pf-c-check__input" type="checkbox" id="glue-host-list-4" name="glue-hosts-list" value="gwvm"/>
+                                            <span class="pf-c-check__label">gwvm</span>
+                                        </label>
+                                    </fieldset> -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pf-c-form__group">
+                        <div class="pf-c-form__group-label" style="margin-left: 20px;">
+                            <label class="pf-c-form__label" for="form-input-object-gateway-zone-group" style="margin-left: 10px;width: 120px;">
+                                <span class="pf-c-form__label-text">Zone 그룹</span>
+                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                            </label>
+                        </div>
+                        <div class="pf-c-form__group-control">
+                            <input class="pf-c-form-control" style="width:50%" type="text" id="form-input-object-gateway-zone-group" name="form-input-object-gateway-zone-group" value="default" disabled/>
+                        </div>
+                    </div>
+                    <div class="pf-c-form__group">
+                        <div class="pf-c-form__group-label" style="margin-left: 20px;">
+                            <label class="pf-c-form__label" for="form-input-object-gateway-zone" style="margin-left: 10px;width: 120px;">
+                                <span class="pf-c-form__label-text">Zone</span>
+                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                            </label>
+                        </div>
+                        <div class="pf-c-form__group-control">
+                            <input class="pf-c-form-control" style="width:50%" type="text" id="form-input-object-gateway-zone" name="form-input-object-gateway-zone" value="default" disabled/>
+                        </div>
+                    </div>
+                    <div class="pf-c-form__group">
+                        <div class="pf-c-form__group-label" style="margin-left: 20px;">
+                            <label class="pf-c-form__label" for="form-input-object-gateway-port" style="margin-left: 10px;width: 120px;">
+                                <span class="pf-c-form__label-text">포트 번호</span>
+                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                            </label>
+                        </div>
+                        <div class="pf-c-form__group-control">
+                            <input class="pf-c-form-control" style="width:50%" type="text" id="form-input-object-gateway-port" name="form-input-object-gateway-port"/>
+                        </div>
+                    </div>
+                </section>
+            </form>
+            <footer class="pf-c-modal-box__footer">
+                <button id="button-execution-modal-create-object-gateway" aria-disabled="false" class="pf-c-button pf-m-primary" type="button" data-ouia-safe="true">실행</button>
+                <button id="button-cancel-modal-create-object-gateway" aria-disabled="false" class="pf-c-button pf-m-link" type="button" data-ouia-safe="true">취소</button>
+            </footer>
+        </div>
+    </div>
+</div>
+<!-- object gateway 생성 : Modal 영역 끝 -->
 
 
 
@@ -2634,13 +2758,14 @@
 <!-- 모달 영역 끝  -->
 
 <!-- 해당 페이지에 필요한 javascript 파일 추가 영역 시작 -->
-<script src="./src/features/glue/main_glue.js"></script>
+<script src="./src/features/glue/main-glue.js"></script>
 <script src="./src/features/glue/gateway-vm-status.js"></script>
 <script src="./src/features/glue/gluefs.js"></script>
 <script src="./src/features/glue/nfs.js"></script>
 <script src="./src/features/glue/ingress.js"></script>
 <script src="./src/features/glue/iscsi.js"></script>
 <script src="./src/features/glue/smb.js"></script>
+<script src="./src/features/glue/object-gateway.js"></script>
 <script src="./src/common/validation.js"></script>
 <script src="./src/common/logger.js"></script>
 <!-- 해당 페이지에 필요한 javascript 파일 추가 영역 끝 -->

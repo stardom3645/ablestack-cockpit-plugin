@@ -10,7 +10,7 @@ $(document).ready(function(){
     cockpit.script(["hostname"])
     .then(function (hostname) {
         if (hostname.includes("scvm")) {
-            $('#index-page').load("main_glue.html");
+            $('#index-page').load("main-glue.html");
         } else {
             $('#index-page').load("main.html");
         }

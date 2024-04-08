@@ -2,7 +2,7 @@
  * File Name : gateway-vm-status.js
  * Date Created : 2024.01.25
  * Writer  : 배태주
- * Description : main_glue.html에서 gateway 가상머신 관련 발생하는 이벤트 처리를 위한 JavaScript
+ * Description : main-glue.html에서 gateway 가상머신 관련 발생하는 이벤트 처리를 위한 JavaScript
 **/
 
 /** gateway vm start 관련 action start */
