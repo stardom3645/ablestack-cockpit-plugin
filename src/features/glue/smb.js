@@ -464,13 +464,13 @@ function smbServiceCreateValidateCheck(){
         alert("SMB 공유 폴더 명을 입력해주세요.");
         validate_check = false;
     } else if(!nameCheck(folder_name)) {
-        alert("SMB 공유 폴더 명 생성 규칙은 영문, 숫자 특수문자 '.','-','_' 만 입력 가능합니다.");
+        alert("SMB 공유 폴더 명 생성 규칙은 영문, 숫자 특수문자 '-','_' 만 입력 가능합니다.");
         validate_check = false;
     } else if (username == "") {
         alert("사용자 이름을 입력해주세요.");
         validate_check = false;
     } else if (!nameCheck(username)) {
-        alert("사용자 이름 생성 규칙은 영문, 숫자 특수문자 '.','-','_' 만 입력 가능하고 영문으로 시작해야 합니다.");
+        alert("사용자 이름 생성 규칙은 영문, 숫자 특수문자 '-','_' 만 입력 가능하고 영문으로 시작해야 합니다.");
         validate_check = false;
     } else if (unavailableIdCheck(username)) {
         alert(username+" 은(는) 사용할 수 없는 사용자 명입니다.");
@@ -499,7 +499,7 @@ function smbUserCreateValidateCheck(){
         alert("사용자 이름을 입력해주세요.");
         validate_check = false;
     } else if (!nameCheck(username)) {
-        alert("사용자 이름 생성 규칙은 영문, 숫자 특수문자 '.','-','_' 만 입력 가능하고 영문으로 시작해야 합니다.");
+        alert("사용자 이름 생성 규칙은 영문, 숫자 특수문자 '-','_' 만 입력 가능하고 영문으로 시작해야 합니다.");
         validate_check = false;
     } else if (unavailableIdCheck(username)) {
         alert(username+" 은(는) 사용할 수 없는 사용자 명입니다.");
@@ -523,7 +523,7 @@ function smbUserUpdateValidateCheck(){
         alert("사용자를 선택해주세요.");
         validate_check = false;
     } else if (!nameCheck(username)) {
-        alert("사용자 이름 생성 규칙은 영문, 숫자 특수문자 '.','-','_' 만 입력 가능하고 영문으로 시작해야 합니다.");
+        alert("사용자 이름 생성 규칙은 영문, 숫자 특수문자 '-','_' 만 입력 가능하고 영문으로 시작해야 합니다.");
         validate_check = false;
     } else if (password == "") {
         alert("비밀번호를 입력해주세요.");

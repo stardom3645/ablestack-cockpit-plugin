@@ -633,7 +633,7 @@ function iscsiCreateValidateCheck(){
         alert("API 유저 이름을 입력해주세요.");
         validate_check = false;
     } else if (!nameCheck(api_user)) {
-        alert("API 유저 이름 생성 규칙은 영문, 숫자 특수문자 '.','-','_' 만 입력 가능하고 영문으로 시작해야 합니다.");
+        alert("API 유저 이름 생성 규칙은 영문, 숫자 특수문자 '-','_' 만 입력 가능하고 영문으로 시작해야 합니다.");
         validate_check = false;
     } else if (api_password == "") {
         alert("API 유저 패스워드을 입력해주세요.");

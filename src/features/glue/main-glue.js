@@ -222,7 +222,12 @@ $('i[name=icon-help-action]').on('click',function(e){
     } else if (e.target.id == "icon-help-smb-service") {
         $("#modal-help-title").html("SMB Service 도움말");
         $("#modal-help-body").html("SMB 서비스를 제공 및 활성화 하고 관리할 수 있습니다.");
-    }
+    } else if (e.target.id == "icon-help-object-gateway") {
+        $("#modal-help-title").html("Object Gateway 도움말");
+        $("#modal-help-body").html("Object Gateway는 Glue 위에 구축된 객체 스토리지 인터페이스입니다. 애플리케이션과 Glue Storage Cluster 사이에 RESTful 게이트웨이를 제공합니다. Glue Object Storage는 S3과 Swift 두 가지 RESTful API와 호환되는 인터페이스로 객체 스토리지 기능을 제공합니다.");
+    } else if (e.target.id == "icon-help-object-gateway-user") {
+        $("#modal-help-title").html("Object Gateway User 도움말");
+        $("#modal-help-body").html("Object Gateway User는 객체 스토리지 사용자정보를 관리하는 기능으로서 엑세스 정보와 사용량 제한 등 관리기능을 제공합니다.");    }
 
     $('#div-modal-help').show();
 })
@@ -1041,20 +1046,20 @@ function Byte(size){
     if(size < (1024*1024))
     {
         ret_byte = parseFloat(size)/1024;
-        ret_byte_name = "KiB";
+        ret_byte_name = " KiB";
     }
     else if (size < (1024*1024*1024))
     {
         ret_byte = parseFloat(size)/(1024*1024);
-        ret_byte_name = "MiB";
+        ret_byte_name = " MiB";
     }
     else if (size < (1024*1024*1024*1024)){
         ret_byte = parseFloat(size)/(1024*1024*1024);
-        ret_byte_name = "GiB";
+        ret_byte_name = " GiB";
     }
     else if (size < (1024*1024*1024*1024*1024)){
         ret_byte = parseFloat(size)/(1024*1024*1024*1024);
-        ret_byte_name = "TiB";
+        ret_byte_name = " TiB";
     }
 
     var bytes = parseInt(ret_byte);
@@ -1500,7 +1505,9 @@ function topTabAction(button_id){
         case 'button-tab-object-gateway':
             $('div[name="div-help-content"]').remove();
             setHelpInfoContent("Object Gateway","Object Gateway는 Glue 위에 구축된 객체 스토리지 인터페이스입니다. 애플리케이션과 Glue Storage Cluster 사이에 RESTful 게이트웨이를 제공합니다. Glue Object Storage는 S3과 Swift 두 가지 RESTful API와 호환되는 인터페이스로 객체 스토리지 기능을 제공합니다.")
+            setHelpInfoContent("Object Gateway User","Object Gateway User는 객체 스토리지 사용자정보를 관리하는 기능으로서 엑세스 정보와 사용량 제한 등 관리기능을 제공합니다.")
             objectGatewayList();
+            objectGatewayUserList();
             $('#div-object-gateway-card').show();
             $('#div-object-gateway-user-card').show();
             break;

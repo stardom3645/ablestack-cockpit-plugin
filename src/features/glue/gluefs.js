@@ -453,7 +453,7 @@ function gluefsValidateCheck(){
         alert("GlueFS 이름를 입력해주세요.");
         validate_check = false;
     } else if (!nameCheck(gluefs_id)) {
-        alert("GlueFS 이름 생성 규칙은 영문, 숫자 특수문자 '.','-','_' 만 입력 가능하고 영문으로 시작해야 합니다.");
+        alert("GlueFS 이름 생성 규칙은 영문, 숫자 특수문자 '-','_' 만 입력 가능하고 영문으로 시작해야 합니다.");
         validate_check = false;
     }
  
@@ -470,7 +470,7 @@ function gluefsSubvolumueGroupCreateValidateCheck(){
         alert("Group 이름을 입력해주세요.");
         validate_check = false;
     } else if (!pathNameCheck(group_name)) {
-        alert("Group 이름 생성 규칙은 영문, 숫자 특수문자 '.','-','_' 만 입력 가능합니다.");
+        alert("Group 이름 생성 규칙은 영문, 숫자 특수문자 '-','_' 만 입력 가능합니다.");
         validate_check = false;
     } else if (size == "") {
         alert("용량을 입력해주세요.");
@@ -493,7 +493,7 @@ function gluefsSubvolumueGroupUpdateValidateCheck(){
         alert("Group 이름을 입력해주세요.");
         validate_check = false;
     } else if (!pathNameCheck(group_name)) {
-        alert("Group 이름 생성 규칙은 영문, 숫자 특수문자 '.','-','_' 만 입력 가능합니다.");
+        alert("Group 이름 생성 규칙은 영문, 숫자 특수문자 '-','_' 만 입력 가능합니다.");
         validate_check = false;
     } else if (size == "") {
         alert("용량을 입력해주세요.");

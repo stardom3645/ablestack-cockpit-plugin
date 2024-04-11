@@ -528,7 +528,7 @@ function nfsServiceCreateValidateCheck(){
         alert("NFS 클러스터 이름를 입력해주세요.");
         validate_check = false;
     } else if (!nameCheck(nfs_cluster_id)) {
-        alert("NFS 클러스터 이름 생성 규칙은 영문, 숫자 특수문자 '.','-','_' 만 입력 가능하고 영문으로 시작해야 합니다.");
+        alert("NFS 클러스터 이름 생성 규칙은 영문, 숫자 특수문자 '-','_' 만 입력 가능하고 영문으로 시작해야 합니다.");
         validate_check = false;
     } else if (host_cnt == 0) {
         alert("배치 호스트를 선택해주세요.");

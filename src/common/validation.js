@@ -178,7 +178,7 @@ function checkEmail(email) {
  * History  : 2024.03.21 최초 작성
  */
 function nameCheck(name) {
-  var regex = /^[a-zA-Z][a-zA-Z0-9._-]*$/;
+  var regex = /^[a-zA-Z][a-zA-Z0-9_-]*$/;
   return regex.test(name)
 }
 
@@ -192,7 +192,7 @@ function nameCheck(name) {
  * History  : 2024.03.21 최초 작성
  */
 function pathNameCheck(path) {
-  var regex = /^[a-zA-Z0-9._-]*$/;
+  var regex = /^[a-zA-Z0-9_-]*$/;
   return regex.test(path)
 }
 
@@ -207,6 +207,20 @@ function pathNameCheck(path) {
  */
 function numberCheck(number) {
   var regex = /^[0-9]*$/;
+  return regex.test(number)
+}
+
+/**
+ * Meathod Name : integerCheck
+ * Date Created : 2024.04.09
+ * Writer  : 배태주
+ * Description : 정수를 검사하는 함수
+ * Parameter : 없음
+ * Return  : 없음
+ * History  : 2024.04.09 최초 작성
+ */
+function integerCheck(number) {
+  var regex = /^(-?)[0-9]+$/;
   return regex.test(number)
 }
 
@@ -240,4 +254,18 @@ function unavailableIdCheck(id) {
   } else {
     return false
   }  
+}
+
+/**
+ * Meathod Name : nameCheck2
+ * Date Created : 2024.03.21
+ * Writer  : 배태주
+ * Description : 이름 검사하는 함수 공백허용
+ * Parameter : 없음
+ * Return  : 없음
+ * History  : 2024.03.21 최초 작성
+ */
+function nameCheck2(name) {
+  var regex = /^[a-zA-Z0-9_-\s]*$/;
+  return regex.test(name)
 }
