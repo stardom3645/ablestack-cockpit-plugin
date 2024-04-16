@@ -19,6 +19,7 @@ function nfsClusterList(){
         if(nfs_cluster_names.length != 0){
             $('#nfs-cluster-list tr').remove();
             for(var i=0; i < nfs_cluster_names.length; i++){
+                var nfs_port = null;
                 let insert_tr = "";
     
                 insert_tr += '<tr role="row">';
@@ -28,12 +29,13 @@ function nfsClusterList(){
                     var hostList=[];
                     var ipList=[];
                     for(var j=0; j < data[nfs_cluster_names[i]].backend.length ; j++){
-                        hostList.push(data[nfs_cluster_names[i]].backend[j].hostname)
-                        ipList.push(data[nfs_cluster_names[i]].backend[j].ip)
+                        hostList.push(data[nfs_cluster_names[i]].backend[j].hostname);
+                        ipList.push(data[nfs_cluster_names[i]].backend[j].ip);
                     }
+                    nfs_port = data[nfs_cluster_names[i]].backend[0].port;
                     insert_tr += '    <td role="cell" data-label="호스트 명" id="nfs-cluster-host-name">'+hostList+'</td>';
                     insert_tr += '    <td role="cell" data-label="IP" id="nfs-cluster-ip">'+ipList+'</td>';
-                    insert_tr += '    <td role="cell" data-label="PORT" id="nfs-cluster-port">'+data[nfs_cluster_names[i]].backend[0].port+'</td>';
+                    insert_tr += '    <td role="cell" data-label="PORT" id="nfs-cluster-port">'+nfs_port+'</td>';
                 }else{
                     insert_tr += '    <td role="cell" data-label="호스트 명" id="nfs-cluster-host-name">N/A</td>';
                     insert_tr += '    <td role="cell" data-label="IP" id="nfs-cluster-ip">N/A</td>';
@@ -46,7 +48,8 @@ function nfsClusterList(){
                 insert_tr += '            </button>';
                 insert_tr += '            <ul class="pf-c-dropdown__menu pf-m-align-right" aria-labelledby="card-action-nfs-cluster'+i+'" id="dropdown-menu-card-action-nfs-cluster'+i+'">';
                 insert_tr += '                <li>';
-                insert_tr += '                    <button class="pf-c-dropdown__menu-item pf-m-enabled" type="button" id="menu-item-nfs-cluster-remove" onclick=\'nfsClusterDelete("'+nfs_cluster_names[i]+'")\' >NFS Cluster 삭제</button>';
+                insert_tr += '                    <button class="pf-c-dropdown__menu-item pf-m-enabled" type="button" onclick=\'nfsClusterEdit("'+nfs_cluster_names[i]+'","'+nfs_port+'")\' >NFS Cluster 수정</button>';
+                insert_tr += '                    <button class="pf-c-dropdown__menu-item pf-m-enabled" type="button" onclick=\'nfsClusterDelete("'+nfs_cluster_names[i]+'")\' >NFS Cluster 삭제</button>';
                 insert_tr += '                </li>';
                 insert_tr += '            </ul>';
                 insert_tr += '        </div>';
@@ -152,6 +155,86 @@ $('#button-execution-modal-create-nfs-cluster').on('click', function(){
     }
 });
 /** nfs cluster create 관련 action end */
+/** nfs cluster update 관련 action start */
+function nfsClusterEdit(cluster_id, port){
+    fetch('https://10.10.2.11:8080/api/v1/service?service_type=nfs&service_name=nfs.'+cluster_id,{
+        method: 'GET',
+        headers: {
+            'accept': 'application/json',
+            'Content-Type': 'application/x-www-form-urlencoded'
+        }
+    }).then(res => res.json()).then(data => {
+        $('#form-input-update-nfs-cluster-id').val(cluster_id);
+        setSelectHostsCheckbox('div-update-glue-hosts-list','form-input-update-nfs-cluster-placement-hosts',data[0].placement.hosts);
+        $('#form-input-update-nfs-cluster-port').val(port);
+
+        $('#div-modal-update-nfs-cluster').show();
+    }).catch(function(data){
+        console.log("error : "+data);
+    });
+}
+
+$('#button-close-modal-update-nfs-cluster').on('click', function(){
+    $('#div-modal-update-nfs-cluster').hide();
+});
+
+$('#button-cancel-modal-update-nfs-cluster').on('click', function(){
+    $('#div-modal-update-nfs-cluster').hide();
+});
+
+$('#button-execution-modal-update-nfs-cluster').on('click', function(){
+    if(nfsServiceUpdateValidateCheck()){
+        var body_val = "";
+        var nfs_cluster_id = $('#form-input-update-nfs-cluster-id').val();
+        var cnt=0
+        $('input[type=checkbox][name="glue-hosts-list"]').each(function() {
+            if(this.checked){
+                if(cnt==0){
+                    body_val = "hostname="+this.value
+                }else{
+                    body_val += "&hostname="+this.value
+                }
+                cnt++
+            }
+        });
+    
+        var nfs_cluster_port = $('#form-input-update-nfs-cluster-port').val();
+        
+        $('#div-modal-update-nfs-cluster').hide();
+        $('#div-modal-spinner-header-txt').text('NFS Cluster를 수정하고 있습니다.');
+        $('#div-modal-spinner').show();
+    
+        $("#modal-status-alert-title").html("NFS Cluster 수정 실패");
+        $("#modal-status-alert-body").html("NFS Cluster 수정을 실패하였습니다.");
+    
+        fetch('https://10.10.2.11:8080/api/v1/nfs/'+nfs_cluster_id+'/'+nfs_cluster_port,{
+            method: 'PUT',
+            headers: {
+                'accept': 'application/json',
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: body_val
+        }).then(res => res.json()).then(data => {
+            $('#div-modal-spinner').hide();
+            if(data == "Success"){
+                $("#modal-status-alert-title").html("NFS Cluster 수정 완료");
+                $("#modal-status-alert-body").html("NFS Cluster 수정을 완료하였습니다.");
+                $('#div-modal-status-alert').show();
+                nfsClusterList();
+                nfsExportList();
+                createLoggerInfo("nfs cluster update success");
+            }else{
+                $('#div-modal-status-alert').show();
+            }
+        }).catch(function(data){
+            $('#div-modal-spinner').hide();
+            $('#div-modal-status-alert').show();
+            createLoggerInfo("nfs cluster update error : "+ data);
+            console.log('button-execution-modal-update-nfs-cluster : '+data);
+        });
+    }
+});
+/** nfs cluster update 관련 action end */
 
 /** nfs cluster delete 관련 action start */
 $('#menu-item-nfs-cluster-remove').on('click', function(){
@@ -523,6 +606,36 @@ function nfsServiceCreateValidateCheck(){
     var nfs_cluster_id = $('#form-input-nfs-cluster-id').val();
     var host_cnt = $('input[type=checkbox][name="glue-hosts-list"]:checked').length
     var nfs_cluster_port = $('#form-input-nfs-cluster-port').val();
+
+    if (nfs_cluster_id == "") {
+        alert("NFS 클러스터 이름를 입력해주세요.");
+        validate_check = false;
+    } else if (!nameCheck(nfs_cluster_id)) {
+        alert("NFS 클러스터 이름 생성 규칙은 영문, 숫자 특수문자 '-','_' 만 입력 가능하고 영문으로 시작해야 합니다.");
+        validate_check = false;
+    } else if (host_cnt == 0) {
+        alert("배치 호스트를 선택해주세요.");
+        validate_check = false;
+    } else if (nfs_cluster_port == "") {
+        alert("포트 번호을 입력해주세요.");
+        validate_check = false;
+    } else if (!numberCheck(nfs_cluster_port)) {
+        alert("포트 번호는 숫자만 입력해주세요.");
+        validate_check = false;
+    } else if (nfs_cluster_port < 0 || nfs_cluster_port > 65535) {
+        alert("포트 번호는 0부터 65535까지 입력 가능합니다.");
+        validate_check = false;
+    }
+ 
+    return validate_check;
+}
+
+function nfsServiceUpdateValidateCheck(){
+    var validate_check = true;
+
+    var nfs_cluster_id = $('#form-input-update-nfs-cluster-id').val();
+    var host_cnt = $('input[type=checkbox][name="glue-hosts-list"]:checked').length
+    var nfs_cluster_port = $('#form-input-update-nfs-cluster-port').val();
 
     if (nfs_cluster_id == "") {
         alert("NFS 클러스터 이름를 입력해주세요.");

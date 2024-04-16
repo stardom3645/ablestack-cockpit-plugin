@@ -1363,7 +1363,7 @@ function glueVmList(){
 }
 
 // glue 배치 호스트 리스트 기능
-$('#button-glue-hosts-list-setting, #button-ingress-glue-hosts-list-setting, #button-iscsi-glue-hosts-list-setting, #button-object-gateway-glue-hosts-list-setting').on('click', function(e){
+$('#button-glue-hosts-list-setting, #button-update-nfs-glue-hosts-list-setting, #button-ingress-glue-hosts-list-setting, #button-update-ingress-glue-hosts-list-setting, #button-iscsi-glue-hosts-list-setting, #button-update-iscsi-glue-hosts-list-setting, #button-object-gateway-glue-hosts-list-setting, #button-update-object-gateway-glue-hosts-list-setting').on('click', function(e){
     $('#'+e.target.parentElement.children[2].id).toggle();
 });
 
@@ -1543,14 +1543,14 @@ $('#ul-top-tab-list').on('click', function(e){
 
 function setSelectHostsCheckbox(div_id, form_input_id, selectHosts){
     $('fieldset[name="fieldset-glue-host-list"]').remove();
-    // 호스트 선택된 호스트가 없으면 새창으로 세팅 
-    if(selectHosts==null){
-        //호스트 리스트 불러와서
-        fetch('https://10.10.2.11:8080/api/v1/glue/hosts',{
-            method: 'GET'
-        }).then(res => res.json()).then(data => {
-            $('#'+div_id+' fieldset').remove();
-            let insert_tr = "";
+    $('#'+form_input_id).val('');
+    //호스트 리스트 불러와서
+    fetch('https://10.10.2.11:8080/api/v1/glue/hosts',{
+        method: 'GET'
+    }).then(res => res.json()).then(data => {
+        $('#'+div_id+' fieldset').remove();
+        let insert_tr = "";
+        if(selectHosts==null){
             insert_tr += '<fieldset class="pf-c-select__menu-fieldset" aria-label="Select input" name="fieldset-glue-host-list">';
             for(var i=0; i < data.length; i++){
                 insert_tr += '    <label class="pf-c-check pf-c-select__menu-item">';
@@ -1558,34 +1558,58 @@ function setSelectHostsCheckbox(div_id, form_input_id, selectHosts){
                 insert_tr += '        <span class="pf-c-check__label">'+data[i].hostname+'</span>';
                 insert_tr += '    </label>';
             }
-            insert_tr += '</fieldset>';
-            $("#"+div_id).append(insert_tr);
-
-            if(form_input_id!=null){
-                // glue 호스트 리스트 기능
-                $('input[name=glue-hosts-list]').on('click', function(){
-                    var cnt = 0;
-                    var el = "";
-                    $('input[type=checkbox][name="glue-hosts-list"]').each(function() {
-                        if(this.checked){
-                            if(cnt==0){
-                                el = this.value
-                            }else{
-                                el += ", "+this.value
-                            }
-                            cnt++
-                        }
-                    });
-                    $('#'+form_input_id).val(el);
-                });
+        }else{
+            var el = "";
+            for(var i=0; i < selectHosts.length; i++){
+                if(i==0){
+                    el = selectHosts[i]
+                }else{
+                    el += ", "+selectHosts[i]
+                }
             }
-        }).catch(function(data){
-            createLoggerInfo("Glue 가상머신 cleckbox 세팅 에러 : "+data);
-            console.log("Glue 가상머신 cleckbox 세팅 에러 : "+data);
-        });
-    }else{
+            $('#'+form_input_id).val(el);
 
-    }
+            insert_tr += '<fieldset class="pf-c-select__menu-fieldset" aria-label="Select input" name="fieldset-glue-host-list">';
+            for(var i=0; i < data.length; i++){
+                var selected_hosts_yn = false;
+                for(var j=0 ; j < selectHosts.length; j++){
+                    if(selectHosts[j] == data[i].hostname){
+                        selected_hosts_yn = true;
+                        break;
+                    }
+                }
+                insert_tr += '    <label class="pf-c-check pf-c-select__menu-item">';
+                insert_tr += '        <input class="pf-c-check__input" type="checkbox" name="glue-hosts-list" value="'+data[i].hostname+'" '+(selected_hosts_yn ? 'checked' : '')+'/>';
+                insert_tr += '        <span class="pf-c-check__label">'+data[i].hostname+'</span>';
+                insert_tr += '    </label>';
+            }
+
+        }
+        insert_tr += '</fieldset>';
+        $("#"+div_id).append(insert_tr);
+
+        if(form_input_id!=null){
+            // glue 호스트 리스트 기능
+            $('input[name=glue-hosts-list]').on('click', function(){
+                var cnt = 0;
+                var el = "";
+                $('input[type=checkbox][name="glue-hosts-list"]').each(function() {
+                    if(this.checked){
+                        if(cnt==0){
+                            el = this.value
+                        }else{
+                            el += ", "+this.value
+                        }
+                        cnt++
+                    }
+                });
+                $('#'+form_input_id).val(el);
+            });
+        }
+    }).catch(function(data){
+        createLoggerInfo("Glue 가상머신 cleckbox 세팅 에러 : "+data);
+        console.log("Glue 가상머신 cleckbox 세팅 에러 : "+data);
+    });
 }
 
 function setSmbUserSelectBox(select_box_id, data){

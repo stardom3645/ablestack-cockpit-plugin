@@ -21,11 +21,6 @@ function ingressList(){
                 let insert_tr = "";
     
                 insert_tr += '<tr role="row">';
-
-
-
-
-                
                 insert_tr += '    <td role="cell" data-label="이름" id="ingress-name">'+data[i].service_name+'</td>';
                 insert_tr += '    <td role="cell" data-label="백엔드 서비스" id="ingress-backend-service-name">'+data[i].service_id+'</td>';
                 insert_tr += '    <td role="cell" data-label="배치 호스트" id="ingress-placement-hosts">'+data[i].placement.hosts+'</td>';
@@ -39,6 +34,7 @@ function ingressList(){
                 insert_tr += '            </button>';
                 insert_tr += '            <ul class="pf-c-dropdown__menu pf-m-align-right" aria-labelledby="card-action-ingress'+i+'" id="dropdown-menu-card-action-ingress'+i+'">';
                 insert_tr += '                <li>';
+                insert_tr += '                    <button class="pf-c-dropdown__menu-item pf-m-enabled" type="button" id="menu-item-ingress-remove" onclick=\'ingressEdit("'+data[i].service_name+'")\' >INGRESS 서비스 수정</button>';
                 insert_tr += '                    <button class="pf-c-dropdown__menu-item pf-m-enabled" type="button" id="menu-item-ingress-remove" onclick=\'ingressDelete("'+data[i].service_name+'")\' >INGRESS 서비스 삭제</button>';
                 insert_tr += '                </li>';
                 insert_tr += '            </ul>';
@@ -112,8 +108,6 @@ $('#button-execution-modal-create-ingress').on('click', function(){
         var monitor_port = $('#form-input-ingress-monitor-port').val();
         
         body_val += "&virtual_ip="+virtual_ip+"&frontend_port="+frontend_port+"&monitor_port="+monitor_port
-    
-        var ingress_port = $('#form-input-ingress-port').val();
         
         $('#div-modal-create-ingress').hide();
         $('#div-modal-spinner-header-txt').text('INGRESS를 생성하고 있습니다.');
@@ -149,6 +143,90 @@ $('#button-execution-modal-create-ingress').on('click', function(){
     }
 });
 /** ingress create 관련 action end */
+/** ingress update 관련 action start */
+function ingressEdit(ingress_id){
+    fetch('https://10.10.2.11:8080/api/v1/service?service_name='+ingress_id,{
+        method: 'GET',
+        headers: {
+            'accept': 'application/json',
+            'Content-Type': 'application/x-www-form-urlencoded'
+        }
+    }).then(res => res.json()).then(data => {
+        $('#form-update-ingress-nfs-cluster-name').val(data[0].service_id)
+        setSelectHostsCheckbox('div-update-ingress-glue-hosts-list','form-input-update-ingress-placement-hosts',data[0].placement.hosts);
+        $('#form-input-update-ingress-virtual-ip').val(data[0].spec.virtual_ip);
+        $('#form-input-update-ingress-frontend-port').val(data[0].spec.frontend_port);
+        $('#form-input-update-ingress-monitor-port').val(data[0].spec.monitor_port);
+
+        $('#div-modal-update-ingress').show();
+    }).catch(function(data){
+        console.log("error : "+data);
+    });
+}
+
+$('#button-close-modal-update-ingress').on('click', function(){
+    $('#div-modal-update-ingress').hide();
+});
+
+$('#button-cancel-modal-update-ingress').on('click', function(){
+    $('#div-modal-update-ingress').hide();
+});
+
+$('#button-execution-modal-update-ingress').on('click', function(){
+    if(ingressUpdateValidateCheck()){
+        var body_val = "";
+        var service_id = $('#form-update-ingress-nfs-cluster-name').val();
+        var backend_service = $('#form-update-ingress-nfs-cluster-name').val();
+        
+        body_val +="service_id="+service_id+"&backend_service="+backend_service
+        
+        $('input[type=checkbox][name="glue-hosts-list"]').each(function() {
+            if(this.checked){
+                body_val += "&hostname="+this.value
+            }
+        });
+        
+        var virtual_ip = $('#form-input-update-ingress-virtual-ip').val();
+        var frontend_port = $('#form-input-update-ingress-frontend-port').val();
+        var monitor_port = $('#form-input-update-ingress-monitor-port').val();
+        
+        body_val += "&virtual_ip="+virtual_ip+"&frontend_port="+frontend_port+"&monitor_port="+monitor_port
+        
+        $('#div-modal-update-ingress').hide();
+        $('#div-modal-spinner-header-txt').text('INGRESS를 생성하고 있습니다.');
+        $('#div-modal-spinner').show();
+    
+        $("#modal-status-alert-title").html("INGRESS 수정 실패");
+        $("#modal-status-alert-body").html("INGRESS 수정을 실패하였습니다.");
+    
+        fetch('https://10.10.2.11:8080/api/v1/nfs/ingress',{
+            method: 'POST',
+            headers: {
+                'accept': 'application/json',
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: body_val
+        }).then(res => res.json()).then(data => {
+            $('#div-modal-spinner').hide();
+            if(data == "Success"){
+                $("#modal-status-alert-title").html("INGRESS 수정 완료");
+                $("#modal-status-alert-body").html("INGRESS 수정을 완료하였습니다.");
+                $('#div-modal-status-alert').show();
+                ingressList();
+                createLoggerInfo("ingress update success");
+            }else{
+                $('#div-modal-status-alert').show();
+            }
+        }).catch(function(data){
+            $('#div-modal-spinner').hide();
+            $('#div-modal-status-alert').show();
+            createLoggerInfo("ingress update error : "+ data);
+            console.log('button-execution-modal-update-ingress : '+data);
+        });
+    }
+});
+/** ingress update 관련 action end */
+
 
 /** ingress delete 관련 action start */
 $('#menu-item-ingress-remove').on('click', function(){
@@ -207,7 +285,6 @@ function ingressCreateInitInputValue(){
     $('#form-input-ingress-monitor-port').val("");
 }
 
-
 function ingressCreateValidateCheck(){
     var validate_check = true;
 
@@ -217,6 +294,52 @@ function ingressCreateValidateCheck(){
     var virtual_ip = $('#form-input-ingress-virtual-ip').val();
     var frontend_port = $('#form-input-ingress-frontend-port').val();
     var monitor_port = $('#form-input-ingress-monitor-port').val();
+    
+    if (service_id == "") {
+        alert("NFS 클러스터 이름을 입력해주세요.");
+        validate_check = false;
+    } else if (host_cnt == 0) {
+        alert("배치 호스트를 선택해주세요.");
+        validate_check = false;
+    } else if (virtual_ip == "") {
+        alert("가상 IP를 입력해주세요.");
+        validate_check = false;
+    } else if (!checkIp(virtual_ip)){
+        alert("가상 IP 유형이 올바르지 않습니다.");
+        validate_check = true;
+        return false;
+    } else if (frontend_port == "") {
+        alert("프론트엔드 포트 번호을 입력해주세요.");
+        validate_check = false;
+    } else if (!numberCheck(frontend_port)) {
+        alert("프론트엔드 포트 번호는 숫자만 입력해주세요.");
+        validate_check = false;
+    } else if (frontend_port < 0 || frontend_port > 65535) {
+        alert("프론트엔드 포트 번호는 0부터 65535까지 입력 가능합니다.");
+        validate_check = false;
+    } else if (monitor_port == "") {
+        alert("모니터 포트 번호을 입력해주세요.");
+        validate_check = false;
+    } else if (!numberCheck(monitor_port)) {
+        alert("모니터 포트 번호는 숫자만 입력해주세요.");
+        validate_check = false;
+    } else if (monitor_port < 0 || monitor_port > 65535) {
+        alert("모니터 포트 번호는 0부터 65535까지 입력 가능합니다.");
+        validate_check = false;
+    }
+ 
+    return validate_check;
+}
+
+function ingressUpdateValidateCheck(){
+    var validate_check = true;
+
+    var service_id = $('#form-update-ingress-nfs-cluster-name').val();
+    var host_cnt = $('input[type=checkbox][name="glue-hosts-list"]:checked').length
+ 
+    var virtual_ip = $('#form-input-update-ingress-virtual-ip').val();
+    var frontend_port = $('#form-input-update-ingress-frontend-port').val();
+    var monitor_port = $('#form-input-update-ingress-monitor-port').val();
     
     if (service_id == "") {
         alert("NFS 클러스터 이름을 입력해주세요.");

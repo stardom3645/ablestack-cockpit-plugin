@@ -1469,6 +1469,73 @@
     </div>
 </div>
 <!-- nfs cluster 생성 : Modal 영역 끝 -->
+<!-- nfs cluster 수정 : Modal 영역 시작 -->
+<div id="div-modal-update-nfs-cluster" class="pf-c-backdrop" style="display:none">
+    <div class="pf-l-bullseye">
+        <div class="pf-c-modal-box pf-m-sm" role="dialog" aria-modal="true" aria-label="Update NFS Cluster">
+            <button id="button-close-modal-update-nfs-cluster" aria-disabled="false" aria-label="Close" class="pf-c-button pf-m-plain" type="button">
+                <i class="fas fa-times" aria-hidden="true"></i>
+            </button>
+            <header class="pf-c-modal-box__header"><h1 class="pf-c-modal-box__title"><span class="pf-c-modal-box__title-text">NFS Cluster 수정</span></h1></header>
+            <form novalidate class="pf-c-form pf-m-horizontal" style="margin-left:15px;margin-top:10px">
+                <section class="pf-c-form__section">
+                    <div class="pf-c-form__group">
+                        <div class="pf-c-form__group-label" style="margin-left: 15px;">
+                            <label class="pf-c-form__label" for="form-input-update-nfs-cluster-id" style="margin-left: 10px;width: 120px;">
+                                <span class="pf-c-form__label-text">NFS 클러스터 이름</span>
+                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                            </label>
+                        </div>
+                        <div class="pf-c-form__group-control">
+                            <input class="pf-c-form-control" style="width:50%" type="text" id="form-input-update-nfs-cluster-id" name="form-input-update-nfs-cluster-id" disabled/>
+                        </div>
+                    </div>
+                    <div class="pf-c-form__group">
+                        <div class="pf-c-form__group-label" style="margin-left: 20px;">
+                            <label class="pf-c-form__label" for="button-update-nfs-glue-hosts-list-setting" style="margin-left: 10px;width: 120px;">
+                                <span class="pf-c-form__label-text">배치 호스트</span>
+                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                            </label>
+                        </div>
+                        <div class="pf-c-form__group-control">
+                            <div class="pf-c-select pf-m-expanded">
+                                <input class="pf-c-form-control" type="text" style="width:60%" id="form-input-update-nfs-cluster-placement-hosts" name="form-input-update-nfs-cluster-placement-hosts" disabled/>
+                                <button class="pf-c-select__toggle" type="button" style="width: 60%;" id="button-update-nfs-glue-hosts-list-setting" aria-haspopup="true" aria-expanded="true" aria-labelledby="select-checkbox-expanded-toggle">
+                                    <div class="pf-c-select__toggle-wrapper">
+                                        <span class="pf-c-select__toggle-text">선택하십시오.</span>
+                                    </div>
+                                    <span class="pf-c-select__toggle-arrow">
+                                        <i class="fas fa-times" aria-hidden="true"></i>
+                                        <i class="fas fa-caret-down" aria-hidden="true"></i>
+                                    </span>
+                                </button>
+                                <!-- <div class="pf-c-select__menu" style="min-width: 60%;height: 250px;overflow: auto;"> -->
+                                <div class="pf-c-select__menu" style="min-width: 60%;display: none;" id="div-update-glue-hosts-list">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pf-c-form__group">
+                        <div class="pf-c-form__group-label" style="margin-left: 20px;">
+                            <label class="pf-c-form__label" for="form-input-update-nfs-cluster-port" style="margin-left: 10px;width: 120px;">
+                                <span class="pf-c-form__label-text">포트 번호</span>
+                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                            </label>
+                        </div>
+                        <div class="pf-c-form__group-control">
+                            <input class="pf-c-form-control" style="width:50%" type="text" id="form-input-update-nfs-cluster-port" name="form-input-update-nfs-cluster-port" placeholder="2049"/>
+                        </div>
+                    </div>
+                </section>
+            </form>
+            <footer class="pf-c-modal-box__footer">
+                <button id="button-execution-modal-update-nfs-cluster" aria-disabled="false" class="pf-c-button pf-m-primary" type="button" data-ouia-safe="true">실행</button>
+                <button id="button-cancel-modal-update-nfs-cluster" aria-disabled="false" class="pf-c-button pf-m-link" type="button" data-ouia-safe="true">취소</button>
+            </footer>
+        </div>
+    </div>
+</div>
+<!-- nfs cluster 수정 : Modal 영역 끝 -->
 
 <!-- nfs cluster 삭제 : Modal 영역 시작 -->
 <div id="div-modal-remove-nfs-cluster" class="pf-c-backdrop" style="display:none">
@@ -1877,6 +1944,106 @@
     </div>
 </div>
 <!-- ingress 생성 : Modal 영역 끝 -->
+<!-- ingress 수정 : Modal 영역 시작 -->
+<div id="div-modal-update-ingress" class="pf-c-backdrop" style="display:none">
+    <div class="pf-l-bullseye">
+        <div class="pf-c-modal-box pf-m-sm" role="dialog" aria-modal="true" aria-label="Update INGRESS">
+            <button id="button-close-modal-update-ingress" aria-disabled="false" aria-label="Close" class="pf-c-button pf-m-plain" type="button">
+                <i class="fas fa-times" aria-hidden="true"></i>
+            </button>
+            <header class="pf-c-modal-box__header"><h1 class="pf-c-modal-box__title"><span class="pf-c-modal-box__title-text">INGRESS 수정</span></h1></header>
+            <form novalidate class="pf-c-form pf-m-horizontal" style="margin-left:15px;margin-top:10px">
+                <section class="pf-c-form__section">
+                    <!-- <div class="pf-c-form__group">
+                        <div class="pf-c-form__group-label" style="margin-left: 15px;">
+                            <label class="pf-c-form__label" for="form-update-ingress-service-name" style="margin-left: 10px;width: 120px;">
+                                <span class="pf-c-form__label-text">INGRESS 이름</span>
+                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                            </label>
+                        </div>
+                        <div class="pf-c-form__group-control">
+                            <input class="pf-c-form-control" style="width:50%" type="text" id="form-update-ingress-service-name" name="form-update-ingress-service-name" disabled/>
+                        </div>
+                    </div> -->
+                    <div class="pf-c-form__group">
+                        <div class="pf-c-form__group-label" style="margin-left: 15px;">
+                            <label class="pf-c-form__label" for="form-update-ingress-nfs-cluster-name" style="margin-left: 10px;width: 120px;">
+                                <span class="pf-c-form__label-text">NFS 클러스터 이름</span>
+                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                            </label>
+                        </div>
+                        <div class="pf-c-form__group-control">
+                            <input class="pf-c-form-control" style="width:50%" type="text" id="form-update-ingress-nfs-cluster-name" name="form-update-ingress-nfs-cluster-name" disabled/>
+                        </div>
+                    </div>
+                    <div class="pf-c-form__group">
+                        <div class="pf-c-form__group-label" style="margin-left: 20px;">
+                            <label class="pf-c-form__label" for="button-update-ingress-glue-hosts-list-setting" style="margin-left: 10px;width: 120px;">
+                                <span class="pf-c-form__label-text">배치 호스트</span>
+                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                            </label>
+                        </div>
+                        <div class="pf-c-form__group-control">
+                            <div class="pf-c-select pf-m-expanded">
+                                <input class="pf-c-form-control" type="text" style="width:60%" id="form-input-update-ingress-placement-hosts" name="form-input-update-ingress-placement-hosts" disabled/>
+                                <button class="pf-c-select__toggle" type="button" style="width: 60%;" id="button-update-ingress-glue-hosts-list-setting" aria-haspopup="true" aria-expanded="true" aria-labelledby="select-checkbox-expanded-toggle">
+                                    <div class="pf-c-select__toggle-wrapper">
+                                        <span class="pf-c-select__toggle-text">선택하십시오.</span>
+                                    </div>
+                                    <span class="pf-c-select__toggle-arrow">
+                                        <i class="fas fa-times" aria-hidden="true"></i>
+                                        <i class="fas fa-caret-down" aria-hidden="true"></i>
+                                    </span>
+                                </button>
+                                <!-- <div class="pf-c-select__menu" style="min-width: 60%;height: 250px;overflow: auto;"> -->
+                                <div class="pf-c-select__menu" style="min-width: 60%;display: none;" id="div-update-ingress-glue-hosts-list">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pf-c-form__group">
+                        <div class="pf-c-form__group-label" style="margin-left: 20px;">
+                            <label class="pf-c-form__label" for="form-input-update-ingress-virtual-ip" style="margin-left: 10px;width: 120px;">
+                                <span class="pf-c-form__label-text">가상 IP</span>
+                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                            </label>
+                        </div>
+                        <div class="pf-c-form__group-control">
+                            <input class="pf-c-form-control" style="width:50%" type="text" id="form-input-update-ingress-virtual-ip" name="form-input-update-ingress-virtual-ip" />
+                        </div>
+                    </div>
+                    <div class="pf-c-form__group">
+                        <div class="pf-c-form__group-label" style="margin-left: 20px;">
+                            <label class="pf-c-form__label" for="form-input-update-ingress-frontend-port" style="margin-left: 10px;width: 120px;">
+                                <span class="pf-c-form__label-text">프론트엔드 PORT</span>
+                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                            </label>
+                        </div>
+                        <div class="pf-c-form__group-control">
+                            <input class="pf-c-form-control" style="width:50%" type="text" id="form-input-update-ingress-frontend-port" name="form-input-update-ingress-frontend-port" />
+                        </div>
+                    </div>
+                    <div class="pf-c-form__group">
+                        <div class="pf-c-form__group-label" style="margin-left: 20px;">
+                            <label class="pf-c-form__label" for="form-input-update-ingress-monitor-port" style="margin-left: 10px;width: 120px;">
+                                <span class="pf-c-form__label-text">모니터 PORT</span>
+                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                            </label>
+                        </div>
+                        <div class="pf-c-form__group-control">
+                            <input class="pf-c-form-control" style="width:50%" type="text" id="form-input-update-ingress-monitor-port" name="form-input-update-ingress-monitor-port" />
+                        </div>
+                    </div>
+                </section>
+            </form>
+            <footer class="pf-c-modal-box__footer">
+                <button id="button-execution-modal-update-ingress" aria-disabled="false" class="pf-c-button pf-m-primary" type="button" data-ouia-safe="true">실행</button>
+                <button id="button-cancel-modal-update-ingress" aria-disabled="false" class="pf-c-button pf-m-link" type="button" data-ouia-safe="true">취소</button>
+            </footer>
+        </div>
+    </div>
+</div>
+<!-- ingress 수정 : Modal 영역 끝 -->
 <!-- ingress 삭제 : Modal 영역 시작 -->
 <div id="div-modal-remove-ingress" class="pf-c-backdrop" style="display:none">
     <div class="pf-l-bullseye">
@@ -2034,6 +2201,107 @@
     </div>
 </div>
 <!-- iscsi service 생성 : Modal 영역 끝 -->
+<!-- iscsi service 수정 : Modal 영역 시작 -->
+<div id="div-modal-update-iscsi-service" class="pf-c-backdrop" style="display:none">
+    <div class="pf-l-bullseye">
+        <div class="pf-c-modal-box pf-m-sm" role="dialog" aria-modal="true" aria-label="Update iSCSI Service">
+            <button id="button-close-modal-update-iscsi-service" aria-disabled="false" aria-label="Close" class="pf-c-button pf-m-plain" type="button">
+                <i class="fas fa-times" aria-hidden="true"></i>
+            </button>
+            <header class="pf-c-modal-box__header"><h1 class="pf-c-modal-box__title"><span class="pf-c-modal-box__title-text">iSCSI Service 수정</span></h1></header>
+            <form novalidate class="pf-c-form pf-m-horizontal" style="margin-left:15px;margin-top:10px">
+                <section class="pf-c-form__section">
+                    <div class="pf-c-form__group">
+                        <div class="pf-c-form__group-label" style="margin-left: 20px;">
+                            <label class="pf-c-form__label" for="form-input-update-iscsi-service-id" style="margin-left: 10px;width: 120px;">
+                                <span class="pf-c-form__label-text">이름</span>
+                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                            </label>
+                        </div>
+                        <div class="pf-c-form__group-control">
+                            <input class="pf-c-form-control" style="width:50%" type="text" id="form-input-update-iscsi-service-id" name="form-input-update-iscsi-service-id"/>
+                        </div>
+                    </div>
+                    <div class="pf-c-form__group">
+                        <div class="pf-c-form__group-label" style="margin-left: 20px;">
+                            <label class="pf-c-form__label" for="button-update-iscsi-glue-hosts-list-setting" style="margin-left: 10px;width: 120px;">
+                                <span class="pf-c-form__label-text">배치 호스트</span>
+                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                            </label>
+                        </div>
+                        <div class="pf-c-form__group-control">
+                            <div class="pf-c-select pf-m-expanded">
+                                <input class="pf-c-form-control" type="text" style="width:60%" id="form-input-update-iscsi-placement-hosts" name="form-input-update-iscsi-placement-hosts" disabled/>
+                                <button class="pf-c-select__toggle" type="button" style="width: 60%;" id="button-update-iscsi-glue-hosts-list-setting" aria-haspopup="true" aria-expanded="true" aria-labelledby="select-checkbox-expanded-toggle">
+                                    <div class="pf-c-select__toggle-wrapper">
+                                        <span class="pf-c-select__toggle-text">선택하십시오.</span>
+                                    </div>
+                                    <span class="pf-c-select__toggle-arrow">
+                                        <i class="fas fa-times" aria-hidden="true"></i>
+                                        <i class="fas fa-caret-down" aria-hidden="true"></i>
+                                    </span>
+                                </button>
+                                <div class="pf-c-select__menu" style="min-width: 60%;display: none;" id="div-update-iscsi-glue-hosts-list">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pf-c-form__group">
+                        <div class="pf-c-form__group-label" style="margin-left: 20px;">
+                            <label class="pf-c-form__label" for="form-select-update-iscsi-service-pool" style="margin-left: 10px;width: 120px;">
+                                <span class="pf-c-form__label-text">데이터 풀</span>
+                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                            </label>
+                        </div>
+                        <div class="pf-c-dropdown">
+                            <select class="pf-c-form-control" style="width:50%" id="form-select-update-iscsi-service-pool" name="form-select-update-iscsi-service-pool">
+                                <option value="" selected>선택하십시오.</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="pf-c-form__group">
+                        <div class="pf-c-form__group-label" style="margin-left: 20px;">
+                            <label class="pf-c-form__label" for="form-input-update-iscsi-service-api-port" style="margin-left: 10px;width: 120px;">
+                                <span class="pf-c-form__label-text">PORT</span>
+                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                            </label>
+                        </div>
+                        <div class="pf-c-form__group-control">
+                            <input class="pf-c-form-control" style="width:50%" type="text" id="form-input-update-iscsi-service-api-port" name="form-input-update-iscsi-service-api-port"/>
+                        </div>
+                    </div>
+                    <div class="pf-c-form__group">
+                        <div class="pf-c-form__group-label" style="margin-left: 20px;">
+                            <label class="pf-c-form__label" for="form-input-update-iscsi-service-api-user" style="margin-left: 10px;width: 120px;">
+                                <span class="pf-c-form__label-text">API 유저 이름</span>
+                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                            </label>
+                        </div>
+                        <div class="pf-c-form__group-control">
+                            <input class="pf-c-form-control" style="width:50%" type="text" id="form-input-update-iscsi-service-api-user" name="form-input-update-iscsi-service-api-user"/>
+                        </div>
+                    </div>
+                    <div class="pf-c-form__group">
+                        <div class="pf-c-form__group-label" style="margin-left: 20px;">
+                            <label class="pf-c-form__label" for="form-input-update-iscsi-service-api-password" style="margin-left: 10px;width: 120px;">
+                                <span class="pf-c-form__label-text">API 유저 패스워드</span>
+                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                            </label>
+                        </div>
+                        <div class="pf-c-form__group-control">
+                            <input class="pf-c-form-control" style="width:50%" type="password" id="form-input-update-iscsi-service-api-password" name="form-input-update-iscsi-service-api-password"/>
+                        </div>
+                    </div>
+                </section>
+            </form>
+            <footer class="pf-c-modal-box__footer">
+                <button id="button-execution-modal-update-iscsi-service" aria-disabled="false" class="pf-c-button pf-m-primary" type="button" data-ouia-safe="true">실행</button>
+                <button id="button-cancel-modal-update-iscsi-service" aria-disabled="false" class="pf-c-button pf-m-link" type="button" data-ouia-safe="true">취소</button>
+            </footer>
+        </div>
+    </div>
+</div>
+<!-- iscsi service 수정 : Modal 영역 끝 -->
 <!-- iscsi service 삭제 : Modal 영역 시작 -->
 <div id="div-modal-remove-iscsi-service" class="pf-c-backdrop" style="display:none">
     <div class="pf-l-bullseye">
@@ -2731,6 +2999,95 @@
     </div>
 </div>
 <!-- object gateway 생성 : Modal 영역 끝 -->
+<!-- object gateway 수정 : Modal 영역 시작 -->
+<div id="div-modal-update-object-gateway" class="pf-c-backdrop" style="display:none">
+    <div class="pf-l-bullseye">
+        <div class="pf-c-modal-box pf-m-sm" role="dialog" aria-modal="true" aria-label="Update Object Gateway">
+            <button id="button-close-modal-update-object-gateway" aria-disabled="false" aria-label="Close" class="pf-c-button pf-m-plain" type="button">
+                <i class="fas fa-times" aria-hidden="true"></i>
+            </button>
+            <header class="pf-c-modal-box__header"><h1 class="pf-c-modal-box__title"><span class="pf-c-modal-box__title-text">Object Gateway 수정</span></h1></header>
+            <form novalidate class="pf-c-form pf-m-horizontal" style="margin-left:15px;margin-top:10px">
+                <section class="pf-c-form__section">
+                    <div class="pf-c-form__group">
+                        <div class="pf-c-form__group-label" style="margin-left: 15px;">
+                            <label class="pf-c-form__label" for="form-input-update-object-gateway-id" style="margin-left: 10px;width: 120px;">
+                                <span class="pf-c-form__label-text">이름</span>
+                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                            </label>
+                        </div>
+                        <div class="pf-c-form__group-control">
+                            <input class="pf-c-form-control" style="width:50%" type="text" id="form-input-update-object-gateway-id" name="form-input-update-object-gateway-id" disabled/>
+                        </div>
+                    </div>
+                    <div class="pf-c-form__group">
+                        <div class="pf-c-form__group-label" style="margin-left: 20px;">
+                            <label class="pf-c-form__label" for="button-update-object-gateway-glue-hosts-list-setting" style="margin-left: 10px;width: 120px;">
+                                <span class="pf-c-form__label-text">배치 호스트</span>
+                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                            </label>
+                        </div>
+                        <div class="pf-c-form__group-control">
+                            <div class="pf-c-select pf-m-expanded">
+                                <input class="pf-c-form-control" type="text" style="width:60%" id="form-input-update-object-gateway-placement-hosts" name="form-input-update-object-gateway-placement-hosts" disabled/>
+                                <button class="pf-c-select__toggle" type="button" style="width: 60%;" id="button-update-object-gateway-glue-hosts-list-setting" aria-haspopup="true" aria-expanded="true" aria-labelledby="select-checkbox-expanded-toggle">
+                                    <div class="pf-c-select__toggle-wrapper">
+                                        <span class="pf-c-select__toggle-text">선택하십시오.</span>
+                                    </div>
+                                    <span class="pf-c-select__toggle-arrow">
+                                        <i class="fas fa-times" aria-hidden="true"></i>
+                                        <i class="fas fa-caret-down" aria-hidden="true"></i>
+                                    </span>
+                                </button>
+                                <!-- <div class="pf-c-select__menu" style="min-width: 60%;height: 250px;overflow: auto;"> -->
+                                <div class="pf-c-select__menu" style="min-width: 60%;display: none;" id="div-update-object-gateway-hosts-list">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pf-c-form__group">
+                        <div class="pf-c-form__group-label" style="margin-left: 20px;">
+                            <label class="pf-c-form__label" for="form-input-update-object-gateway-zone-group" style="margin-left: 10px;width: 120px;">
+                                <span class="pf-c-form__label-text">Zone 그룹</span>
+                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                            </label>
+                        </div>
+                        <div class="pf-c-form__group-control">
+                            <input class="pf-c-form-control" style="width:50%" type="text" id="form-input-update-object-gateway-zone-group" name="form-input-update-object-gateway-zone-group" value="default" disabled/>
+                        </div>
+                    </div>
+                    <div class="pf-c-form__group">
+                        <div class="pf-c-form__group-label" style="margin-left: 20px;">
+                            <label class="pf-c-form__label" for="form-input-update-object-gateway-zone" style="margin-left: 10px;width: 120px;">
+                                <span class="pf-c-form__label-text">Zone</span>
+                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                            </label>
+                        </div>
+                        <div class="pf-c-form__group-control">
+                            <input class="pf-c-form-control" style="width:50%" type="text" id="form-input-update-object-gateway-zone" name="form-input-update-object-gateway-zone" value="default" disabled/>
+                        </div>
+                    </div>
+                    <div class="pf-c-form__group">
+                        <div class="pf-c-form__group-label" style="margin-left: 20px;">
+                            <label class="pf-c-form__label" for="form-input-update-object-gateway-port" style="margin-left: 10px;width: 120px;">
+                                <span class="pf-c-form__label-text">포트 번호</span>
+                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                            </label>
+                        </div>
+                        <div class="pf-c-form__group-control">
+                            <input class="pf-c-form-control" style="width:50%" type="text" id="form-input-update-object-gateway-port" name="form-input-update-object-gateway-port"/>
+                        </div>
+                    </div>
+                </section>
+            </form>
+            <footer class="pf-c-modal-box__footer">
+                <button id="button-execution-modal-update-object-gateway" aria-disabled="false" class="pf-c-button pf-m-primary" type="button" data-ouia-safe="true">실행</button>
+                <button id="button-cancel-modal-update-object-gateway" aria-disabled="false" class="pf-c-button pf-m-link" type="button" data-ouia-safe="true">취소</button>
+            </footer>
+        </div>
+    </div>
+</div>
+<!-- object gateway 수정 : Modal 영역 끝 -->
 <!-- object gateway user 삭제 : Modal 영역 시작 -->
 <div id="div-modal-remove-object-gateway-user" class="pf-c-backdrop" style="display:none">
     <div class="pf-l-bullseye">

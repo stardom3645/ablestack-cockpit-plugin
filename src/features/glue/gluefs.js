@@ -343,11 +343,11 @@ $('#button-execution-modal-update-gluefs-subvolume-group').on('click', function(
         var body_val = "vol_name="+vol_name+"&group_name="+group_name+"&new_size="+new_size
         
         $('#div-modal-update-gluefs-subvolume-group').hide();
-        $('#div-modal-spinner-header-txt').text('Glue FS Subvolume Group을 생성하고 있습니다.');
+        $('#div-modal-spinner-header-txt').text('Glue FS Subvolume Group을 수정하고 있습니다.');
         $('#div-modal-spinner').show();
     
-        $("#modal-status-alert-title").html("Glue FS Subvolume Group 생성 실패");
-        $("#modal-status-alert-body").html("Glue FS Subvolume Group 생성을 실패하였습니다.");
+        $("#modal-status-alert-title").html("Glue FS Subvolume Group 수정 실패");
+        $("#modal-status-alert-body").html("Glue FS Subvolume Group 수정을 실패하였습니다.");
     
         fetch('https://10.10.2.11:8080/api/v1/gluefs/subvolume/group',{
             method: 'PUT',
@@ -359,8 +359,8 @@ $('#button-execution-modal-update-gluefs-subvolume-group').on('click', function(
         }).then(res => res.json()).then(data => {
             $('#div-modal-spinner').hide();
             if(data == "Success"){
-                $("#modal-status-alert-title").html("Glue FS Subvolume Group 생성 완료");
-                $("#modal-status-alert-body").html("Glue FS Subvolume Group 생성을 완료하였습니다.");
+                $("#modal-status-alert-title").html("Glue FS Subvolume Group 수정 완료");
+                $("#modal-status-alert-body").html("Glue FS Subvolume Group 수정을 완료하였습니다.");
                 $('#div-modal-status-alert').show();
                 gluefsSubvolumeGroupList(vol_name, data_pool_name);
                 createLoggerInfo("gluefs subvolume group update success");

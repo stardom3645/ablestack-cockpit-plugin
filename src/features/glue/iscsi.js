@@ -36,6 +36,7 @@ function iscsiServiceList(){
                 insert_tr += '            </button>';
                 insert_tr += '            <ul class="pf-c-dropdown__menu pf-m-align-right" aria-labelledby="card-action-iscsi-service-status'+i+'" id="dropdown-menu-card-action-iscsi-service-status'+i+'">';
                 insert_tr += '                <li>';
+                insert_tr += '                    <button class="pf-c-dropdown__menu-item pf-m-enabled" type="button" id="menu-item-set-iscsi-service-remove" onclick=\'iscsiServiceEdit("'+data[i].service_name+'")\' >iSCSI 서비스 수정</button>';
                 insert_tr += '                    <button class="pf-c-dropdown__menu-item pf-m-enabled" type="button" id="menu-item-set-iscsi-service-remove" onclick=\'iscsiServiceDelete("'+data[i].service_name+'")\' >iSCSI 서비스 삭제</button>';
                 insert_tr += '                </li>';
                 insert_tr += '            </ul>';
@@ -134,6 +135,86 @@ $('#button-execution-modal-create-iscsi-service').on('click', function(){
     }
 });
 /** iSCSI Service create 관련 action end */
+/** iSCSI Service update 관련 action start */
+function iscsiServiceEdit(iscsi_id){
+    fetch('https://10.10.2.11:8080/api/v1/service?service_type=iscsi&service_name='+iscsi_id,{
+        method: 'GET',
+        headers: {
+            'accept': 'application/json',
+            'Content-Type': 'application/x-www-form-urlencoded'
+        }
+    }).then(res => res.json()).then(data => {
+        $('#form-input-update-iscsi-service-id').val(data[0].service_id);
+        setSelectHostsCheckbox('div-update-iscsi-glue-hosts-list','form-input-update-iscsi-placement-hosts',data[0].placement.hosts);
+        setPoolSelectBox('form-select-update-iscsi-service-pool',data[0].spec.pool);
+        $('#form-input-update-iscsi-service-api-port').val(data[0].spec.api_port);
+        $('#form-input-update-iscsi-service-api-user').val(data[0].spec.api_user);
+        $('#form-input-update-iscsi-service-api-password').val(data[0].spec.api_password);
+
+        $('#div-modal-update-iscsi-service').show();
+    }).catch(function(data){
+        console.log("error : "+data);
+    });
+}
+
+$('#button-close-modal-update-iscsi-service').on('click', function(){
+    $('#div-modal-update-iscsi-service').hide();
+});
+
+$('#button-cancel-modal-update-iscsi-service').on('click', function(){
+    $('#div-modal-update-iscsi-service').hide();
+});
+
+$('#button-execution-modal-update-iscsi-service').on('click', function(){
+    if(iscsiUpdateValidateCheck()){
+        var pool = $('#form-select-update-iscsi-service-pool option:selected').val();
+        var service_id = $('#form-input-update-iscsi-service-id').val();
+        var api_port = $('#form-input-update-iscsi-service-api-port').val();
+        var api_user = $('#form-input-update-iscsi-service-api-user').val();
+        var api_password = $('#form-input-update-iscsi-service-api-password').val();
+    
+        var body_val = "service_id="+service_id+"&pool="+pool+"&api_port="+api_port+"&api_user="+api_user+"&api_password="+api_password;
+        
+        $('input[type=checkbox][name="glue-hosts-list"]').each(function() {
+            if(this.checked){
+                body_val += "&hosts="+this.value;
+            }
+        });
+    
+        $('#div-modal-update-iscsi-service').hide();
+        $('#div-modal-spinner-header-txt').text('iSCSI Service를 생성하고 있습니다.');
+        $('#div-modal-spinner').show();
+    
+        $("#modal-status-alert-title").html("iSCSI Service 생성 실패");
+        $("#modal-status-alert-body").html("iSCSI Service 생성을 실패하였습니다.");
+    
+        fetch('https://10.10.2.11:8080/api/v1/iscsi',{
+            method: 'POST',
+            headers: {
+                'accept': 'application/json',
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: body_val
+        }).then(res => res.json()).then(data => {
+            $('#div-modal-spinner').hide();
+            if(data == "Success"){
+                $("#modal-status-alert-title").html("iSCSI Service 생성 완료");
+                $("#modal-status-alert-body").html("iSCSI Service 생성을 완료하였습니다.");
+                $('#div-modal-status-alert').show();
+                iscsiServiceList();
+                createLoggerInfo("iSCSI Service update success");
+            }else{
+                $('#div-modal-status-alert').show();
+            }
+        }).catch(function(data){
+            $('#div-modal-spinner').hide();
+            $('#div-modal-status-alert').show();
+            createLoggerInfo("iSCSI Service update error : "+ data);
+            console.log('button-execution-modal-update-iscsi-service : '+data);
+        });
+    }
+});
+/** iSCSI Service update 관련 action end */
 
 /** iSCSI Service delete 관련 action start */
 $('#menu-item-iscsi-service-remove').on('click', function(){
@@ -528,6 +609,8 @@ $('#button-execution-modal-remove-iscsi-target').on('click', function(){
         body: body_val
     }).then(res => res.json()).then(data => {
         $('#div-modal-spinner').hide();
+        console.log(data)
+        console.log(111)
         if(data == "Success"){
             $("#modal-status-alert-title").html("iSCSI Target 삭제 완료");
             $("#modal-status-alert-body").html("iSCSI Target 삭제를 완료하였습니다.");
@@ -642,6 +725,50 @@ function iscsiCreateValidateCheck(){
  
     return validate_check;
 }
+
+function iscsiUpdateValidateCheck(){
+    var validate_check = true;
+
+    var service_id = $('#form-input-update-iscsi-service-id').val();
+    var host_cnt = $('input[type=checkbox][name="glue-hosts-list"]:checked').length
+    var pool = $('#form-select-update-iscsi-service-pool option:selected').val();
+
+    var api_port = $('#form-input-update-iscsi-service-api-port').val();
+    var api_user = $('#form-input-update-iscsi-service-api-user').val();
+    var api_password = $('#form-input-update-iscsi-service-api-password').val();
+    
+    if (service_id == "") {
+        alert("이름을 입력해주세요.");
+        validate_check = false;
+    } else if (host_cnt == 0) {
+        alert("배치 호스트를 선택해주세요.");
+        validate_check = false;
+    } else if (pool == "") {
+        alert("데이터 풀을 입력해주세요.");
+        validate_check = false;
+    } else if (api_port == "") {
+        alert("포트 번호을 입력해주세요.");
+        validate_check = false;
+    } else if (!numberCheck(api_port)) {
+        alert("포트 번호는 숫자만 입력해주세요.");
+        validate_check = false;
+    } else if (api_port < 0 || api_port > 65535) {
+        alert("포트 번호는 0부터 65535까지 입력 가능합니다.");
+        validate_check = false;
+    } else if (api_user == "") {
+        alert("API 유저 이름을 입력해주세요.");
+        validate_check = false;
+    } else if (!nameCheck(api_user)) {
+        alert("API 유저 이름 생성 규칙은 영문, 숫자 특수문자 '-','_' 만 입력 가능하고 영문으로 시작해야 합니다.");
+        validate_check = false;
+    } else if (api_password == "") {
+        alert("API 유저 패스워드을 입력해주세요.");
+        validate_check = false;
+    } 
+ 
+    return validate_check;
+}
+
 
 function iscsiTargetCreateValidateCheck(){
     var validate_check = true;

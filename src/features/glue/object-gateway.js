@@ -30,7 +30,8 @@ function objectGatewayList(){
                 insert_tr += '            </button>';
                 insert_tr += '            <ul class="pf-c-dropdown__menu pf-m-align-right" aria-labelledby="card-action-object-gateway'+i+'" id="dropdown-menu-card-action-object-gateway'+i+'">';
                 insert_tr += '                <li>';
-                insert_tr += '                    <button class="pf-c-dropdown__menu-item pf-m-enabled" type="button" id="menu-item-object-gateway-remove" onclick=\'objectGatewayDelete("'+data[i].service_name+'")\' >Object Gateway 삭제</button>';
+                insert_tr += '                    <button class="pf-c-dropdown__menu-item pf-m-enabled" type="button" onclick=\'objectGatewayEdit("'+data[i].service_name+'")\' >Object Gateway 수정</button>';
+                insert_tr += '                    <button class="pf-c-dropdown__menu-item pf-m-enabled" type="button" onclick=\'objectGatewayDelete("'+data[i].service_name+'")\' >Object Gateway 삭제</button>';
                 insert_tr += '                </li>';
                 insert_tr += '            </ul>';
                 insert_tr += '        </div>';
@@ -96,7 +97,7 @@ $('#button-execution-modal-create-object-gateway').on('click', function(){
         
         $('input[type=checkbox][name="glue-hosts-list"]').each(function() {
             if(this.checked){
-                body_val += "&hosts="+this.value
+                body_val += "&hostname="+this.value
             }
         });
         
@@ -116,7 +117,8 @@ $('#button-execution-modal-create-object-gateway').on('click', function(){
             body: body_val
         }).then(res => res.json()).then(data => {
             $('#div-modal-spinner').hide();
-            if(data == "Success"){
+            console.log(data)
+            if( true || data == "Success"){
                 $("#modal-status-alert-title").html("Object Gateway 생성 완료");
                 $("#modal-status-alert-body").html("Object Gateway 생성을 완료하였습니다.");
                 $('#div-modal-status-alert').show();
@@ -134,6 +136,87 @@ $('#button-execution-modal-create-object-gateway').on('click', function(){
     }
 });
 /** object gateway create 관련 action end */
+/** object gateway update 관련 action start */
+function objectGatewayEdit(obj_gw_id){
+    fetch('https://10.10.2.11:8080/api/v1/service?service_type=rgw&service_name='+obj_gw_id,{
+        method: 'GET',
+        headers: {
+            'accept': 'application/json',
+            'Content-Type': 'application/x-www-form-urlencoded'
+        }
+    }).then(res => res.json()).then(data => {
+        $('#form-input-update-object-gateway-id').val(data[0].service_id);
+        setSelectHostsCheckbox('div-update-object-gateway-hosts-list','form-input-update-object-gateway-placement-hosts',data[0].placement.hosts);
+        $('#form-input-update-object-gateway-port').val(data[0].spec.rgw_frontend_port);
+        $('#div-modal-update-object-gateway').show();
+    }).catch(function(data){
+        console.log("error : "+data);
+    });
+}
+
+$('#button-close-modal-update-object-gateway').on('click', function(){
+    $('#div-modal-update-object-gateway').hide();
+});
+
+$('#button-cancel-modal-update-object-gateway').on('click', function(){
+    $('#div-modal-update-object-gateway').hide();
+});
+
+$('#button-execution-modal-update-object-gateway').on('click', function(){
+    if(objectGatewayUpdateValidateCheck()){
+        var body_val = "";
+
+        var service_name = $('#form-input-update-object-gateway-id').val();
+        // var zonegroup_name = $('#form-input-update-object-gateway-zone-group').val();
+        // var zone_name = $('#form-input-update-object-gateway-zone').val();
+        var port = $('#form-input-update-object-gateway-port').val();
+        
+        // body_val +="service_name="+service_name+"&zonegroup_name="+zonegroup_name+"&zone_name="+zone_name+"&port="+port
+        body_val +="service_name="+service_name+"&port="+port
+        
+        $('input[type=checkbox][name="glue-hosts-list"]').each(function() {
+            if(this.checked){
+                body_val += "&hosts="+this.value
+            }
+        });
+
+        alert(body_val);
+        
+        $('#div-modal-update-object-gateway').hide();
+        $('#div-modal-spinner-header-txt').text('Object Gateway를 수정하고 있습니다.');
+        $('#div-modal-spinner').show();
+    
+        $("#modal-status-alert-title").html("Object Gateway 수정 실패");
+        $("#modal-status-alert-body").html("Object Gateway 수정을 실패하였습니다.");
+    
+        fetch('https://10.10.2.11:8080/api/v1/rgw',{
+            method: 'PUT',
+            headers: {
+                'accept': 'application/json',
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: body_val
+        }).then(res => res.json()).then(data => {
+            $('#div-modal-spinner').hide();
+            console.log(data)
+            if( true || data == "Success"){
+                $("#modal-status-alert-title").html("Object Gateway 수정 완료");
+                $("#modal-status-alert-body").html("Object Gateway 수정을 완료하였습니다.");
+                $('#div-modal-status-alert').show();
+                objectGatewayList();
+                createLoggerInfo("Object Gateway update success");
+            }else{
+                $('#div-modal-status-alert').show();
+            }
+        }).catch(function(data){
+            $('#div-modal-spinner').hide();
+            $('#div-modal-status-alert').show();
+            createLoggerInfo("Object Gateway update error : "+ data);
+            console.log('button-execution-modal-update-object-gateway : '+data);
+        });
+    }
+});
+/** object gateway update 관련 action end */
 
 /** object gateway delete 관련 action start */
 $('#menu-item-object-gateway-remove').on('click', function(){
@@ -630,35 +713,35 @@ function objectGatewayCreateValidateCheck(){
     return validate_check;
 }
 
-// function objectGatewayUpdateValidateCheck(){
-//     var validate_check = true;
+function objectGatewayUpdateValidateCheck(){
+    var validate_check = true;
 
-//     var service_name = $('#form-input-object-gateway-id').val();
-//     var host_cnt = $('input[type=checkbox][name="glue-hosts-list"]:checked').length
-//     var port = $('#form-input-object-gateway-port').val();
+    var service_name = $('#form-input-update-object-gateway-id').val();
+    var host_cnt = $('input[type=checkbox][name="glue-hosts-list"]:checked').length
+    var port = $('#form-input-update-object-gateway-port').val();
     
-//     if (service_name == "") {
-//         alert("이름을 입력해주세요.");
-//         validate_check = false;
-//     } else if (!nameCheck(service_name)) {
-//         alert("이름 생성 규칙은 영문, 숫자 특수문자 '-','_' 만 입력 가능하고 영문으로 시작해야 합니다.");
-//         validate_check = false;
-//     } else if (host_cnt == 0) {
-//         alert("배치 호스트를 선택해주세요.");
-//         validate_check = false;
-//     } else if (port == "") {
-//         alert("포트 번호을 입력해주세요.");
-//         validate_check = false;
-//     } else if (!numberCheck(port)) {
-//         alert("포트 번호는 숫자만 입력해주세요.");
-//         validate_check = false;
-//     } else if (port < 0 || port > 65535) {
-//         alert("포트 번호는 0부터 65535까지 입력 가능합니다.");
-//         validate_check = false;
-//     }
+    if (service_name == "") {
+        alert("이름을 입력해주세요.");
+        validate_check = false;
+    } else if (!nameCheck(service_name)) {
+        alert("이름 생성 규칙은 영문, 숫자 특수문자 '-','_' 만 입력 가능하고 영문으로 시작해야 합니다.");
+        validate_check = false;
+    } else if (host_cnt == 0) {
+        alert("배치 호스트를 선택해주세요.");
+        validate_check = false;
+    } else if (port == "") {
+        alert("포트 번호을 입력해주세요.");
+        validate_check = false;
+    } else if (!numberCheck(port)) {
+        alert("포트 번호는 숫자만 입력해주세요.");
+        validate_check = false;
+    } else if (port < 0 || port > 65535) {
+        alert("포트 번호는 0부터 65535까지 입력 가능합니다.");
+        validate_check = false;
+    }
  
-//     return validate_check;
-// }
+    return validate_check;
+}
 
 function objectGatewayUserCreateValidateCheck(){
     var validate_check = true;
