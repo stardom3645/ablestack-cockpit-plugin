@@ -89,12 +89,11 @@ function smbServiceList(){
     });
 }
 
-/** smb -service search 관련 action start */
+/** smb-service search 관련 action start */
 $('#button-smb-service-search').on('click', function(){
     smbServiceList();
 });
 /** smb service search 관련 action end */
-
 
 /** SMB Service create 관련 action start */
 function smbServiceCreate(hostname){
@@ -161,6 +160,7 @@ $('#button-execution-modal-create-smb-service').on('click', function(){
 
 /** SMB Service delete 관련 action start */
 function smbServiceDelete(hostname){
+    $('#input-checkbox-smb-service-remove').prop('checked',false);
     $('#div-modal-remove-smb-service').show();
     $('#smb-service-hostname').val(hostname);
     $('#smb-service-text').text('선택하신 '+hostname+' 을(를) 삭제하시겠습니까?');
@@ -179,37 +179,41 @@ $('#button-cancel-modal-remove-smb-service').on('click', function(){
 });
 
 $('#button-execution-modal-remove-smb-service').on('click', function(){
-    var hostname = $('#smb-service-hostname').val()
+    if($('#input-checkbox-smb-service-remove').is(":checked")){
+        var hostname = $('#smb-service-hostname').val()
+        
+        $('#div-modal-remove-smb-service').hide();
+        $('#div-modal-spinner-header-txt').text('SMB Service를 삭제하고 있습니다.');
+        $('#div-modal-spinner').show();
     
-    $('#div-modal-remove-smb-service').hide();
-    $('#div-modal-spinner-header-txt').text('SMB Service를 삭제하고 있습니다.');
-    $('#div-modal-spinner').show();
-
-    $("#modal-status-alert-title").html("SMB Service 삭제 실패");
-    $("#modal-status-alert-body").html("SMB Service 삭제를 실패하였습니다.");
-    fetch('https://10.10.2.11:8080/api/v1/smb?hostname='+hostname,{
-        method: 'DELETE',
-        headers: {
-            'accept': 'application/json',
-            'Content-Type': 'application/x-www-form-urlencoded'
-        }
-    }).then(res => res.json()).then(data => {
-        $('#div-modal-spinner').hide();
-        if(data == "Success"){
-            $("#modal-status-alert-title").html("SMB Service 삭제 완료");
-            $("#modal-status-alert-body").html("SMB Service 삭제를 완료하였습니다.");
+        $("#modal-status-alert-title").html("SMB Service 삭제 실패");
+        $("#modal-status-alert-body").html("SMB Service 삭제를 실패하였습니다.");
+        fetch('https://10.10.2.11:8080/api/v1/smb?hostname='+hostname,{
+            method: 'DELETE',
+            headers: {
+                'accept': 'application/json',
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        }).then(res => res.json()).then(data => {
+            $('#div-modal-spinner').hide();
+            if(data == "Success"){
+                $("#modal-status-alert-title").html("SMB Service 삭제 완료");
+                $("#modal-status-alert-body").html("SMB Service 삭제를 완료하였습니다.");
+                $('#div-modal-status-alert').show();
+                smbServiceList();
+                createLoggerInfo("SMB Service remove success");
+            }else{
+                $('#div-modal-status-alert').show();
+            }
+        }).catch(function(data){
+            $('#div-modal-spinner').hide();
             $('#div-modal-status-alert').show();
-            smbServiceList();
-            createLoggerInfo("SMB Service remove success");
-        }else{
-            $('#div-modal-status-alert').show();
-        }
-    }).catch(function(data){
-        $('#div-modal-spinner').hide();
-        $('#div-modal-status-alert').show();
-        createLoggerInfo("SMB Service remove error : "+ data);
-        console.log('button-execution-modal-remove-smb-service : '+data);
-    });
+            createLoggerInfo("SMB Service remove error : "+ data);
+            console.log('button-execution-modal-remove-smb-service : '+data);
+        });
+    }else{
+        alert("삭제 여부를 체크해주세요.");
+    }
 });
 /** SMB Service delete 관련 action end */
 

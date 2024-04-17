@@ -71,12 +71,6 @@ function nfsClusterList(){
     });
 }
 
-function nfsClusterDelete(cluster_id){
-    $('#div-modal-remove-nfs-cluster').show();
-    $('#nfs-cluster-id').val(cluster_id);
-    $('#nfs-cluster-text').text('선택하신 '+cluster_id+' 을(를) 삭제하시겠습니까?');
-}
-
 /** nfs cluster search 관련 action start */
 $('#button-nfs-cluster-search').on('click', function(){
     nfsClusterList();
@@ -237,9 +231,16 @@ $('#button-execution-modal-update-nfs-cluster').on('click', function(){
 /** nfs cluster update 관련 action end */
 
 /** nfs cluster delete 관련 action start */
-$('#menu-item-nfs-cluster-remove').on('click', function(){
+function nfsClusterDelete(cluster_id){
+    $('#input-checkbox-nfs-cluster-remove').prop('checked',false);
     $('#div-modal-remove-nfs-cluster').show();
-});
+    $('#nfs-cluster-id').val(cluster_id);
+    $('#nfs-cluster-text').text('선택하신 '+cluster_id+' 을(를) 삭제하시겠습니까?');
+}
+
+// $('#menu-item-nfs-cluster-remove').on('click', function(){
+//     $('#div-modal-remove-nfs-cluster').show();
+// });
 
 $('#button-close-modal-remove-nfs-cluster').on('click', function(){
     $('#div-modal-remove-nfs-cluster').hide();
@@ -250,39 +251,43 @@ $('#button-cancel-modal-remove-nfs-cluster').on('click', function(){
 });
 
 $('#button-execution-modal-remove-nfs-cluster').on('click', function(){
-    var nfs_cluster_id = $('#nfs-cluster-id').val()
+    if($('#input-checkbox-nfs-cluster-remove').is(":checked")){
+        var nfs_cluster_id = $('#nfs-cluster-id').val()
+        
+        $('#div-modal-remove-nfs-cluster').hide();
+        $('#div-modal-spinner-header-txt').text('NFS Cluster 삭제하고 있습니다.');
+        $('#div-modal-spinner').show();
     
-    $('#div-modal-remove-nfs-cluster').hide();
-    $('#div-modal-spinner-header-txt').text('NFS Cluster 삭제하고 있습니다.');
-    $('#div-modal-spinner').show();
-
-    $("#modal-status-alert-title").html("NFS Cluster 삭제 실패");
-    $("#modal-status-alert-body").html("NFS Cluster 삭제를 실패하였습니다.");
-
-    fetch('https://10.10.2.11:8080/api/v1/nfs/'+nfs_cluster_id,{
-        method: 'DELETE',
-        headers: {
-            'accept': 'application/json',
-            'Content-Type': 'application/x-www-form-urlencoded'
-        }
-    }).then(res => res.json()).then(data => {
-        $('#div-modal-spinner').hide();
-        if(data == "Success"){
-            $("#modal-status-alert-title").html("NFS Cluster 삭제 완료");
-            $("#modal-status-alert-body").html("NFS Cluster 삭제를 완료하였습니다.");
+        $("#modal-status-alert-title").html("NFS Cluster 삭제 실패");
+        $("#modal-status-alert-body").html("NFS Cluster 삭제를 실패하였습니다.");
+    
+        fetch('https://10.10.2.11:8080/api/v1/nfs/'+nfs_cluster_id,{
+            method: 'DELETE',
+            headers: {
+                'accept': 'application/json',
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        }).then(res => res.json()).then(data => {
+            $('#div-modal-spinner').hide();
+            if(data == "Success"){
+                $("#modal-status-alert-title").html("NFS Cluster 삭제 완료");
+                $("#modal-status-alert-body").html("NFS Cluster 삭제를 완료하였습니다.");
+                $('#div-modal-status-alert').show();
+                nfsClusterList();
+                nfsExportList();
+                createLoggerInfo("nfs cluster remove success");
+            }else{
+                $('#div-modal-status-alert').show();
+            }
+        }).catch(function(data){
+            $('#div-modal-spinner').hide();
             $('#div-modal-status-alert').show();
-            nfsClusterList();
-            nfsExportList();
-            createLoggerInfo("nfs cluster remove success");
-        }else{
-            $('#div-modal-status-alert').show();
-        }
-    }).catch(function(data){
-        $('#div-modal-spinner').hide();
-        $('#div-modal-status-alert').show();
-        createLoggerInfo("nfs cluster remove error : "+ data);
-        console.log('button-execution-modal-remove-nfs-cluster : '+data);
-    });
+            createLoggerInfo("nfs cluster remove error : "+ data);
+            console.log('button-execution-modal-remove-nfs-cluster : '+data);
+        });
+    }else{
+        alert("삭제 여부를 체크해주세요.");
+    }
 });
 /**  nfs cluster delete 관련 action end */
 
@@ -349,15 +354,16 @@ $('#button-nfs-export-search').on('click', function(){
 
 /** nfs export delete 관련 action start */
 function nfsExportDelete(export_id, pseudo, cluster_id){
+    $('#input-checkbox-nfs-export-remove').prop('checked',false);
     $('#div-modal-remove-nfs-export').show();
     $('#nfs-export-id').val(export_id);
     $('#export-nfs-cluster-id').val(cluster_id);
     $('#nfs-export-text').text('선택하신 '+pseudo+" : "+cluster_id+' 을(를) 삭제하시겠습니까?');
 }
 
-$('#menu-item-nfs-export-remove').on('click', function(){
-    $('#div-modal-remove-nfs-export').show();
-});
+// $('#menu-item-nfs-export-remove').on('click', function(){
+//     $('#div-modal-remove-nfs-export').show();
+// });
 
 $('#button-close-modal-remove-nfs-export').on('click', function(){
     $('#div-modal-remove-nfs-export').hide();
@@ -368,39 +374,43 @@ $('#button-cancel-modal-remove-nfs-export').on('click', function(){
 });
 
 $('#button-execution-modal-remove-nfs-export').on('click', function(){
-    var nfs_export_id = $('#nfs-export-id').val()
-    var nfs_cluster_id = $('#export-nfs-cluster-id').val()
+    if($('#input-checkbox-nfs-export-remove').is(":checked")){
+        var nfs_export_id = $('#nfs-export-id').val()
+        var nfs_cluster_id = $('#export-nfs-cluster-id').val()
+        
+        $('#div-modal-remove-nfs-export').hide();
+        $('#div-modal-spinner-header-txt').text('NFS Export를 삭제하고 있습니다.');
+        $('#div-modal-spinner').show();
     
-    $('#div-modal-remove-nfs-export').hide();
-    $('#div-modal-spinner-header-txt').text('NFS Export를 삭제하고 있습니다.');
-    $('#div-modal-spinner').show();
-
-    $("#modal-status-alert-title").html("NFS Export 삭제 실패");
-    $("#modal-status-alert-body").html("NFS Export 삭제를 실패하였습니다.");
-
-    fetch('https://10.10.2.11:8080/api/v1/nfs/export/'+nfs_cluster_id+"/"+nfs_export_id,{
-        method: 'DELETE',
-        headers: {
-            'accept': 'application/json',
-            'Content-Type': 'application/x-www-form-urlencoded'
-        }
-    }).then(res => res.json()).then(data => {
-        $('#div-modal-spinner').hide();
-        if(data == "Success"){
-            $("#modal-status-alert-title").html("NFS Export 삭제 완료");
-            $("#modal-status-alert-body").html("NFS Export 삭제를 완료하였습니다.");
+        $("#modal-status-alert-title").html("NFS Export 삭제 실패");
+        $("#modal-status-alert-body").html("NFS Export 삭제를 실패하였습니다.");
+    
+        fetch('https://10.10.2.11:8080/api/v1/nfs/export/'+nfs_cluster_id+"/"+nfs_export_id,{
+            method: 'DELETE',
+            headers: {
+                'accept': 'application/json',
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        }).then(res => res.json()).then(data => {
+            $('#div-modal-spinner').hide();
+            if(data == "Success"){
+                $("#modal-status-alert-title").html("NFS Export 삭제 완료");
+                $("#modal-status-alert-body").html("NFS Export 삭제를 완료하였습니다.");
+                $('#div-modal-status-alert').show();
+                nfsExportList();
+                createLoggerInfo("nfs export remove success");
+            }else{
+                $('#div-modal-status-alert').show();
+            }
+        }).catch(function(data){
+            $('#div-modal-spinner').hide();
             $('#div-modal-status-alert').show();
-            nfsExportList();
-            createLoggerInfo("nfs export remove success");
-        }else{
-            $('#div-modal-status-alert').show();
-        }
-    }).catch(function(data){
-        $('#div-modal-spinner').hide();
-        $('#div-modal-status-alert').show();
-        createLoggerInfo("nfs export remove error : "+ data);
-        console.log('button-execution-modal-remove-nfs-export : '+data);
-    });
+            createLoggerInfo("nfs export remove error : "+ data);
+            console.log('button-execution-modal-remove-nfs-export : '+data);
+        });
+    }else{
+        alert("삭제 여부를 체크해주세요.");
+    }
 });
 /**  nfs export delete 관련 action end */
 

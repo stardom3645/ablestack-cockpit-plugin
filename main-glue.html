@@ -1235,6 +1235,10 @@
             <header class="pf-c-modal-box__header"><h1 class="pf-c-modal-box__title"><span class="pf-c-modal-box__title-text">Glue File System 삭제</span></h1></header>
             <div class="pf-c-modal-box__body">
                 <div id="gluefs-id"></div>
+                <label class="pf-c-check pf-c-select__menu-item" style="margin-top: 20px;">
+                    <input class="pf-c-check__input" type="checkbox" id="input-checkbox-gluefs-remove" value="remove"/>
+                    <span class="pf-c-check__label" style="color: #c9190b;"><i class="fas fa-fw fa-exclamation-circle" aria-hidden="true"></i> 데이터가 삭제 됩니다. 예, 확실히 삭제합니다.</span>
+                </label>
             </div>
             <footer class="pf-c-modal-box__footer">
                 <button id="button-execution-modal-remove-gluefs" aria-disabled="false" class="pf-c-button pf-m-primary" type="button" data-ouia-safe="true">실행</button>
@@ -1373,12 +1377,17 @@
             <header class="pf-c-modal-box__header"><h1 class="pf-c-modal-box__title"><span class="pf-c-modal-box__title-text">GlueFS SubVolume Group 삭제</span></h1></header>
             <div class="pf-c-modal-box__body">
                 <div id="gluefs-subvolume-group-id"></div>
+                <label class="pf-c-check pf-c-select__menu-item" style="margin-top: 20px;">
+                    <input class="pf-c-check__input" type="checkbox" id="input-checkbox-gluefs-subvolume-group-remove" value="remove"/>
+                    <span class="pf-c-check__label" style="color: #c9190b;"><i class="fas fa-fw fa-exclamation-circle" aria-hidden="true"></i> 데이터가 삭제 됩니다. 에, 확실히 삭제합니다.</span>
+                </label>
             </div>
             <footer class="pf-c-modal-box__footer">
                 <button id="button-execution-modal-remove-gluefs-subvolume-group" aria-disabled="false" class="pf-c-button pf-m-primary" type="button" data-ouia-safe="true">실행</button>
                 <button id="button-cancel-modal-remove-gluefs-subvolume-group" aria-disabled="false" class="pf-c-button pf-m-link" type="button" data-ouia-safe="true">취소</button>
             </footer>
             <input type="text" id="gluefs-subvolume-group-remove-id" name="gluefs-subvolume-group-remove-id" value="" style="display:none" disabled/>
+            <input type="text" id="gluefs-subvolume-group-remove-path" name="gluefs-subvolume-group-remove-path" value="" style="display:none" disabled/>
         </div>
     </div>
 </div>
@@ -1547,6 +1556,10 @@
             <header class="pf-c-modal-box__header"><h1 class="pf-c-modal-box__title"><span class="pf-c-modal-box__title-text">NFS Cluster 삭제</span></h1></header>
             <div class="pf-c-modal-box__body">
                 <div id="nfs-cluster-text"></div>
+                <label class="pf-c-check pf-c-select__menu-item" style="margin-top: 20px;">
+                    <input class="pf-c-check__input" type="checkbox" id="input-checkbox-nfs-cluster-remove" value="remove"/>
+                    <span class="pf-c-check__label" style="color: #c9190b;"><i class="fas fa-fw fa-exclamation-circle" aria-hidden="true"></i>예, 확실히 삭제합니다.</span>
+                </label>
             </div>
             <footer class="pf-c-modal-box__footer">
                 <button id="button-execution-modal-remove-nfs-cluster" aria-disabled="false" class="pf-c-button pf-m-primary" type="button" data-ouia-safe="true">실행</button>
@@ -1822,6 +1835,10 @@
             <header class="pf-c-modal-box__header"><h1 class="pf-c-modal-box__title"><span class="pf-c-modal-box__title-text">NFS Export 삭제</span></h1></header>
             <div class="pf-c-modal-box__body">
                 <div id="nfs-export-text"></div>
+                <label class="pf-c-check pf-c-select__menu-item" style="margin-top: 20px;">
+                    <input class="pf-c-check__input" type="checkbox" id="input-checkbox-nfs-export-remove" value="remove"/>
+                    <span class="pf-c-check__label" style="color: #c9190b;"><i class="fas fa-fw fa-exclamation-circle" aria-hidden="true"></i>예, 확실히 삭제합니다.</span>
+                </label>
             </div>
             <footer class="pf-c-modal-box__footer">
                 <button id="button-execution-modal-remove-nfs-export" aria-disabled="false" class="pf-c-button pf-m-primary" type="button" data-ouia-safe="true">실행</button>
@@ -2054,6 +2071,10 @@
             <header class="pf-c-modal-box__header"><h1 class="pf-c-modal-box__title"><span class="pf-c-modal-box__title-text">Ingress 삭제</span></h1></header>
             <div class="pf-c-modal-box__body">
                 <div id="ingress-text"></div>
+                <label class="pf-c-check pf-c-select__menu-item" style="margin-top: 20px;">
+                    <input class="pf-c-check__input" type="checkbox" id="input-checkbox-ingress-remove" value="remove"/>
+                    <span class="pf-c-check__label" style="color: #c9190b;"><i class="fas fa-fw fa-exclamation-circle" aria-hidden="true"></i>예, 확실히 삭제합니다.</span>
+                </label>
             </div>
             <footer class="pf-c-modal-box__footer">
                 <button id="button-execution-modal-remove-ingress" aria-disabled="false" class="pf-c-button pf-m-primary" type="button" data-ouia-safe="true">실행</button>
@@ -2312,6 +2333,10 @@
             <header class="pf-c-modal-box__header"><h1 class="pf-c-modal-box__title"><span class="pf-c-modal-box__title-text">iSCSI 서비스 삭제</span></h1></header>
             <div class="pf-c-modal-box__body">
                 <div id="iscsi-service-text"></div>
+                <label class="pf-c-check pf-c-select__menu-item" style="margin-top: 20px;">
+                    <input class="pf-c-check__input" type="checkbox" id="input-checkbox-iscsi-service-remove" value="remove"/>
+                    <span class="pf-c-check__label" style="color: #c9190b;"><i class="fas fa-fw fa-exclamation-circle" aria-hidden="true"></i>예, 확실히 삭제합니다.</span>
+                </label>
             </div>
             <footer class="pf-c-modal-box__footer">
                 <button id="button-execution-modal-remove-iscsi-service" aria-disabled="false" class="pf-c-button pf-m-primary" type="button" data-ouia-safe="true">실행</button>
@@ -2559,6 +2584,10 @@
             <header class="pf-c-modal-box__header"><h1 class="pf-c-modal-box__title"><span class="pf-c-modal-box__title-text">iSCSI 타겟 삭제</span></h1></header>
             <div class="pf-c-modal-box__body">
                 <div id="iscsi-target-text"></div>
+                <label class="pf-c-check pf-c-select__menu-item" style="margin-top: 20px;">
+                    <input class="pf-c-check__input" type="checkbox" id="input-checkbox-iscsi-target-remove" value="remove"/>
+                    <span class="pf-c-check__label" style="color: #c9190b;"><i class="fas fa-fw fa-exclamation-circle" aria-hidden="true"></i>예, 확실히 삭제합니다.</span>
+                </label>
             </div>
             <footer class="pf-c-modal-box__footer">
                 <button id="button-execution-modal-remove-iscsi-target" aria-disabled="false" class="pf-c-button pf-m-primary" type="button" data-ouia-safe="true">실행</button>
@@ -2569,13 +2598,6 @@
     </div>
 </div>
 <!-- iscsi target 삭제 : Modal 영역 끝 -->
-
-
-
-
-
-
-
 
 <!-- smb service 생성 : Modal 영역 시작 -->
 <div id="div-modal-create-smb-service" class="pf-c-backdrop" style="display:none">
@@ -2688,6 +2710,10 @@
             <header class="pf-c-modal-box__header"><h1 class="pf-c-modal-box__title"><span class="pf-c-modal-box__title-text">SMB 서비스 삭제</span></h1></header>
             <div class="pf-c-modal-box__body">
                 <div id="smb-service-text"></div>
+                <label class="pf-c-check pf-c-select__menu-item" style="margin-top: 20px;">
+                    <input class="pf-c-check__input" type="checkbox" id="input-checkbox-smb-service-remove" value="remove"/>
+                    <span class="pf-c-check__label" style="color: #c9190b;"><i class="fas fa-fw fa-exclamation-circle" aria-hidden="true"></i>예, 확실히 삭제합니다.</span>
+                </label>
             </div>
             <footer class="pf-c-modal-box__footer">
                 <button id="button-execution-modal-remove-smb-service" aria-disabled="false" class="pf-c-button pf-m-primary" type="button" data-ouia-safe="true">실행</button>
@@ -2882,6 +2908,10 @@
             <header class="pf-c-modal-box__header"><h1 class="pf-c-modal-box__title"><span class="pf-c-modal-box__title-text">Object Gateway 삭제</span></h1></header>
             <div class="pf-c-modal-box__body">
                 <div id="object-gateway-text"></div>
+                <label class="pf-c-check pf-c-select__menu-item" style="margin-top: 20px;">
+                    <input class="pf-c-check__input" type="checkbox" id="input-checkbox-object-gateway-remove" value="remove"/>
+                    <span class="pf-c-check__label" style="color: #c9190b;"><i class="fas fa-fw fa-exclamation-circle" aria-hidden="true"></i>예, 확실히 삭제합니다.</span>
+                </label>
             </div>
             <footer class="pf-c-modal-box__footer">
                 <button id="button-execution-modal-remove-object-gateway" aria-disabled="false" class="pf-c-button pf-m-primary" type="button" data-ouia-safe="true">실행</button>
@@ -3098,6 +3128,10 @@
             <header class="pf-c-modal-box__header"><h1 class="pf-c-modal-box__title"><span class="pf-c-modal-box__title-text">Object Gateway User 삭제</span></h1></header>
             <div class="pf-c-modal-box__body">
                 <div id="object-gateway-user-text"></div>
+                <label class="pf-c-check pf-c-select__menu-item" style="margin-top: 20px;">
+                    <input class="pf-c-check__input" type="checkbox" id="input-checkbox-object-gateway-user-remove" value="remove"/>
+                    <span class="pf-c-check__label" style="color: #c9190b;"><i class="fas fa-fw fa-exclamation-circle" aria-hidden="true"></i>예, 확실히 삭제합니다.</span>
+                </label>
             </div>
             <footer class="pf-c-modal-box__footer">
                 <button id="button-execution-modal-remove-object-gateway-user" aria-disabled="false" class="pf-c-button pf-m-primary" type="button" data-ouia-safe="true">실행</button>
@@ -3380,7 +3414,7 @@
                             </label>
                         </div>
                         <div class="pf-c-form__group-control">
-                            <input class="pf-c-form-control" style="width:50%" type="text" id="form-input-quota-update-object-gateway-user-max-size" name="form-input-quota-update-object-gateway-user-max-size"/>
+                            <input class="pf-c-form-control" style="width:50%" type="text" id="form-input-quota-update-object-gateway-user-max-size" name="form-input-quota-update-object-gateway-user-max-size"/>&ensp;( 제한 없음 -1 )
                         </div>
                     </div>
                     <div class="pf-c-form__group">
@@ -3391,7 +3425,7 @@
                             </label>
                         </div>
                         <div class="pf-c-form__group-control">
-                            <input class="pf-c-form-control" style="width:50%" type="text" id="form-input-quota-update-object-gateway-user-max-objects" name="form-input-quota-update-object-gateway-user-max-objects"/>
+                            <input class="pf-c-form-control" style="width:50%" type="text" id="form-input-quota-update-object-gateway-user-max-objects" name="form-input-quota-update-object-gateway-user-max-objects"/>&ensp;( 제한 없음 -1 )
                         </div>
                     </div>
                 </section>

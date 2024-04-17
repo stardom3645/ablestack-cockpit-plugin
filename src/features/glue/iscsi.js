@@ -63,12 +63,6 @@ $('#button-iscsi-service-search').on('click', function(){
     iscsiServiceList();
 });
 
-function iscsiServiceDelete(iscsi_service_id){
-    $('#div-modal-remove-iscsi-service').show();
-    $('#iscsi-service-id').val(iscsi_service_id);
-    $('#iscsi-service-text').text('선택하신 '+iscsi_service_id+' 을(를) 삭제하시겠습니까?');
-}
-
 /** iSCSI Service create 관련 action start */
 $('#button-iscsi-service-create').on('click', function(){
     iscsiServiceCreateInitInputValue();
@@ -217,6 +211,13 @@ $('#button-execution-modal-update-iscsi-service').on('click', function(){
 /** iSCSI Service update 관련 action end */
 
 /** iSCSI Service delete 관련 action start */
+function iscsiServiceDelete(iscsi_service_id){
+    $('#input-checkbox-iscsi-service-remove').prop('checked',false);
+    $('#div-modal-remove-iscsi-service').show();
+    $('#iscsi-service-id').val(iscsi_service_id);
+    $('#iscsi-service-text').text('선택하신 '+iscsi_service_id+' 을(를) 삭제하시겠습니까?');
+}
+
 $('#menu-item-iscsi-service-remove').on('click', function(){
     $('#div-modal-remove-iscsi-service').show();
 });
@@ -230,37 +231,41 @@ $('#button-cancel-modal-remove-iscsi-service').on('click', function(){
 });
 
 $('#button-execution-modal-remove-iscsi-service').on('click', function(){
-    var iscsi_service_id = $('#iscsi-service-id').val()
+    if($('#input-checkbox-iscsi-service-remove').is(":checked")){
+        var iscsi_service_id = $('#iscsi-service-id').val()
+        
+        $('#div-modal-remove-iscsi-service').hide();
+        $('#div-modal-spinner-header-txt').text('iSCSI Service를 삭제하고 있습니다.');
+        $('#div-modal-spinner').show();
     
-    $('#div-modal-remove-iscsi-service').hide();
-    $('#div-modal-spinner-header-txt').text('iSCSI Service를 삭제하고 있습니다.');
-    $('#div-modal-spinner').show();
-
-    $("#modal-status-alert-title").html("iSCSI Service 삭제 실패");
-    $("#modal-status-alert-body").html("iSCSI Service 삭제를 실패하였습니다.");
-    fetch('https://10.10.2.11:8080/api/v1/service/'+iscsi_service_id,{
-        method: 'DELETE',
-        headers: {
-            'accept': 'application/json',
-            'Content-Type': 'application/x-www-form-urlencoded'
-        }
-    }).then(res => res.json()).then(data => {
-        $('#div-modal-spinner').hide();
-        if(data == "Success"){
-            $("#modal-status-alert-title").html("iSCSI Service 삭제 완료");
-            $("#modal-status-alert-body").html("iSCSI Service 삭제를 완료하였습니다.");
+        $("#modal-status-alert-title").html("iSCSI Service 삭제 실패");
+        $("#modal-status-alert-body").html("iSCSI Service 삭제를 실패하였습니다.");
+        fetch('https://10.10.2.11:8080/api/v1/service/'+iscsi_service_id,{
+            method: 'DELETE',
+            headers: {
+                'accept': 'application/json',
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        }).then(res => res.json()).then(data => {
+            $('#div-modal-spinner').hide();
+            if(data == "Success"){
+                $("#modal-status-alert-title").html("iSCSI Service 삭제 완료");
+                $("#modal-status-alert-body").html("iSCSI Service 삭제를 완료하였습니다.");
+                $('#div-modal-status-alert').show();
+                iscsiServiceList();
+                createLoggerInfo("iSCSI Service remove success");
+            }else{
+                $('#div-modal-status-alert').show();
+            }
+        }).catch(function(data){
+            $('#div-modal-spinner').hide();
             $('#div-modal-status-alert').show();
-            iscsiServiceList();
-            createLoggerInfo("iSCSI Service remove success");
-        }else{
-            $('#div-modal-status-alert').show();
-        }
-    }).catch(function(data){
-        $('#div-modal-spinner').hide();
-        $('#div-modal-status-alert').show();
-        createLoggerInfo("iSCSI Service remove error : "+ data);
-        console.log('button-execution-modal-remove-iscsi-service : '+data);
-    });
+            createLoggerInfo("iSCSI Service remove error : "+ data);
+            console.log('button-execution-modal-remove-iscsi-service : '+data);
+        });
+    }else{
+        alert("삭제 여부를 체크해주세요.");
+    }
 });
 /**  iSCSI Service delete 관련 action end */
 
@@ -351,12 +356,6 @@ $('#button-iscsi-target-search').on('click', function(){
     iscsiTargetList();
 });
 /** iSCSI target search 관련 action end */
-
-function iscsiTargetDelete(iqn_id){
-    $('#div-modal-remove-iscsi-target').show();
-    $('#iscsi-target-iqn-id').val(iqn_id);
-    $('#iscsi-target-text').text('선택하신 '+iqn_id+' 을(를) 삭제하시겠습니까?');
-}
 
 /** iSCSI target create 관련 action start */
 $('#button-iscsi-target-create').on('click', function(){
@@ -578,9 +577,16 @@ $('#button-execution-modal-update-iscsi-target').on('click', function(){
 /** iSCSI target update 관련 action end */
 
 /** iSCSI target delete 관련 action start */
-$('#menu-item-iscsi-target-remove').on('click', function(){
+function iscsiTargetDelete(iqn_id){
+    $('#input-checkbox-iscsi-target-remove').prop('checked',false);
     $('#div-modal-remove-iscsi-target').show();
-});
+    $('#iscsi-target-iqn-id').val(iqn_id);
+    $('#iscsi-target-text').text('선택하신 '+iqn_id+' 을(를) 삭제하시겠습니까?');
+}
+
+// $('#menu-item-iscsi-target-remove').on('click', function(){
+//     $('#div-modal-remove-iscsi-target').show();
+// });
 
 $('#button-close-modal-remove-iscsi-target').on('click', function(){
     $('#div-modal-remove-iscsi-target').hide();
@@ -591,41 +597,45 @@ $('#button-cancel-modal-remove-iscsi-target').on('click', function(){
 });
 
 $('#button-execution-modal-remove-iscsi-target').on('click', function(){
-    var iqn_id = $('#iscsi-target-iqn-id').val()
-    var body_val = "iqn_id="+iqn_id;
+    if($('#input-checkbox-iscsi-target-remove').is(":checked")){
+        var iqn_id = $('#iscsi-target-iqn-id').val()
+        var body_val = "iqn_id="+iqn_id;
+        
+        $('#div-modal-remove-iscsi-target').hide();
+        $('#div-modal-spinner-header-txt').text('iSCSI Target을 삭제하고 있습니다.');
+        $('#div-modal-spinner').show();
     
-    $('#div-modal-remove-iscsi-target').hide();
-    $('#div-modal-spinner-header-txt').text('iSCSI Target을 삭제하고 있습니다.');
-    $('#div-modal-spinner').show();
-
-    $("#modal-status-alert-title").html("iSCSI Target 삭제 실패");
-    $("#modal-status-alert-body").html("iSCSI Target 삭제를 실패하였습니다.");
-    fetch('https://10.10.2.11:8080/api/v1/iscsi/target?iqn_id='+iqn_id,{
-        method: 'DELETE',
-        headers: {
-            'accept': 'application/json',
-            'Content-Type': 'application/x-www-form-urlencoded'
-        },
-        body: body_val
-    }).then(res => res.json()).then(data => {
-        $('#div-modal-spinner').hide();
-        console.log(data)
-        console.log(111)
-        if(data == "Success"){
-            $("#modal-status-alert-title").html("iSCSI Target 삭제 완료");
-            $("#modal-status-alert-body").html("iSCSI Target 삭제를 완료하였습니다.");
+        $("#modal-status-alert-title").html("iSCSI Target 삭제 실패");
+        $("#modal-status-alert-body").html("iSCSI Target 삭제를 실패하였습니다.");
+        fetch('https://10.10.2.11:8080/api/v1/iscsi/target?iqn_id='+iqn_id,{
+            method: 'DELETE',
+            headers: {
+                'accept': 'application/json',
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: body_val
+        }).then(res => res.json()).then(data => {
+            $('#div-modal-spinner').hide();
+            console.log(data)
+            console.log(111)
+            if(data == "Success"){
+                $("#modal-status-alert-title").html("iSCSI Target 삭제 완료");
+                $("#modal-status-alert-body").html("iSCSI Target 삭제를 완료하였습니다.");
+                $('#div-modal-status-alert').show();
+                iscsiTargetList();
+                createLoggerInfo("iSCSI Target remove success");
+            }else{
+                $('#div-modal-status-alert').show();
+            }
+        }).catch(function(data){
+            $('#div-modal-spinner').hide();
             $('#div-modal-status-alert').show();
-            iscsiTargetList();
-            createLoggerInfo("iSCSI Target remove success");
-        }else{
-            $('#div-modal-status-alert').show();
-        }
-    }).catch(function(data){
-        $('#div-modal-spinner').hide();
-        $('#div-modal-status-alert').show();
-        createLoggerInfo("iSCSI Target remove error : "+ data);
-        console.log('button-execution-modal-remove-iscsi-target : '+data);
-    });
+            createLoggerInfo("iSCSI Target remove error : "+ data);
+            console.log('button-execution-modal-remove-iscsi-target : '+data);
+        });
+    }else{
+        alert("삭제 여부를 체크해주세요.");
+    }
 });
 /**  iSCSI target delete 관련 action end */
 

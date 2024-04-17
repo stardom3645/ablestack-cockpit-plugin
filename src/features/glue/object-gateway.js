@@ -53,12 +53,6 @@ function objectGatewayList(){
     });
 }
 
-function objectGatewayDelete(object_gateway_id){
-    $('#div-modal-remove-object-gateway').show();
-    $('#object-gateway-id').val(object_gateway_id);
-    $('#object-gateway-text').text('선택하신 '+object_gateway_id+' 을(를) 삭제하시겠습니까?');
-}
-
 /** object gateway search 관련 action start */
 $('#button-object-gateway-search').on('click', function(){
     objectGatewayList();
@@ -217,8 +211,14 @@ $('#button-execution-modal-update-object-gateway').on('click', function(){
     }
 });
 /** object gateway update 관련 action end */
-
 /** object gateway delete 관련 action start */
+function objectGatewayDelete(object_gateway_id){
+    $('#input-checkbox-object-gateway-remove').prop('checked',false);
+    $('#div-modal-remove-object-gateway').show();
+    $('#object-gateway-id').val(object_gateway_id);
+    $('#object-gateway-text').text('선택하신 '+object_gateway_id+' 을(를) 삭제하시겠습니까?');
+}
+
 $('#menu-item-object-gateway-remove').on('click', function(){
     $('#div-modal-remove-object-gateway').show();
 });
@@ -232,37 +232,41 @@ $('#button-cancel-modal-remove-object-gateway').on('click', function(){
 });
 
 $('#button-execution-modal-remove-object-gateway').on('click', function(){
-    var object_gateway_id = $('#object-gateway-id').val()
-    $('#div-modal-remove-object-gateway').hide();
-    $('#div-modal-spinner-header-txt').text('Object Gateway를 삭제하고 있습니다.');
-    $('#div-modal-spinner').show();
-
-    $("#modal-status-alert-title").html("Object Gateway 삭제 실패");
-    $("#modal-status-alert-body").html("Object Gateway 삭제를 실패하였습니다.");
+    if($('#input-checkbox-object-gateway-remove').is(":checked")){
+        var object_gateway_id = $('#object-gateway-id').val()
+        $('#div-modal-remove-object-gateway').hide();
+        $('#div-modal-spinner-header-txt').text('Object Gateway를 삭제하고 있습니다.');
+        $('#div-modal-spinner').show();
     
-    fetch('https://10.10.2.11:8080/api/v1/service/'+object_gateway_id,{
-        method: 'DELETE',
-        headers: {
-            'accept': 'application/json',
-            'Content-Type': 'application/x-www-form-urlencoded'
-        }
-    }).then(res => res.json()).then(data => {
-        $('#div-modal-spinner').hide();
-        if(data == "Success"){
-            $("#modal-status-alert-title").html("Object Gateway 삭제 완료");
-            $("#modal-status-alert-body").html("Object Gateway 삭제를 완료하였습니다.");
+        $("#modal-status-alert-title").html("Object Gateway 삭제 실패");
+        $("#modal-status-alert-body").html("Object Gateway 삭제를 실패하였습니다.");
+        
+        fetch('https://10.10.2.11:8080/api/v1/service/'+object_gateway_id,{
+            method: 'DELETE',
+            headers: {
+                'accept': 'application/json',
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        }).then(res => res.json()).then(data => {
+            $('#div-modal-spinner').hide();
+            if(data == "Success"){
+                $("#modal-status-alert-title").html("Object Gateway 삭제 완료");
+                $("#modal-status-alert-body").html("Object Gateway 삭제를 완료하였습니다.");
+                $('#div-modal-status-alert').show();
+                objectGatewayList();
+                createLoggerInfo("object gateway remove success");
+            }else{
+                $('#div-modal-status-alert').show();
+            }
+        }).catch(function(data){
+            $('#div-modal-spinner').hide();
             $('#div-modal-status-alert').show();
-            objectGatewayList();
-            createLoggerInfo("object gateway remove success");
-        }else{
-            $('#div-modal-status-alert').show();
-        }
-    }).catch(function(data){
-        $('#div-modal-spinner').hide();
-        $('#div-modal-status-alert').show();
-        createLoggerInfo("object gateway remove error : "+ data);
-        console.log('button-execution-modal-remove-object-gateway : '+data);
-    });
+            createLoggerInfo("object gateway remove error : "+ data);
+            console.log('button-execution-modal-remove-object-gateway : '+data);
+        });
+    }else{
+        alert("삭제 여부를 체크해주세요.");
+    }
 });
 /**  object gateway delete 관련 action end */
 
@@ -332,6 +336,7 @@ function objectGatewayUserDelete(rgw_user_id){
         alert("dashboard 사용자는 삭제할 수 없습니다.");
         return;
     }
+    $('#input-checkbox-object-gateway-user-remove').prop('checked',false);
     $('#div-modal-remove-object-gateway-user').show();
     $('#object-gateway-user-id').val(rgw_user_id);
     $('#object-gateway-user-text').text('선택하신 '+rgw_user_id+' 을(를) 삭제하시겠습니까?');
@@ -350,38 +355,42 @@ $('#button-cancel-modal-remove-object-gateway-user').on('click', function(){
 });
 
 $('#button-execution-modal-remove-object-gateway-user').on('click', function(){
-    var object_gateway_user = $('#object-gateway-user-id').val()
+    if($('#input-checkbox-object-gateway-user-remove').is(":checked")){
+        var object_gateway_user = $('#object-gateway-user-id').val()
+        
+        $('#div-modal-remove-object-gateway-user').hide();
+        $('#div-modal-spinner-header-txt').text('Object Gateway User를 삭제하고 있습니다.');
+        $('#div-modal-spinner').show();
     
-    $('#div-modal-remove-object-gateway-user').hide();
-    $('#div-modal-spinner-header-txt').text('Object Gateway User를 삭제하고 있습니다.');
-    $('#div-modal-spinner').show();
-
-    $("#modal-status-alert-title").html("Object Gateway User 삭제 실패");
-    $("#modal-status-alert-body").html("Object Gateway User 삭제를 실패하였습니다.");
-
-    fetch('https://10.10.2.11:8080/api/v1/rgw/user?username='+object_gateway_user,{
-        method: 'DELETE',
-        headers: {
-            'accept': 'application/json',
-            'Content-Type': 'application/x-www-form-urlencoded'
-        }
-    }).then(res => res.json()).then(data => {
-        $('#div-modal-spinner').hide();
-        if(data == "Success"){
-            $("#modal-status-alert-title").html("Object Gateway User 삭제 완료");
-            $("#modal-status-alert-body").html("Object Gateway User 삭제를 완료하였습니다.");
+        $("#modal-status-alert-title").html("Object Gateway User 삭제 실패");
+        $("#modal-status-alert-body").html("Object Gateway User 삭제를 실패하였습니다.");
+    
+        fetch('https://10.10.2.11:8080/api/v1/rgw/user?username='+object_gateway_user,{
+            method: 'DELETE',
+            headers: {
+                'accept': 'application/json',
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        }).then(res => res.json()).then(data => {
+            $('#div-modal-spinner').hide();
+            if(data == "Success"){
+                $("#modal-status-alert-title").html("Object Gateway User 삭제 완료");
+                $("#modal-status-alert-body").html("Object Gateway User 삭제를 완료하였습니다.");
+                $('#div-modal-status-alert').show();
+                objectGatewayUserList();
+                createLoggerInfo("object gateway user remove success");
+            }else{
+                $('#div-modal-status-alert').show();
+            }
+        }).catch(function(data){
+            $('#div-modal-spinner').hide();
             $('#div-modal-status-alert').show();
-            objectGatewayUserList();
-            createLoggerInfo("object gateway user remove success");
-        }else{
-            $('#div-modal-status-alert').show();
-        }
-    }).catch(function(data){
-        $('#div-modal-spinner').hide();
-        $('#div-modal-status-alert').show();
-        createLoggerInfo("object gateway user remove error : "+ data);
-        console.log('button-execution-modal-remove-object-gateway-user : '+data);
-    });
+            createLoggerInfo("object gateway user remove error : "+ data);
+            console.log('button-execution-modal-remove-object-gateway-user : '+data);
+        });
+    }else{
+        alert("삭제 여부를 체크해주세요.");
+    }
 });
 /**  object gateway user delete 관련 action end */
 

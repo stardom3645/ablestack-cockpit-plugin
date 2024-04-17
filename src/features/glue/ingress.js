@@ -57,12 +57,6 @@ function ingressList(){
     });
 }
 
-function ingressDelete(ingress_id){
-    $('#div-modal-remove-ingress').show();
-    $('#ingress-id').val(ingress_id);
-    $('#ingress-text').text('선택하신 '+ingress_id+' 을(를) 삭제하시겠습니까?');
-}
-
 /** ingress search 관련 action start */
 $('#button-ingress-search').on('click', function(){
     ingressList();
@@ -226,9 +220,14 @@ $('#button-execution-modal-update-ingress').on('click', function(){
     }
 });
 /** ingress update 관련 action end */
-
-
 /** ingress delete 관련 action start */
+function ingressDelete(ingress_id){
+    $('#input-checkbox-ingress-remove').prop('checked',false);
+    $('#div-modal-remove-ingress').show();
+    $('#ingress-id').val(ingress_id);
+    $('#ingress-text').text('선택하신 '+ingress_id+' 을(를) 삭제하시겠습니까?');
+}
+
 $('#menu-item-ingress-remove').on('click', function(){
     $('#div-modal-remove-ingress').show();
 });
@@ -242,37 +241,41 @@ $('#button-cancel-modal-remove-ingress').on('click', function(){
 });
 
 $('#button-execution-modal-remove-ingress').on('click', function(){
-    var ingress_id = $('#ingress-id').val()
-    $('#div-modal-remove-ingress').hide();
-    $('#div-modal-spinner-header-txt').text('INGRESS를 삭제하고 있습니다.');
-    $('#div-modal-spinner').show();
-
-    $("#modal-status-alert-title").html("INGRESS 삭제 실패");
-    $("#modal-status-alert-body").html("INGRESS 삭제를 실패하였습니다.");
+    if($('#input-checkbox-ingress-remove').is(":checked")){
+        var ingress_id = $('#ingress-id').val()
+        $('#div-modal-remove-ingress').hide();
+        $('#div-modal-spinner-header-txt').text('INGRESS를 삭제하고 있습니다.');
+        $('#div-modal-spinner').show();
     
-    fetch('https://10.10.2.11:8080/api/v1/service/'+ingress_id,{
-        method: 'DELETE',
-        headers: {
-            'accept': 'application/json',
-            'Content-Type': 'application/x-www-form-urlencoded'
-        }
-    }).then(res => res.json()).then(data => {
-        $('#div-modal-spinner').hide();
-        if(data == "Success"){
-            $("#modal-status-alert-title").html("INGRESS 삭제 완료");
-            $("#modal-status-alert-body").html("INGRESS 삭제를 완료하였습니다.");
+        $("#modal-status-alert-title").html("INGRESS 삭제 실패");
+        $("#modal-status-alert-body").html("INGRESS 삭제를 실패하였습니다.");
+        
+        fetch('https://10.10.2.11:8080/api/v1/service/'+ingress_id,{
+            method: 'DELETE',
+            headers: {
+                'accept': 'application/json',
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        }).then(res => res.json()).then(data => {
+            $('#div-modal-spinner').hide();
+            if(data == "Success"){
+                $("#modal-status-alert-title").html("INGRESS 삭제 완료");
+                $("#modal-status-alert-body").html("INGRESS 삭제를 완료하였습니다.");
+                $('#div-modal-status-alert').show();
+                ingressList();
+                createLoggerInfo("ingress remove success");
+            }else{
+                $('#div-modal-status-alert').show();
+            }
+        }).catch(function(data){
+            $('#div-modal-spinner').hide();
             $('#div-modal-status-alert').show();
-            ingressList();
-            createLoggerInfo("ingress remove success");
-        }else{
-            $('#div-modal-status-alert').show();
-        }
-    }).catch(function(data){
-        $('#div-modal-spinner').hide();
-        $('#div-modal-status-alert').show();
-        createLoggerInfo("ingress remove error : "+ data);
-        console.log('button-execution-modal-remove-ingress : '+data);
-    });
+            createLoggerInfo("ingress remove error : "+ data);
+            console.log('button-execution-modal-remove-ingress : '+data);
+        });
+    }else{
+        alert("삭제 여부를 체크해주세요.");
+    }
 });
 /**  ingress delete 관련 action end */
 
