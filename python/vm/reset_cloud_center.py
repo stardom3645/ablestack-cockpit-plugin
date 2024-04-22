@@ -62,7 +62,7 @@ def resetCloudCenter(args):
     # ceph rbd 이미지 삭제
     result = os.system("rbd ls -p rbd | grep ccvm > /dev/null")
     if result == 0:
-        os.system("rbd rm rbd/ccvm")
+        os.system("rbd rm --no-progress rbd/ccvm")
 
     # virsh 초기화
     os.system("virsh destroy ccvm > /dev/null")

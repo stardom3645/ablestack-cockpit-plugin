@@ -81,8 +81,15 @@ def create(args):
 
         python3(pluginpath+'/python/host/ssh-scan.py')
 
-        os.system("scp -q -o StrictHostKeyChecking=no " + hosts_file_path + " root@scvm-mngt:/etc/hosts")
-        return createReturn(code=200, val="hosts file config success.")
+        result = 0
+        result += os.system("scp -q -o StrictHostKeyChecking=no " + hosts_file_path + " root@scvm-mngt:"+hosts_file_path)
+        result += os.system("scp -q -o StrictHostKeyChecking=no " + json_file_path + " root@scvm-mngt:"+json_file_path)
+
+        if result == 0: # 성공일 경우
+            return createReturn(code=200, val="hosts and cluster.json file copy success.")
+        else: # 실패할 경우
+            return createReturn(code=500, val="hosts and cluster.json file copy fail.")
+        
     except Exception as e:
         # 결과값 리턴
         return createReturn(code=500, val="Please check the \"cluster.json\" file. : "+e)
@@ -106,7 +113,20 @@ def remove(args):
         python3(pluginpath+'/python/host/ssh-scan.py')
 
         os.system("scp -q -o StrictHostKeyChecking=no " + hosts_file_path + " root@scvm-mngt:/etc/hosts")
-        return createReturn(code=200, val="hosts file config success.")
+        result = 0
+        result += os.system("scp -q -o StrictHostKeyChecking=no " + hosts_file_path + " root@scvm-mngt:"+hosts_file_path)
+        result += os.system("scp -q -o StrictHostKeyChecking=no " + json_file_path + " root@scvm-mngt:"+json_file_path)
+
+        # cloudinit iso 삭제
+        os.system("rm -f /var/lib/libvirt/images/gwvm-cloudinit.iso")
+
+        # 확인후 폴더 밑 내용 다 삭제해도 무관하면 아래 코드 수행
+        os.system("rm -rf "+pluginpath+"/tools/vmconfig/gwvm/*")
+
+        if result == 0: # 성공일 경우
+            return createReturn(code=200, val="hosts and cluster.json file copy success.")
+        else: # 실패할 경우
+            return createReturn(code=500, val="hosts and cluster.json file copy fail.")
     except Exception as e:
         # 결과값 리턴
         return createReturn(code=500, val="Please check the \"cluster.json\" file. : "+e)

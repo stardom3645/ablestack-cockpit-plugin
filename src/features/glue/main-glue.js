@@ -1461,6 +1461,7 @@ function topTabAction(button_id){
     $('#div-smb-service-card').hide();
     $('#div-object-gateway-card').hide();
     $('#div-object-gateway-user-card').hide();
+    $('#div-object-gateway-bucket-card').hide();
 
     //본문 영역 숨기기 끝
     switch (button_id) {
@@ -1512,10 +1513,13 @@ function topTabAction(button_id){
             $('div[name="div-help-content"]').remove();
             setHelpInfoContent("Object Gateway","Object Gateway는 Glue 위에 구축된 객체 스토리지 인터페이스입니다. 애플리케이션과 Glue Storage Cluster 사이에 RESTful 게이트웨이를 제공합니다. Glue Object Storage는 S3과 Swift 두 가지 RESTful API와 호환되는 인터페이스로 객체 스토리지 기능을 제공합니다.")
             setHelpInfoContent("Object Gateway User","Object Gateway User는 객체 스토리지 사용자정보를 관리하는 기능으로서 엑세스 정보와 사용량 제한 등 관리기능을 제공합니다.")
+            setHelpInfoContent("Object Gateway Bucket","Object Gateway Bucket은")
             objectGatewayList();
             objectGatewayUserList();
+            objectGatewayBucketList();
             $('#div-object-gateway-card').show();
             $('#div-object-gateway-user-card').show();
+            $('#div-object-gateway-bucket-card').show();
             break;
         default:
             alert( "탭을 잘못 선택했습니다." );

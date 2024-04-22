@@ -799,6 +799,64 @@
                         <!-- Object Gateway User 카드 영역 끝-->
                     </div>
                 </div>
+                <div class="pf-l-grid__item pf-m-12-col" id="div-object-gateway-bucket-card" hidden>
+                    <div class="pf-l-grid pf-m-gutter">
+                        <!-- Object Gateway Bucket 영역 시작-->
+                        <div class="pf-l-grid__item pf-m-12col">
+                            <div class="pf-c-card pf-m-hoverable pf-m-compact" id="card-object-gateway-bucket-status">
+                                <div class="pf-c-card__header">
+                                    <div class="pf-c-card__title" id="card-object-gateway-bucket-status-title">Object Gateway Bucket</div>
+                                    &nbsp;<i class="pf-icon-help" aria-hidden="true" id="icon-help-object-gateway-bucket" name="icon-help-action"></i>
+                                    <div class="pf-c-card__actions">
+                                        <button style="font-size: 0.83rem;" class="pf-c-button pf-m-secondary pf-m-inline" id="button-object-gateway-bucket-search" aria-disabled="false" type="button" data-ouia-safe="true" ><i class="fas fa-fw fa-redo" aria-hidden="true"></i></button>
+                                        <button style="font-size: 0.83rem;" class="pf-c-button pf-m-secondary pf-m-inline" id="button-object-gateway-bucket-create" aria-disabled="false" type="button" data-ouia-safe="true" >추가</button>
+                                    </div>
+                                </div>
+                                <div class="pf-c-card__body">
+                                    <dl class="pf-c-description-list pf-m-horizontal" style="--pf-c-description-list--RowGap: 10px;">
+                                        <table class="pf-c-table pf-m-compact pf-m-grid-lg" role="grid" aria-label="This is a compact table example">
+                                            <thead>
+                                                <tr role="row">
+                                                    <th role="columnheader" scope="col">버킷 이름</th>
+                                                    <th role="columnheader" scope="col">소유자</th>
+                                                    <th role="columnheader" style="width:10%" scope="col">사용된 용량</th>
+                                                    <th role="columnheader" style="width:10%" scope="col">용량 제한</th>
+                                                    <th role="columnheader" style="width:10%" scope="col">오브젝트</th>
+                                                    <th role="columnheader" style="width:10%" scope="col">오브젝트 제한</th>
+                                                    <th class="pf-c-table__icon" style="width:10%" role="columnheader" scope="col"></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody role="rowgroup" id="object-gateway-bucket-list">
+                                                <!-- <tr role="row">
+                                                    <td role="cell" data-label="버킷 이름">test</td>
+                                                    <td role="cell" data-label="소유자">test</td>
+                                                    <td role="cell" data-label="최대 버킷">1GiB</td>
+                                                    <td role="cell" data-label="최대 버킷">10</td>
+                                                    <td class="pf-c-table__icon" role="cell" data-label="편집">
+                                                        <div class="pf-c-dropdown">
+                                                            <button class="pf-c-dropdown__toggle pf-m-plain" id="card-action-object-gateway-bucket" aria-expanded="false" type="button" aria-label="Actions">
+                                                                <i class="fas fa-ellipsis-v" aria-hidden="true"></i>
+                                                            </button>
+                                                            <ul class="pf-c-dropdown__menu pf-m-align-right" aria-labelledby="card-action-object-gateway-bucket" id="dropdown-menu-card-action-object-gateway-bucket">
+                                                                <li>
+                                                                    <button class="pf-c-dropdown__menu-item pf-m-enabled" type="button" id="menu-item-object-gateway-bucket-edit" >User 편집</button>
+                                                                </li>
+                                                                <li>
+                                                                    <button class="pf-c-dropdown__menu-item pf-m-enabled" type="button" id="menu-item-object-gateway-bucket-remove" >User 삭제</button>
+                                                                </li>
+                                                            </ul>
+                                                        </div>
+                                                    </td>
+                                                </tr> -->
+                                            </tbody>
+                                        </table>
+                                    </dl>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Object Gateway Bucket 카드 영역 끝-->
+                    </div>
+                </div>
             </div>
         </section>
     </main>
@@ -3439,6 +3497,31 @@
     </div>
 </div>
 <!-- object gateway user quota 생성 : Modal 영역 끝 -->
+
+<!-- object gateway bucket 삭제 : Modal 영역 시작 -->
+<div id="div-modal-remove-object-gateway-bucket" class="pf-c-backdrop" style="display:none">
+    <div class="pf-l-bullseye">
+        <div class="pf-c-modal-box pf-m-sm" role="dialog" aria-modal="true" aria-label="Remove Object Gateway Bucket">
+            <button id="button-close-modal-remove-object-gateway-user" aria-disabled="false" aria-label="Close" class="pf-c-button pf-m-plain" type="button">
+                <i class="fas fa-times" aria-hidden="true"></i>
+            </button>
+            <header class="pf-c-modal-box__header"><h1 class="pf-c-modal-box__title"><span class="pf-c-modal-box__title-text">Object Gateway Bucket 삭제</span></h1></header>
+            <div class="pf-c-modal-box__body">
+                <div id="object-gateway-bucket-text"></div>
+                <label class="pf-c-check pf-c-select__menu-item" style="margin-top: 20px;">
+                    <input class="pf-c-check__input" type="checkbox" id="input-checkbox-object-gateway-bucket-remove" value="remove"/>
+                    <span class="pf-c-check__label" style="color: #c9190b;"><i class="fas fa-fw fa-exclamation-circle" aria-hidden="true"></i>예, 확실히 삭제합니다.</span>
+                </label>
+            </div>
+            <footer class="pf-c-modal-box__footer">
+                <button id="button-execution-modal-remove-object-gateway-bucket" aria-disabled="false" class="pf-c-button pf-m-primary" type="button" data-ouia-safe="true">실행</button>
+                <button id="button-cancel-modal-remove-object-gateway-bucket" aria-disabled="false" class="pf-c-button pf-m-link" type="button" data-ouia-safe="true">취소</button>
+            </footer>
+            <input type="text" id="object-gateway-bucket-id" name="object-gateway-bucket-id" value="" style="display:none" disabled/>
+        </div>
+    </div>
+</div>
+<!-- object gateway bucket 삭제 : Modal 영역 끝 -->
 
 
 
