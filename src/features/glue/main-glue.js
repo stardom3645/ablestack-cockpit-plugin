@@ -126,6 +126,12 @@ $('#menu-item-gateway-vm-setup').on('click', function(){
     $('#div-modal-gateway-vm-setup').show();
 });
 
+/** 스토리지 서비스 구성 관련 action start */
+$('#menu-item-gateway-vm-setup2').on('click', function(){
+
+    $('#div-modal-gateway-vm-setup').show();
+});
+
 // iscsi 구성 화면 닫기
 $('#div-modal-iscsi-close, #button-cancel-iscsi').on('click', function(){
     $('#div-modal-iscsi').hide();

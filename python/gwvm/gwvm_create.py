@@ -85,8 +85,8 @@ def create(args):
         json_data = openClusterJson()
 
         host_name="gwvm"
-        cpu_core = 4
-        memory_gb = 8
+        cpu_core = 16
+        memory_gb = 32
         mngt_nic = args.management_network_bridge
         mngt_ip = args.mngt_ip
 

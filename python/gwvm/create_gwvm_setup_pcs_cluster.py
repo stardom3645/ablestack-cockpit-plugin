@@ -46,6 +46,11 @@ def setupPcsCluster(args):
     success_bool = True
 
     #=========== pcs cluster 구성 ===========
+    # ceph rbd 이미지 삭제
+    result = os.system("rbd ls -p rbd | grep gwvm > /dev/null")
+    if result == 0:
+        os.system("rbd rm rbd/gwvm")
+
     # ceph 이미지 등록
     os.system("qemu-img convert -f qcow2 -O rbd /var/lib/libvirt/images/ablestack-template-back.qcow2 rbd:rbd/gwvm")
     # 클러스터 구성
