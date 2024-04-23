@@ -115,7 +115,7 @@
                                     <div class="pf-c-card__title" id="card-glue-vm-status-title">Glue 가상머신</div>
                                     &nbsp;<i class="pf-icon-help" aria-hidden="true" id="icon-help-glue-vm-status" name="icon-help-action"></i>
                                     <div class="pf-c-card__actions">
-                                        <button style="font-size: 0.83rem;" class="pf-c-button pf-m-secondary pf-m-inline" id="menu-item-gateway-vm-setup2" aria-disabled="false" type="button" data-ouia-safe="true" >GlueAPI 서버 연결</button>
+                                        <!-- <button style="font-size: 0.83rem;" class="pf-c-button pf-m-secondary pf-m-inline" id="menu-item-gateway-vm-setup2" aria-disabled="false" type="button" data-ouia-safe="true" >GlueAPI 서버 연결</button> -->
                                         <button style="font-size: 0.83rem;" class="pf-c-button pf-m-secondary pf-m-inline" id="button-glue-api-server-connect" aria-disabled="false" type="button" data-ouia-safe="true" >GlueAPI 서버 연결</button>
                                         <button style="font-size: 0.83rem;" class="pf-c-button pf-m-secondary pf-m-inline" id="button-storage-dashboard-connect" aria-disabled="false" type="button" data-ouia-safe="true" >스토리지센터 대시보드 연결</button>
                                     </div>
@@ -418,8 +418,8 @@
                                                 <tr role="row">
                                                     <th role="columnheader" scope="col">내보내기 경로</th>
                                                     <th role="columnheader" scope="col">클러스터 이름</th>
-                                                    <th role="columnheader" scope="col">GlueFS 이름</th>
-                                                    <th role="columnheader" scope="col">GlueFS 경로</th>
+                                                    <th role="columnheader" scope="col">GlueFS 이름 (경로)</th>
+                                                    <th role="columnheader" scope="col">Bucket 이름</th>
                                                     <th role="columnheader" scope="col">프로토콜</th>
                                                     <th role="columnheader" scope="col">접근 타입</th>
                                                     <th role="columnheader" scope="col">Squash</th>
@@ -650,7 +650,7 @@
                                                     <th role="columnheader" scope="col">PORT</th>
                                                     <th role="columnheader" scope="col">SMB 공유 폴더</th>
                                                     <th role="columnheader" scope="col">SMB 마운트 경로</th>
-                                                    <th role="columnheader" scope="col">GlueFS 이름 ( 경로 )</th>
+                                                    <th role="columnheader" scope="col">GlueFS 이름 (경로)</th>
                                                     <!-- <th role="columnheader" scope="col">GlueFS 경로</th> -->
                                                     <th class="pf-c-table__icon" style="width:10%" role="columnheader" scope="col"></th>
                                                 </tr>
@@ -1822,6 +1822,20 @@
                     </div>
                     <div class="pf-c-form__group">
                         <div class="pf-c-form__group-label" style="margin-left: 20px;">
+                            <label class="pf-c-form__label" for="form-select-update-storage-type" style="margin-left: 10px;width: 120px;">
+                                <span class="pf-c-form__label-text">스토리지 타입</span>
+                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                            </label>
+                        </div>
+                        <div class="pf-c-dropdown">
+                            <select class="pf-c-form-control" id="form-select-update-storage-type" name="form-select-update-storage-type" style="width: 180px;">
+                                <option value="CEPH" selected>GlueFS</option>
+                                <option value="RGW">Object Gateway</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="pf-c-form__group" name="div-update-nfs-storage-type-gluefs">
+                        <div class="pf-c-form__group-label" style="margin-left: 20px;">
                             <label class="pf-c-form__label" for="form-select-update-nfs-export-gluefs-name" style="margin-left: 10px;width: 120px;">
                                 <span class="pf-c-form__label-text">GlueFS 이름</span>
                                 <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
@@ -1833,7 +1847,7 @@
                             </select>
                         </div>
                     </div>
-                    <div class="pf-c-form__group">
+                    <div class="pf-c-form__group" name="div-update-nfs-storage-type-gluefs">
                         <div class="pf-c-form__group-label" style="margin-left: 20px;">
                             <label class="pf-c-form__label" for="form-select-update-nfs-export-gluefs-path" style="margin-left: 10px;width: 120px;">
                                 <span class="pf-c-form__label-text">GlueFS 경로</span>
@@ -1842,6 +1856,19 @@
                         </div>
                         <div class="pf-c-dropdown">
                             <select class="pf-c-form-control" style="width:50%" id="form-select-update-nfs-export-gluefs-path" name="form-select-update-nfs-export-gluefs-path">
+                                <option value="" selected>선택하십시오.</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="pf-c-form__group" name="div-update-nfs-storage-type-rgw">
+                        <div class="pf-c-form__group-label" style="margin-left: 20px;">
+                            <label class="pf-c-form__label" for="form-select-update-nfs-export-bucket-name" style="margin-left: 10px;width: 120px;">
+                                <span class="pf-c-form__label-text">버킷 이름</span>
+                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                            </label>
+                        </div>
+                        <div class="pf-c-dropdown">
+                            <select class="pf-c-form-control" style="width:50%" id="form-select-update-nfs-export-bucket-name" name="form-select-update-nfs-export-bucket-name">
                                 <option value="" selected>선택하십시오.</option>
                             </select>
                         </div>
@@ -1876,20 +1903,7 @@
                                 <option value="all_squash">all_squash</option>
                             </select>
                         </div>
-                    </div>
-                    <div class="pf-c-form__group">
-                        <div class="pf-c-form__group-label" style="margin-left: 20px;">
-                            <label class="pf-c-form__label" for="form-select-update-storage-type" style="margin-left: 10px;width: 120px;">
-                                <span class="pf-c-form__label-text">스토리지 타입</span>
-                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
-                            </label>
-                        </div>
-                        <div class="pf-c-dropdown">
-                            <select class="pf-c-form-control" id="form-select-update-storage-type" name="form-select-update-storage-type" style="width: 180px;">
-                                <option value="CEPH" selected>CEPH</option>
-                            </select>
-                        </div>
-                    </div>                    
+                    </div>                 
                 </section>
             </form>
             <footer class="pf-c-modal-box__footer">

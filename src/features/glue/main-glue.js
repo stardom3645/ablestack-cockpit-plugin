@@ -1695,7 +1695,9 @@ function setGlueFsSelectBox(fs_select_box_id, path_select_box_id, selected_gluef
 
 function setGlueFsVolumeGroupSelectBox(gluefs_name, path_select_box_id, selected_subvolume_group_path_id){
     $('#'+path_select_box_id).empty();
+    $('#'+path_select_box_id).append('<option value="" selected>불러오는 중...</option>');
     if(gluefs_name == ""){
+        $('#'+path_select_box_id).empty();
         var el ='';
         el += '<option value="" selected>선택하십시오.</option>';
         $('#'+path_select_box_id).append(el);
