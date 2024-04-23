@@ -69,7 +69,7 @@ $('#button-ingress-create').on('click', function(){
     // 입력항목 초기화
     ingressCreateInitInputValue();
     setSelectHostsCheckbox('div-ingress-glue-hosts-list','form-input-ingress-placement-hosts');
-    setNfsClusterNameSelectBox('form-ingress-nfs-cluster-name')
+    setIngressBackendSelectBox('form-select-ingress-backend-service-name')
     $('#div-ingress-glue-hosts-list').hide();
 
     $('#div-modal-create-ingress').show();
@@ -86,8 +86,8 @@ $('#button-cancel-modal-create-ingress').on('click', function(){
 $('#button-execution-modal-create-ingress').on('click', function(){
     if(ingressCreateValidateCheck()){
         var body_val = "";
-        var service_id = $('#form-ingress-nfs-cluster-name option:selected').val();
-        var backend_service = $('#form-ingress-nfs-cluster-name option:selected').val();
+        var service_id = $('#form-select-ingress-backend-service-name option:selected').val();
+        var backend_service = $('#form-select-ingress-backend-service-name option:selected').val();
         
         body_val +="service_id="+service_id+"&backend_service="+backend_service
         
@@ -146,7 +146,7 @@ function ingressEdit(ingress_id){
             'Content-Type': 'application/x-www-form-urlencoded'
         }
     }).then(res => res.json()).then(data => {
-        $('#form-update-ingress-nfs-cluster-name').val(data[0].service_id)
+        $('#form-select-update-ingress-backend-service-name').val(data[0].service_id)
         setSelectHostsCheckbox('div-update-ingress-glue-hosts-list','form-input-update-ingress-placement-hosts',data[0].placement.hosts);
         $('#form-input-update-ingress-virtual-ip').val(data[0].spec.virtual_ip);
         $('#form-input-update-ingress-frontend-port').val(data[0].spec.frontend_port);
@@ -169,8 +169,8 @@ $('#button-cancel-modal-update-ingress').on('click', function(){
 $('#button-execution-modal-update-ingress').on('click', function(){
     if(ingressUpdateValidateCheck()){
         var body_val = "";
-        var service_id = $('#form-update-ingress-nfs-cluster-name').val();
-        var backend_service = $('#form-update-ingress-nfs-cluster-name').val();
+        var service_id = $('#form-select-update-ingress-backend-service-name').val();
+        var backend_service = $('#form-select-update-ingress-backend-service-name').val();
         
         body_val +="service_id="+service_id+"&backend_service="+backend_service
         
@@ -281,7 +281,7 @@ $('#button-execution-modal-remove-ingress').on('click', function(){
 
 // ingress 생성 입력값 초기화
 function ingressCreateInitInputValue(){
-    $('#form-ingress-nfs-cluster-name').val("");
+    $('#form-select-ingress-backend-service-name').val("");
     $('#form-input-ingress-placement-hosts').val("");
     $('#form-input-ingress-virtual-ip').val("");
     $('#form-input-ingress-frontend-port').val("");
@@ -291,7 +291,7 @@ function ingressCreateInitInputValue(){
 function ingressCreateValidateCheck(){
     var validate_check = true;
 
-    var service_id = $('#form-ingress-nfs-cluster-name option:selected').val();
+    var service_id = $('#form-select-ingress-backend-service-name option:selected').val();
     var host_cnt = $('input[type=checkbox][name="glue-hosts-list"]:checked').length
  
     var virtual_ip = $('#form-input-ingress-virtual-ip').val();
@@ -337,7 +337,7 @@ function ingressCreateValidateCheck(){
 function ingressUpdateValidateCheck(){
     var validate_check = true;
 
-    var service_id = $('#form-update-ingress-nfs-cluster-name').val();
+    var service_id = $('#form-select-update-ingress-backend-service-name').val();
     var host_cnt = $('input[type=checkbox][name="glue-hosts-list"]:checked').length
  
     var virtual_ip = $('#form-input-update-ingress-virtual-ip').val();

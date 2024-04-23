@@ -218,7 +218,7 @@ $('i[name=icon-help-action]').on('click',function(e){
         $("#modal-help-body").html("NFS Export의 경로, GlueFS, 프로토콜, 접근타입, Squash를 설정 및 관리할 수 있습니다.");
     } else if (e.target.id == "icon-help-ingress-service") {
         $("#modal-help-title").html("INGRESS Service 도움말");
-        $("#modal-help-body").html("NFS 서비스에 대한 INGRESS 서비스를 배포하면 가상 IP를 통한 안적적 접근이 가능하고, SCVM 장애 발생시 SCVM간 페일오버가 가능합니다.");
+        $("#modal-help-body").html("NFS, OBJECT GATEWAY 서비스에 대한 INGRESS 서비스를 배포하면 가상 IP를 통한 안적적 접근이 가능하고, SCVM 장애 발생시 SCVM간 페일오버가 가능합니다.");
     } else if (e.target.id == "icon-help-iscsi-service") {
         $("#modal-help-title").html("iSCSI Service 도움말");
         $("#modal-help-body").html("iSCSI 게이트웨이 서비스는 RBD(RADOS 블록 장치) 이미지를 SCSI 디스크로 내보내는 HA(고가용성) iSCSI Target을 제공합니다. iSCSI 프로토콜을 사용하면 클라이언트(이니시에이터)가 TCP/IP 네트워크를 통해 스토리지 장치(대상)에 SCSI 명령을 보낼 수 있으므로 클라이언트가 Glue 블록 스토리지에 액세스할 수 있습니다.");
@@ -233,7 +233,11 @@ $('i[name=icon-help-action]').on('click',function(e){
         $("#modal-help-body").html("Object Gateway는 Glue 위에 구축된 객체 스토리지 인터페이스입니다. 애플리케이션과 Glue Storage Cluster 사이에 RESTful 게이트웨이를 제공합니다. Glue Object Storage는 S3과 Swift 두 가지 RESTful API와 호환되는 인터페이스로 객체 스토리지 기능을 제공합니다.");
     } else if (e.target.id == "icon-help-object-gateway-user") {
         $("#modal-help-title").html("Object Gateway User 도움말");
-        $("#modal-help-body").html("Object Gateway User는 객체 스토리지 사용자정보를 관리하는 기능으로서 엑세스 정보와 사용량 제한 등 관리기능을 제공합니다.");    }
+        $("#modal-help-body").html("Object Gateway User는 객체 스토리지 사용자정보를 관리하는 기능으로서 엑세스 정보와 사용량 제한 등 관리기능을 제공합니다.");
+    } else if (e.target.id == "icon-help-object-gateway-bucket") {
+        $("#modal-help-title").html("Object Gateway Bucket 도움말");
+        $("#modal-help-body").html("Object Gateway Bucket은 연관된 오브젝트(파일)를 그룹핑한 최상위 디렉토리이며, 사용자별 여러개의 버킷을 생성하여 사용할 수 있습니다.");
+    }
 
     $('#div-modal-help').show();
 })
@@ -1467,22 +1471,22 @@ function topTabAction(button_id){
     switch (button_id) {
         case 'button-tab-glue-vm':
             $('div[name="div-help-content"]').remove();
-            setHelpInfoContent("Glue 가상머신","Glue 스토리지 클러스터를 구성하는 Glue 가상머신 상태 정보와 IP 정보를 확인할 수 있습니다. 해당 Glue 가상머신을 통해 다양한 스토리지 서비스를 제공합니다.")
-            setHelpInfoContent("게이트웨이 가상머신","스토리지 서비스 게이트웨이 전용 가상머신이며, 선택적으로 해당 가상머신을 구성하여 사용할 수 있습니다.")
+            setHelpInfoContent("Glue 가상머신","Glue 스토리지 클러스터를 구성하는 Glue 가상머신 상태 정보와 IP 정보를 확인할 수 있습니다. 해당 Glue 가상머신을 통해 다양한 스토리지 서비스를 제공합니다.");
+            setHelpInfoContent("게이트웨이 가상머신","스토리지 서비스 게이트웨이 전용 가상머신이며, 선택적으로 해당 가상머신을 구성하여 사용할 수 있습니다.");
             $('#div-gwvm-card').show();
             $('#div-glue-vm-card').show();
             break;
         case 'button-tab-gluefs':
             $('div[name="div-help-content"]').remove();
-            setHelpInfoContent("Glue File System","Glue 파일 시스템( GlueFS )은 Glue의 분산 객체 저장소인 RADOS 위에 구축된 POSIX 호환 파일 시스템입니다. Glue FS는 공유 홈 디렉터리, HPC 스크래치 공간, 분산 워크플로 공유 스토리지와 같은 다양한 애플리케이션을 위한 다용도 고가용성 고성능 파일 저장소를 제공합니다.")
-            setHelpInfoContent("Glue FS Subvolume Group","GlueFS(Glue File System) 하위 볼륨 그룹을 생성, 조회, 절대 경로 가져오기 및 제거할 수 있습니다. Glue FS의 하위 그룹을 생성하여 효율적으로 GlueFS의 그룹 및 경로(/volumes/볼륨 그룹)를 관리할 수 있습니다.")
+            setHelpInfoContent("Glue File System","Glue 파일 시스템( GlueFS )은 Glue의 분산 객체 저장소인 RADOS 위에 구축된 POSIX 호환 파일 시스템입니다. Glue FS는 공유 홈 디렉터리, HPC 스크래치 공간, 분산 워크플로 공유 스토리지와 같은 다양한 애플리케이션을 위한 다용도 고가용성 고성능 파일 저장소를 제공합니다.");
+            setHelpInfoContent("Glue FS Subvolume Group","GlueFS(Glue File System) 하위 볼륨 그룹을 생성, 조회, 절대 경로 가져오기 및 제거할 수 있습니다. Glue FS의 하위 그룹을 생성하여 효율적으로 GlueFS의 그룹 및 경로(/volumes/볼륨 그룹)를 관리할 수 있습니다.");
             gluefsList();
             $('#div-glue-fs-card').show();
             break;
         case 'button-tab-nfs':
             $('div[name="div-help-content"]').remove();
-            setHelpInfoContent("NFS Cluster","Glue 가상머신을 클러스터링 하여 NFS 서비스를 제공하는 클러스터를 생성할 수 있습니다. 사용자는 해당 IP와 포트를 통해 NFS에 접근할 수 있습니다.")
-            setHelpInfoContent("NFS Export","NFS Export의 내보내기 경로, GlueFS, 프로토콜, 접근타입, Squash를 설정 및 관리할 수 있습니다.")
+            setHelpInfoContent("NFS Cluster","Glue 가상머신을 클러스터링 하여 NFS 서비스를 제공하는 클러스터를 생성할 수 있습니다. 사용자는 해당 IP와 포트를 통해 NFS에 접근할 수 있습니다.");
+            setHelpInfoContent("NFS Export","NFS Export의 내보내기 경로, GlueFS, 프로토콜, 접근타입, Squash를 설정 및 관리할 수 있습니다.");
             nfsClusterList();
             nfsExportList();
             $('#div-nfs-cluster-card').show();
@@ -1490,14 +1494,23 @@ function topTabAction(button_id){
             break;
         case 'button-tab-ingress':
             $('div[name="div-help-content"]').remove();
-            setHelpInfoContent("INGRESS Service","NFS 서비스에 대한 INGRESS 서비스를 배포하면 가상 IP를 통해 안적적 접근이 가능하고, SCVM 장애 발생시 SCVM간 페일오버가 가능합니다.")
+            setHelpInfoContent("INGRESS Service","NFS, OBJECT GATEWAY 서비스에 대한 INGRESS 서비스를 배포하면 가상 IP를 통해 안적적 접근이 가능하고, SCVM 장애 발생시 SCVM간 페일오버가 가능합니다.");
             ingressList();
             $('#div-ingress-card').show();
             break;
         case 'button-tab-iscsi':
             $('div[name="div-help-content"]').remove();
-            setHelpInfoContent("iSCSI Service","iSCSI 게이트웨이 서비스는 RBD(RADOS 블록 장치) 이미지를 SCSI 디스크로 내보내는 HA(고가용성) iSCSI Target을 제공합니다. iSCSI 프로토콜을 사용하면 클라이언트(이니시에이터)가 TCP/IP 네트워크를 통해 스토리지 장치(대상)에 SCSI 명령을 보낼 수 있으므로 클라이언트가 Glue 블록 스토리지에 액세스할 수 있습니다.")
-            setHelpInfoContent("iSCSI Target","iSCSI Target을 생성하고 관리할 수 있습니다.")
+            setHelpInfoContent("iSCSI Service","iSCSI 게이트웨이 서비스는 RBD(RADOS 블록 장치) 이미지를 SCSI 디스크로 내보내는 HA(고가용성) iSCSI Target을 제공합니다. iSCSI 프로토콜을 사용하면 클라이언트(이니시에이터)가 TCP/IP 네트워크를 통해 스토리지 장치(대상)에 SCSI 명령을 보낼 수 있으므로 클라이언트가 Glue 블록 스토리지에 액세스할 수 있습니다.");
+            setHelpInfoContent("iSCSI Target","iSCSI Target을 생성하고 관리할 수 있습니다.");
+            iscsiServiceList();
+            iscsiTargetList();
+            $('#div-iscsi-service-card').show();
+            $('#div-iscsi-target-card').show();
+            break;
+        case 'button-tab-nvmeof':
+            $('div[name="div-help-content"]').remove();
+            setHelpInfoContent("NVMe-oF Service","iSCSI 게이트웨이 서비스는 RBD(RADOS 블록 장치) 이미지를 SCSI 디스크로 내보내는 HA(고가용성) iSCSI Target을 제공합니다. iSCSI 프로토콜을 사용하면 클라이언트(이니시에이터)가 TCP/IP 네트워크를 통해 스토리지 장치(대상)에 SCSI 명령을 보낼 수 있으므로 클라이언트가 Glue 블록 스토리지에 액세스할 수 있습니다.");
+            setHelpInfoContent("iSCSI Target","iSCSI Target을 생성하고 관리할 수 있습니다.");
             iscsiServiceList();
             iscsiTargetList();
             $('#div-iscsi-service-card').show();
@@ -1511,9 +1524,9 @@ function topTabAction(button_id){
             break;
         case 'button-tab-object-gateway':
             $('div[name="div-help-content"]').remove();
-            setHelpInfoContent("Object Gateway","Object Gateway는 Glue 위에 구축된 객체 스토리지 인터페이스입니다. 애플리케이션과 Glue Storage Cluster 사이에 RESTful 게이트웨이를 제공합니다. Glue Object Storage는 S3과 Swift 두 가지 RESTful API와 호환되는 인터페이스로 객체 스토리지 기능을 제공합니다.")
-            setHelpInfoContent("Object Gateway User","Object Gateway User는 객체 스토리지 사용자정보를 관리하는 기능으로서 엑세스 정보와 사용량 제한 등 관리기능을 제공합니다.")
-            setHelpInfoContent("Object Gateway Bucket","Object Gateway Bucket은")
+            setHelpInfoContent("Object Gateway","Object Gateway는 Glue 위에 구축된 객체 스토리지 인터페이스입니다. 애플리케이션과 Glue Storage Cluster 사이에 RESTful 게이트웨이를 제공합니다. Glue Object Storage는 S3과 Swift 두 가지 RESTful API와 호환되는 인터페이스로 객체 스토리지 기능을 제공합니다.");
+            setHelpInfoContent("Object Gateway User","Object Gateway User는 객체 스토리지 사용자정보를 관리하는 기능으로서 엑세스 정보와 사용량 제한 등 관리기능을 제공합니다.");
+            setHelpInfoContent("Object Gateway Bucket","Object Gateway Bucket은 연관된 오브젝트(파일)를 그룹핑한 최상위 디렉토리이며, 사용자별 여러개의 버킷을 생성하여 사용할 수 있습니다.");
             objectGatewayList();
             objectGatewayUserList();
             objectGatewayBucketList();
@@ -1766,8 +1779,8 @@ function setNfsClusterSelectBox(select_box_id, selected_cluster_id){
     });
 }
 
-function setNfsClusterNameSelectBox(select_box_id){
-    fetch('https://10.10.2.11:8080/api/v1/service?service_type=nfs',{
+function setIngressBackendSelectBox(select_box_id){
+    fetch('https://10.10.2.11:8080/api/v1/service',{
         method: 'GET',
         headers: {
             'accept': 'application/json',
@@ -1777,10 +1790,9 @@ function setNfsClusterNameSelectBox(select_box_id){
         $('#'+select_box_id).empty();
         var el ='';
         el += '<option value="" selected>선택하십시오.</option>';
-
-        if(data.length != 0){
-            for(var i=0; i < data.length; i++){
-                    el += '<option value="'+data[i].service_name+'">'+data[i].service_name+'</option>';
+        for(var i = 0 ; i < data.length; i++){
+            if(data[i].service_type == "nfs" ||  data[i].service_type == "rgw"){
+                el += '<option value="'+data[i].service_name+'">'+data[i].service_name+'</option>';
             }
         }
 
@@ -2005,4 +2017,70 @@ function setImageSelectBox(div_id, form_input_id, disks_json){
         console.log("iscis portal cleckbox 세팅 에러 : "+data);
     });
 
+}
+
+function setRgwUserSelectBox(select_box_id, selected_user_id){
+    $('#'+select_box_id).empty();
+    $('#'+select_box_id).append('<option value="" selected>불러오는 중...</option>');
+    fetch('https://10.10.2.11:8080/api/v1/rgw/user',{
+        method: 'GET',
+        headers: {
+            'accept': 'application/json',
+            'Content-Type': 'application/x-www-form-urlencoded'
+        }
+    }).then(res => res.json()).then(data => {
+        $('#'+select_box_id).empty();
+        var el ='';
+        el += '<option value="" selected>선택하십시오.</option>';
+
+        for(var i=0; i < data.length; i++){
+            if(selected_user_id == null){
+                el += '<option value="'+data[i].user_id+'">'+data[i].user_id+'</option>';
+            } else {
+                if(selected_user_id != data[i].user_id){
+                    el += '<option value="'+data[i].user_id+'">'+data[i].user_id+'</option>';
+                }else{
+                    el += '<option value="'+data[i].user_id+'" selected>'+data[i].user_id+'</option>';
+                }
+            }
+        }
+
+        $('#'+select_box_id).append(el);
+        createLoggerInfo("setRgwUserSelectBox success");
+    }).catch(function(data){
+        console.log("setRgwUserSelectBox error : "+data);
+    });
+}
+
+function setRgwBucketSelectBox(select_box_id, selected_bucket_id){
+    $('#'+select_box_id).empty();
+    $('#'+select_box_id).append('<option value="" selected>불러오는 중...</option>');
+    fetch('https://10.10.2.11:8080/api/v1/rgw/bucket?detail=false',{
+        method: 'GET',
+        headers: {
+            'accept': 'application/json',
+            'Content-Type': 'application/x-www-form-urlencoded'
+        }
+    }).then(res => res.json()).then(data => {
+        $('#'+select_box_id).empty();
+        var el ='';
+        el += '<option value="" selected>선택하십시오.</option>';
+
+        for(var i=0; i < data.length; i++){
+            if(selected_bucket_id == null){
+                el += '<option value="'+data[i]+'">'+data[i]+'</option>';
+            } else {
+                if(selected_bucket_id != data[i]){
+                    el += '<option value="'+data[i]+'">'+data[i]+'</option>';
+                }else{
+                    el += '<option value="'+data[i]+'" selected>'+data[i]+'</option>';
+                }
+            }
+        }
+
+        $('#'+select_box_id).append(el);
+        createLoggerInfo("setRgwBucketSelectBox success");
+    }).catch(function(data){
+        console.log("setRgwBucketSelectBox error : "+data);
+    });
 }

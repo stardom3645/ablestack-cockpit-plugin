@@ -44,6 +44,11 @@
                         </button>
                     </li>
                     <li class="pf-c-tabs__item">
+                        <button type="button" class="pf-c-tabs__link" id="button-tab-nvmeof">
+                            <span class="pf-c-tabs__item-text">NVMe-oF</span>
+                        </button>
+                    </li>
+                    <li class="pf-c-tabs__item">
                         <button type="button" class="pf-c-tabs__link" id="button-tab-smb">
                             <span class="pf-c-tabs__item-text">SMB</span>
                         </button>
@@ -1665,6 +1670,20 @@
                     </div>
                     <div class="pf-c-form__group">
                         <div class="pf-c-form__group-label" style="margin-left: 20px;">
+                            <label class="pf-c-form__label" for="form-select-storage-type" style="margin-left: 10px;width: 120px;">
+                                <span class="pf-c-form__label-text">스토리지 타입</span>
+                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                            </label>
+                        </div>
+                        <div class="pf-c-dropdown">
+                            <select class="pf-c-form-control" id="form-select-storage-type" name="form-select-storage-type" style="width: 180px;">
+                                <option value="CEPH" selected>GlueFS</option>
+                                <option value="RGW">Object Gateway</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="pf-c-form__group" name="div-nfs-storage-type-gluefs">
+                        <div class="pf-c-form__group-label" style="margin-left: 20px;">
                             <label class="pf-c-form__label" for="form-select-nfs-export-gluefs-name" style="margin-left: 10px;width: 120px;">
                                 <span class="pf-c-form__label-text">GlueFS 이름</span>
                                 <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
@@ -1676,7 +1695,7 @@
                             </select>
                         </div>
                     </div>
-                    <div class="pf-c-form__group">
+                    <div class="pf-c-form__group" name="div-nfs-storage-type-gluefs">
                         <div class="pf-c-form__group-label" style="margin-left: 20px;">
                             <label class="pf-c-form__label" for="form-select-nfs-export-gluefs-path" style="margin-left: 10px;width: 120px;">
                                 <span class="pf-c-form__label-text">GlueFS 경로</span>
@@ -1685,6 +1704,19 @@
                         </div>
                         <div class="pf-c-dropdown">
                             <select class="pf-c-form-control" style="width:50%" id="form-select-nfs-export-gluefs-path" name="form-select-nfs-export-gluefs-path">
+                                <option value="" selected>선택하십시오.</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="pf-c-form__group" name="div-nfs-storage-type-rgw">
+                        <div class="pf-c-form__group-label" style="margin-left: 20px;">
+                            <label class="pf-c-form__label" for="form-select-nfs-export-bucket-name" style="margin-left: 10px;width: 120px;">
+                                <span class="pf-c-form__label-text">버킷 이름</span>
+                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                            </label>
+                        </div>
+                        <div class="pf-c-dropdown">
+                            <select class="pf-c-form-control" style="width:50%" id="form-select-nfs-export-bucket-name" name="form-select-nfs-export-bucket-name">
                                 <option value="" selected>선택하십시오.</option>
                             </select>
                         </div>
@@ -1743,19 +1775,6 @@
                             </select>
                         </div>
                     </div>
-                    <div class="pf-c-form__group">
-                        <div class="pf-c-form__group-label" style="margin-left: 20px;">
-                            <label class="pf-c-form__label" for="form-select-storage-type" style="margin-left: 10px;width: 120px;">
-                                <span class="pf-c-form__label-text">스토리지 타입</span>
-                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
-                            </label>
-                        </div>
-                        <div class="pf-c-dropdown">
-                            <select class="pf-c-form-control" id="form-select-storage-type" name="form-select-storage-type" style="width: 180px;">
-                                <option value="CEPH" selected>CEPH</option>
-                            </select>
-                        </div>
-                    </div>                    
                 </section>
             </form>
             <footer class="pf-c-modal-box__footer">
@@ -1921,14 +1940,14 @@
                 <section class="pf-c-form__section">
                     <div class="pf-c-form__group">
                         <div class="pf-c-form__group-label" style="margin-left: 15px;">
-                            <label class="pf-c-form__label" for="form-ingress-nfs-cluster-name" style="margin-left: 10px;width: 120px;">
-                                <span class="pf-c-form__label-text">NFS 클러스터 이름</span>
+                            <label class="pf-c-form__label" for="form-select-ingress-backend-service-name" style="margin-left: 10px;width: 120px;">
+                                <span class="pf-c-form__label-text">백엔드 이름</span>
                                 <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
                             </label>
                         </div>
                         <div class="pf-c-dropdown">
                             <!-- <input class="pf-c-form-control" style="width:50%" type="text" id="form-input-ingress-nfs-cluster-id" name="form-input-ingress-nfs-cluster-id"/> -->
-                            <select class="pf-c-form-control" style="width:50%" id="form-ingress-nfs-cluster-name" name="form-ingress-nfs-cluster-name">
+                            <select class="pf-c-form-control" style="width:50%" id="form-select-ingress-backend-service-name" name="form-select-ingress-backend-service-name">
                                 <option value="" selected>선택하십시오.</option>
                             </select>
                         </div>
@@ -2042,13 +2061,13 @@
                     </div> -->
                     <div class="pf-c-form__group">
                         <div class="pf-c-form__group-label" style="margin-left: 15px;">
-                            <label class="pf-c-form__label" for="form-update-ingress-nfs-cluster-name" style="margin-left: 10px;width: 120px;">
-                                <span class="pf-c-form__label-text">NFS 클러스터 이름</span>
+                            <label class="pf-c-form__label" for="form-select-update-ingress-backend-service-name" style="margin-left: 10px;width: 120px;">
+                                <span class="pf-c-form__label-text">백엔드 이름</span>
                                 <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
                             </label>
                         </div>
                         <div class="pf-c-form__group-control">
-                            <input class="pf-c-form-control" style="width:50%" type="text" id="form-update-ingress-nfs-cluster-name" name="form-update-ingress-nfs-cluster-name" disabled/>
+                            <input class="pf-c-form-control" style="width:50%" type="text" id="form-select-update-ingress-backend-service-name" name="form-select-update-ingress-backend-service-name" disabled/>
                         </div>
                     </div>
                     <div class="pf-c-form__group">
@@ -3522,6 +3541,96 @@
     </div>
 </div>
 <!-- object gateway bucket 삭제 : Modal 영역 끝 -->
+<!-- object gateway bucket 생성 : Modal 영역 시작 -->
+<div id="div-modal-create-object-gateway-bucket" class="pf-c-backdrop" style="display:none">
+    <div class="pf-l-bullseye">
+        <div class="pf-c-modal-box pf-m-sm" role="dialog" aria-modal="true" aria-label="Create Object Gateway Bucket">
+            <button id="button-close-modal-create-object-gateway-bucket" aria-disabled="false" aria-label="Close" class="pf-c-button pf-m-plain" type="button">
+                <i class="fas fa-times" aria-hidden="true"></i>
+            </button>
+            <header class="pf-c-modal-box__header"><h1 class="pf-c-modal-box__title"><span class="pf-c-modal-box__title-text">Object Gateway Bucket 생성</span></h1></header>
+            <form novalidate class="pf-c-form pf-m-horizontal" style="margin-left:15px;margin-top:10px">
+                <section class="pf-c-form__section">
+                    <div class="pf-c-form__group">
+                        <div class="pf-c-form__group-label" style="margin-left: 20px;">
+                            <label class="pf-c-form__label" for="form-input-object-gateway-bucket-name" style="margin-left: 10px;width: 120px;">
+                                <span class="pf-c-form__label-text">버킷 이름</span>
+                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                            </label>
+                        </div>
+                        <div class="pf-c-form__group-control">
+                            <input class="pf-c-form-control" style="width:50%" type="text" id="form-input-object-gateway-bucket-name" name="form-input-object-gateway-bucket-name"/>
+                        </div>
+                    </div>
+                    <div class="pf-c-form__group">
+                        <div class="pf-c-form__group-label" style="margin-left: 20px;">
+                            <label class="pf-c-form__label" for="form-select-object-gateway-bucket-user-name" style="margin-left: 10px;width: 120px;">
+                                <span class="pf-c-form__label-text">사용자 이름</span>
+                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                            </label>
+                        </div>
+                        <div class="pf-c-dropdown">
+                            <select class="pf-c-form-control" style="width:50%" id="form-select-object-gateway-bucket-user-name" name="form-select-object-gateway-bucket-user-name">
+                                <option value="" selected>선택하십시오.</option>
+                            </select>
+                        </div>
+                    </div>
+                </section>
+            </form>
+            <footer class="pf-c-modal-box__footer">
+                <button id="button-execution-modal-create-object-gateway-bucket" aria-disabled="false" class="pf-c-button pf-m-primary" type="button" data-ouia-safe="true">실행</button>
+                <button id="button-cancel-modal-create-object-gateway-bucket" aria-disabled="false" class="pf-c-button pf-m-link" type="button" data-ouia-safe="true">취소</button>
+            </footer>
+        </div>
+    </div>
+</div>
+<!-- object gateway bucket 생성 : Modal 영역 끝 -->
+<!-- object gateway bucket 수정 : Modal 영역 시작 -->
+<div id="div-modal-update-object-gateway-bucket" class="pf-c-backdrop" style="display:none">
+    <div class="pf-l-bullseye">
+        <div class="pf-c-modal-box pf-m-sm" role="dialog" aria-modal="true" aria-label="Update Object Gateway Bucket">
+            <button id="button-close-modal-update-object-gateway-bucket" aria-disabled="false" aria-label="Close" class="pf-c-button pf-m-plain" type="button">
+                <i class="fas fa-times" aria-hidden="true"></i>
+            </button>
+            <header class="pf-c-modal-box__header"><h1 class="pf-c-modal-box__title"><span class="pf-c-modal-box__title-text">Object Gateway Bucket 수정</span></h1></header>
+            <form novalidate class="pf-c-form pf-m-horizontal" style="margin-left:15px;margin-top:10px">
+                <section class="pf-c-form__section">
+                    <div class="pf-c-form__group">
+                        <div class="pf-c-form__group-label" style="margin-left: 20px;">
+                            <label class="pf-c-form__label" for="form-input-update-object-gateway-bucket-name" style="margin-left: 10px;width: 120px;">
+                                <span class="pf-c-form__label-text">버킷 이름</span>
+                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                            </label>
+                        </div>
+                        <div class="pf-c-form__group-control">
+                            <input class="pf-c-form-control" style="width:50%" type="text" id="form-input-update-object-gateway-bucket-name" name="form-input-update-object-gateway-bucket-name" disabled/>
+                            <input class="pf-c-form-control" style="width:50%" type="text" id="form-input-update-object-gateway-bucket-id" name="form-input-update-object-gateway-bucket-id" hidden/>
+                        </div>
+                    </div>
+                    <div class="pf-c-form__group">
+                        <div class="pf-c-form__group-label" style="margin-left: 20px;">
+                            <label class="pf-c-form__label" for="form-select-update-object-gateway-bucket-user-name" style="margin-left: 10px;width: 120px;">
+                                <span class="pf-c-form__label-text">사용자 이름</span>
+                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                            </label>
+                        </div>
+                        <div class="pf-c-dropdown">
+                            <select class="pf-c-form-control" style="width:50%" id="form-select-update-object-gateway-bucket-user-name" name="form-select-update-object-gateway-bucket-user-name">
+                                <option value="" selected>선택하십시오.</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                </section>
+            </form>
+            <footer class="pf-c-modal-box__footer">
+                <button id="button-execution-modal-update-object-gateway-bucket" aria-disabled="false" class="pf-c-button pf-m-primary" type="button" data-ouia-safe="true">실행</button>
+                <button id="button-cancel-modal-update-object-gateway-bucket" aria-disabled="false" class="pf-c-button pf-m-link" type="button" data-ouia-safe="true">취소</button>
+            </footer>
+        </div>
+    </div>
+</div>
+<!-- object gateway bucket 수정 : Modal 영역 끝 -->
 
 
 
@@ -3555,6 +3664,7 @@
 <script src="./src/features/glue/nfs.js"></script>
 <script src="./src/features/glue/ingress.js"></script>
 <script src="./src/features/glue/iscsi.js"></script>
+<script src="./src/features/glue/nvmeof.js"></script>
 <script src="./src/features/glue/smb.js"></script>
 <script src="./src/features/glue/object-gateway.js"></script>
 <script src="./src/common/validation.js"></script>

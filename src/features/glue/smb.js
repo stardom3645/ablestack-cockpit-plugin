@@ -227,8 +227,8 @@ function smbUserList(users){
             insert_tr += '<tr role="row">';
             insert_tr += '    <td role="cell" data-label="사용자 이름" >'+user_list[i]+'</td>';
             insert_tr += '</tr>';
-            $("#smb-user-list:last").append(insert_tr);
         }
+        $("#smb-user-list:last").append(insert_tr);
     }else{
         noList("smb-user-list",1);
     }

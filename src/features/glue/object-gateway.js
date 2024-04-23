@@ -708,7 +708,7 @@ function objectGatewayBucketList(){
                 insert_tr += '            </button>';
                 insert_tr += '            <ul class="pf-c-dropdown__menu pf-m-align-right" aria-labelledby="card-action-object-gateway-bucket'+i+'" id="dropdown-menu-card-action-object-gateway-bucket'+i+'">';
                 insert_tr += '                <li>';
-                insert_tr += '                    <button class="pf-c-dropdown__menu-item pf-m-enabled" type="button" onclick=\'objectGatewayBucketEdit("'+data[i].bucket+'")\' >Bucket 수정</button>';
+                insert_tr += '                    <button class="pf-c-dropdown__menu-item pf-m-enabled" type="button" onclick=\'objectGatewayBucketEdit("'+data[i].bucket+'","'+data[i].id+'")\' >Bucket 수정</button>';
                 insert_tr += '                    <button class="pf-c-dropdown__menu-item pf-m-enabled" type="button" onclick=\'objectGatewayBucketDelete("'+data[i].bucket+'")\' >Bucket 삭제</button>';
                 insert_tr += '                </li>';
                 insert_tr += '            </ul>';
@@ -797,37 +797,37 @@ $('#button-execution-modal-remove-object-gateway-bucket').on('click', function()
 });
 /**  object gateway bucket delete 관련 action end */
 
-/** object gateway user create 관련 action start */
-$('#button-object-gateway-user-create').on('click', function(){
-    objectGatewayUserCreateInitInputValue();
-    $('#div-modal-create-object-gateway-user').show();
+/** object gateway bucket create 관련 action start */
+$('#button-object-gateway-bucket-create').on('click', function(){
+    objectGatewayBucketCreateInitInputValue();
+    setRgwUserSelectBox('form-select-object-gateway-bucket-user-name');
+    $('#div-modal-create-object-gateway-bucket').show();
 });
 
-$('#button-close-modal-create-object-gateway-user').on('click', function(){
-    $('#div-modal-create-object-gateway-user').hide();
+$('#button-close-modal-create-object-gateway-bucket').on('click', function(){
+    $('#div-modal-create-object-gateway-bucket').hide();
 });
 
-$('#button-cancel-modal-create-object-gateway-user').on('click', function(){
-    $('#div-modal-create-object-gateway-user').hide();
+$('#button-cancel-modal-create-object-gateway-bucket').on('click', function(){
+    $('#div-modal-create-object-gateway-bucket').hide();
 });
 
-$('#button-execution-modal-create-object-gateway-user').on('click', function(){
-    if(objectGatewayUserCreateValidateCheck()){
-        var username = $('#form-input-object-gateway-user-name').val();
-        var display_name = $('#form-input-object-gateway-user-display-name').val();
-        var email = $('#form-input-object-gateway-user-email').val();
-        
-        var body_val = "username="+username+"&display_name="+display_name
-        if(email != "") body_val+="&email="+email
+$('#button-execution-modal-create-object-gateway-bucket').on('click', function(){
+    if(objectGatewayBucketCreateValidateCheck()){
+        var bucket_name = $('#form-input-object-gateway-bucket-name').val();
+        var username = $('#form-select-object-gateway-bucket-user-name option:selected').val();
+        var lock_enabled = false;
 
-        $('#div-modal-create-object-gateway-user').hide();
-        $('#div-modal-spinner-header-txt').text('Object Gateway User를 생성하고 있습니다.');
+        var body_val = "bucket_name="+bucket_name+"&username="+username+"&lock_enabled="+lock_enabled
+
+        $('#div-modal-create-object-gateway-bucket').hide();
+        $('#div-modal-spinner-header-txt').text('Object Gateway Bucket을 생성하고 있습니다.');
         $('#div-modal-spinner').show();
     
-        $("#modal-status-alert-title").html("Object Gateway User 생성 실패");
-        $("#modal-status-alert-body").html("Object Gateway User 생성을 실패하였습니다.");
+        $("#modal-status-alert-title").html("Object Gateway Bucket 생성 실패");
+        $("#modal-status-alert-body").html("Object Gateway Bucket 생성을 실패하였습니다.");
     
-        fetch('https://10.10.2.11:8080/api/v1/rgw/user',{
+        fetch('https://10.10.2.11:8080/api/v1/rgw/bucket',{
             method: 'POST',
             headers: {
                 'accept': 'application/json',
@@ -837,23 +837,93 @@ $('#button-execution-modal-create-object-gateway-user').on('click', function(){
         }).then(res => res.json()).then(data => {
             $('#div-modal-spinner').hide();
             if(data == "Success"){
-                $("#modal-status-alert-title").html("Object Gateway User 생성 완료");
-                $("#modal-status-alert-body").html("Object Gateway User 생성을 완료하였습니다.");
+                $("#modal-status-alert-title").html("Object Gateway Bucket 생성 완료");
+                $("#modal-status-alert-body").html("Object Gateway Bucket 생성을 완료하였습니다.");
                 $('#div-modal-status-alert').show();
-                objectGatewayUserList();
-                createLoggerInfo("object gateway user create success");
+                objectGatewayBucketList();
+                createLoggerInfo("object gateway bucket create success");
             }else{
                 $('#div-modal-status-alert').show();
             }
         }).catch(function(data){
             $('#div-modal-spinner').hide();
             $('#div-modal-status-alert').show();
-            createLoggerInfo("object gateway user create error : "+ data);
-            console.log('button-execution-modal-create-object-gateway-user : '+data);
+            createLoggerInfo("object gateway bucket create error : "+ data);
+            console.log('button-execution-modal-create-object-gateway-bucket : '+data);
         });
     }
 });
-/** object gateway user create 관련 action end */
+/** object gateway bucket create 관련 action end */
+
+/** object gateway bucket update 관련 action start */
+function objectGatewayBucketEdit(bucket_name, bucket_id){
+    fetch('https://10.10.2.11:8080/api/v1/rgw/bucket?bucket_name='+bucket_name+'&detail=true',{
+        method: 'GET',
+        headers: {
+            'accept': 'application/json',
+            'Content-Type': 'application/x-www-form-urlencoded'
+        }
+    }).then(res => res.json()).then(data => {
+        $('#form-input-update-object-gateway-bucket-name').val(bucket_name);
+        $('#form-input-update-object-gateway-bucket-id').val(bucket_id);
+        setRgwUserSelectBox('form-select-update-object-gateway-bucket-user-name',data.owner);
+        $('#div-modal-update-object-gateway-bucket').show();
+    }).catch(function(data){
+        console.log("error : "+data);
+    });
+}
+
+$('#button-close-modal-update-object-gateway-bucket').on('click', function(){
+    $('#div-modal-update-object-gateway-bucket').hide();
+});
+
+$('#button-cancel-modal-update-object-gateway-bucket').on('click', function(){
+    $('#div-modal-update-object-gateway-bucket').hide();
+});
+
+$('#button-execution-modal-update-object-gateway-bucket').on('click', function(){    
+    if(objectGatewayBucketUpdateValidateCheck()){
+
+        var bucket_name = $('#form-input-update-object-gateway-bucket-name').val();
+        var username = $('#form-select-update-object-gateway-bucket-user-name option:selected').val();
+        var lock_enabled = false;
+        
+        var body_val = "bucket_name="+bucket_name+"&username="+username+"&lock_enabled="+lock_enabled
+
+        $('#div-modal-update-object-gateway-bucket').hide();
+        $('#div-modal-spinner-header-txt').text('Object Gateway Bucket를 수정하고 있습니다.');
+        $('#div-modal-spinner').show();
+    
+        $("#modal-status-alert-title").html("Object Gateway Bucket 수정 실패");
+        $("#modal-status-alert-body").html("Object Gateway Bucket 수정을 실패하였습니다.");
+    
+        fetch('https://10.10.2.11:8080/api/v1/rgw/bucket',{
+            method: 'PUT',
+            headers: {
+                'accept': 'application/json',
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: body_val
+        }).then(res => res.json()).then(data => {
+            $('#div-modal-spinner').hide();
+            if(data == "Success"){
+                $("#modal-status-alert-title").html("Object Gateway Bucket 수정 완료");
+                $("#modal-status-alert-body").html("Object Gateway Bucket 수정을 완료하였습니다.");
+                $('#div-modal-status-alert').show();
+                objectGatewayBucketList()
+                createLoggerInfo("object gateway bucket update success");
+            }else{
+                $('#div-modal-status-alert').show();
+            }
+        }).catch(function(data){
+            $('#div-modal-spinner').hide();
+            $('#div-modal-status-alert').show();
+            createLoggerInfo("object gateway bucket update error : "+ data);
+            console.log('button-execution-modal-update-object-gateway-bucket : '+data);
+        });
+    }
+});
+/** object gateway bucket update 관련 action end */
 
 
 // object gateway 생성 입력값 초기화
@@ -867,6 +937,11 @@ function objectGatewayUserCreateInitInputValue(){
     $('#form-input-object-gateway-user-name').val("");
     $('#form-input-object-gateway-user-display-name').val("");
     $('#form-input-object-gateway-user-email').val("");
+}
+
+function objectGatewayBucketCreateInitInputValue(){
+    $('#form-input-object-gateway-bucket-name').val("");
+    $('#form-input-object-gateway-bucket-user-name').val("");
 }
 
 function objectGatewayCreateValidateCheck(){
@@ -1003,5 +1078,59 @@ function objectGatewayUserQuotaCreateValidateCheck(){
         validate_check = false;
     }
 
+    return validate_check;
+}
+
+function objectGatewayBucketCreateValidateCheck(){
+    var validate_check = true;
+
+    // var username = $('#form-input-object-gateway-user-name').val();
+    // var display_name = $('#form-input-object-gateway-user-display-name').val();
+    // var email = $('#form-input-object-gateway-user-email').val();
+    
+    // if (username == "") {
+    //     alert("사용자 이름을 입력해주세요.");
+    //     validate_check = false;
+    // } else if (!pathNameCheck(username)) {
+    //     alert("사용자 이름 생성 규칙은 영문, 숫자 특수문자 '-','_' 만 입력 가능합니다.");
+    //     validate_check = false;
+    // } else if (display_name == "") {
+    //     alert("전체 이름을 입력해주세요.");
+    //     validate_check = false;
+    // } else if (!pathNameCheck(display_name)) {
+    //     alert("전체 이름 생성 규칙은 영문, 숫자 특수문자 '-','_' 만 입력 가능합니다.");
+    //     validate_check = false;
+    // } else if (email != "" && !checkEmail(email)) {
+    //     alert("이메일 주소 형식을 확인해주세요.");
+    //     validate_check = false;
+    // }
+ 
+    return validate_check;
+}
+
+function objectGatewayBucketUpdateValidateCheck(){
+    var validate_check = true;
+
+    // var username = $('#form-input-object-gateway-user-name').val();
+    // var display_name = $('#form-input-object-gateway-user-display-name').val();
+    // var email = $('#form-input-object-gateway-user-email').val();
+    
+    // if (username == "") {
+    //     alert("사용자 이름을 입력해주세요.");
+    //     validate_check = false;
+    // } else if (!pathNameCheck(username)) {
+    //     alert("사용자 이름 생성 규칙은 영문, 숫자 특수문자 '-','_' 만 입력 가능합니다.");
+    //     validate_check = false;
+    // } else if (display_name == "") {
+    //     alert("전체 이름을 입력해주세요.");
+    //     validate_check = false;
+    // } else if (!pathNameCheck(display_name)) {
+    //     alert("전체 이름 생성 규칙은 영문, 숫자 특수문자 '-','_' 만 입력 가능합니다.");
+    //     validate_check = false;
+    // } else if (email != "" && !checkEmail(email)) {
+    //     alert("이메일 주소 형식을 확인해주세요.");
+    //     validate_check = false;
+    // }
+ 
     return validate_check;
 }
