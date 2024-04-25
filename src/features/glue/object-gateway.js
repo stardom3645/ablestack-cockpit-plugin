@@ -8,7 +8,7 @@
 function objectGatewayList(){
     //조회
     $('#button-object-gateway-search').html("<svg class='pf-c-spinner pf-m-md' role='progressbar' aria-valuetext='Loading...' viewBox='0 0 100 100' ><circle class='pf-c-spinner__path' cx='50' cy='50' r='45' fill='none'></circle></svg>");
-    fetch('https://10.10.2.11:8080/api/v1/service?service_type=rgw',{
+    fetch('https://10.10.3.11:8080/api/v1/service?service_type=rgw',{
         method: 'GET',
         headers: {
             'accept': 'application/json',
@@ -102,7 +102,7 @@ $('#button-execution-modal-create-object-gateway').on('click', function(){
         $("#modal-status-alert-title").html("Object Gateway 생성 실패");
         $("#modal-status-alert-body").html("Object Gateway 생성을 실패하였습니다.");
     
-        fetch('https://10.10.2.11:8080/api/v1/rgw',{
+        fetch('https://10.10.3.11:8080/api/v1/rgw',{
             method: 'POST',
             headers: {
                 'accept': 'application/json',
@@ -132,7 +132,7 @@ $('#button-execution-modal-create-object-gateway').on('click', function(){
 /** object gateway create 관련 action end */
 /** object gateway update 관련 action start */
 function objectGatewayEdit(obj_gw_id){
-    fetch('https://10.10.2.11:8080/api/v1/service?service_type=rgw&service_name='+obj_gw_id,{
+    fetch('https://10.10.3.11:8080/api/v1/service?service_type=rgw&service_name='+obj_gw_id,{
         method: 'GET',
         headers: {
             'accept': 'application/json',
@@ -183,7 +183,7 @@ $('#button-execution-modal-update-object-gateway').on('click', function(){
         $("#modal-status-alert-title").html("Object Gateway 수정 실패");
         $("#modal-status-alert-body").html("Object Gateway 수정을 실패하였습니다.");
     
-        fetch('https://10.10.2.11:8080/api/v1/rgw',{
+        fetch('https://10.10.3.11:8080/api/v1/rgw',{
             method: 'PUT',
             headers: {
                 'accept': 'application/json',
@@ -241,7 +241,7 @@ $('#button-execution-modal-remove-object-gateway').on('click', function(){
         $("#modal-status-alert-title").html("Object Gateway 삭제 실패");
         $("#modal-status-alert-body").html("Object Gateway 삭제를 실패하였습니다.");
         
-        fetch('https://10.10.2.11:8080/api/v1/service/'+object_gateway_id,{
+        fetch('https://10.10.3.11:8080/api/v1/service/'+object_gateway_id,{
             method: 'DELETE',
             headers: {
                 'accept': 'application/json',
@@ -273,7 +273,7 @@ $('#button-execution-modal-remove-object-gateway').on('click', function(){
 function objectGatewayUserList(){
     //조회
     $('#button-object-gateway-user-search').html("<svg class='pf-c-spinner pf-m-md' role='progressbar' aria-valuetext='Loading...' viewBox='0 0 100 100' ><circle class='pf-c-spinner__path' cx='50' cy='50' r='45' fill='none'></circle></svg>");
-    fetch('https://10.10.2.11:8080/api/v1/rgw/user',{
+    fetch('https://10.10.3.11:8080/api/v1/rgw/user',{
         method: 'GET',
         headers: {
             'accept': 'application/json',
@@ -365,7 +365,7 @@ $('#button-execution-modal-remove-object-gateway-user').on('click', function(){
         $("#modal-status-alert-title").html("Object Gateway User 삭제 실패");
         $("#modal-status-alert-body").html("Object Gateway User 삭제를 실패하였습니다.");
     
-        fetch('https://10.10.2.11:8080/api/v1/rgw/user?username='+object_gateway_user,{
+        fetch('https://10.10.3.11:8080/api/v1/rgw/user?username='+object_gateway_user,{
             method: 'DELETE',
             headers: {
                 'accept': 'application/json',
@@ -424,7 +424,7 @@ $('#button-execution-modal-create-object-gateway-user').on('click', function(){
         $("#modal-status-alert-title").html("Object Gateway User 생성 실패");
         $("#modal-status-alert-body").html("Object Gateway User 생성을 실패하였습니다.");
     
-        fetch('https://10.10.2.11:8080/api/v1/rgw/user',{
+        fetch('https://10.10.3.11:8080/api/v1/rgw/user',{
             method: 'POST',
             headers: {
                 'accept': 'application/json',
@@ -454,7 +454,7 @@ $('#button-execution-modal-create-object-gateway-user').on('click', function(){
 
 /** object gateway user update 관련 action start */
 function objectGatewayUserEdit(user_id){
-    fetch('https://10.10.2.11:8080/api/v1/rgw/user',{
+    fetch('https://10.10.3.11:8080/api/v1/rgw/user',{
         method: 'GET',
         headers: {
             'accept': 'application/json',
@@ -504,7 +504,7 @@ $('#button-execution-modal-update-object-gateway-user').on('click', function(){
         $("#modal-status-alert-title").html("Object Gateway User 수정 실패");
         $("#modal-status-alert-body").html("Object Gateway User 수정을 실패하였습니다.");
     
-        fetch('https://10.10.2.11:8080/api/v1/rgw/user',{
+        fetch('https://10.10.3.11:8080/api/v1/rgw/user',{
             method: 'PUT',
             headers: {
                 'accept': 'application/json',
@@ -534,7 +534,7 @@ $('#button-execution-modal-update-object-gateway-user').on('click', function(){
 
 /** object gateway user s3 key search 관련 action start */
 function objectGatewayUserS3keySearch(user_id){
-    fetch('https://10.10.2.11:8080/api/v1/rgw/user',{
+    fetch('https://10.10.3.11:8080/api/v1/rgw/user',{
         method: 'GET',
         headers: {
             'accept': 'application/json',
@@ -603,7 +603,7 @@ $('#button-cancel-modal-search-object-gateway-user-s3key').on('click', function(
 
 /** object gateway user quota update 관련 action start */
 function objectGatewayUserQuotaEdit(user_id){
-    fetch('https://10.10.2.11:8080/api/v1/rgw/user',{
+    fetch('https://10.10.3.11:8080/api/v1/rgw/user',{
         method: 'GET',
         headers: {
             'accept': 'application/json',
@@ -650,7 +650,7 @@ $('#button-execution-modal-update-object-gateway-user-quota').on('click', functi
         $("#modal-status-alert-title").html("Object Gateway User Quota 수정 실패");
         $("#modal-status-alert-body").html("Object Gateway User Quota 수정을 실패하였습니다.");
     
-        fetch('https://10.10.2.11:8080/api/v1/rgw/quota',{
+        fetch('https://10.10.3.11:8080/api/v1/rgw/quota',{
             method: 'POST',
             headers: {
                 'accept': 'application/json',
@@ -681,7 +681,7 @@ $('#button-execution-modal-update-object-gateway-user-quota').on('click', functi
 function objectGatewayBucketList(){
     //조회
     $('#button-object-gateway-bucket-search').html("<svg class='pf-c-spinner pf-m-md' role='progressbar' aria-valuetext='Loading...' viewBox='0 0 100 100' ><circle class='pf-c-spinner__path' cx='50' cy='50' r='45' fill='none'></circle></svg>");
-    fetch('https://10.10.2.11:8080/api/v1/rgw/bucket?detail=true',{
+    fetch('https://10.10.3.11:8080/api/v1/rgw/bucket?detail=true',{
         method: 'GET',
         headers: {
             'accept': 'application/json',
@@ -768,7 +768,7 @@ $('#button-execution-modal-remove-object-gateway-bucket').on('click', function()
         $("#modal-status-alert-title").html("Object Gateway Bucket 삭제 실패");
         $("#modal-status-alert-body").html("Object Gateway Bucket 삭제를 실패하였습니다.");
     
-        fetch('https://10.10.2.11:8080/api/v1/rgw/bucket?bucket_name='+object_gateway_bucket,{
+        fetch('https://10.10.3.11:8080/api/v1/rgw/bucket?bucket_name='+object_gateway_bucket,{
             method: 'DELETE',
             headers: {
                 'accept': 'application/json',
@@ -827,7 +827,7 @@ $('#button-execution-modal-create-object-gateway-bucket').on('click', function()
         $("#modal-status-alert-title").html("Object Gateway Bucket 생성 실패");
         $("#modal-status-alert-body").html("Object Gateway Bucket 생성을 실패하였습니다.");
     
-        fetch('https://10.10.2.11:8080/api/v1/rgw/bucket',{
+        fetch('https://10.10.3.11:8080/api/v1/rgw/bucket',{
             method: 'POST',
             headers: {
                 'accept': 'application/json',
@@ -857,7 +857,7 @@ $('#button-execution-modal-create-object-gateway-bucket').on('click', function()
 
 /** object gateway bucket update 관련 action start */
 function objectGatewayBucketEdit(bucket_name, bucket_id){
-    fetch('https://10.10.2.11:8080/api/v1/rgw/bucket?bucket_name='+bucket_name+'&detail=true',{
+    fetch('https://10.10.3.11:8080/api/v1/rgw/bucket?bucket_name='+bucket_name+'&detail=true',{
         method: 'GET',
         headers: {
             'accept': 'application/json',
@@ -897,7 +897,7 @@ $('#button-execution-modal-update-object-gateway-bucket').on('click', function()
         $("#modal-status-alert-title").html("Object Gateway Bucket 수정 실패");
         $("#modal-status-alert-body").html("Object Gateway Bucket 수정을 실패하였습니다.");
     
-        fetch('https://10.10.2.11:8080/api/v1/rgw/bucket',{
+        fetch('https://10.10.3.11:8080/api/v1/rgw/bucket',{
             method: 'PUT',
             headers: {
                 'accept': 'application/json',

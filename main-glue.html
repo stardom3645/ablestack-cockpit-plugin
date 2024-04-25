@@ -538,7 +538,7 @@
                                                     <th role="columnheader" scope="col">이름</th>
                                                     <th role="columnheader" scope="col">상태</th>
                                                     <th role="columnheader" scope="col">배치 호스트</th>
-                                                    <th role="columnheader" scope="col">스토리지 풀</th>
+                                                    <th role="columnheader" scope="col">데이터 풀</th>
                                                     <th role="columnheader" scope="col">API Port</th>
                                                     <th class="pf-c-table__icon" style="width:10%" role="columnheader" scope="col"></th>
                                                 </tr>
@@ -548,7 +548,7 @@
                                                     <td role="cell" data-label="이름" id="iscsi-service-name">iscsi.iscsi</td>
                                                     <td role="cell" data-label="상태" id="iscsi-service-status">1/1</td>
                                                     <td role="cell" data-label="배치 호스트" id="iscsi-service-host">gwvm</td>
-                                                    <td role="cell" data-label="스토리지 풀" id="iscsi-service-pool">rbd</td>
+                                                    <td role="cell" data-label="데이터 풀" id="iscsi-service-pool">rbd</td>
                                                     <td role="cell" data-label="API Port" id="iscsi-service-api-port">5000</td>
                                                     <td class="pf-c-table__icon" role="cell" data-label="편집">
                                                         <div class="pf-c-dropdown">
@@ -625,6 +625,124 @@
                         <!-- ISCSI target 카드 영역 끝-->
                     </div>
                 </div>
+                <div class="pf-l-grid__item pf-m-12-col" id="div-nvmeof-service-card" hidden>
+                    <div class="pf-l-grid pf-m-gutter">
+                        <!-- NVMe-oF 서비스 카드 영역 시작-->
+                        <div class="pf-l-grid__item pf-m-12-col">
+                            <div class="pf-c-card pf-m-hoverable pf-m-compact">
+                                <div class="pf-c-card__header">
+                                    <div class="pf-c-card__title">NVMe-oF Service</div>
+                                    &nbsp;<i class="pf-icon-help" aria-hidden="true" id="icon-help-nvmeof-service" name="icon-help-action"></i>
+                                    <div class="pf-c-card__actions">
+                                        <button style="font-size: 0.83rem;" class="pf-c-button pf-m-secondary pf-m-inline" id="button-nvmeof-service-search" aria-disabled="false" type="button" data-ouia-safe="true" ><i class="fas fa-fw fa-redo" aria-hidden="true"></i></button>
+                                        <button style="font-size: 0.83rem;" class="pf-c-button pf-m-secondary pf-m-inline" id="button-nvmeof-service-create" aria-disabled="false" type="button" data-ouia-safe="true" >추가</button>
+                                    </div>
+                                </div>
+                                <div class="pf-c-card__body">
+                                    <dl class="pf-c-description-list pf-m-horizontal" style="--pf-c-description-list--RowGap: 10px;">
+                                        <table class="pf-c-table pf-m-compact pf-m-grid-lg" role="grid" aria-label="This is a compact table example">
+                                            <thead>
+                                                <tr role="row">
+                                                    <th role="columnheader" scope="col">이름</th>
+                                                    <th role="columnheader" scope="col">상태</th>
+                                                    <th role="columnheader" scope="col">배치 호스트</th>
+                                                    <th role="columnheader" scope="col">데이터 풀</th>
+                                                    <th role="columnheader" scope="col">API Port</th>
+                                                    <th class="pf-c-table__icon" style="width:10%" role="columnheader" scope="col"></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody role="rowgroup" id="nvmeof-service-list">
+                                                <!-- <tr role="row">
+                                                    <td role="cell" data-label="이름" >nvmeof.nvmeof</td>
+                                                    <td role="cell" data-label="상태" >1/1</td>
+                                                    <td role="cell" data-label="배치 호스트">gwvm</td>
+                                                    <td role="cell" data-label="데이터 풀">rbd</td>
+                                                    <td role="cell" data-label="API Port">5000</td>
+                                                    <td class="pf-c-table__icon" role="cell" data-label="편집">
+                                                        <div class="pf-c-dropdown">
+                                                            <button class="pf-c-dropdown__toggle pf-m-plain" id="card-action-nvmeof-service-status" aria-expanded="false" type="button" aria-label="Actions">
+                                                                <i class="fas fa-ellipsis-v" aria-hidden="true"></i>
+                                                            </button>
+                                                            <ul class="pf-c-dropdown__menu pf-m-align-right" aria-labelledby="card-action-nvmeof-service-status" id="dropdown-menu-card-action-nvmeof-service-status">
+                                                                <li>
+                                                                    <button class="pf-c-dropdown__menu-item pf-m-enabled" type="button" id="menu-item-set-nvmeof-service-remove" >nvmeof Service 삭제</button>
+                                                                </li>
+                                                            </ul>
+                                                        </div>
+                                                    </td>
+                                                </tr> -->
+                                            </tbody>
+                                        </table>
+                                    </dl>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- NVMe-oF 서비스 카드 영역 끝-->
+                    </div>
+                </div>
+                <div class="pf-l-grid__item pf-m-12-col" id="div-nvmeof-target-card" hidden>
+                    <div class="pf-l-grid pf-m-gutter">
+                        <!-- NVMe-oF target 카드 영역 시작-->
+                        <div class="pf-l-grid__item pf-m-12-col">
+                            <div class="pf-c-card pf-m-hoverable pf-m-compact">
+                                <div class="pf-c-card__header">
+                                    <div class="pf-c-card__title">NVMe-oF Target</div>
+                                    &nbsp;<i class="pf-icon-help" aria-hidden="true" id="icon-help-nvmeof-target" name="icon-help-action"></i>
+                                    <div class="pf-c-card__actions">
+                                        <button style="font-size: 0.83rem;" class="pf-c-button pf-m-secondary pf-m-inline" id="button-nvmeof-target-search" aria-disabled="false" type="button" data-ouia-safe="true" ><i class="fas fa-fw fa-redo" aria-hidden="true"></i></button>
+                                        <button style="font-size: 0.83rem;" class="pf-c-button pf-m-secondary pf-m-inline" id="button-nvmeof-target-create" aria-disabled="false" type="button" data-ouia-safe="true" >추가</button>
+                                    </div>
+                                </div>
+                                <div class="pf-c-card__body">
+                                    <dl class="pf-c-description-list pf-m-horizontal" style="--pf-c-description-list--RowGap: 10px;">
+                                        <table class="pf-c-table pf-m-compact pf-m-grid-lg" role="grid" aria-label="This is a compact table example">
+                                            <thead>
+                                                <tr role="row">
+                                                    <th role="columnheader" scope="col">NQN</th>
+                                                    <th role="columnheader" scope="col">포탈 IP</th>
+                                                    <th role="columnheader" scope="col">디스크 정보(풀/이미지명)</th>
+                                                    <th role="columnheader" scope="col">세션 수</th>
+                                                    <th class="pf-c-table__icon" style="width:10%" role="columnheader" scope="col"></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody role="rowgroup" id="nvmeof-target-list">
+                                                <!-- <tr role="row">
+                                                    <td role="cell" data-label="IQN" id="target_iqn">iqn.2020-11.com.ablecloud:11</td>
+                                                    <td role="cell" data-label="포탈" id="portals">gwvm:10.10.2.11</td>
+                                                    <td role="cell" data-label="디스크 정보" id="disks">rbd/mcjeong</td>
+                                                    <td role="cell" data-label="디스크 정보" id="num_sessions">0</td>
+                                                    <td class="pf-c-table__icon" role="cell" data-label="편집">
+                                                        <div class="pf-c-dropdown">
+                                                            <button class="pf-c-dropdown__toggle pf-m-plain" id="card-action-nvmeof-service-status" aria-expanded="false" type="button" aria-label="Actions">
+                                                                <i class="fas fa-ellipsis-v" aria-hidden="true"></i>
+                                                            </button>
+                                                            <ul class="pf-c-dropdown__menu pf-m-align-right" aria-labelledby="card-action-nvmeof-service-status" id="dropdown-menu-card-action-nvmeof-service-status">
+                                                                <li>
+                                                                    <button class="pf-c-dropdown__menu-item pf-m-enabled" type="button" id="menu-item-set-nvmeof-service-remove" >NVMe-oF Service 삭제</button>
+                                                                </li>
+                                                            </ul>
+                                                        </div>
+                                                    </td>
+                                                </tr> -->
+                                            </tbody>
+                                        </table>
+                                    </dl>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- NVMe-oF target 카드 영역 끝-->
+                    </div>
+                </div>
+
+
+
+
+
+
+
+
+
+
                 <div class="pf-l-grid__item pf-m-12-col" id="div-smb-service-card" hidden>
                     <div class="pf-l-grid pf-m-gutter">
                         <!-- SMB 서비스 카드 영역 시작-->
@@ -2438,9 +2556,6 @@
     </div>
 </div>
 <!-- iscsi service 삭제 : Modal 영역 끝 -->
-
-
-
 <!-- iscsi target 생성 : Modal 영역 시작 -->
 <div id="div-modal-create-iscsi-target" class="pf-c-backdrop" style="display:none">
     <div class="pf-l-bullseye">
@@ -2689,6 +2804,205 @@
     </div>
 </div>
 <!-- iscsi target 삭제 : Modal 영역 끝 -->
+<!-- NVMe-oF service 생성 : Modal 영역 시작 -->
+<div id="div-modal-create-nvmeof-service" class="pf-c-backdrop" style="display:none">
+    <div class="pf-l-bullseye">
+        <div class="pf-c-modal-box pf-m-sm" role="dialog" aria-modal="true" aria-label="Create NVMe-oF Service">
+            <button id="button-close-modal-create-nvmeof-service" aria-disabled="false" aria-label="Close" class="pf-c-button pf-m-plain" type="button">
+                <i class="fas fa-times" aria-hidden="true"></i>
+            </button>
+            <header class="pf-c-modal-box__header"><h1 class="pf-c-modal-box__title"><span class="pf-c-modal-box__title-text">NVMe-oF Service 생성</span></h1></header>
+            <form novalidate class="pf-c-form pf-m-horizontal" style="margin-left:15px;margin-top:10px">
+                <section class="pf-c-form__section">
+                    <div class="pf-c-form__group">
+                        <div class="pf-c-form__group-label" style="margin-left: 20px;">
+                            <label class="pf-c-form__label" for="form-input-nvmeof-service-id" style="margin-left: 10px;width: 120px;">
+                                <span class="pf-c-form__label-text">이름(데이터 풀)</span>
+                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                            </label>
+                        </div>
+                        <div class="pf-c-form__group-control">
+                            <input class="pf-c-form-control" style="width:50%" type="text" id="form-input-nvmeof-service-id" name="form-input-nvmeof-service-id"/>
+                        </div>
+                    </div>
+                    <div class="pf-c-form__group">
+                        <div class="pf-c-form__group-label" style="margin-left: 20px;">
+                            <label class="pf-c-form__label" for="button-nvmeof-glue-hosts-list-setting" style="margin-left: 10px;width: 120px;">
+                                <span class="pf-c-form__label-text">배치 호스트</span>
+                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                            </label>
+                        </div>
+                        <div class="pf-c-form__group-control">
+                            <div class="pf-c-select pf-m-expanded">
+                                <input class="pf-c-form-control" type="text" style="width:60%" id="form-input-nvmeof-placement-hosts" name="form-input-nvmeof-placement-hosts" disabled/>
+                                <button class="pf-c-select__toggle" type="button" style="width: 60%;" id="button-nvmeof-glue-hosts-list-setting" aria-haspopup="true" aria-expanded="true" aria-labelledby="select-checkbox-expanded-toggle">
+                                    <div class="pf-c-select__toggle-wrapper">
+                                        <span class="pf-c-select__toggle-text">선택하십시오.</span>
+                                    </div>
+                                    <span class="pf-c-select__toggle-arrow">
+                                        <i class="fas fa-times" aria-hidden="true"></i>
+                                        <i class="fas fa-caret-down" aria-hidden="true"></i>
+                                    </span>
+                                </button>
+                                <div class="pf-c-select__menu" style="min-width: 60%;display: none;" id="div-nvmeof-glue-hosts-list">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </form>
+            <footer class="pf-c-modal-box__footer">
+                <button id="button-execution-modal-create-nvmeof-service" aria-disabled="false" class="pf-c-button pf-m-primary" type="button" data-ouia-safe="true">실행</button>
+                <button id="button-cancel-modal-create-nvmeof-service" aria-disabled="false" class="pf-c-button pf-m-link" type="button" data-ouia-safe="true">취소</button>
+            </footer>
+        </div>
+    </div>
+</div>
+<!-- NVMe-oF service 생성 : Modal 영역 끝 -->
+<!-- NVMe-oF service 삭제 : Modal 영역 시작 -->
+<div id="div-modal-remove-nvmeof-service" class="pf-c-backdrop" style="display:none">
+    <div class="pf-l-bullseye">
+        <div class="pf-c-modal-box pf-m-sm" role="dialog" aria-modal="true" aria-label="Remove NVMe-oF Service">
+            <button id="button-close-modal-remove-nvmeof-service" aria-disabled="false" aria-label="Close" class="pf-c-button pf-m-plain" type="button">
+                <i class="fas fa-times" aria-hidden="true"></i>
+            </button>
+            <header class="pf-c-modal-box__header"><h1 class="pf-c-modal-box__title"><span class="pf-c-modal-box__title-text">NVMe-oF 서비스 삭제</span></h1></header>
+            <div class="pf-c-modal-box__body">
+                <div id="nvmeof-service-text"></div>
+                <label class="pf-c-check pf-c-select__menu-item" style="margin-top: 20px;">
+                    <input class="pf-c-check__input" type="checkbox" id="input-checkbox-nvmeof-service-remove" value="remove"/>
+                    <span class="pf-c-check__label" style="color: #c9190b;"><i class="fas fa-fw fa-exclamation-circle" aria-hidden="true"></i>예, 확실히 삭제합니다.</span>
+                </label>
+            </div>
+            <footer class="pf-c-modal-box__footer">
+                <button id="button-execution-modal-remove-nvmeof-service" aria-disabled="false" class="pf-c-button pf-m-primary" type="button" data-ouia-safe="true">실행</button>
+                <button id="button-cancel-modal-remove-nvmeof-service" aria-disabled="false" class="pf-c-button pf-m-link" type="button" data-ouia-safe="true">취소</button>
+            </footer>
+            <input type="text" id="nvmeof-service-id" name="nvmeof-service-id" value="" style="display:none" disabled/>
+        </div>
+    </div>
+</div>
+<!-- NVMe-oF service 삭제 : Modal 영역 끝 -->
+<!-- NVMe-oF target 생성 : Modal 영역 시작 -->
+<div id="div-modal-create-nvmeof-target" class="pf-c-backdrop" style="display:none">
+    <div class="pf-l-bullseye">
+        <div class="pf-c-modal-box pf-m-sm" role="dialog" aria-modal="true" aria-label="Create NVMe-oF Target">
+            <button id="button-close-modal-create-nvmeof-target" aria-disabled="false" aria-label="Close" class="pf-c-button pf-m-plain" type="button">
+                <i class="fas fa-times" aria-hidden="true"></i>
+            </button>
+            <header class="pf-c-modal-box__header"><h1 class="pf-c-modal-box__title"><span class="pf-c-modal-box__title-text">NVMe-oF Target 생성</span></h1></header>
+            <form novalidate class="pf-c-form pf-m-horizontal" style="margin-left:15px;margin-top:10px">
+                <section class="pf-c-form__section">
+                    <div class="pf-c-form__group">
+                        <div class="pf-c-form__group-label" style="margin-left: 20px;">
+                            <label class="pf-c-form__label" for="form-input-nqn-id" style="margin-left: 10px;width: 120px;">
+                                <span class="pf-c-form__label-text">NQN</span>
+                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                            </label>
+                        </div>
+                        <div class="pf-c-form__group-control">
+                            <input class="pf-c-form-control" style="width:80%" type="text" id="form-input-nqn-id" name="form-input-nqn-id"/>
+                        </div>
+                    </div>
+                    <div class="pf-c-form__group">
+                        <div class="pf-c-form__group-label" style="margin-left: 20px;">
+                            <label class="pf-c-form__label" for="form-input-nvmeof-ip" style="margin-left: 10px;width: 120px;">
+                                <span class="pf-c-form__label-text">포탈 IP</span>
+                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                            </label>
+                        </div>
+                        <div class="pf-c-form__group-control">
+                            <input class="pf-c-form-control" style="width:50%" type="text" id="form-input-nvmeof-ip" name="form-input-nvmeof-ip"/>
+                        </div>
+                        <!-- <div class="pf-c-form__group-control">
+                            <div class="pf-c-select pf-m-expanded">
+                                <input class="pf-c-form-control" type="text" style="width:60%" id="form-input-nvmeof-ip" name="form-input-nvmeof-ip" disabled/>
+                                <button class="pf-c-select__toggle" type="button" style="width: 60%;" id="button-nvmeof-portal-list-setting" aria-haspopup="true" aria-expanded="true" aria-labelledby="select-checkbox-expanded-toggle">
+                                    <div class="pf-c-select__toggle-wrapper">
+                                        <span class="pf-c-select__toggle-text">선택하십시오.</span>
+                                    </div>
+                                    <span class="pf-c-select__toggle-arrow">
+                                        <i class="fas fa-times" aria-hidden="true"></i>
+                                        <i class="fas fa-caret-down" aria-hidden="true"></i>
+                                    </span>
+                                </button>
+                                <div class="pf-c-select__menu" style="min-width: 60%;display: none;" id="div-nvmeof-ip-list">
+                                </div>
+                            </div>
+                        </div> -->
+                    </div>
+                    <div class="pf-c-form__group" id="div-target-new-rbd-pool">
+                        <div class="pf-c-form__group-label" style="margin-left: 20px;">
+                            <label class="pf-c-form__label" for="form-select-nvmeof-target-image-pool" style="margin-left: 10px;width: 120px;">
+                                <span class="pf-c-form__label-text">데이터 풀</span>
+                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                            </label>
+                        </div>
+                        <div class="pf-c-dropdown">
+                            <select class="pf-c-form-control" id="form-select-nvmeof-target-image-pool" name="form-select-nvmeof-target-image-pool" style="width: 50%;">
+                                <option value="" selected>선택하십시오.</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="pf-c-form__group" id="div-target-new-image-name">
+                        <div class="pf-c-form__group-label" style="margin-left: 20px;">
+                            <label class="pf-c-form__label" for="form-input-nvmeof-target-image-name" style="margin-left: 10px;width: 120px;">
+                                <span class="pf-c-form__label-text">이미지 명</span>
+                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                            </label>
+                        </div>
+                        <div class="pf-c-form__group-control">
+                            <input class="pf-c-form-control" style="width:80%" type="text" id="form-input-nvmeof-target-image-name" name="form-input-nvmeof-target-image-name"/>
+                        </div>
+                    </div>
+                    <div class="pf-c-form__group" id="div-target-image-size">
+                        <div class="pf-c-form__group-label" style="margin-left: 20px;">
+                            <label class="pf-c-form__label" for="form-input-nvmeof-target-image-size" style="margin-left: 10px;width: 120px;">
+                                <span class="pf-c-form__label-text">용량(GiB)</span>
+                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                            </label>
+                        </div>
+                        <div class="pf-c-form__group-control">
+                            <input class="pf-c-form-control" style="width:50%" type="text" id="form-input-nvmeof-target-image-size" name="form-input-nvmeof-target-image-size"/>
+                        </div>
+                    </div>
+                </section>
+            </form>
+            <footer class="pf-c-modal-box__footer">
+                <button id="button-execution-modal-create-nvmeof-target" aria-disabled="false" class="pf-c-button pf-m-primary" type="button" data-ouia-safe="true">실행</button>
+                <button id="button-cancel-modal-create-nvmeof-target" aria-disabled="false" class="pf-c-button pf-m-link" type="button" data-ouia-safe="true">취소</button>
+            </footer>
+        </div>
+    </div>
+</div>
+<!-- NVMe-oF target 생성 : Modal 영역 끝 -->
+<!-- NVMe-oF target 삭제 : Modal 영역 시작 -->
+<div id="div-modal-remove-nvmeof-target" class="pf-c-backdrop" style="display:none">
+    <div class="pf-l-bullseye">
+        <div class="pf-c-modal-box pf-m-sm" role="dialog" aria-modal="true" aria-label="Remove NVMe-oF target">
+            <button id="button-close-modal-remove-nvmeof-target" aria-disabled="false" aria-label="Close" class="pf-c-button pf-m-plain" type="button">
+                <i class="fas fa-times" aria-hidden="true"></i>
+            </button>
+            <header class="pf-c-modal-box__header"><h1 class="pf-c-modal-box__title"><span class="pf-c-modal-box__title-text">NVMe-oF 타겟 삭제</span></h1></header>
+            <div class="pf-c-modal-box__body">
+                <div id="nvmeof-target-text"></div>
+                <label class="pf-c-check pf-c-select__menu-item" style="margin-top: 20px;">
+                    <input class="pf-c-check__input" type="checkbox" id="input-checkbox-nvmeof-target-remove" value="remove"/>
+                    <span class="pf-c-check__label" style="color: #c9190b;"><i class="fas fa-fw fa-exclamation-circle" aria-hidden="true"></i>예, 확실히 삭제합니다.</span>
+                </label>
+            </div>
+            <footer class="pf-c-modal-box__footer">
+                <button id="button-execution-modal-remove-nvmeof-target" aria-disabled="false" class="pf-c-button pf-m-primary" type="button" data-ouia-safe="true">실행</button>
+                <button id="button-cancel-modal-remove-nvmeof-target" aria-disabled="false" class="pf-c-button pf-m-link" type="button" data-ouia-safe="true">취소</button>
+            </footer>
+            <input type="text" id="nvmeof-target-nqn-id" name="nvmeof-target-nqn-id" value="" style="display:none" disabled/>
+        </div>
+    </div>
+</div>
+<!-- NVMe-oF target 삭제 : Modal 영역 끝 -->
+
+
+
 
 <!-- smb service 생성 : Modal 영역 시작 -->
 <div id="div-modal-create-smb-service" class="pf-c-backdrop" style="display:none">

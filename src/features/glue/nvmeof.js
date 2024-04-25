@@ -1,699 +1,493 @@
 /**
- * File Name : nfs.js
- * Date Created : 2024.02.06
+ * File Name : nvmeof.js
+ * Date Created : 2024.04.25
  * Writer  : 배태주
- * Description : NFS cluster, export 관련 발생하는 이벤트 처리를 위한 JavaScript
+ * Description : nvmeof service, nvmeof target 관련 발생하는 이벤트 처리를 위한 JavaScript
 **/
 
-// function nfsClusterList(){
-//     //조회
-//     $('#button-nfs-cluster-search').html("<svg class='pf-c-spinner pf-m-md' role='progressbar' aria-valuetext='Loading...' viewBox='0 0 100 100' ><circle class='pf-c-spinner__path' cx='50' cy='50' r='45' fill='none'></circle></svg>");
-//     fetch('https://10.10.2.11:8080/api/v1/nfs',{
-//         method: 'GET',
-//         headers: {
-//             'accept': 'application/json',
-//             'Content-Type': 'application/x-www-form-urlencoded'
-//         }
-//     }).then(res => res.json()).then(data => {
-//         nfs_cluster_names = Object.keys(data);
-//         if(nfs_cluster_names.length != 0){
-//             $('#nfs-cluster-list tr').remove();
-//             for(var i=0; i < nfs_cluster_names.length; i++){
-//                 var nfs_port = null;
-//                 let insert_tr = "";
+function nvmeofServiceList(){
+    //조회
+    $('#button-nvmeof-service-search').html("<svg class='pf-c-spinner pf-m-md' role='progressbar' aria-valuetext='Loading...' viewBox='0 0 100 100' ><circle class='pf-c-spinner__path' cx='50' cy='50' r='45' fill='none'></circle></svg>");
+    fetch('https://10.10.3.11:8080/api/v1/service?service_type=nvmeof',{
+        method: 'GET',
+        headers: {
+            'accept': 'application/json',
+            'Content-Type': 'application/x-www-form-urlencoded'
+        }
+    }).then(res => res.json()).then(data => {
+        if(data.length != 0){
+            $('#nvmeof-service-list tr').remove();
+            for(var i=0; i < data.length; i++){
+                let insert_tr = "";
+                insert_tr += '<tr role="row">';
+                insert_tr += '    <td role="cell" data-label="이름">'+data[i].service_name+'</td>';
+                insert_tr += '    <td role="cell" data-label="상태">'+data[i].status.running+'/'+data[i].status.size+'</td>';
+                if(data[i].placement.hosts != "" && data[i].placement.hosts != undefined){
+                    insert_tr += '    <td role="cell" data-label="배치 호스트">'+data[i].placement.hosts+'</td>';
+                }else{
+                    insert_tr += '    <td role="cell" data-label="배치 호스트">'+data[i].placement.count+' 대 배치</td>';
+                }
+                insert_tr += '    <td role="cell" data-label="데이터 풀">'+data[i].spec.pool+'</td>';
+                insert_tr += '    <td role="cell" data-label="Ports">'+data[i].status.ports+'</td>';
+                insert_tr += '    <td class="pf-c-table__icon" role="cell" data-label="편집">';
+                insert_tr += '        <div class="pf-c-dropdown">';
+                insert_tr += '            <button class="pf-c-dropdown__toggle pf-m-plain" id="card-action-nvmeof-service-status'+i+'" onclick="toggleAction(\'dropdown-menu-card-action-nvmeof-service-status\','+i+')" aria-expanded="false" type="button" aria-label="Actions">';
+                insert_tr += '                <i class="fas fa-ellipsis-v" aria-hidden="true"></i>';
+                insert_tr += '            </button>';
+                insert_tr += '            <ul class="pf-c-dropdown__menu pf-m-align-right" aria-labelledby="card-action-nvmeof-service-status'+i+'" id="dropdown-menu-card-action-nvmeof-service-status'+i+'">';
+                insert_tr += '                <li>';
+                insert_tr += '                    <button class="pf-c-dropdown__menu-item pf-m-enabled" type="button" id="menu-item-set-nvmeof-service-remove" onclick=\'nvmeofServiceDelete("'+data[i].service_name+'")\' >NVMe-oF 서비스 삭제</button>';
+                insert_tr += '                </li>';
+                insert_tr += '            </ul>';
+                insert_tr += '        </div>';
+                insert_tr += '    </td>';
+                insert_tr += '</tr>';
+
+                $("#nvmeof-service-list:last").append(insert_tr);
+                $('#dropdown-menu-card-action-nvmeof-service-status'+i).hide();
+            }
+        }else{
+            noList("nvmeof-service-list",6);
+        }
+        $('#button-nvmeof-service-search').html("<i class='fas fa-fw fa-redo' aria-hidden='true'></i>");
+    }).catch(function(data){
+        console.log("error : "+data);
+        //조회되는 데이터가 없음
+        noList("nvmeof-service-list",6);
+        $('#button-nvmeof-service-search').html("<i class='fas fa-fw fa-redo' aria-hidden='true'></i>");
+    });
+}
+
+$('#button-nvmeof-service-search').on('click', function(){
+    nvmeofServiceList();
+});
+
+/** NVMe-of Service create 관련 action start */
+$('#button-nvmeof-service-create').on('click', function(){
+    nvmeofServiceCreateInitInputValue();
+    setSelectHostsCheckbox('div-nvmeof-glue-hosts-list','form-input-nvmeof-placement-hosts');
+    $('#div-modal-create-nvmeof-service').show();
+});
+
+$('#button-close-modal-create-nvmeof-service').on('click', function(){
+    $('#div-modal-create-nvmeof-service').hide();
+});
+
+$('#button-cancel-modal-create-nvmeof-service').on('click', function(){
+    $('#div-modal-create-nvmeof-service').hide();
+});
+
+$('#button-execution-modal-create-nvmeof-service').on('click', function(){
+    if(nvmeofCreateValidateCheck()){
+        var pool_name = $('#form-input-nvmeof-service-id').val();
     
-//                 insert_tr += '<tr role="row">';
-//                 insert_tr += '    <td role="cell" data-label="이름" id="nfs-cluster-name">'+nfs_cluster_names[i]+'</td>';
-    
-//                 if(data[nfs_cluster_names[i]].backend.length > 0){
-//                     var hostList=[];
-//                     var ipList=[];
-//                     for(var j=0; j < data[nfs_cluster_names[i]].backend.length ; j++){
-//                         hostList.push(data[nfs_cluster_names[i]].backend[j].hostname);
-//                         ipList.push(data[nfs_cluster_names[i]].backend[j].ip);
-//                     }
-//                     nfs_port = data[nfs_cluster_names[i]].backend[0].port;
-//                     insert_tr += '    <td role="cell" data-label="호스트 명" id="nfs-cluster-host-name">'+hostList+'</td>';
-//                     insert_tr += '    <td role="cell" data-label="IP" id="nfs-cluster-ip">'+ipList+'</td>';
-//                     insert_tr += '    <td role="cell" data-label="PORT" id="nfs-cluster-port">'+nfs_port+'</td>';
-//                 }else{
-//                     insert_tr += '    <td role="cell" data-label="호스트 명" id="nfs-cluster-host-name">N/A</td>';
-//                     insert_tr += '    <td role="cell" data-label="IP" id="nfs-cluster-ip">N/A</td>';
-//                     insert_tr += '    <td role="cell" data-label="PORT" id="nfs-cluster-port">N/A</td>';
-//                 }
-//                 insert_tr += '    <td class="pf-c-table__icon" role="cell" data-label="편집">';
-//                 insert_tr += '        <div class="pf-c-dropdown">';
-//                 insert_tr += '            <button class="pf-c-dropdown__toggle pf-m-plain" id="card-action-nfs-cluster'+i+'" onclick="toggleAction(\'dropdown-menu-card-action-nfs-cluster\','+i+')" aria-expanded="false" type="button" aria-label="Actions">';
-//                 insert_tr += '                <i class="fas fa-ellipsis-v" aria-hidden="true"></i>';
-//                 insert_tr += '            </button>';
-//                 insert_tr += '            <ul class="pf-c-dropdown__menu pf-m-align-right" aria-labelledby="card-action-nfs-cluster'+i+'" id="dropdown-menu-card-action-nfs-cluster'+i+'">';
-//                 insert_tr += '                <li>';
-//                 insert_tr += '                    <button class="pf-c-dropdown__menu-item pf-m-enabled" type="button" onclick=\'nfsClusterEdit("'+nfs_cluster_names[i]+'","'+nfs_port+'")\' >NFS Cluster 수정</button>';
-//                 insert_tr += '                    <button class="pf-c-dropdown__menu-item pf-m-enabled" type="button" onclick=\'nfsClusterDelete("'+nfs_cluster_names[i]+'")\' >NFS Cluster 삭제</button>';
-//                 insert_tr += '                </li>';
-//                 insert_tr += '            </ul>';
-//                 insert_tr += '        </div>';
-//                 insert_tr += '    </td>';
-//                 insert_tr += '</tr>';
-    
-//                 $("#nfs-cluster-list:last").append(insert_tr);
-//                 $('#dropdown-menu-card-action-nfs-cluster'+i).hide();
-//             }
-//         }else{
-//             noList("nfs-cluster-list",5);
-//         }
-//         $('#button-nfs-cluster-search').html("<i class='fas fa-fw fa-redo' aria-hidden='true'></i>");
-//     }).catch(function(data){
-//         console.log("error : "+data);
-//         //조회되는 데이터가 없음
-//         noList("nfs-cluster-list",5);
-//         $('#button-nfs-cluster-search').html("<i class='fas fa-fw fa-redo' aria-hidden='true'></i>");
-//     });
-// }
-
-// /** nfs cluster search 관련 action start */
-// $('#button-nfs-cluster-search').on('click', function(){
-//     nfsClusterList();
-// });
-// /** nfs cluster search 관련 action end */
-
-
-// /** nfs cluster create 관련 action start */
-// $('#button-nfs-cluster-create').on('click', function(){
-//     // 입력항목 초기화
-//     nfsServiceCreateInitInputValue();
-//     setSelectHostsCheckbox('div-glue-hosts-list','form-input-nfs-cluster-placement-hosts');
-//     $('#div-glue-hosts-list').hide();
-
-//     $('#div-modal-create-nfs-cluster').show();
-// });
-
-// $('#button-close-modal-create-nfs-cluster').on('click', function(){
-//     $('#div-modal-create-nfs-cluster').hide();
-// });
-
-// $('#button-cancel-modal-create-nfs-cluster').on('click', function(){
-//     $('#div-modal-create-nfs-cluster').hide();
-// });
-
-// $('#button-execution-modal-create-nfs-cluster').on('click', function(){
-//     if(nfsServiceCreateValidateCheck()){
-//         var body_val = "";
-//         var nfs_cluster_id = $('#form-input-nfs-cluster-id').val();
-//         var cnt=0
-//         $('input[type=checkbox][name="glue-hosts-list"]').each(function() {
-//             if(this.checked){
-//                 if(cnt==0){
-//                     body_val = "hostname="+this.value
-//                 }else{
-//                     body_val += "&hostname="+this.value
-//                 }
-//                 cnt++
-//             }
-//         });
-    
-//         var nfs_cluster_port = $('#form-input-nfs-cluster-port').val();
+        var body_val = "pool_name="+pool_name;
         
-//         $('#div-modal-create-nfs-cluster').hide();
-//         $('#div-modal-spinner-header-txt').text('NFS Cluster를 생성하고 있습니다.');
-//         $('#div-modal-spinner').show();
+        $('input[type=checkbox][name="glue-hosts-list"]').each(function() {
+            if(this.checked){
+                body_val += "&hostname="+this.value;
+            }
+        });
     
-//         $("#modal-status-alert-title").html("NFS Cluster 생성 실패");
-//         $("#modal-status-alert-body").html("NFS Cluster 생성을 실패하였습니다.");
+        $('#div-modal-create-nvmeof-service').hide();
+        $('#div-modal-spinner-header-txt').text('NVMe-oF Service를 생성하고 있습니다.');
+        $('#div-modal-spinner').show();
     
-//         fetch('https://10.10.2.11:8080/api/v1/nfs/'+nfs_cluster_id+'/'+nfs_cluster_port,{
-//             method: 'POST',
-//             headers: {
-//                 'accept': 'application/json',
-//                 'Content-Type': 'application/x-www-form-urlencoded'
-//             },
-//             body: body_val
-//         }).then(res => res.json()).then(data => {
-//             $('#div-modal-spinner').hide();
-//             if(data == "Success"){
-//                 $("#modal-status-alert-title").html("NFS Cluster 생성 완료");
-//                 $("#modal-status-alert-body").html("NFS Cluster 생성을 완료하였습니다.");
-//                 $('#div-modal-status-alert').show();
-//                 nfsClusterList();
-//                 nfsExportList();
-//                 createLoggerInfo("nfs cluster create success");
-//             }else{
-//                 $('#div-modal-status-alert').show();
-//             }
-//         }).catch(function(data){
-//             $('#div-modal-spinner').hide();
-//             $('#div-modal-status-alert').show();
-//             createLoggerInfo("nfs cluster create error : "+ data);
-//             console.log('button-execution-modal-create-nfs-cluster : '+data);
-//         });
-//     }
-// });
-// /** nfs cluster create 관련 action end */
-// /** nfs cluster update 관련 action start */
-// function nfsClusterEdit(cluster_id, port){
-//     fetch('https://10.10.2.11:8080/api/v1/service?service_type=nfs&service_name=nfs.'+cluster_id,{
-//         method: 'GET',
-//         headers: {
-//             'accept': 'application/json',
-//             'Content-Type': 'application/x-www-form-urlencoded'
-//         }
-//     }).then(res => res.json()).then(data => {
-//         $('#form-input-update-nfs-cluster-id').val(cluster_id);
-//         setSelectHostsCheckbox('div-update-glue-hosts-list','form-input-update-nfs-cluster-placement-hosts',data[0].placement.hosts);
-//         $('#form-input-update-nfs-cluster-port').val(port);
-
-//         $('#div-modal-update-nfs-cluster').show();
-//     }).catch(function(data){
-//         console.log("error : "+data);
-//     });
-// }
-
-// $('#button-close-modal-update-nfs-cluster').on('click', function(){
-//     $('#div-modal-update-nfs-cluster').hide();
-// });
-
-// $('#button-cancel-modal-update-nfs-cluster').on('click', function(){
-//     $('#div-modal-update-nfs-cluster').hide();
-// });
-
-// $('#button-execution-modal-update-nfs-cluster').on('click', function(){
-//     if(nfsServiceUpdateValidateCheck()){
-//         var body_val = "";
-//         var nfs_cluster_id = $('#form-input-update-nfs-cluster-id').val();
-//         var cnt=0
-//         $('input[type=checkbox][name="glue-hosts-list"]').each(function() {
-//             if(this.checked){
-//                 if(cnt==0){
-//                     body_val = "hostname="+this.value
-//                 }else{
-//                     body_val += "&hostname="+this.value
-//                 }
-//                 cnt++
-//             }
-//         });
+        $("#modal-status-alert-title").html("NVMe-oF Service 생성 실패");
+        $("#modal-status-alert-body").html("NVMe-oF Service 생성을 실패하였습니다.");
     
-//         var nfs_cluster_port = $('#form-input-update-nfs-cluster-port').val();
+        fetch('https://10.10.3.11:8080/api/v1/nvmeof',{
+            method: 'POST',
+            headers: {
+                'accept': 'application/json',
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: body_val
+        }).then(res => res.json()).then(data => {
+            $('#div-modal-spinner').hide();
+            if(data == "Success"){
+                $("#modal-status-alert-title").html("NVMe-oF Service 생성 완료");
+                $("#modal-status-alert-body").html("NVMe-oF Service 생성을 완료하였습니다.");
+                $('#div-modal-status-alert').show();
+                nvmeofServiceList();
+                createLoggerInfo("NVMe-oF Service create success");
+            }else{
+                $('#div-modal-status-alert').show();
+            }
+        }).catch(function(data){
+            $('#div-modal-spinner').hide();
+            $('#div-modal-status-alert').show();
+            createLoggerInfo("NVMe-oF Service create error : "+ data);
+            console.log('button-execution-modal-create-nvmeof-service : '+data);
+        });
+    }
+});
+/** NVMe-of Service create 관련 action end */
+
+
+/** NVMe-of Service delete 관련 action start */
+function nvmeofServiceDelete(nvmeof_service_id){
+    $('#input-checkbox-nvmeof-service-remove').prop('checked',false);
+    $('#div-modal-remove-nvmeof-service').show();
+    $('#nvmeof-service-id').val(nvmeof_service_id);
+    $('#nvmeof-service-text').text('선택하신 '+nvmeof_service_id+' 을(를) 삭제하시겠습니까?');
+}
+
+$('#menu-item-nvmeof-service-remove').on('click', function(){
+    $('#div-modal-remove-nvmeof-service').show();
+});
+
+$('#button-close-modal-remove-nvmeof-service').on('click', function(){
+    $('#div-modal-remove-nvmeof-service').hide();
+});
+
+$('#button-cancel-modal-remove-nvmeof-service').on('click', function(){
+    $('#div-modal-remove-nvmeof-service').hide();
+});
+
+$('#button-execution-modal-remove-nvmeof-service').on('click', function(){
+    if($('#input-checkbox-nvmeof-service-remove').is(":checked")){
+        var nvmeof_service_id = $('#nvmeof-service-id').val()
         
-//         $('#div-modal-update-nfs-cluster').hide();
-//         $('#div-modal-spinner-header-txt').text('NFS Cluster를 수정하고 있습니다.');
-//         $('#div-modal-spinner').show();
+        $('#div-modal-remove-nvmeof-service').hide();
+        $('#div-modal-spinner-header-txt').text('NVMe-of Service를 삭제하고 있습니다.');
+        $('#div-modal-spinner').show();
     
-//         $("#modal-status-alert-title").html("NFS Cluster 수정 실패");
-//         $("#modal-status-alert-body").html("NFS Cluster 수정을 실패하였습니다.");
-    
-//         fetch('https://10.10.2.11:8080/api/v1/nfs/'+nfs_cluster_id+'/'+nfs_cluster_port,{
-//             method: 'PUT',
-//             headers: {
-//                 'accept': 'application/json',
-//                 'Content-Type': 'application/x-www-form-urlencoded'
-//             },
-//             body: body_val
-//         }).then(res => res.json()).then(data => {
-//             $('#div-modal-spinner').hide();
-//             if(data == "Success"){
-//                 $("#modal-status-alert-title").html("NFS Cluster 수정 완료");
-//                 $("#modal-status-alert-body").html("NFS Cluster 수정을 완료하였습니다.");
-//                 $('#div-modal-status-alert').show();
-//                 nfsClusterList();
-//                 nfsExportList();
-//                 createLoggerInfo("nfs cluster update success");
-//             }else{
-//                 $('#div-modal-status-alert').show();
-//             }
-//         }).catch(function(data){
-//             $('#div-modal-spinner').hide();
-//             $('#div-modal-status-alert').show();
-//             createLoggerInfo("nfs cluster update error : "+ data);
-//             console.log('button-execution-modal-update-nfs-cluster : '+data);
-//         });
-//     }
-// });
-// /** nfs cluster update 관련 action end */
+        $("#modal-status-alert-title").html("NVMe-of Service 삭제 실패");
+        $("#modal-status-alert-body").html("NVMe-of Service 삭제를 실패하였습니다.");
+        fetch('https://10.10.3.11:8080/api/v1/service/'+nvmeof_service_id,{
+            method: 'DELETE',
+            headers: {
+                'accept': 'application/json',
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        }).then(res => res.json()).then(data => {
+            $('#div-modal-spinner').hide();
+            if(data == "Success"){
+                $("#modal-status-alert-title").html("NVMe-of Service 삭제 완료");
+                $("#modal-status-alert-body").html("NVMe-of Service 삭제를 완료하였습니다.");
+                $('#div-modal-status-alert').show();
+                nvmeofServiceList();
+                createLoggerInfo("NVMe-of Service remove success");
+            }else{
+                $('#div-modal-status-alert').show();
+            }
+        }).catch(function(data){
+            $('#div-modal-spinner').hide();
+            $('#div-modal-status-alert').show();
+            createLoggerInfo("NVMe-of Service remove error : "+ data);
+            console.log('button-execution-modal-remove-nvmeof-service : '+data);
+        });
+    }else{
+        alert("삭제 여부를 체크해주세요.");
+    }
+});
+/**  NVMe-of Service delete 관련 action end */
 
-// /** nfs cluster delete 관련 action start */
-// function nfsClusterDelete(cluster_id){
-//     $('#input-checkbox-nfs-cluster-remove').prop('checked',false);
-//     $('#div-modal-remove-nfs-cluster').show();
-//     $('#nfs-cluster-id').val(cluster_id);
-//     $('#nfs-cluster-text').text('선택하신 '+cluster_id+' 을(를) 삭제하시겠습니까?');
-// }
+// nvmeof service 생성 입력값 초기화
+function nvmeofServiceCreateInitInputValue(){
+    $('#form-input-nvmeof-service-id').val("");
+    $('#form-input-nvmeof-placement-hosts').val("");
+}
 
-// // $('#menu-item-nfs-cluster-remove').on('click', function(){
-// //     $('#div-modal-remove-nfs-cluster').show();
-// // });
+function nvmeofTargetList(){
+    //조회
+    $('#button-nvmeof-target-search').html("<svg class='pf-c-spinner pf-m-md' role='progressbar' aria-valuetext='Loading...' viewBox='0 0 100 100' ><circle class='pf-c-spinner__path' cx='50' cy='50' r='45' fill='none'></circle></svg>");
+    fetch('https://10.10.3.11:8080/api/v1/nvmeof/target',{
+        method: 'GET',
+        headers: {
+            'accept': 'application/json',
+            'Content-Type': 'application/x-www-form-urlencoded'
+        }
+    }).then(res => res.json()).then(data => {
+        if(data.length > 0 || (data.code != undefined && data.code!="no_gateways_defined")){
+            $('#nvmeof-target-list tr').remove();
+            console.log(data)
+            for(var i=0; i < data.length; i++){
+                let insert_tr = "";
+                insert_tr += '<tr role="row">';
+                insert_tr += '    <td role="cell" data-label="NQN">'+data[i].nqn+'</td>';
+                if(data[i].listen_addresses != undefined && data[i].listen_addresses != ""){
+                    var ip_list=[];
+                    for(var j=0; j < data[i].listen_addresses.length; j++){
+                        ip_list.push(data[i].listen_addresses[j].traddr);
+                    }
+                    insert_tr += '    <td role="cell" data-label="IP">'+ip_list+'</td>';
+                }else{
+                    insert_tr += '    <td role="cell" data-label="IP">N/A</td>';
+                }
 
-// $('#button-close-modal-remove-nfs-cluster').on('click', function(){
-//     $('#div-modal-remove-nfs-cluster').hide();
-// });
-
-// $('#button-cancel-modal-remove-nfs-cluster').on('click', function(){
-//     $('#div-modal-remove-nfs-cluster').hide();
-// });
-
-// $('#button-execution-modal-remove-nfs-cluster').on('click', function(){
-//     if($('#input-checkbox-nfs-cluster-remove').is(":checked")){
-//         var nfs_cluster_id = $('#nfs-cluster-id').val()
-        
-//         $('#div-modal-remove-nfs-cluster').hide();
-//         $('#div-modal-spinner-header-txt').text('NFS Cluster 삭제하고 있습니다.');
-//         $('#div-modal-spinner').show();
-    
-//         $("#modal-status-alert-title").html("NFS Cluster 삭제 실패");
-//         $("#modal-status-alert-body").html("NFS Cluster 삭제를 실패하였습니다.");
-    
-//         fetch('https://10.10.2.11:8080/api/v1/nfs/'+nfs_cluster_id,{
-//             method: 'DELETE',
-//             headers: {
-//                 'accept': 'application/json',
-//                 'Content-Type': 'application/x-www-form-urlencoded'
-//             }
-//         }).then(res => res.json()).then(data => {
-//             $('#div-modal-spinner').hide();
-//             if(data == "Success"){
-//                 $("#modal-status-alert-title").html("NFS Cluster 삭제 완료");
-//                 $("#modal-status-alert-body").html("NFS Cluster 삭제를 완료하였습니다.");
-//                 $('#div-modal-status-alert').show();
-//                 nfsClusterList();
-//                 nfsExportList();
-//                 createLoggerInfo("nfs cluster remove success");
-//             }else{
-//                 $('#div-modal-status-alert').show();
-//             }
-//         }).catch(function(data){
-//             $('#div-modal-spinner').hide();
-//             $('#div-modal-status-alert').show();
-//             createLoggerInfo("nfs cluster remove error : "+ data);
-//             console.log('button-execution-modal-remove-nfs-cluster : '+data);
-//         });
-//     }else{
-//         alert("삭제 여부를 체크해주세요.");
-//     }
-// });
-// /**  nfs cluster delete 관련 action end */
-
-// function nfsExportList(){
-//     //조회
-//     $('#button-nfs-export-search').html("<svg class='pf-c-spinner pf-m-md' role='progressbar' aria-valuetext='Loading...' viewBox='0 0 100 100' ><circle class='pf-c-spinner__path' cx='50' cy='50' r='45' fill='none'></circle></svg>");
-//     fetch('https://10.10.2.11:8080/api/v1/nfs/export',{
-//         method: 'GET',
-//         headers: {
-//             'accept': 'application/json',
-//             'Content-Type': 'application/x-www-form-urlencoded'
-//         }
-//     }).then(res => res.json()).then(data => {
-//         if(data != null && data.length != 0){
-//             $('#nfs-export-list tr').remove();
-//             for(var i=0; i < data.length; i++){
-//                 let insert_tr = "";
+                if(data[i].namespaces != undefined && data[i].namespaces != ""){
+                    var disk_list=[];
+                    for(var j=0; j < data[i].namespaces.length; j++){
+                        disk_list.push(data[i].namespaces[j].rbd_pool_name+'/'+data[i].namespaces[j].rbd_image_name);
+                    }
+                    insert_tr += '    <td role="cell" data-label="디스크 정보">'+disk_list+'</td>';
+                }else{
+                    insert_tr += '    <td role="cell" data-label="디스크 정보">N/A</td>';
+                }               
                 
-//                 insert_tr += '<tr role="row">'
-//                 insert_tr += '    <td role="cell" data-label="내보내기 경로" id="nfs-export-name">'+data[i].pseudo+'</td>';
-//                 insert_tr += '    <td role="cell" data-label="클러스터 명" id="nfs-export-name">'+data[i].cluster_id+'</td>';
-//                 insert_tr += '    <td role="cell" data-label="GlueFS 명" id="nfs-export-name">'+data[i].fsal.fs_name+'</td>';
-//                 insert_tr += '    <td role="cell" data-label="GlueFS 경로" id="nfs-export-name">'+data[i].path+'</td>';
-//                 insert_tr += '    <td role="cell" data-label="프로토콜" id="nfs-export-name">'+data[i].transports+'</td>';
-//                 insert_tr += '    <td role="cell" data-label="접근 타입" id="nfs-export-name">'+data[i].access_type+'</td>';
-//                 insert_tr += '    <td role="cell" data-label="Squash" id="nfs-export-name">'+data[i].squash+'</td>';
-//                 insert_tr += '    <td class="pf-c-table__icon" role="cell" data-label="편집">';
-//                 insert_tr += '         <div class="pf-c-dropdown">';
-//                 insert_tr += '            <button class="pf-c-dropdown__toggle pf-m-plain" id="card-action-nfs-export'+i+'" onclick="toggleAction(\'dropdown-menu-card-action-nfs-export\','+i+')" aria-expanded="false" type="button" aria-label="Actions">';
-//                 insert_tr += '                <i class="fas fa-ellipsis-v" aria-hidden="true"></i>';
-//                 insert_tr += '            </button>';
-//                 insert_tr += '            <ul class="pf-c-dropdown__menu pf-m-align-right" aria-labelledby="card-action-nfs-export'+i+'" id="dropdown-menu-card-action-nfs-export'+i+'">';
-//                 insert_tr += '                <li>';
-//                 insert_tr += '                    <button class="pf-c-dropdown__menu-item pf-m-enabled" type="button" id="menu-item-nfs-export-edit" onclick=\'nfsExportEdit("'+data[i].cluster_id+'","'+data[i].export_id+'")\' >NFS Export 수정</button>';
-//                 insert_tr += '                </li>';
-//                 insert_tr += '                <li>';
-//                 insert_tr += '                    <button class="pf-c-dropdown__menu-item pf-m-enabled" type="button" id="menu-item-nfs-export-remove" onclick=\'nfsExportDelete("'+data[i].export_id+'","'+data[i].pseudo+'","'+data[i].cluster_id+'")\' >NFS Export 삭제</button>';
-//                 insert_tr += '                </li>';
-//                 insert_tr += '            </ul>';
-//                 insert_tr += '       </div>';
-//                 insert_tr += '    </td>';
-//                 insert_tr += '</tr>';
+                insert_tr += '    <td role="cell" data-label="세션 수">'+data[i].session+'</td>';
+                insert_tr += '    <td class="pf-c-table__icon" role="cell" data-label="편집">';
+                insert_tr += '        <div class="pf-c-dropdown">';
+                insert_tr += '            <button class="pf-c-dropdown__toggle pf-m-plain" id="card-action-nvmeof-target-status'+i+'" onclick="toggleAction(\'dropdown-menu-card-action-nvmeof-target-status\','+i+')" aria-expanded="false" type="button" aria-label="Actions">';
+                insert_tr += '                <i class="fas fa-ellipsis-v" aria-hidden="true"></i>';
+                insert_tr += '            </button>';
+                insert_tr += '            <ul class="pf-c-dropdown__menu pf-m-align-right" aria-labelledby="card-action-nvmeof-target-status'+i+'" id="dropdown-menu-card-action-nvmeof-target-status'+i+'">'
+                insert_tr += '                <li>';
+                insert_tr += '                    <button class="pf-c-dropdown__menu-item pf-m-enabled" type="button" id="menu-item-set-nvmeof-target-remove" onclick=\'nvmeofTargetDelete("'+data[i].nqn+'")\' >NVMe-of 타겟 삭제</button>'
+                insert_tr += '                </li>';
+                insert_tr += '            </ul>';
+                insert_tr += '        </div>';
+                insert_tr += '    </td>';
+                insert_tr += '</tr>';
 
-//                 $("#nfs-export-list:last").append(insert_tr);
-//                 $('#dropdown-menu-card-action-nfs-export'+i).hide();
-//             }
-//         }else{
-//             noList("nfs-export-list",8);
-//         }
-//         $('#button-nfs-export-search').html("<i class='fas fa-fw fa-redo' aria-hidden='true'></i>");
-//     }).catch(function(data){
-//         console.log("error : "+data);
-//         //조회되는 데이터가 없음
-//         noList("nfs-export-list",8);
-//         $('#button-nfs-export-search').html("<i class='fas fa-fw fa-redo' aria-hidden='true'></i>");
-//     });
-// }
+                $("#nvmeof-target-list:last").append(insert_tr);
+                $('#dropdown-menu-card-action-nvmeof-target-status'+i).hide();
+            }
+        }else{
+            noList("nvmeof-target-list",5);
+        }
+        $('#button-nvmeof-target-search').html("<i class='fas fa-fw fa-redo' aria-hidden='true'></i>");
+    }).catch(function(data){
+        console.log("error : "+data);
+        noList("nvmeof-target-list",5);
+        $('#button-nvmeof-target-search').html("<i class='fas fa-fw fa-redo' aria-hidden='true'></i>");
+    });
+}
 
-// /** nfs export search 관련 action start */
-// $('#button-nfs-export-search').on('click', function(){
-//     nfsExportList();
-// });
-// /** nfs export search 관련 action end */
+/** NVMe-of target search 관련 action start */
+$('#button-nvmeof-target-search').on('click', function(){
+    nvmeofTargetList();
+});
+/** NVMe-of target search 관련 action end */
 
-// /** nfs export delete 관련 action start */
-// function nfsExportDelete(export_id, pseudo, cluster_id){
-//     $('#input-checkbox-nfs-export-remove').prop('checked',false);
-//     $('#div-modal-remove-nfs-export').show();
-//     $('#nfs-export-id').val(export_id);
-//     $('#export-nfs-cluster-id').val(cluster_id);
-//     $('#nfs-export-text').text('선택하신 '+pseudo+" : "+cluster_id+' 을(를) 삭제하시겠습니까?');
-// }
+/** NVMe-of target create 관련 action start */
+$('#button-nvmeof-target-create').on('click', function(){
+    nvmeofTargetCreateInitInputValue();
+    $('#form-input-nqn-id').val(nqnIdCreate());
+    $('#form-input-nvmeof-target-image-name').val($('#form-input-nqn-id').val().replace(':', '.'));
+    // setIscsiPortalCheckbox('div-iscsi-portal-list','form-input-iscsi-portal');
+    setPoolSelectBox('form-select-nvmeof-target-image-pool');
+    $('#div-modal-create-nvmeof-target').show();
+});
 
-// // $('#menu-item-nfs-export-remove').on('click', function(){
-// //     $('#div-modal-remove-nfs-export').show();
-// // });
+$('#button-close-modal-create-nvmeof-target').on('click', function(){
+    $('#div-modal-create-nvmeof-target').hide();
+});
 
-// $('#button-close-modal-remove-nfs-export').on('click', function(){
-//     $('#div-modal-remove-nfs-export').hide();
-// });
+$('#button-cancel-modal-create-nvmeof-target').on('click', function(){
+    $('#div-modal-create-nvmeof-target').hide();
+});
 
-// $('#button-cancel-modal-remove-nfs-export').on('click', function(){
-//     $('#div-modal-remove-nfs-export').hide();
-// });
-
-// $('#button-execution-modal-remove-nfs-export').on('click', function(){
-//     if($('#input-checkbox-nfs-export-remove').is(":checked")){
-//         var nfs_export_id = $('#nfs-export-id').val()
-//         var nfs_cluster_id = $('#export-nfs-cluster-id').val()
+$('#button-execution-modal-create-nvmeof-target').on('click', function(){
+    if(nvmeofTargetCreateValidateCheck()){
+        var subsystem_nqn_id = $('#form-input-nqn-id').val();
+        var gateway_ip = $('#form-input-nvmeof-ip').val();
+        var pool_name = $('#form-select-nvmeof-target-image-pool option:selected').val();
+        var image_name = $('#form-input-nvmeof-target-image-name').val();
+        var size = $('#form-input-nvmeof-target-image-size').val();
         
-//         $('#div-modal-remove-nfs-export').hide();
-//         $('#div-modal-spinner-header-txt').text('NFS Export를 삭제하고 있습니다.');
-//         $('#div-modal-spinner').show();
+        var body_val = "subsystem_nqn_id="+subsystem_nqn_id+"&gateway_ip="+gateway_ip+"&pool_name="+pool_name+"&image_name="+image_name+"&size="+size
+        
     
-//         $("#modal-status-alert-title").html("NFS Export 삭제 실패");
-//         $("#modal-status-alert-body").html("NFS Export 삭제를 실패하였습니다.");
+        $('#div-modal-create-nvmeof-target').hide();
+        $('#div-modal-spinner-header-txt').text('NVMe-oF Target를 생성하고 있습니다.');
+        $('#div-modal-spinner').show();
     
-//         fetch('https://10.10.2.11:8080/api/v1/nfs/export/'+nfs_cluster_id+"/"+nfs_export_id,{
-//             method: 'DELETE',
-//             headers: {
-//                 'accept': 'application/json',
-//                 'Content-Type': 'application/x-www-form-urlencoded'
-//             }
-//         }).then(res => res.json()).then(data => {
-//             $('#div-modal-spinner').hide();
-//             if(data == "Success"){
-//                 $("#modal-status-alert-title").html("NFS Export 삭제 완료");
-//                 $("#modal-status-alert-body").html("NFS Export 삭제를 완료하였습니다.");
-//                 $('#div-modal-status-alert').show();
-//                 nfsExportList();
-//                 createLoggerInfo("nfs export remove success");
-//             }else{
-//                 $('#div-modal-status-alert').show();
-//             }
-//         }).catch(function(data){
-//             $('#div-modal-spinner').hide();
-//             $('#div-modal-status-alert').show();
-//             createLoggerInfo("nfs export remove error : "+ data);
-//             console.log('button-execution-modal-remove-nfs-export : '+data);
-//         });
+        $("#modal-status-alert-title").html("NVMe-oF Target 생성 실패");
+        $("#modal-status-alert-body").html("NVMe-oF Target 생성을 실패하였습니다.");
+    
+        fetch('https://10.10.3.11:8080/api/v1/nvmeof/target',{
+            method: 'POST',
+            headers: {
+                'accept': 'application/json',
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: body_val
+        }).then(res => res.json()).then(data => {
+            $('#div-modal-spinner').hide();
+            if(data == "Success"){
+                $("#modal-status-alert-title").html("NVMe-oF Target 생성 완료");
+                $("#modal-status-alert-body").html("NVMe-oF Target 생성을 완료하였습니다.");
+                $('#div-modal-status-alert').show();
+                nvmeofTargetList();
+                createLoggerInfo("NVMe-oF Target create success");
+            }else{
+                $('#div-modal-status-alert').show();
+            }
+        }).catch(function(data){
+            $('#div-modal-spinner').hide();
+            $('#div-modal-status-alert').show();
+            createLoggerInfo("NVMe-oF Target create error : "+ data);
+            console.log('button-execution-modal-create-nvmeof-target : '+data);
+        });
+    }
+});
+/** NVMe-of target create 관련 action end */
+
+/** NVMe-of target delete 관련 action start */
+function nvmeofTargetDelete(nqn_id){
+    $('#input-checkbox-nvmeof-target-remove').prop('checked',false);
+    $('#div-modal-remove-nvmeof-target').show();
+    $('#nvmeof-target-nqn-id').val(nqn_id);
+    $('#nvmeof-target-text').text('선택하신 '+nqn_id+' 을(를) 삭제하시겠습니까?');
+}
+
+$('#button-close-modal-remove-nvmeof-target').on('click', function(){
+    $('#div-modal-remove-nvmeof-target').hide();
+});
+
+$('#button-cancel-modal-remove-nvmeof-target').on('click', function(){
+    $('#div-modal-remove-nvmeof-target').hide();
+});
+
+$('#button-execution-modal-remove-nvmeof-target').on('click', function(){
+    if($('#input-checkbox-nvmeof-target-remove').is(":checked")){
+        var nqn_id = $('#nvmeof-target-nqn-id').val()
+        var body_val = "nqn_id="+nqn_id;
+        
+        $('#div-modal-remove-nvmeof-target').hide();
+        $('#div-modal-spinner-header-txt').text('NVMe-of Target을 삭제하고 있습니다.');
+        $('#div-modal-spinner').show();
+    
+        $("#modal-status-alert-title").html("NVMe-of Target 삭제 실패");
+        $("#modal-status-alert-body").html("NVMe-of Target 삭제를 실패하였습니다.");
+        fetch('https://10.10.3.11:8080/api/v1/nvmeof/subsystem?subsystem_nqn_id='+nqn_id,{
+            method: 'DELETE',
+            headers: {
+                'accept': 'application/json',
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: body_val
+        }).then(res => res.json()).then(data => {
+            $('#div-modal-spinner').hide();
+            if(data == "Success"){
+                $("#modal-status-alert-title").html("NVMe-of Target 삭제 완료");
+                $("#modal-status-alert-body").html("NVMe-of Target 삭제를 완료하였습니다.");
+                $('#div-modal-status-alert').show();
+                nvmeofTargetList();
+                createLoggerInfo("NVMe-of Target remove success");
+            }else{
+                $('#div-modal-status-alert').show();
+            }
+        }).catch(function(data){
+            $('#div-modal-spinner').hide();
+            $('#div-modal-status-alert').show();
+            createLoggerInfo("NVMe-of Target remove error : "+ data);
+            console.log('button-execution-modal-remove-nvmeof-target : '+data);
+        });
+    }else{
+        alert("삭제 여부를 체크해주세요.");
+    }
+});
+/**  NVMe-of target delete 관련 action end */
+
+function nqnIdCreate(){
+    // nqn.yyyy-mm.naming-authority:unique
+    var nqn_id = "";
+    var nqn = "nqn";
+    const date_time = new Date();
+    const year = date_time.getFullYear();
+    const month = date_time.getMonth() + 1;
+    var month_val = month >= 10 ? month : '0' + month;
+    var naming_authority = "ablecloud.io";
+    var unique = Math.floor(new Date().getTime()/1000);
+
+    nqn_id += nqn+"."+year+"-"+month_val+"."+naming_authority+":"+unique;
+    return nqn_id;
+}
+
+// $('#form-checkbox-existing-image-use-yn').on('change', function(){
+//     setiscsiImage();
+// });
+// function setiscsiImage(){
+//     var yn_bool = $('input[type=checkbox][id="form-checkbox-existing-image-use-yn"]').is(":checked");
+//     if(yn_bool){
+//         $('#div-target-new-rbd-pool').hide();
+//         $('#div-target-new-image-name').hide();
+//         $('#div-target-image-size').hide();
+//         $('#div-target-image-name').show();
 //     }else{
-//         alert("삭제 여부를 체크해주세요.");
+//         $('#div-target-new-rbd-pool').show();
+//         $('#div-target-new-image-name').show();
+//         $('#div-target-image-size').show();
+//         $('#div-target-image-name').hide();
+//         $('#form-input-target-image-name').val($('#form-input-iqn-id').val());
 //     }
-// });
-// /**  nfs export delete 관련 action end */
-
-// /** nfs export create 관련 action start */
-// $('#button-nfs-export-create').on('click', function(){
-//     nfsExportCreateInitInputValue();
-//     setNfsClusterSelectBox("form-select-nfs-cluster-name");
-//     setGlueFsSelectBox("form-select-nfs-export-gluefs-name","form-select-nfs-export-gluefs-path");
-//     $('#div-modal-create-nfs-export').show();
-// });
-
-// $('#button-close-modal-create-nfs-export').on('click', function(){
-//     $('#div-modal-create-nfs-export').hide();
-// });
-
-// $('#button-cancel-modal-create-nfs-export').on('click', function(){
-//     $('#div-modal-create-nfs-export').hide();
-// });
-
-// $('#button-execution-modal-create-nfs-export').on('click', function(){
-//     if(nfsExportCreateValidateCheck()){
-//         var pseudo = $('#form-input-nfs-export-pseudo').val();
-//         var nfs_cluster_id = $('#form-select-nfs-cluster-name option:selected').val();
-//         var fs_name = $('#form-select-nfs-export-gluefs-name option:selected').val();
-//         var path = $('#form-select-nfs-export-gluefs-path option:selected').val();
-//         var access_type = $('#form-select-nfs-export-access-type').val();
-//         var squash = $('#form-select-nfs-export-squash-type').val();
-//         var storage_name = $('#form-select-storage-type').val();
-//         var transports = "TCP"
-    
-//         var body_val = "access_type="+access_type+"&fs_name="+fs_name+"&path="+path+"&pseudo="+pseudo+"&squash="+squash+"&storage_name="+storage_name+"&transports="+transports
-    
-//         $('#div-modal-create-nfs-export').hide();
-//         $('#div-modal-spinner-header-txt').text('NFS Export를 생성하고 있습니다.');
-//         $('#div-modal-spinner').show();
-    
-//         $("#modal-status-alert-title").html("NFS Export 생성 실패");
-//         $("#modal-status-alert-body").html("NFS Export 생성을 실패하였습니다.");
-    
-//         fetch('https://10.10.2.11:8080/api/v1/nfs/export/'+nfs_cluster_id,{
-//             method: 'POST',
-//             headers: {
-//                 'accept': 'application/json',
-//                 'Content-Type': 'application/x-www-form-urlencoded'
-//             },
-//             body: body_val
-//         }).then(res => res.json()).then(data => {
-//             $('#div-modal-spinner').hide();
-//             if(data == "Success"){
-//                 $("#modal-status-alert-title").html("NFS Export 생성 완료");
-//                 $("#modal-status-alert-body").html("NFS Export 생성을 완료하였습니다.");
-//                 $('#div-modal-status-alert').show();
-//                 nfsClusterList();
-//                 nfsExportList();
-//                 createLoggerInfo("nfs export create success");
-//             }else{
-//                 $('#div-modal-status-alert').show();
-//             }
-//         }).catch(function(data){
-//             $('#div-modal-spinner').hide();
-//             $('#div-modal-status-alert').show();
-//             createLoggerInfo("nfs export create error : "+ data);
-//             console.log('button-execution-modal-create-nfs-export : '+data);
-//         });
-//     }
-// });
-// /** nfs export create 관련 action end */
-
-// /** nfs export update 관련 action start */
-// function nfsExportEdit(cluster_id, export_id){
-//     fetch('https://10.10.2.11:8080/api/v1/nfs/export?cluster_id='+cluster_id,{
-//         method: 'GET',
-//         headers: {
-//             'accept': 'application/json',
-//             'Content-Type': 'application/x-www-form-urlencoded'
-//         }
-//     }).then(res => res.json()).then(data => {
-//         if(data.length != 0){
-//             for(var i=0; i < data.length; i++){
-//                 if(data[i].export_id == export_id){
-//                     $('#form-input-update-nfs-export-id').val(data[i].export_id);
-//                     $('#form-input-update-nfs-export-pseudo').val(data[i].pseudo);
-//                     $('#form-select-update-nfs-cluster-name option:selected').val();
-//                     $('#form-select-update-nfs-export-gluefs-name option:selected').val(data[i].fsal.fs_name);
-//                     $('#form-select-update-nfs-export-gluefs-path option:selected').val(data[i].path);
-//                     $('#form-select-update-nfs-export-access-type').val(data[i].access_type);
-//                     $('#form-select-update-nfs-export-squash-type').val(data[i].squash);
-//                     $('#form-select-update-storage-type').val();
-
-//                     setNfsClusterSelectBox("form-select-update-nfs-cluster-name", data[i].cluster_id);
-//                     setGlueFsSelectBox("form-select-update-nfs-export-gluefs-name","form-select-update-nfs-export-gluefs-path", data[i].fsal.fs_name);
-//                     setGlueFsVolumeGroupSelectBox(data[i].fsal.fs_name, "form-select-update-nfs-export-gluefs-path", data[i].path);
-//                     $('#div-modal-update-nfs-export').show();
-                    
-//                 }
-//             }
-//         }
-//     }).catch(function(data){
-//         console.log("error : "+data);
-//     });
 // }
 
-// $('#button-close-modal-update-nfs-export').on('click', function(){
-//     $('#div-modal-update-nfs-export').hide();
-// });
+// nvmeof target 생성 입력값 초기화
+function nvmeofTargetCreateInitInputValue(){
+    $('#form-input-nqn-id').val("");
+    $('#form-input-nvmeof-ip').val("");
+    $('#form-select-nvmeof-target-image-pool').val("");
+    $('#form-input-nvmeof-target-image-name').val("");
+    $('#form-input-nvmeof-target-image-size').val("");
+}
 
-// $('#button-cancel-modal-update-nfs-export').on('click', function(){
-//     $('#div-modal-update-nfs-export').hide();
-// });
+// nvmeof target 수정 입력값 초기화
+function nvmeofTargetUpdateInitInputValue(){
+    $('#form-input-update-nqn-id').val("");
+    $('#form-input-update-nvmeof-portal').val("");
+    $('#form-input-update-nvmeof-image').val("");
+}
 
-// $('#button-execution-modal-update-nfs-export').on('click', function(){
-//     var export_id = $('#form-input-update-nfs-export-id').val();
-//     var pseudo = $('#form-input-update-nfs-export-pseudo').val();
-//     var nfs_cluster_id = $('#form-select-update-nfs-cluster-name option:selected').val();
-//     var fs_name = $('#form-select-update-nfs-export-gluefs-name option:selected').val();
-//     var path = $('#form-select-update-nfs-export-gluefs-path option:selected').val();
-//     var access_type = $('#form-select-update-nfs-export-access-type').val();
-//     var squash = $('#form-select-update-nfs-export-squash-type').val();
-//     var storage_name = $('#form-select-update-storage-type').val();
-//     var transports = "TCP"
+function nvmeofCreateValidateCheck(){
+    var validate_check = true;
 
-//     var body_val = "export_id="+export_id+"&access_type="+access_type+"&fs_name="+fs_name+"&path="+path+"&pseudo="+pseudo+"&squash="+squash+"&storage_name="+storage_name+"&transports="+transports
+    var service_id = $('#form-input-nvmeof-service-id').val();
+    var host_cnt = $('input[type=checkbox][name="glue-hosts-list"]:checked').length
     
-//     $('#div-modal-update-nfs-export').hide();
-//     $('#div-modal-spinner-header-txt').text('NFS Export를 수정하고 있습니다.');
-//     $('#div-modal-spinner').show();
-
-//     $("#modal-status-alert-title").html("NFS Export 수정 실패");
-//     $("#modal-status-alert-body").html("NFS Export 수정을 실패하였습니다.");
-
-//     console.log(1111)
-//     console.log(body_val);
-//     fetch('https://10.10.2.11:8080/api/v1/nfs/export/'+nfs_cluster_id,{
-//         method: 'PUT',
-//         headers: {
-//             'accept': 'application/json',
-//             'Content-Type': 'application/x-www-form-urlencoded'
-//         },
-//         body: body_val
-//     }).then(res => res.json()).then(data => {
-//         $('#div-modal-spinner').hide();
-//         if(data == "Success"){
-//             $("#modal-status-alert-title").html("NFS Export 수정 완료");
-//             $("#modal-status-alert-body").html("NFS Export 수정을 완료하였습니다.");
-//             $('#div-modal-status-alert').show();
-//             nfsClusterList();
-//             nfsExportList();
-//             createLoggerInfo("nfs export update success");
-//         }else{
-//             $('#div-modal-status-alert').show();
-//         }
-//     }).catch(function(data){
-//         $('#div-modal-spinner').hide();
-//         $('#div-modal-status-alert').show();
-//         createLoggerInfo("nfs export update error : "+ data);
-//         console.log('button-execution-modal-update-nfs-export : '+data);
-//     });
-// });
-// /** nfs export update 관련 action end */
-
-// // nfs Export 생성 입력값 초기화
-// function nfsServiceCreateInitInputValue(){
-//     $('#form-input-nfs-cluster-id').val("");
-//     $('#form-input-nfs-cluster-placement-hosts').val("");
-//     $('#form-input-nfs-cluster-port').val("");
-// }
-
-// // nfs Export 생성 입력값 초기화
-// function nfsExportCreateInitInputValue(){
-//     $('#form-input-nfs-export-pseudo').val("");
-
-//     var init_txt = '<option value="" selected>선택하십시오.</option>';
-//     $('#form-select-nfs-cluster-name option').remove();
-//     $('#form-select-nfs-cluster-name:last').append(init_txt);
-//     $('#form-select-nfs-export-gluefs-name option').remove();
-//     $('#form-select-nfs-export-gluefs-name:last').append(init_txt);
-//     $('#form-select-nfs-export-gluefs-path option').remove();
-//     $('#form-select-nfs-export-gluefs-path:last').append(init_txt);
-    
-//     $('#form-select-nfs-export-access-type').val("RW");
-//     $('#form-select-nfs-export-squash-type').val("no_root_squash");
-// }
-
-// // nfs Export 수정 입력값 초기화
-// function nfsExportUpdateInitInputValue(){
-//     $('#form-input-update-nfs-export-pseudo').val("");
-
-//     var init_txt = '<option value="" selected>선택하십시오.</option>';
-//     $('#form-select-update-nfs-cluster-name option').remove();
-//     $('#form-select-update-nfs-cluster-name:last').append(init_txt);
-//     $('#form-select-update-nfs-export-gluefs-name option').remove();
-//     $('#form-select-update-nfs-export-gluefs-name:last').append(init_txt);
-//     $('#form-select-update-nfs-export-gluefs-path option').remove();
-//     $('#form-select-update-nfs-export-gluefs-path:last').append(init_txt);
-    
-//     $('#form-select-update-nfs-export-access-type').val("RW");
-//     $('#form-select-update-nfs-export-squash-type').val("no_root_squash");
-// }
-
-// function nfsServiceCreateValidateCheck(){
-//     var validate_check = true;
-
-//     var nfs_cluster_id = $('#form-input-nfs-cluster-id').val();
-//     var host_cnt = $('input[type=checkbox][name="glue-hosts-list"]:checked').length
-//     var nfs_cluster_port = $('#form-input-nfs-cluster-port').val();
-
-//     if (nfs_cluster_id == "") {
-//         alert("NFS 클러스터 이름를 입력해주세요.");
-//         validate_check = false;
-//     } else if (!nameCheck(nfs_cluster_id)) {
-//         alert("NFS 클러스터 이름 생성 규칙은 영문, 숫자 특수문자 '-','_' 만 입력 가능하고 영문으로 시작해야 합니다.");
-//         validate_check = false;
-//     } else if (host_cnt == 0) {
-//         alert("배치 호스트를 선택해주세요.");
-//         validate_check = false;
-//     } else if (nfs_cluster_port == "") {
-//         alert("포트 번호을 입력해주세요.");
-//         validate_check = false;
-//     } else if (!numberCheck(nfs_cluster_port)) {
-//         alert("포트 번호는 숫자만 입력해주세요.");
-//         validate_check = false;
-//     } else if (nfs_cluster_port < 0 || nfs_cluster_port > 65535) {
-//         alert("포트 번호는 0부터 65535까지 입력 가능합니다.");
-//         validate_check = false;
-//     }
+    if (service_id == "") {
+        alert("이름을 입력해주세요.");
+        validate_check = false;
+    } else if (host_cnt == 0) {
+        alert("배치 호스트를 선택해주세요.");
+        validate_check = false;
+    }
  
-//     return validate_check;
-// }
+    return validate_check;
+}
 
-// function nfsServiceUpdateValidateCheck(){
-//     var validate_check = true;
+function nvmeofTargetCreateValidateCheck(){
+    var validate_check = true;
 
-//     var nfs_cluster_id = $('#form-input-update-nfs-cluster-id').val();
-//     var host_cnt = $('input[type=checkbox][name="glue-hosts-list"]:checked').length
-//     var nfs_cluster_port = $('#form-input-update-nfs-cluster-port').val();
+    var nqn_id = $('#form-input-nqn-id').val();
+    var potal_ip = $('#form-input-nvmeof-ip').val();
+    var pool = $('#form-select-nvmeof-target-image-pool option:selected').val();
+    var image_name = $('#form-input-nvmeof-target-image-name').val();
+    var size = $('#form-input-nvmeof-target-image-size').val();
 
-//     if (nfs_cluster_id == "") {
-//         alert("NFS 클러스터 이름를 입력해주세요.");
-//         validate_check = false;
-//     } else if (!nameCheck(nfs_cluster_id)) {
-//         alert("NFS 클러스터 이름 생성 규칙은 영문, 숫자 특수문자 '-','_' 만 입력 가능하고 영문으로 시작해야 합니다.");
-//         validate_check = false;
-//     } else if (host_cnt == 0) {
-//         alert("배치 호스트를 선택해주세요.");
-//         validate_check = false;
-//     } else if (nfs_cluster_port == "") {
-//         alert("포트 번호을 입력해주세요.");
-//         validate_check = false;
-//     } else if (!numberCheck(nfs_cluster_port)) {
-//         alert("포트 번호는 숫자만 입력해주세요.");
-//         validate_check = false;
-//     } else if (nfs_cluster_port < 0 || nfs_cluster_port > 65535) {
-//         alert("포트 번호는 0부터 65535까지 입력 가능합니다.");
-//         validate_check = false;
-//     }
+    if (nqn_id == "") {
+        alert("IQN을 입력해주세요.");
+        validate_check = false;
+    } else if (potal_ip == "") {
+        alert("IP를 입력해주세요.");
+        validate_check = false;
+    } else if (!checkIp(potal_ip)){
+        alert("IP 유형이 올바르지 않습니다.");
+        validate_check = true;
+        return false;
+    } else if (pool == "") {
+        alert("데이터 풀을 입력해주세요.");
+        validate_check = false;
+    } else if (image_name == "") {
+        alert("이미지 명을 입력해주세요.");
+        validate_check = false;
+    } else if (!imageNameCheck(image_name)) {
+        alert("이미지 명 생성 규칙은 영문, 숫자 특수문자 '-','_','.' 만 입력 가능하고 영문으로 시작해야 합니다.");
+        validate_check = false;
+    } else if (size == "") {
+        alert("용량을 입력해주세요.");
+        validate_check = false;
+    } else if (!numberCheck(size)) {
+        alert("용량은 숫자만 입력해주세요.");
+        validate_check = false;
+    } else if (size < 1 || size > 5000) {
+        alert("용량은 1부터 5000까지 입력 가능합니다.");
+        validate_check = false;
+    }
  
-//     return validate_check;
-// }
-
-// function nfsExportCreateValidateCheck(){
-//     var validate_check = true;
-
-//     var pseudo = $('#form-input-nfs-export-pseudo').val();
-//     var nfs_cluster_id = $('#form-select-nfs-cluster-name option:selected').val();
-//     var fs_name = $('#form-select-nfs-export-gluefs-name option:selected').val();
-//     var path = $('#form-select-nfs-export-gluefs-path option:selected').val();
-    
-//     if (pseudo == "") {
-//         alert("내보내기 경로를 입력해주세요.");
-//         validate_check = false;
-//     } else if (!pseudoCheck(pseudo)) {
-//         alert("내보내기 경로 생성 규칙은 '/'로 시작하고 영문, 숫자만 입력 가능합니다.");
-//         validate_check = false;
-//     } else if (nfs_cluster_id == "") {
-//         alert("NFS 클러스터 이름을 선택해주세요.");
-//         validate_check = false;
-//     } else if (fs_name == "") {
-//         alert("GlueFS 이름을 선택해주세요.");
-//         validate_check = false;
-//     } else if (path == undefined || path == "") {
-//         alert("GlueFS 경로를 선택해주세요.");
-//         validate_check = false;
-//     }
- 
-//     return validate_check;
-// }
+    return validate_check;
+}

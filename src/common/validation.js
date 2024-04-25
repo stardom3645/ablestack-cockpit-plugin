@@ -269,3 +269,17 @@ function nameCheck2(name) {
   var regex = /^[a-zA-Z0-9_-\s]*$/;
   return regex.test(name)
 }
+
+/**
+ * Meathod Name : imageNameCheck
+ * Date Created : 2024.04.25
+ * Writer  : 배태주
+ * Description : 이미지 이름 검사하는 함수
+ * Parameter : 없음
+ * Return  : 없음
+ * History  : 2024.04.25 최초 작성
+ */
+function imageNameCheck(name) {
+  var regex = /^[a-zA-Z][a-zA-Z0-9._-]*$/;
+  return regex.test(name)
+}

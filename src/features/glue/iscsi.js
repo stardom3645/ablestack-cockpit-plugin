@@ -8,7 +8,7 @@
 function iscsiServiceList(){
     //조회
     $('#button-iscsi-service-search').html("<svg class='pf-c-spinner pf-m-md' role='progressbar' aria-valuetext='Loading...' viewBox='0 0 100 100' ><circle class='pf-c-spinner__path' cx='50' cy='50' r='45' fill='none'></circle></svg>");
-    fetch('https://10.10.2.11:8080/api/v1/service?service_type=iscsi',{
+    fetch('https://10.10.3.11:8080/api/v1/service?service_type=iscsi',{
         method: 'GET',
         headers: {
             'accept': 'application/json',
@@ -102,7 +102,7 @@ $('#button-execution-modal-create-iscsi-service').on('click', function(){
         $("#modal-status-alert-title").html("iSCSI Service 생성 실패");
         $("#modal-status-alert-body").html("iSCSI Service 생성을 실패하였습니다.");
     
-        fetch('https://10.10.2.11:8080/api/v1/iscsi',{
+        fetch('https://10.10.3.11:8080/api/v1/iscsi',{
             method: 'POST',
             headers: {
                 'accept': 'application/json',
@@ -131,7 +131,7 @@ $('#button-execution-modal-create-iscsi-service').on('click', function(){
 /** iSCSI Service create 관련 action end */
 /** iSCSI Service update 관련 action start */
 function iscsiServiceEdit(iscsi_id){
-    fetch('https://10.10.2.11:8080/api/v1/service?service_type=iscsi&service_name='+iscsi_id,{
+    fetch('https://10.10.3.11:8080/api/v1/service?service_type=iscsi&service_name='+iscsi_id,{
         method: 'GET',
         headers: {
             'accept': 'application/json',
@@ -182,7 +182,7 @@ $('#button-execution-modal-update-iscsi-service').on('click', function(){
         $("#modal-status-alert-title").html("iSCSI Service 생성 실패");
         $("#modal-status-alert-body").html("iSCSI Service 생성을 실패하였습니다.");
     
-        fetch('https://10.10.2.11:8080/api/v1/iscsi',{
+        fetch('https://10.10.3.11:8080/api/v1/iscsi',{
             method: 'POST',
             headers: {
                 'accept': 'application/json',
@@ -240,7 +240,7 @@ $('#button-execution-modal-remove-iscsi-service').on('click', function(){
     
         $("#modal-status-alert-title").html("iSCSI Service 삭제 실패");
         $("#modal-status-alert-body").html("iSCSI Service 삭제를 실패하였습니다.");
-        fetch('https://10.10.2.11:8080/api/v1/service/'+iscsi_service_id,{
+        fetch('https://10.10.3.11:8080/api/v1/service/'+iscsi_service_id,{
             method: 'DELETE',
             headers: {
                 'accept': 'application/json',
@@ -282,7 +282,7 @@ function iscsiServiceCreateInitInputValue(){
 function iscsiTargetList(){
     //조회
     $('#button-iscsi-target-search').html("<svg class='pf-c-spinner pf-m-md' role='progressbar' aria-valuetext='Loading...' viewBox='0 0 100 100' ><circle class='pf-c-spinner__path' cx='50' cy='50' r='45' fill='none'></circle></svg>");
-    fetch('https://10.10.2.11:8080/api/v1/iscsi/target',{
+    fetch('https://10.10.3.11:8080/api/v1/iscsi/target',{
         method: 'GET',
         headers: {
             'accept': 'application/json',
@@ -376,8 +376,8 @@ $('#button-cancel-modal-create-iscsi-target').on('click', function(){
     $('#div-modal-create-iscsi-target').hide();
 });
 
-$('#button-execution-modal-create-iscsi-target').on('click', function(){
-    if(iscsiTargetCreateValidateCheck()){
+$('#button-execution-modal-create-iscsi-target').on('click', async function(){
+    if(await iscsiTargetCreateValidateCheck()){
         var yn_bool = $('input[type=checkbox][id="form-checkbox-existing-image-use-yn"]').is(":checked");
         var body_val = "";
         var iqn_id = $('#form-input-iqn-id').val();
@@ -418,7 +418,7 @@ $('#button-execution-modal-create-iscsi-target').on('click', function(){
     
             var size = $('#form-input-target-image-size').val();
             //이미지 생성
-            fetch('https://10.10.2.11:8080/api/v1/image',{
+            fetch('https://10.10.3.11:8080/api/v1/image',{
                 method: 'POST',
                 headers: {
                     'accept': 'application/json',
@@ -453,7 +453,7 @@ function createIscsiTarget(body_val){
     $("#modal-status-alert-title").html("iSCSI Target 생성 실패");
     $("#modal-status-alert-body").html("iSCSI Target 생성을 실패하였습니다.");
 
-    fetch('https://10.10.2.11:8080/api/v1/iscsi/target',{
+    fetch('https://10.10.3.11:8080/api/v1/iscsi/target',{
         method: 'POST',
         headers: {
             'accept': 'application/json',
@@ -483,7 +483,7 @@ function createIscsiTarget(body_val){
 /** iSCSI target update 관련 action start */
 function iscsiTargeEdit(iqn_id){
     iscsiTargetUpdateInitInputValue();
-    fetch('https://10.10.2.11:8080/api/v1/iscsi/target?iqn_id='+iqn_id,{
+    fetch('https://10.10.3.11:8080/api/v1/iscsi/target?iqn_id='+iqn_id,{
         method: 'GET',
         headers: {
             'accept': 'application/json',
@@ -546,7 +546,7 @@ $('#button-execution-modal-update-iscsi-target').on('click', function(){
         $("#modal-status-alert-title").html("iSCSI Target 수정 실패");
         $("#modal-status-alert-body").html("iSCSI Target 수정을 실패하였습니다.");
     
-        fetch('https://10.10.2.11:8080/api/v1/iscsi/target',{
+        fetch('https://10.10.3.11:8080/api/v1/iscsi/target',{
             method: 'PUT',
             headers: {
                 'accept': 'application/json',
@@ -607,7 +607,7 @@ $('#button-execution-modal-remove-iscsi-target').on('click', function(){
     
         $("#modal-status-alert-title").html("iSCSI Target 삭제 실패");
         $("#modal-status-alert-body").html("iSCSI Target 삭제를 실패하였습니다.");
-        fetch('https://10.10.2.11:8080/api/v1/iscsi/target?iqn_id='+iqn_id,{
+        fetch('https://10.10.3.11:8080/api/v1/iscsi/target?iqn_id='+iqn_id,{
             method: 'DELETE',
             headers: {
                 'accept': 'application/json',
@@ -616,8 +616,6 @@ $('#button-execution-modal-remove-iscsi-target').on('click', function(){
             body: body_val
         }).then(res => res.json()).then(data => {
             $('#div-modal-spinner').hide();
-            console.log(data)
-            console.log(111)
             if(data == "Success"){
                 $("#modal-status-alert-title").html("iSCSI Target 삭제 완료");
                 $("#modal-status-alert-body").html("iSCSI Target 삭제를 완료하였습니다.");
@@ -779,8 +777,7 @@ function iscsiUpdateValidateCheck(){
     return validate_check;
 }
 
-
-function iscsiTargetCreateValidateCheck(){
+async function iscsiTargetCreateValidateCheck(){
     var validate_check = true;
 
     var iqn_id = $('#form-input-iqn-id').val();
@@ -793,7 +790,7 @@ function iscsiTargetCreateValidateCheck(){
     var size = $('#form-input-target-image-size').val();
 
     var checked_image_cnt = $('input[type=checkbox][name="iscsi-image-list"]:checked').length
-
+    
     if (iqn_id == "") {
         alert("IQN을 입력해주세요.");
         validate_check = false;
@@ -812,7 +809,13 @@ function iscsiTargetCreateValidateCheck(){
         } else if (image_name == "") {
             alert("이미지 명을 입력해주세요.");
             validate_check = false;
-        } else if (size == "") {
+        } else if (!imageNameCheck(image_name)) {
+            alert("이미지 명 생성 규칙은 영문, 숫자 특수문자 '-','_','.' 만 입력 가능하고 영문으로 시작해야 합니다.");
+            validate_check = false;
+        } else if (await duplicatImageNameCheck(pool,image_name)) {
+            alert(image_name + "는 이미 사용중인 이미지 명입니다.");
+            validate_check = false;
+        }  else if (size == "") {
             alert("용량을 입력해주세요.");
             validate_check = false;
         } else if (!numberCheck(size)) {
@@ -823,54 +826,6 @@ function iscsiTargetCreateValidateCheck(){
             validate_check = false;
         }
     }
- 
-    return validate_check;
-}
-
-function iscsiTargetCreateValidateCheck(){
-    var validate_check = true;
-
-    var iqn_id = $('#form-input-iqn-id').val();
-    var portal_cnt = $('input[type=checkbox][name="iscsi-portal-list"]:checked').length
-
-    var yn_bool = $('input[type=checkbox][id="form-checkbox-existing-image-use-yn"]').is(":checked");
-
-    var pool = $('#form-select-target-image-pool option:selected').val();
-    var image_name = $('#form-input-target-image-name').val();
-    var size = $('#form-input-target-image-size').val();
-
-    var checked_image_cnt = $('input[type=checkbox][name="iscsi-image-list"]:checked').length
-
-    if (iqn_id == "") {
-        alert("IQN을 입력해주세요.");
-        validate_check = false;
-    } else if (portal_cnt == 0) {
-        alert("포탈을 선택해주세요.");
-        validate_check = false;
-    } else if (yn_bool == true){
-        if (checked_image_cnt == 0) {
-            alert("이미지를 선택해주세요.");
-            validate_check = false;
-        }
-    }else{
-        if (pool == "") {
-            alert("데이터 풀을 입력해주세요.");
-            validate_check = false;
-        } else if (image_name == "") {
-            alert("이미지 명을 입력해주세요.");
-            validate_check = false;
-        } else if (size == "") {
-            alert("용량을 입력해주세요.");
-            validate_check = false;
-        } else if (!numberCheck(size)) {
-            alert("용량은 숫자만 입력해주세요.");
-            validate_check = false;
-        } else if (size < 0 || size > 5000) {
-            alert("용량은 0부터 5000까지 입력 가능합니다.");
-            validate_check = false;
-        }
-    }
- 
     return validate_check;
 }
 
