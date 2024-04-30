@@ -8,7 +8,7 @@
 function ingressList(){
     //조회
     $('#button-ingress-search').html("<svg class='pf-c-spinner pf-m-md' role='progressbar' aria-valuetext='Loading...' viewBox='0 0 100 100' ><circle class='pf-c-spinner__path' cx='50' cy='50' r='45' fill='none'></circle></svg>");
-    fetch('https://10.10.3.11:8080/api/v1/service?service_type=ingress',{
+    fetch('https://'+api_ip+':'+api_port+'/api/v1/service?service_type=ingress',{
         method: 'GET',
         headers: {
             'accept': 'application/json',
@@ -110,7 +110,7 @@ $('#button-execution-modal-create-ingress').on('click', function(){
         $("#modal-status-alert-title").html("INGRESS 생성 실패");
         $("#modal-status-alert-body").html("INGRESS 생성을 실패하였습니다.");
     
-        fetch('https://10.10.3.11:8080/api/v1/nfs/ingress',{
+        fetch('https://'+api_ip+':'+api_port+'/api/v1/nfs/ingress',{
             method: 'POST',
             headers: {
                 'accept': 'application/json',
@@ -139,7 +139,7 @@ $('#button-execution-modal-create-ingress').on('click', function(){
 /** ingress create 관련 action end */
 /** ingress update 관련 action start */
 function ingressEdit(ingress_id){
-    fetch('https://10.10.3.11:8080/api/v1/service?service_name='+ingress_id,{
+    fetch('https://'+api_ip+':'+api_port+'/api/v1/service?service_name='+ingress_id,{
         method: 'GET',
         headers: {
             'accept': 'application/json',
@@ -193,7 +193,7 @@ $('#button-execution-modal-update-ingress').on('click', function(){
         $("#modal-status-alert-title").html("INGRESS 수정 실패");
         $("#modal-status-alert-body").html("INGRESS 수정을 실패하였습니다.");
     
-        fetch('https://10.10.3.11:8080/api/v1/nfs/ingress',{
+        fetch('https://'+api_ip+':'+api_port+'/api/v1/nfs/ingress',{
             method: 'POST',
             headers: {
                 'accept': 'application/json',
@@ -250,7 +250,7 @@ $('#button-execution-modal-remove-ingress').on('click', function(){
         $("#modal-status-alert-title").html("INGRESS 삭제 실패");
         $("#modal-status-alert-body").html("INGRESS 삭제를 실패하였습니다.");
         
-        fetch('https://10.10.3.11:8080/api/v1/service/'+ingress_id,{
+        fetch('https://'+api_ip+':'+api_port+'/api/v1/service/'+ingress_id,{
             method: 'DELETE',
             headers: {
                 'accept': 'application/json',
@@ -299,7 +299,7 @@ function ingressCreateValidateCheck(){
     var monitor_port = $('#form-input-ingress-monitor-port').val();
     
     if (service_id == "") {
-        alert("NFS 클러스터 이름을 입력해주세요.");
+        alert("백엔드 이름을 입력해주세요.");
         validate_check = false;
     } else if (host_cnt == 0) {
         alert("배치 호스트를 선택해주세요.");
@@ -345,7 +345,7 @@ function ingressUpdateValidateCheck(){
     var monitor_port = $('#form-input-update-ingress-monitor-port').val();
     
     if (service_id == "") {
-        alert("NFS 클러스터 이름을 입력해주세요.");
+        alert("백엔드 이름을 입력해주세요.");
         validate_check = false;
     } else if (host_cnt == 0) {
         alert("배치 호스트를 선택해주세요.");

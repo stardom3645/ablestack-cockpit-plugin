@@ -7,6 +7,9 @@
 
 // document.ready 영역 시작
 pluginpath = '/usr/share/cockpit/ablestack';
+api_ip = '';
+api_port = '8080';
+
 var console_log = true;
 
 $(document).ready(function(){
@@ -33,15 +36,23 @@ $(document).ready(function(){
     $('#menu-item-set-iscsi-target-create').hide();
     $('#menu-item-set-iscsi-acl-connect').hide();
 
-    topTabAction("button-tab-glue-vm");
-    scanHostKey();
-    gwvmInfoSet();
-    glueVmList();
-
-    setInterval(() => {
-        gwvmInfoSet(),glueVmList()
-        // ,gluefsList(),nfsClusterList(),nfsExportList(),iscsiServiceList(),smbServiceList()
-    }, 60000);
+    cockpit.script(["cat /etc/hosts | grep 'scvm-mngt' | awk '{print $1}'"])
+    .then(function (ip) {
+        if(ip != ""){
+            api_ip = ip;
+            topTabAction("button-tab-glue-vm");
+            scanHostKey();
+            gwvmInfoSet();
+            glueVmList();
+        
+            setInterval(() => {
+                gwvmInfoSet(),glueVmList()
+                // ,gluefsList(),nfsClusterList(),nfsExportList(),iscsiServiceList(),smbServiceList()
+            }, 15000);
+        }else{
+            alert("/etc/hosts 파일에 호스트 해당명이 없습니다. /etc/hosts 파일을 확인해주세요.");
+        }
+    })
 });
 // document.ready 영역 끝
 
@@ -113,17 +124,23 @@ $('#card-action-storage-cluster-iscsi-status').on('click', function(){
 
 /** 스토리지 서비스 구성 관련 action start */
 $('#button-glue-api-server-connect').on('click', function(){
-    window.open("https://10.10.3.11:8080/swagger/index.html");
+    window.open("https://'+api_ip+':'+api_port+'/swagger/index.html");
 });
 
 /** 스토리지 서비스 구성 관련 action start */
 $('#menu-item-gateway-vm-setup').on('click', function(){
-    $('#form-select-gateway-vm-mngt-nic-parent').val("");
-    $('#form-input-gateway-vm-mngt-nic-ip').val("");
-    $('#form-select-gateway-vm-storage-nic-parent').val("");
-    $('#form-input-gateway-vm-storage-nic-ip').val("");
-    
-    $('#div-modal-gateway-vm-setup').show();
+    cockpit.script(["scp -q -o StrictHostKeyChecking=no root@ablecube:/usr/share/cockpit/ablestack/tools/properties/cluster.json /usr/share/cockpit/ablestack/tools/properties/cluster.json"])
+    .then(function () {
+        $('#form-select-gateway-vm-mngt-nic-parent').val("");
+        $('#form-input-gateway-vm-mngt-nic-ip').val("");
+        $('#form-select-gateway-vm-storage-nic-parent').val("");
+        $('#form-input-gateway-vm-storage-nic-ip').val("");
+        
+        $('#div-modal-gateway-vm-setup').show();
+    })
+    .catch(function (error) {
+        alert("cluster.json 파일 복사 실패 : "+error);
+    });
 });
 
 /** 스토리지 서비스 구성 관련 action start */
@@ -1114,13 +1131,13 @@ function gwvmInfoSet(){
     $("#gwvm-cluster-icon").attr('class','fas fa-fw fa-exclamation-triangle');
     
     //디테일 정보 가져오기
-    fetch('https://10.10.3.11:8080/api/v1/gwvm/detail/cell',{
+    fetch('https://'+api_ip+':'+api_port+'/api/v1/gwvm/detail/cell',{
         method: 'GET'
     }).then(res => res.json()).then(data => {
         var retDetailVal = JSON.parse(data.Message);
         console.log(retDetailVal)
         if (retDetailVal.code == "200" || retDetailVal.val["role"] == 'Running') {
-            fetch('https://10.10.3.11:8080/api/v1/gwvm/cell',{
+            fetch('https://'+api_ip+':'+api_port+'/api/v1/gwvm/cell',{
                 method: 'GET'
             }).then(res => res.json()).then(data => {
                 var retVal = JSON.parse(data.Message);
@@ -1330,7 +1347,7 @@ $('#button-storage-dashboard-connect').on('click', function(){
  * History  : 2024.02.22 최초 작성
  */
 function glueVmList(){
-    fetch('https://10.10.3.11:8080/api/v1/glue/hosts',{
+    fetch('https://'+api_ip+':'+api_port+'/api/v1/glue/hosts',{
         method: 'GET'
     }).then(res => res.json()).then(data => {
         $('#glue-vm-list tr').remove();
@@ -1570,7 +1587,7 @@ function setSelectHostsCheckbox(div_id, form_input_id, selectHosts){
     $('fieldset[name="fieldset-glue-host-list"]').remove();
     $('#'+form_input_id).val('');
     //호스트 리스트 불러와서
-    fetch('https://10.10.3.11:8080/api/v1/glue/hosts',{
+    fetch('https://'+api_ip+':'+api_port+'/api/v1/glue/hosts',{
         method: 'GET'
     }).then(res => res.json()).then(data => {
         $('#'+div_id+' fieldset').remove();
@@ -1657,7 +1674,7 @@ function setSmbUserSelectBox(select_box_id, data){
 }
 
 function setGlueFsSelectBox(fs_select_box_id, path_select_box_id, selected_gluefs_id){
-    fetch('https://10.10.3.11:8080/api/v1/gluefs',{
+    fetch('https://'+api_ip+':'+api_port+'/api/v1/gluefs',{
         method: 'GET',
         headers: {
             'accept': 'application/json',
@@ -1705,7 +1722,7 @@ function setGlueFsVolumeGroupSelectBox(gluefs_name, path_select_box_id, selected
         $('#'+path_select_box_id).append(el);
         return
     }
-    fetch('https://10.10.3.11:8080/api/v1/gluefs/subvolume/group?vol_name='+gluefs_name,{
+    fetch('https://'+api_ip+':'+api_port+'/api/v1/gluefs/subvolume/group?vol_name='+gluefs_name,{
         method: 'GET',
         headers: {
             'accept': 'application/json',
@@ -1750,7 +1767,7 @@ function setGlueFsVolumeGroupSelectBox(gluefs_name, path_select_box_id, selected
 }
 
 function setNfsClusterSelectBox(select_box_id, selected_cluster_id){
-    fetch('https://10.10.3.11:8080/api/v1/nfs',{
+    fetch('https://'+api_ip+':'+api_port+'/api/v1/nfs',{
         method: 'GET',
         headers: {
             'accept': 'application/json',
@@ -1784,7 +1801,7 @@ function setNfsClusterSelectBox(select_box_id, selected_cluster_id){
 }
 
 function setIngressBackendSelectBox(select_box_id){
-    fetch('https://10.10.3.11:8080/api/v1/service',{
+    fetch('https://'+api_ip+':'+api_port+'/api/v1/service',{
         method: 'GET',
         headers: {
             'accept': 'application/json',
@@ -1808,7 +1825,7 @@ function setIngressBackendSelectBox(select_box_id){
 }
 
 function setPoolSelectBox(select_box_id, selected_pool_id){
-    fetch('https://10.10.3.11:8080/api/v1/pool?pool_type=rbd',{
+    fetch('https://'+api_ip+':'+api_port+'/api/v1/pool?pool_type=rbd',{
         method: 'GET',
         headers: {
             'accept': 'application/json',
@@ -1840,7 +1857,7 @@ function setPoolSelectBox(select_box_id, selected_pool_id){
 
 function setIscsiPortalCheckbox(div_id, form_input_id, portals_json){
     //호스트 리스트 불러와서
-    fetch('https://10.10.3.11:8080/api/v1/glue/hosts',{
+    fetch('https://'+api_ip+':'+api_port+'/api/v1/glue/hosts',{
         method: 'GET'
     }).then(res => res.json()).then(data => {
         $('#'+div_id+' fieldset').remove();
@@ -1939,7 +1956,7 @@ function setIscsiPortalCheckbox(div_id, form_input_id, portals_json){
 
 function setImageSelectBox(div_id, form_input_id, disks_json){
     //호스트 리스트 불러와서
-    fetch('https://10.10.3.11:8080/api/v1/image',{
+    fetch('https://'+api_ip+':'+api_port+'/api/v1/image',{
         method: 'GET'
     }).then(res => res.json()).then(data => {
         $('#'+div_id+' fieldset').remove();
@@ -2026,7 +2043,7 @@ function setImageSelectBox(div_id, form_input_id, disks_json){
 function setRgwUserSelectBox(select_box_id, selected_user_id){
     $('#'+select_box_id).empty();
     $('#'+select_box_id).append('<option value="" selected>불러오는 중...</option>');
-    fetch('https://10.10.3.11:8080/api/v1/rgw/user',{
+    fetch('https://'+api_ip+':'+api_port+'/api/v1/rgw/user',{
         method: 'GET',
         headers: {
             'accept': 'application/json',
@@ -2059,7 +2076,7 @@ function setRgwUserSelectBox(select_box_id, selected_user_id){
 function setRgwBucketSelectBox(select_box_id, selected_bucket_id){
     $('#'+select_box_id).empty();
     $('#'+select_box_id).append('<option value="" selected>불러오는 중...</option>');
-    fetch('https://10.10.3.11:8080/api/v1/rgw/bucket?detail=false',{
+    fetch('https://'+api_ip+':'+api_port+'/api/v1/rgw/bucket?detail=false',{
         method: 'GET',
         headers: {
             'accept': 'application/json',
@@ -2091,7 +2108,7 @@ function setRgwBucketSelectBox(select_box_id, selected_bucket_id){
 
 async function duplicatImageNameCheck(pool_name, image_name){
     var duplication_yn = false;
-    await fetch('https://10.10.3.11:8080/api/v1/image?pool_name='+pool_name,{
+    await fetch('https://'+api_ip+':'+api_port+'/api/v1/image?pool_name='+pool_name,{
         method: 'GET',
         headers: {
             'accept': 'application/json',
@@ -2112,7 +2129,7 @@ async function duplicatImageNameCheck(pool_name, image_name){
 }
 
 function setNvmeofHostIpSelectBox(select_box_id, selected_host_ip){
-    fetch('https://10.10.3.11:8080/api/v1/service?service_type=nvmeof',{
+    fetch('https://'+api_ip+':'+api_port+'/api/v1/service?service_type=nvmeof',{
         method: 'GET',
         headers: {
             'accept': 'application/json',

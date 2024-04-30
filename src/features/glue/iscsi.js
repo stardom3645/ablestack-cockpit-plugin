@@ -8,7 +8,7 @@
 function iscsiServiceList(){
     //조회
     $('#button-iscsi-service-search').html("<svg class='pf-c-spinner pf-m-md' role='progressbar' aria-valuetext='Loading...' viewBox='0 0 100 100' ><circle class='pf-c-spinner__path' cx='50' cy='50' r='45' fill='none'></circle></svg>");
-    fetch('https://10.10.3.11:8080/api/v1/service?service_type=iscsi',{
+    fetch('https://'+api_ip+':'+api_port+'/api/v1/service?service_type=iscsi',{
         method: 'GET',
         headers: {
             'accept': 'application/json',
@@ -102,7 +102,7 @@ $('#button-execution-modal-create-iscsi-service').on('click', function(){
         $("#modal-status-alert-title").html("iSCSI Service 생성 실패");
         $("#modal-status-alert-body").html("iSCSI Service 생성을 실패하였습니다.");
     
-        fetch('https://10.10.3.11:8080/api/v1/iscsi',{
+        fetch('https://'+api_ip+':'+api_port+'/api/v1/iscsi',{
             method: 'POST',
             headers: {
                 'accept': 'application/json',
@@ -131,7 +131,7 @@ $('#button-execution-modal-create-iscsi-service').on('click', function(){
 /** iSCSI Service create 관련 action end */
 /** iSCSI Service update 관련 action start */
 function iscsiServiceEdit(iscsi_id){
-    fetch('https://10.10.3.11:8080/api/v1/service?service_type=iscsi&service_name='+iscsi_id,{
+    fetch('https://'+api_ip+':'+api_port+'/api/v1/service?service_type=iscsi&service_name='+iscsi_id,{
         method: 'GET',
         headers: {
             'accept': 'application/json',
@@ -182,7 +182,7 @@ $('#button-execution-modal-update-iscsi-service').on('click', function(){
         $("#modal-status-alert-title").html("iSCSI Service 생성 실패");
         $("#modal-status-alert-body").html("iSCSI Service 생성을 실패하였습니다.");
     
-        fetch('https://10.10.3.11:8080/api/v1/iscsi',{
+        fetch('https://'+api_ip+':'+api_port+'/api/v1/iscsi',{
             method: 'POST',
             headers: {
                 'accept': 'application/json',
@@ -240,7 +240,7 @@ $('#button-execution-modal-remove-iscsi-service').on('click', function(){
     
         $("#modal-status-alert-title").html("iSCSI Service 삭제 실패");
         $("#modal-status-alert-body").html("iSCSI Service 삭제를 실패하였습니다.");
-        fetch('https://10.10.3.11:8080/api/v1/service/'+iscsi_service_id,{
+        fetch('https://'+api_ip+':'+api_port+'/api/v1/service/'+iscsi_service_id,{
             method: 'DELETE',
             headers: {
                 'accept': 'application/json',
@@ -282,7 +282,7 @@ function iscsiServiceCreateInitInputValue(){
 function iscsiTargetList(){
     //조회
     $('#button-iscsi-target-search').html("<svg class='pf-c-spinner pf-m-md' role='progressbar' aria-valuetext='Loading...' viewBox='0 0 100 100' ><circle class='pf-c-spinner__path' cx='50' cy='50' r='45' fill='none'></circle></svg>");
-    fetch('https://10.10.3.11:8080/api/v1/iscsi/target',{
+    fetch('https://'+api_ip+':'+api_port+'/api/v1/iscsi/target',{
         method: 'GET',
         headers: {
             'accept': 'application/json',
@@ -418,7 +418,7 @@ $('#button-execution-modal-create-iscsi-target').on('click', async function(){
     
             var size = $('#form-input-target-image-size').val();
             //이미지 생성
-            fetch('https://10.10.3.11:8080/api/v1/image',{
+            fetch('https://'+api_ip+':'+api_port+'/api/v1/image',{
                 method: 'POST',
                 headers: {
                     'accept': 'application/json',
@@ -453,7 +453,7 @@ function createIscsiTarget(body_val){
     $("#modal-status-alert-title").html("iSCSI Target 생성 실패");
     $("#modal-status-alert-body").html("iSCSI Target 생성을 실패하였습니다.");
 
-    fetch('https://10.10.3.11:8080/api/v1/iscsi/target',{
+    fetch('https://'+api_ip+':'+api_port+'/api/v1/iscsi/target',{
         method: 'POST',
         headers: {
             'accept': 'application/json',
@@ -483,7 +483,7 @@ function createIscsiTarget(body_val){
 /** iSCSI target update 관련 action start */
 function iscsiTargeEdit(iqn_id){
     iscsiTargetUpdateInitInputValue();
-    fetch('https://10.10.3.11:8080/api/v1/iscsi/target?iqn_id='+iqn_id,{
+    fetch('https://'+api_ip+':'+api_port+'/api/v1/iscsi/target?iqn_id='+iqn_id,{
         method: 'GET',
         headers: {
             'accept': 'application/json',
@@ -537,8 +537,7 @@ $('#button-execution-modal-update-iscsi-target').on('click', function(){
                 body_val += "&ip_address="+portalInfo[1];
             }
         });
-        alert(body_val);
-        
+
         $('#div-modal-update-iscsi-target').hide();
         $('#div-modal-spinner-header-txt').text('iSCSI Target을 수정하고 있습니다.');
         $('#div-modal-spinner').show();
@@ -546,7 +545,7 @@ $('#button-execution-modal-update-iscsi-target').on('click', function(){
         $("#modal-status-alert-title").html("iSCSI Target 수정 실패");
         $("#modal-status-alert-body").html("iSCSI Target 수정을 실패하였습니다.");
     
-        fetch('https://10.10.3.11:8080/api/v1/iscsi/target',{
+        fetch('https://'+api_ip+':'+api_port+'/api/v1/iscsi/target',{
             method: 'PUT',
             headers: {
                 'accept': 'application/json',
@@ -607,7 +606,7 @@ $('#button-execution-modal-remove-iscsi-target').on('click', function(){
     
         $("#modal-status-alert-title").html("iSCSI Target 삭제 실패");
         $("#modal-status-alert-body").html("iSCSI Target 삭제를 실패하였습니다.");
-        fetch('https://10.10.3.11:8080/api/v1/iscsi/target?iqn_id='+iqn_id,{
+        fetch('https://'+api_ip+':'+api_port+'/api/v1/iscsi/target?iqn_id='+iqn_id,{
             method: 'DELETE',
             headers: {
                 'accept': 'application/json',

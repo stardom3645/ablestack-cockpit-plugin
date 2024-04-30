@@ -8,7 +8,7 @@
 function objectGatewayList(){
     //조회
     $('#button-object-gateway-search').html("<svg class='pf-c-spinner pf-m-md' role='progressbar' aria-valuetext='Loading...' viewBox='0 0 100 100' ><circle class='pf-c-spinner__path' cx='50' cy='50' r='45' fill='none'></circle></svg>");
-    fetch('https://10.10.3.11:8080/api/v1/service?service_type=rgw',{
+    fetch('https://'+api_ip+':'+api_port+'/api/v1/service?service_type=rgw',{
         method: 'GET',
         headers: {
             'accept': 'application/json',
@@ -102,7 +102,7 @@ $('#button-execution-modal-create-object-gateway').on('click', function(){
         $("#modal-status-alert-title").html("Object Gateway 생성 실패");
         $("#modal-status-alert-body").html("Object Gateway 생성을 실패하였습니다.");
     
-        fetch('https://10.10.3.11:8080/api/v1/rgw',{
+        fetch('https://'+api_ip+':'+api_port+'/api/v1/rgw',{
             method: 'POST',
             headers: {
                 'accept': 'application/json',
@@ -132,7 +132,7 @@ $('#button-execution-modal-create-object-gateway').on('click', function(){
 /** object gateway create 관련 action end */
 /** object gateway update 관련 action start */
 function objectGatewayEdit(obj_gw_id){
-    fetch('https://10.10.3.11:8080/api/v1/service?service_type=rgw&service_name='+obj_gw_id,{
+    fetch('https://'+api_ip+':'+api_port+'/api/v1/service?service_type=rgw&service_name='+obj_gw_id,{
         method: 'GET',
         headers: {
             'accept': 'application/json',
@@ -183,7 +183,7 @@ $('#button-execution-modal-update-object-gateway').on('click', function(){
         $("#modal-status-alert-title").html("Object Gateway 수정 실패");
         $("#modal-status-alert-body").html("Object Gateway 수정을 실패하였습니다.");
     
-        fetch('https://10.10.3.11:8080/api/v1/rgw',{
+        fetch('https://'+api_ip+':'+api_port+'/api/v1/rgw',{
             method: 'PUT',
             headers: {
                 'accept': 'application/json',
@@ -241,7 +241,7 @@ $('#button-execution-modal-remove-object-gateway').on('click', function(){
         $("#modal-status-alert-title").html("Object Gateway 삭제 실패");
         $("#modal-status-alert-body").html("Object Gateway 삭제를 실패하였습니다.");
         
-        fetch('https://10.10.3.11:8080/api/v1/service/'+object_gateway_id,{
+        fetch('https://'+api_ip+':'+api_port+'/api/v1/service/'+object_gateway_id,{
             method: 'DELETE',
             headers: {
                 'accept': 'application/json',
@@ -273,7 +273,7 @@ $('#button-execution-modal-remove-object-gateway').on('click', function(){
 function objectGatewayUserList(){
     //조회
     $('#button-object-gateway-user-search').html("<svg class='pf-c-spinner pf-m-md' role='progressbar' aria-valuetext='Loading...' viewBox='0 0 100 100' ><circle class='pf-c-spinner__path' cx='50' cy='50' r='45' fill='none'></circle></svg>");
-    fetch('https://10.10.3.11:8080/api/v1/rgw/user',{
+    fetch('https://'+api_ip+':'+api_port+'/api/v1/rgw/user',{
         method: 'GET',
         headers: {
             'accept': 'application/json',
@@ -365,7 +365,7 @@ $('#button-execution-modal-remove-object-gateway-user').on('click', function(){
         $("#modal-status-alert-title").html("Object Gateway User 삭제 실패");
         $("#modal-status-alert-body").html("Object Gateway User 삭제를 실패하였습니다.");
     
-        fetch('https://10.10.3.11:8080/api/v1/rgw/user?username='+object_gateway_user,{
+        fetch('https://'+api_ip+':'+api_port+'/api/v1/rgw/user?username='+object_gateway_user,{
             method: 'DELETE',
             headers: {
                 'accept': 'application/json',
@@ -424,7 +424,7 @@ $('#button-execution-modal-create-object-gateway-user').on('click', function(){
         $("#modal-status-alert-title").html("Object Gateway User 생성 실패");
         $("#modal-status-alert-body").html("Object Gateway User 생성을 실패하였습니다.");
     
-        fetch('https://10.10.3.11:8080/api/v1/rgw/user',{
+        fetch('https://'+api_ip+':'+api_port+'/api/v1/rgw/user',{
             method: 'POST',
             headers: {
                 'accept': 'application/json',
@@ -454,7 +454,7 @@ $('#button-execution-modal-create-object-gateway-user').on('click', function(){
 
 /** object gateway user update 관련 action start */
 function objectGatewayUserEdit(user_id){
-    fetch('https://10.10.3.11:8080/api/v1/rgw/user',{
+    fetch('https://'+api_ip+':'+api_port+'/api/v1/rgw/user',{
         method: 'GET',
         headers: {
             'accept': 'application/json',
@@ -504,7 +504,7 @@ $('#button-execution-modal-update-object-gateway-user').on('click', function(){
         $("#modal-status-alert-title").html("Object Gateway User 수정 실패");
         $("#modal-status-alert-body").html("Object Gateway User 수정을 실패하였습니다.");
     
-        fetch('https://10.10.3.11:8080/api/v1/rgw/user',{
+        fetch('https://'+api_ip+':'+api_port+'/api/v1/rgw/user',{
             method: 'PUT',
             headers: {
                 'accept': 'application/json',
@@ -534,7 +534,7 @@ $('#button-execution-modal-update-object-gateway-user').on('click', function(){
 
 /** object gateway user s3 key search 관련 action start */
 function objectGatewayUserS3keySearch(user_id){
-    fetch('https://10.10.3.11:8080/api/v1/rgw/user',{
+    fetch('https://'+api_ip+':'+api_port+'/api/v1/rgw/user',{
         method: 'GET',
         headers: {
             'accept': 'application/json',
@@ -603,7 +603,7 @@ $('#button-cancel-modal-search-object-gateway-user-s3key').on('click', function(
 
 /** object gateway user quota update 관련 action start */
 function objectGatewayUserQuotaEdit(user_id){
-    fetch('https://10.10.3.11:8080/api/v1/rgw/user',{
+    fetch('https://'+api_ip+':'+api_port+'/api/v1/rgw/user',{
         method: 'GET',
         headers: {
             'accept': 'application/json',
@@ -636,8 +636,8 @@ $('#button-cancel-modal-update-object-gateway-user-quota').on('click', function(
 $('#button-execution-modal-update-object-gateway-user-quota').on('click', function(){    
     if(objectGatewayUserQuotaCreateValidateCheck()){
         var username = $('#form-input-quota-update-object-gateway-user-name').val();
-        var max_objects = $('#form-input-quota-update-object-gateway-user-max-size').val();
-        var max_size = $('#form-input-quota-update-object-gateway-user-max-objects').val()+"G";
+        var max_objects = $('#form-input-quota-update-object-gateway-user-max-objects').val();
+        var max_size = $('#form-input-quota-update-object-gateway-user-max-size').val()+"G";
         var scope = "user";
         var state = "enable";
     
@@ -650,7 +650,7 @@ $('#button-execution-modal-update-object-gateway-user-quota').on('click', functi
         $("#modal-status-alert-title").html("Object Gateway User Quota 수정 실패");
         $("#modal-status-alert-body").html("Object Gateway User Quota 수정을 실패하였습니다.");
     
-        fetch('https://10.10.3.11:8080/api/v1/rgw/quota',{
+        fetch('https://'+api_ip+':'+api_port+'/api/v1/rgw/quota',{
             method: 'POST',
             headers: {
                 'accept': 'application/json',
@@ -681,7 +681,7 @@ $('#button-execution-modal-update-object-gateway-user-quota').on('click', functi
 function objectGatewayBucketList(){
     //조회
     $('#button-object-gateway-bucket-search').html("<svg class='pf-c-spinner pf-m-md' role='progressbar' aria-valuetext='Loading...' viewBox='0 0 100 100' ><circle class='pf-c-spinner__path' cx='50' cy='50' r='45' fill='none'></circle></svg>");
-    fetch('https://10.10.3.11:8080/api/v1/rgw/bucket?detail=true',{
+    fetch('https://'+api_ip+':'+api_port+'/api/v1/rgw/bucket?detail=true',{
         method: 'GET',
         headers: {
             'accept': 'application/json',
@@ -768,7 +768,7 @@ $('#button-execution-modal-remove-object-gateway-bucket').on('click', function()
         $("#modal-status-alert-title").html("Object Gateway Bucket 삭제 실패");
         $("#modal-status-alert-body").html("Object Gateway Bucket 삭제를 실패하였습니다.");
     
-        fetch('https://10.10.3.11:8080/api/v1/rgw/bucket?bucket_name='+object_gateway_bucket,{
+        fetch('https://'+api_ip+':'+api_port+'/api/v1/rgw/bucket?bucket_name='+object_gateway_bucket,{
             method: 'DELETE',
             headers: {
                 'accept': 'application/json',
@@ -827,7 +827,7 @@ $('#button-execution-modal-create-object-gateway-bucket').on('click', function()
         $("#modal-status-alert-title").html("Object Gateway Bucket 생성 실패");
         $("#modal-status-alert-body").html("Object Gateway Bucket 생성을 실패하였습니다.");
     
-        fetch('https://10.10.3.11:8080/api/v1/rgw/bucket',{
+        fetch('https://'+api_ip+':'+api_port+'/api/v1/rgw/bucket',{
             method: 'POST',
             headers: {
                 'accept': 'application/json',
@@ -857,7 +857,7 @@ $('#button-execution-modal-create-object-gateway-bucket').on('click', function()
 
 /** object gateway bucket update 관련 action start */
 function objectGatewayBucketEdit(bucket_name, bucket_id){
-    fetch('https://10.10.3.11:8080/api/v1/rgw/bucket?bucket_name='+bucket_name+'&detail=true',{
+    fetch('https://'+api_ip+':'+api_port+'/api/v1/rgw/bucket?bucket_name='+bucket_name+'&detail=true',{
         method: 'GET',
         headers: {
             'accept': 'application/json',
@@ -897,7 +897,7 @@ $('#button-execution-modal-update-object-gateway-bucket').on('click', function()
         $("#modal-status-alert-title").html("Object Gateway Bucket 수정 실패");
         $("#modal-status-alert-body").html("Object Gateway Bucket 수정을 실패하였습니다.");
     
-        fetch('https://10.10.3.11:8080/api/v1/rgw/bucket',{
+        fetch('https://'+api_ip+':'+api_port+'/api/v1/rgw/bucket',{
             method: 'PUT',
             headers: {
                 'accept': 'application/json',
@@ -1084,26 +1084,19 @@ function objectGatewayUserQuotaCreateValidateCheck(){
 function objectGatewayBucketCreateValidateCheck(){
     var validate_check = true;
 
-    // var username = $('#form-input-object-gateway-user-name').val();
-    // var display_name = $('#form-input-object-gateway-user-display-name').val();
-    // var email = $('#form-input-object-gateway-user-email').val();
+    var bucketname = $('#form-input-object-gateway-bucket-name').val();
+    var username = $('#form-select-object-gateway-bucket-user-name option:selected').val();
     
-    // if (username == "") {
-    //     alert("사용자 이름을 입력해주세요.");
-    //     validate_check = false;
-    // } else if (!pathNameCheck(username)) {
-    //     alert("사용자 이름 생성 규칙은 영문, 숫자 특수문자 '-','_' 만 입력 가능합니다.");
-    //     validate_check = false;
-    // } else if (display_name == "") {
-    //     alert("전체 이름을 입력해주세요.");
-    //     validate_check = false;
-    // } else if (!pathNameCheck(display_name)) {
-    //     alert("전체 이름 생성 규칙은 영문, 숫자 특수문자 '-','_' 만 입력 가능합니다.");
-    //     validate_check = false;
-    // } else if (email != "" && !checkEmail(email)) {
-    //     alert("이메일 주소 형식을 확인해주세요.");
-    //     validate_check = false;
-    // }
+    if (bucketname == "") {
+        alert("버킷 이름을 입력해주세요.");
+        validate_check = false;
+    } else if (!nameCheck(bucketname)) {
+        alert("버킷 이름 생성 규칙은 영문, 숫자 특수문자 '-','_' 만 입력 가능하고 영문으로 시작해야 합니다.");
+        validate_check = false;
+    } else if (username == "") {
+        alert("사용자 이름을 입력해주세요.");
+        validate_check = false;
+    }
  
     return validate_check;
 }
@@ -1111,26 +1104,19 @@ function objectGatewayBucketCreateValidateCheck(){
 function objectGatewayBucketUpdateValidateCheck(){
     var validate_check = true;
 
-    // var username = $('#form-input-object-gateway-user-name').val();
-    // var display_name = $('#form-input-object-gateway-user-display-name').val();
-    // var email = $('#form-input-object-gateway-user-email').val();
+    var bucketname = $('#form-input-update-object-gateway-bucket-name').val();
+    var username = $('#form-select-update-object-gateway-bucket-user-name option:selected').val();
     
-    // if (username == "") {
-    //     alert("사용자 이름을 입력해주세요.");
-    //     validate_check = false;
-    // } else if (!pathNameCheck(username)) {
-    //     alert("사용자 이름 생성 규칙은 영문, 숫자 특수문자 '-','_' 만 입력 가능합니다.");
-    //     validate_check = false;
-    // } else if (display_name == "") {
-    //     alert("전체 이름을 입력해주세요.");
-    //     validate_check = false;
-    // } else if (!pathNameCheck(display_name)) {
-    //     alert("전체 이름 생성 규칙은 영문, 숫자 특수문자 '-','_' 만 입력 가능합니다.");
-    //     validate_check = false;
-    // } else if (email != "" && !checkEmail(email)) {
-    //     alert("이메일 주소 형식을 확인해주세요.");
-    //     validate_check = false;
-    // }
+    if (bucketname == "") {
+        alert("버킷 이름을 입력해주세요.");
+        validate_check = false;
+    } else if (!nameCheck(bucketname)) {
+        alert("버킷 이름 생성 규칙은 영문, 숫자 특수문자 '-','_' 만 입력 가능하고 영문으로 시작해야 합니다.");
+        validate_check = false;
+    } else if (username == "") {
+        alert("사용자 이름을 입력해주세요.");
+        validate_check = false;
+    }
  
     return validate_check;
 }

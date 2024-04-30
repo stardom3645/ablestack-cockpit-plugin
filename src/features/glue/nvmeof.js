@@ -8,7 +8,7 @@
 function nvmeofServiceList(){
     //조회
     $('#button-nvmeof-service-search').html("<svg class='pf-c-spinner pf-m-md' role='progressbar' aria-valuetext='Loading...' viewBox='0 0 100 100' ><circle class='pf-c-spinner__path' cx='50' cy='50' r='45' fill='none'></circle></svg>");
-    fetch('https://10.10.3.11:8080/api/v1/service?service_type=nvmeof',{
+    fetch('https://'+api_ip+':'+api_port+'/api/v1/service?service_type=nvmeof',{
         method: 'GET',
         headers: {
             'accept': 'application/json',
@@ -96,7 +96,7 @@ $('#button-execution-modal-create-nvmeof-service').on('click', function(){
         $("#modal-status-alert-title").html("NVMe-oF Service 생성 실패");
         $("#modal-status-alert-body").html("NVMe-oF Service 생성을 실패하였습니다.");
     
-        fetch('https://10.10.3.11:8080/api/v1/nvmeof',{
+        fetch('https://'+api_ip+':'+api_port+'/api/v1/nvmeof',{
             method: 'POST',
             headers: {
                 'accept': 'application/json',
@@ -155,7 +155,7 @@ $('#button-execution-modal-remove-nvmeof-service').on('click', function(){
     
         $("#modal-status-alert-title").html("NVMe-of Service 삭제 실패");
         $("#modal-status-alert-body").html("NVMe-of Service 삭제를 실패하였습니다.");
-        fetch('https://10.10.3.11:8080/api/v1/service/'+nvmeof_service_id,{
+        fetch('https://'+api_ip+':'+api_port+'/api/v1/service/'+nvmeof_service_id,{
             method: 'DELETE',
             headers: {
                 'accept': 'application/json',
@@ -193,7 +193,7 @@ function nvmeofServiceCreateInitInputValue(){
 function nvmeofTargetList(){
     //조회
     $('#button-nvmeof-target-search').html("<svg class='pf-c-spinner pf-m-md' role='progressbar' aria-valuetext='Loading...' viewBox='0 0 100 100' ><circle class='pf-c-spinner__path' cx='50' cy='50' r='45' fill='none'></circle></svg>");
-    fetch('https://10.10.3.11:8080/api/v1/nvmeof/target',{
+    fetch('https://'+api_ip+':'+api_port+'/api/v1/nvmeof/target',{
         method: 'GET',
         headers: {
             'accept': 'application/json',
@@ -298,7 +298,7 @@ $('#button-execution-modal-create-nvmeof-target').on('click', function(){
         $("#modal-status-alert-title").html("NVMe-oF Target 생성 실패");
         $("#modal-status-alert-body").html("NVMe-oF Target 생성을 실패하였습니다.");
     
-        fetch('https://10.10.3.11:8080/api/v1/nvmeof/target',{
+        fetch('https://'+api_ip+':'+api_port+'/api/v1/nvmeof/target',{
             method: 'POST',
             headers: {
                 'accept': 'application/json',
@@ -353,7 +353,7 @@ $('#button-execution-modal-remove-nvmeof-target').on('click', function(){
     
         $("#modal-status-alert-title").html("NVMe-of Target 삭제 실패");
         $("#modal-status-alert-body").html("NVMe-of Target 삭제를 실패하였습니다.");
-        fetch('https://10.10.3.11:8080/api/v1/nvmeof/subsystem?subsystem_nqn_id='+nqn_id,{
+        fetch('https://'+api_ip+':'+api_port+'/api/v1/nvmeof/subsystem?subsystem_nqn_id='+nqn_id,{
             method: 'DELETE',
             headers: {
                 'accept': 'application/json',
