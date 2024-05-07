@@ -124,7 +124,7 @@ $('#card-action-storage-cluster-iscsi-status').on('click', function(){
 
 /** 스토리지 서비스 구성 관련 action start */
 $('#button-glue-api-server-connect').on('click', function(){
-    window.open("https://'+api_ip+':'+api_port+'/swagger/index.html");
+    window.open('https://'+api_ip+':'+api_port+'/swagger/index.html');
 });
 
 /** 스토리지 서비스 구성 관련 action start */
@@ -1857,100 +1857,118 @@ function setPoolSelectBox(select_box_id, selected_pool_id){
 
 function setIscsiPortalCheckbox(div_id, form_input_id, portals_json){
     //호스트 리스트 불러와서
-    fetch('https://'+api_ip+':'+api_port+'/api/v1/glue/hosts',{
+    fetch('https://'+api_ip+':'+api_port+'/api/v1/service?service_type=iscsi',{
         method: 'GET'
-    }).then(res => res.json()).then(data => {
-        $('#'+div_id+' fieldset').remove();
-        let insert_tr = "";
-        insert_tr += '<fieldset class="pf-c-select__menu-fieldset" aria-label="Select input">';
-        if(portals_json==null){
-            for(var i=0; i < data.length; i++){
-                insert_tr += '    <label class="pf-c-check pf-c-select__menu-item">';
-                insert_tr += '        <input class="pf-c-check__input" type="checkbox" id="iscsi-portal-list-"'+i+'" name="iscsi-portal-list" value="'+data[i].hostname+':'+data[i].ip_address+'"/>';
-                insert_tr += '        <span class="pf-c-check__label">'+data[i].hostname+':'+data[i].ip_address+'</span>';
-                insert_tr += '    </label>';
-                insert_tr += '    <label class="pf-c-check pf-c-select__menu-item">';
-                insert_tr += '        <input class="pf-c-check__input" type="checkbox" id="iscsi-portal-list-"'+i+'" name="iscsi-portal-list" value="'+data[i].hostname+':'+data[i].addr+'"/>';
-                insert_tr += '        <span class="pf-c-check__label">'+data[i].hostname+':'+data[i].addr+'</span>';
-                insert_tr += '    </label>';
-            }
-        }else{
-            
-            for(var i=0; i < data.length; i++){
-                var ip_address_boolon = false;
-                var addr_boolon = false;
+    }).then(res => res.json()).then(iscsi_service => {
+        fetch('https://'+api_ip+':'+api_port+'/api/v1/glue/hosts',{
+            method: 'GET'
+        }).then(res => res.json()).then(data => {
+            var iscsi = [];
 
-                for(var j=0; j < portals_json.length; j++){
-                    if(portals_json[j].ip == data[i].ip_address){
-                        ip_address_boolon = true;
-                    }
-                    if(portals_json[j].ip == data[i].addr){
-                        addr_boolon = true;
-                    }
-                }
-                
-                if(!ip_address_boolon){
-                    insert_tr += '    <label class="pf-c-check pf-c-select__menu-item">';
-                    insert_tr += '        <input class="pf-c-check__input" type="checkbox" id="iscsi-portal-list-"'+i+'" name="iscsi-portal-list" value="'+data[i].hostname+':'+data[i].ip_address+'"/>';
-                    insert_tr += '        <span class="pf-c-check__label">'+data[i].hostname+':'+data[i].ip_address+'</span>';
-                    insert_tr += '    </label>';
-                }else{
-                    insert_tr += '    <label class="pf-c-check pf-c-select__menu-item">';
-                    insert_tr += '        <input class="pf-c-check__input" type="checkbox" id="iscsi-portal-list-"'+i+'" name="iscsi-portal-list" value="'+data[i].hostname+':'+data[i].ip_address+'" checked/>';
-                    insert_tr += '        <span class="pf-c-check__label">'+data[i].hostname+':'+data[i].ip_address+'</span>';
-                    insert_tr += '    </label>';
-                }
-
-                if(!addr_boolon){
-                    insert_tr += '    <label class="pf-c-check pf-c-select__menu-item">';
-                    insert_tr += '        <input class="pf-c-check__input" type="checkbox" id="iscsi-portal-list-"'+i+'" name="iscsi-portal-list" value="'+data[i].hostname+':'+data[i].addr+'"/>';
-                    insert_tr += '        <span class="pf-c-check__label">'+data[i].hostname+':'+data[i].addr+'</span>';
-                    insert_tr += '    </label>';
-                }else{
-                    insert_tr += '    <label class="pf-c-check pf-c-select__menu-item">';
-                    insert_tr += '        <input class="pf-c-check__input" type="checkbox" id="iscsi-portal-list-"'+i+'" name="iscsi-portal-list" value="'+data[i].hostname+':'+data[i].addr+'" checked/>';
-                    insert_tr += '        <span class="pf-c-check__label">'+data[i].hostname+':'+data[i].addr+'</span>';
-                    insert_tr += '    </label>';
-                }
-            }
-
-            //form_input_id 세팅
-            var el = "";
-            for(var i=0; i < portals_json.length; i++){
-                if(i==0){
-                    el += portals_json[i].host+":"+portals_json[i].ip
-                }else{
-                    el += ", "+portals_json[i].host+":"+portals_json[i].ip
-                }
-                
-            }
-            $('#'+form_input_id).val(el);
-        }
-
-        insert_tr += '</fieldset>';
-        $("#"+div_id).append(insert_tr);
-
-        if(form_input_id!=null){
-            // iscis portal 리스트 기능
-            $('input[name=iscsi-portal-list]').on('click', function(){
-                var cnt = 0;
-                var el = "";
-                $('input[type=checkbox][name="iscsi-portal-list"]').each(function() {
-                    if(this.checked){
-                        if(cnt==0){
-                            el = this.value
-                        }else{
-                            el += ", "+this.value
-                        }
-                        cnt++
-                    }
+            for(var i=0; i < iscsi_service.length; i++){
+                iscsi_service[i]["placement"]["hosts"].forEach((value, index) => {
+                    iscsi.push(value)
                 });
+            }
+            //중복 제거
+            const uniquePortalArray = iscsi.filter((value, index, self) => self.indexOf(value) === index);
+            
+            $('#'+div_id+' fieldset').remove();
+            let insert_tr = "";
+            insert_tr += '<fieldset class="pf-c-select__menu-fieldset" aria-label="Select input">';
+            if(portals_json==null){
+                for(var i=0; i < data.length; i++){
+                    if(uniquePortalArray.includes(data[i].hostname)){
+                        insert_tr += '    <label class="pf-c-check pf-c-select__menu-item">';
+                        insert_tr += '        <input class="pf-c-check__input" type="checkbox" id="iscsi-portal-list-'+i+'" name="iscsi-portal-list" value="'+data[i].hostname+':'+data[i].ip_address+'"/>';
+                        insert_tr += '        <span class="pf-c-check__label">'+data[i].hostname+':'+data[i].ip_address+'</span>';
+                        insert_tr += '    </label>';
+                        insert_tr += '    <label class="pf-c-check pf-c-select__menu-item">';
+                        insert_tr += '        <input class="pf-c-check__input" type="checkbox" id="iscsi-portal-list-'+i+'" name="iscsi-portal-list" value="'+data[i].hostname+':'+data[i].addr+'"/>';
+                        insert_tr += '        <span class="pf-c-check__label">'+data[i].hostname+':'+data[i].addr+'</span>';
+                        insert_tr += '    </label>';
+                    }
+                }
+            }else{
+                for(var i=0; i < data.length; i++){
+                    var ip_address_boolon = false;
+                    var addr_boolon = false;
+    
+                    for(var j=0; j < portals_json.length; j++){
+                        if(portals_json[j].ip == data[i].ip_address){
+                            ip_address_boolon = true;
+                        }
+                        if(portals_json[j].ip == data[i].addr){
+                            addr_boolon = true;
+                        }
+                    }
+                    
+                    if(!ip_address_boolon){
+                        insert_tr += '    <label class="pf-c-check pf-c-select__menu-item">';
+                        insert_tr += '        <input class="pf-c-check__input" type="checkbox" id="iscsi-portal-list-'+i+'" name="iscsi-portal-list" value="'+data[i].hostname+':'+data[i].ip_address+'"/>';
+                        insert_tr += '        <span class="pf-c-check__label">'+data[i].hostname+':'+data[i].ip_address+'</span>';
+                        insert_tr += '    </label>';
+                    }else{
+                        insert_tr += '    <label class="pf-c-check pf-c-select__menu-item">';
+                        insert_tr += '        <input class="pf-c-check__input" type="checkbox" id="iscsi-portal-list-'+i+'" name="iscsi-portal-list" value="'+data[i].hostname+':'+data[i].ip_address+'" checked/>';
+                        insert_tr += '        <span class="pf-c-check__label">'+data[i].hostname+':'+data[i].ip_address+'</span>';
+                        insert_tr += '    </label>';
+                    }
+    
+                    if(!addr_boolon){
+                        insert_tr += '    <label class="pf-c-check pf-c-select__menu-item">';
+                        insert_tr += '        <input class="pf-c-check__input" type="checkbox" id="iscsi-portal-list-'+i+'" name="iscsi-portal-list" value="'+data[i].hostname+':'+data[i].addr+'"/>';
+                        insert_tr += '        <span class="pf-c-check__label">'+data[i].hostname+':'+data[i].addr+'</span>';
+                        insert_tr += '    </label>';
+                    }else{
+                        insert_tr += '    <label class="pf-c-check pf-c-select__menu-item">';
+                        insert_tr += '        <input class="pf-c-check__input" type="checkbox" id="iscsi-portal-list-'+i+'" name="iscsi-portal-list" value="'+data[i].hostname+':'+data[i].addr+'" checked/>';
+                        insert_tr += '        <span class="pf-c-check__label">'+data[i].hostname+':'+data[i].addr+'</span>';
+                        insert_tr += '    </label>';
+                    }
+                }
+    
+                //form_input_id 세팅
+                var el = "";
+                for(var i=0; i < portals_json.length; i++){
+                    if(i==0){
+                        el += portals_json[i].host+":"+portals_json[i].ip
+                    }else{
+                        el += ", "+portals_json[i].host+":"+portals_json[i].ip
+                    }
+                    
+                }
                 $('#'+form_input_id).val(el);
-            });
-        }
+            }
+    
+            insert_tr += '</fieldset>';
+            $("#"+div_id).append(insert_tr);
+    
+            if(form_input_id!=null){
+                // iscis portal 리스트 기능
+                $('input[name=iscsi-portal-list]').on('click', function(){
+                    var cnt = 0;
+                    var el = "";
+                    $('input[type=checkbox][name="iscsi-portal-list"]').each(function() {
+                        if(this.checked){
+                            if(cnt==0){
+                                el = this.value
+                            }else{
+                                el += ", "+this.value
+                            }
+                            cnt++
+                        }
+                    });
+                    $('#'+form_input_id).val(el);
+                });
+            }
+        }).catch(function(data){
+            createLoggerInfo("iscis portal cleckbox 세팅 에러 : "+data);
+            console.log("iscis portal cleckbox 세팅 에러 : "+data);
+        });
     }).catch(function(data){
-        createLoggerInfo("iscis portal cleckbox 세팅 에러 : "+data);
-        console.log("iscis portal cleckbox 세팅 에러 : "+data);
+        createLoggerInfo("iscis service 호출 에러 : "+data);
+        console.log("iscis service 호출 에러 : "+data);
     });
 }
 
@@ -1973,7 +1991,7 @@ function setImageSelectBox(div_id, form_input_id, disks_json){
         if(disks_json==null){
             for(var i=0; i < data.length; i++){
                 insert_tr += '    <label class="pf-c-check pf-c-select__menu-item">';
-                insert_tr += '        <input class="pf-c-check__input" type="checkbox" id="iscsi-image-list-"'+i+'" name="iscsi-image-list" value="'+data[i]+'"/>';
+                insert_tr += '        <input class="pf-c-check__input" type="checkbox" id="iscsi-image-list-'+i+'" name="iscsi-image-list" value="'+data[i]+'"/>';
                 insert_tr += '        <span class="pf-c-check__label">'+data[i]+'</span>';
                 insert_tr += '    </label>';
             }
@@ -1990,12 +2008,12 @@ function setImageSelectBox(div_id, form_input_id, disks_json){
                 
                 if(!disk_boolon){
                     insert_tr += '    <label class="pf-c-check pf-c-select__menu-item">';
-                    insert_tr += '        <input class="pf-c-check__input" type="checkbox" id="iscsi-image-list-"'+i+'" name="iscsi-image-list" value="'+data[i]+'"/>';
+                    insert_tr += '        <input class="pf-c-check__input" type="checkbox" id="iscsi-image-list-'+i+'" name="iscsi-image-list" value="'+data[i]+'"/>';
                     insert_tr += '        <span class="pf-c-check__label">'+data[i]+'</span>';
                     insert_tr += '    </label>';
                 }else{
                     insert_tr += '    <label class="pf-c-check pf-c-select__menu-item">';
-                    insert_tr += '        <input class="pf-c-check__input" type="checkbox" id="iscsi-image-list-"'+i+'" name="iscsi-image-list" value="'+data[i]+'" checked/>';
+                    insert_tr += '        <input class="pf-c-check__input" type="checkbox" id="iscsi-image-list-'+i+'" name="iscsi-image-list" value="'+data[i]+'" checked/>';
                     insert_tr += '        <span class="pf-c-check__label">'+data[i]+'</span>';
                     insert_tr += '    </label>';
                 }
