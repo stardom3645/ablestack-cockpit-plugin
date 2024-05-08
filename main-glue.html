@@ -14,7 +14,7 @@
             <!-- <div class="pf-c-tabs pf-m-scrollable" id="overflow-beginning-of-list"> -->
             <div class="pf-c-card__title"><h2 style="font-size: 25px;">ABLESTACK Glue 스토리지 서비스</h2></div>
             <div class="pf-c-tabs">
-                <button class="pf-c-tabs__scroll-button" type="button" disabled aria-label="Scroll left">
+                <button class="pf-c-tabs__scroll-button" type="button" readonly aria-label="Scroll left">
                     <i class="fas fa-angle-left" aria-hidden="true"></i>
                 </button>
                 <ul class="pf-c-tabs__list" id="ul-top-tab-list">
@@ -302,8 +302,8 @@
                                         <button style="font-size: 0.83rem;" class="pf-c-button pf-m-secondary pf-m-inline" id="button-gluefs-subvolume-group-search" aria-disabled="false" type="button" data-ouia-safe="true" ><i class="fas fa-fw fa-redo" aria-hidden="true"></i></button>
                                         <button style="font-size: 0.83rem;" class="pf-c-button pf-m-secondary pf-m-inline" id="button-gluefs-subvolume-group-create" aria-disabled="false" type="button" data-ouia-safe="true" >추가</button>
                                     </div>
-                                    <input type="text" id="gluefs-select-id" name="gluefs-select-id" value="" style="display:none" disabled/>
-                                    <input type="text" id="gluefs-select-data-pool" name="gluefs-select-data-pool" value="" style="display:none" disabled/>
+                                    <input type="text" id="gluefs-select-id" name="gluefs-select-id" value="" style="display:none" readonly/>
+                                    <input type="text" id="gluefs-select-data-pool" name="gluefs-select-data-pool" value="" style="display:none" readonly/>
                                 </div>
                                 <div class="pf-c-card__body">
                                     <dl class="pf-c-description-list pf-m-horizontal" style="--pf-c-description-list--RowGap: 10px;">
@@ -1103,7 +1103,7 @@
 </div>
 <!-- 실행중 : Modal 영역 끝 -->
 <!-- 파일 시스템 : Modal 영역 시작-->
-<div id="div-modal-file-system-control" class="pf-c-backdrop" style="display:none">
+<!-- <div id="div-modal-file-system-control" class="pf-c-backdrop" style="display:none">
     <div class="pf-l-bullseye">
         <div class="pf-c-modal-box pf-m-sm" role="dialog" aria-modal="true" aria-label="File System Control">
             <button id="button-close-file-system-control" aria-disabled="false" aria-label="Close" class="pf-c-button pf-m-plain" type="button">
@@ -1143,7 +1143,7 @@
             </footer>
         </div>
     </div>
-</div>
+</div> -->
 <!-- 파일 시스템 : Modal 영역 끝-->
 <!-- 파일 시스템 : Modal 영여 시작-->
 <div id="div-modal-iscsi-control" class="pf-c-backdrop" style="display:none">
@@ -1237,7 +1237,7 @@
 
 
 <!-- 기본 Modal : Modal 영역 시작 -->
-<div id="div-modal-iscsi" class="pf-c-backdrop" style="display:none">
+<!-- <div id="div-modal-iscsi" class="pf-c-backdrop" style="display:none">
     <div class="pf-l-bullseye">
         <div class="pf-c-modal-box pf-m-sm" role="dialog" aria-modal="true" aria-label="iscsi construction">
             <button id="div-modal-iscsi-close" aria-disabled="false" aria-label="Close" class="pf-c-button pf-m-plain" type="button">
@@ -1253,11 +1253,11 @@
             </footer>
         </div>
     </div>
-</div>
+</div> -->
 <!-- 기본 Modal : Modal 영역 끝 -->
 
 <!-- 스토리지센터VM 배포 마법사 : ./src/features/storage-vm-wizard.html을 내용으로 load -->
-<div class="pf-c-backdrop" id="div-modal-wizard-gateway-vm"></div>
+<!-- <div class="pf-c-backdrop" id="div-modal-wizard-gateway-vm"></div> -->
 
 <!-- <div class="pf-c-backdrop" id="div-modal-gluefs-construction"></div>
 <div class="pf-c-backdrop" id="div-modal-nfs-construction"></div>
@@ -1425,7 +1425,7 @@
                 <button id="button-execution-modal-remove-gluefs" aria-disabled="false" class="pf-c-button pf-m-primary" type="button" data-ouia-safe="true">실행</button>
                 <button id="button-cancel-modal-remove-gluefs" aria-disabled="false" class="pf-c-button pf-m-link" type="button" data-ouia-safe="true">취소</button>
             </footer>
-            <input type="text" id="gluefs-remove-id" name="gluefs-remove-id" value="" style="display:none" disabled/>
+            <input type="text" id="gluefs-remove-id" name="gluefs-remove-id" value="" style="display:none" readonly/>
         </div>
     </div>
 </div>
@@ -1471,7 +1471,7 @@
                             </label>
                         </div>
                         <div class="pf-c-form__group-control">
-                            <input class="pf-c-form-control" style="width:50%" type="text" id="form-input-glue-fs-svg-name" name="form-input-glue-fs-svg-name" disabled/>
+                            <input class="pf-c-form-control" style="width:50%" type="text" id="form-input-glue-fs-svg-name" name="form-input-glue-fs-svg-name" readonly/>
                         </div>
                     </div>
                     <div class="pf-c-form__group">
@@ -1482,7 +1482,7 @@
                             </label>
                         </div>
                         <div class="pf-c-form__group-control">
-                            <input class="pf-c-form-control" style="width:50%" type="text" id="form-input-glue-fs-subvolume-group-data-pool" name="form-input-glue-fs-subvolume-group-data-pool" disabled/>
+                            <input class="pf-c-form-control" style="width:50%" type="text" id="form-input-glue-fs-subvolume-group-data-pool" name="form-input-glue-fs-subvolume-group-data-pool" readonly/>
                         </div>
                     </div>
                     <!-- <div class="pf-c-form__group">
@@ -1524,7 +1524,7 @@
                             </label>
                         </div>
                         <div class="pf-c-form__group-control">
-                            <input class="pf-c-form-control" style="width:50%" type="text" id="form-input-update-glue-fs-subvolume-group-name" name="form-input-update-glue-fs-subvolume-group-name" disabled/>
+                            <input class="pf-c-form-control" style="width:50%" type="text" id="form-input-update-glue-fs-subvolume-group-name" name="form-input-update-glue-fs-subvolume-group-name" readonly/>
                         </div>
                     </div>
                     <div class="pf-c-form__group">
@@ -1567,8 +1567,8 @@
                 <button id="button-execution-modal-remove-gluefs-subvolume-group" aria-disabled="false" class="pf-c-button pf-m-primary" type="button" data-ouia-safe="true">실행</button>
                 <button id="button-cancel-modal-remove-gluefs-subvolume-group" aria-disabled="false" class="pf-c-button pf-m-link" type="button" data-ouia-safe="true">취소</button>
             </footer>
-            <input type="text" id="gluefs-subvolume-group-remove-id" name="gluefs-subvolume-group-remove-id" value="" style="display:none" disabled/>
-            <input type="text" id="gluefs-subvolume-group-remove-path" name="gluefs-subvolume-group-remove-path" value="" style="display:none" disabled/>
+            <input type="text" id="gluefs-subvolume-group-remove-id" name="gluefs-subvolume-group-remove-id" value="" style="display:none" readonly/>
+            <input type="text" id="gluefs-subvolume-group-remove-path" name="gluefs-subvolume-group-remove-path" value="" style="display:none" readonly/>
         </div>
     </div>
 </div>
@@ -1604,7 +1604,7 @@
                         </div>
                         <div class="pf-c-form__group-control">
                             <div class="pf-c-select pf-m-expanded">
-                                <input class="pf-c-form-control" type="text" style="width:60%" id="form-input-nfs-cluster-placement-hosts" name="form-input-nfs-cluster-placement-hosts" disabled/>
+                                <input class="pf-c-form-control" type="text" style="width:60%" id="form-input-nfs-cluster-placement-hosts" name="form-input-nfs-cluster-placement-hosts" readonly/>
                                 <button class="pf-c-select__toggle" type="button" style="width: 60%;" id="button-glue-hosts-list-setting" aria-haspopup="true" aria-expanded="true" aria-labelledby="select-checkbox-expanded-toggle">
                                     <div class="pf-c-select__toggle-wrapper">
                                         <span class="pf-c-select__toggle-text">선택하십시오.</span>
@@ -1677,7 +1677,7 @@
                             </label>
                         </div>
                         <div class="pf-c-form__group-control">
-                            <input class="pf-c-form-control" style="width:50%" type="text" id="form-input-update-nfs-cluster-id" name="form-input-update-nfs-cluster-id" disabled/>
+                            <input class="pf-c-form-control" style="width:50%" type="text" id="form-input-update-nfs-cluster-id" name="form-input-update-nfs-cluster-id" readonly/>
                         </div>
                     </div>
                     <div class="pf-c-form__group">
@@ -1689,7 +1689,7 @@
                         </div>
                         <div class="pf-c-form__group-control">
                             <div class="pf-c-select pf-m-expanded">
-                                <input class="pf-c-form-control" type="text" style="width:60%" id="form-input-update-nfs-cluster-placement-hosts" name="form-input-update-nfs-cluster-placement-hosts" disabled/>
+                                <input class="pf-c-form-control" type="text" style="width:60%" id="form-input-update-nfs-cluster-placement-hosts" name="form-input-update-nfs-cluster-placement-hosts" readonly/>
                                 <button class="pf-c-select__toggle" type="button" style="width: 60%;" id="button-update-nfs-glue-hosts-list-setting" aria-haspopup="true" aria-expanded="true" aria-labelledby="select-checkbox-expanded-toggle">
                                     <div class="pf-c-select__toggle-wrapper">
                                         <span class="pf-c-select__toggle-text">선택하십시오.</span>
@@ -1716,6 +1716,13 @@
                             <input class="pf-c-form-control" style="width:50%" type="text" id="form-input-update-nfs-cluster-port" name="form-input-update-nfs-cluster-port" placeholder="2049"/>
                         </div>
                     </div>
+                    <div class="pf-c-form__group">
+                        <div class="pf-c-form__group-label" style="margin-left: 25px;">
+                            <label class="pf-c-check pf-c-select__menu-item">
+                                <span class="pf-c-check__label" style="color: #c9190b;font-size: 14px;"><i class="fas fa-fw fa-exclamation-circle" aria-hidden="true"></i> 수정시 서비스가 잠시 중단될 수 있으며, 서비스를 사용중인 경우 확인이 필요합니다.</span>
+                            </label>
+                        </div>
+                    </div>
                 </section>
             </form>
             <footer class="pf-c-modal-box__footer">
@@ -1739,14 +1746,14 @@
                 <div id="nfs-cluster-text"></div>
                 <label class="pf-c-check pf-c-select__menu-item" style="margin-top: 20px;">
                     <input class="pf-c-check__input" type="checkbox" id="input-checkbox-nfs-cluster-remove" value="remove"/>
-                    <span class="pf-c-check__label" style="color: #c9190b;"><i class="fas fa-fw fa-exclamation-circle" aria-hidden="true"></i>예, 확실히 삭제합니다.</span>
+                    <span class="pf-c-check__label" style="color: #c9190b;"><i class="fas fa-fw fa-exclamation-circle" aria-hidden="true"></i> 예, 확실히 삭제합니다.</span>
                 </label>
             </div>
             <footer class="pf-c-modal-box__footer">
                 <button id="button-execution-modal-remove-nfs-cluster" aria-disabled="false" class="pf-c-button pf-m-primary" type="button" data-ouia-safe="true">실행</button>
                 <button id="button-cancel-modal-remove-nfs-cluster" aria-disabled="false" class="pf-c-button pf-m-link" type="button" data-ouia-safe="true">취소</button>
             </footer>
-            <input type="text" id="nfs-cluster-id" name="nfs-cluster-id" value="" style="display:none" disabled/>
+            <input type="text" id="nfs-cluster-id" name="nfs-cluster-id" value="" style="display:none" readonly/>
         </div>
     </div>
 </div>
@@ -2028,7 +2035,7 @@
                 <button id="button-execution-modal-update-nfs-export" aria-disabled="false" class="pf-c-button pf-m-primary" type="button" data-ouia-safe="true">실행</button>
                 <button id="button-cancel-modal-update-nfs-export" aria-disabled="false" class="pf-c-button pf-m-link" type="button" data-ouia-safe="true">취소</button>
             </footer>
-            <input type="text" id="form-input-update-nfs-export-id" name="form-input-update-nfs-export-id" value="" style="display:none" disabled/>
+            <input type="text" id="form-input-update-nfs-export-id" name="form-input-update-nfs-export-id" value="" style="display:none" readonly/>
         </div>
     </div>
 </div>
@@ -2046,15 +2053,15 @@
                 <div id="nfs-export-text"></div>
                 <label class="pf-c-check pf-c-select__menu-item" style="margin-top: 20px;">
                     <input class="pf-c-check__input" type="checkbox" id="input-checkbox-nfs-export-remove" value="remove"/>
-                    <span class="pf-c-check__label" style="color: #c9190b;"><i class="fas fa-fw fa-exclamation-circle" aria-hidden="true"></i>예, 확실히 삭제합니다.</span>
+                    <span class="pf-c-check__label" style="color: #c9190b;"><i class="fas fa-fw fa-exclamation-circle" aria-hidden="true"></i> 예, 확실히 삭제합니다.</span>
                 </label>
             </div>
             <footer class="pf-c-modal-box__footer">
                 <button id="button-execution-modal-remove-nfs-export" aria-disabled="false" class="pf-c-button pf-m-primary" type="button" data-ouia-safe="true">실행</button>
                 <button id="button-cancel-modal-remove-nfs-export" aria-disabled="false" class="pf-c-button pf-m-link" type="button" data-ouia-safe="true">취소</button>
             </footer>
-            <input type="text" id="nfs-export-id" name="nfs-export-id" value="" style="display:none" disabled/>
-            <input type="text" id="export-nfs-cluster-id" name="export-nfs-cluster-id" value="" style="display:none" disabled/>
+            <input type="text" id="nfs-export-id" name="nfs-export-id" value="" style="display:none" readonly/>
+            <input type="text" id="export-nfs-cluster-id" name="export-nfs-cluster-id" value="" style="display:none" readonly/>
         </div>
     </div>
 </div>
@@ -2093,7 +2100,7 @@
                         </div>
                         <div class="pf-c-form__group-control">
                             <div class="pf-c-select pf-m-expanded">
-                                <input class="pf-c-form-control" type="text" style="width:60%" id="form-input-ingress-placement-hosts" name="form-input-ingress-placement-hosts" disabled/>
+                                <input class="pf-c-form-control" type="text" style="width:60%" id="form-input-ingress-placement-hosts" name="form-input-ingress-placement-hosts" readonly/>
                                 <button class="pf-c-select__toggle" type="button" style="width: 60%;" id="button-ingress-glue-hosts-list-setting" aria-haspopup="true" aria-expanded="true" aria-labelledby="select-checkbox-expanded-toggle">
                                     <div class="pf-c-select__toggle-wrapper">
                                         <span class="pf-c-select__toggle-text">선택하십시오.</span>
@@ -2188,7 +2195,7 @@
                             </label>
                         </div>
                         <div class="pf-c-form__group-control">
-                            <input class="pf-c-form-control" style="width:50%" type="text" id="form-update-ingress-service-name" name="form-update-ingress-service-name" disabled/>
+                            <input class="pf-c-form-control" style="width:50%" type="text" id="form-update-ingress-service-name" name="form-update-ingress-service-name" readonly/>
                         </div>
                     </div> -->
                     <div class="pf-c-form__group">
@@ -2199,7 +2206,7 @@
                             </label>
                         </div>
                         <div class="pf-c-form__group-control">
-                            <input class="pf-c-form-control" style="width:50%" type="text" id="form-select-update-ingress-backend-service-name" name="form-select-update-ingress-backend-service-name" disabled/>
+                            <input class="pf-c-form-control" style="width:50%" type="text" id="form-select-update-ingress-backend-service-name" name="form-select-update-ingress-backend-service-name" readonly/>
                         </div>
                     </div>
                     <div class="pf-c-form__group">
@@ -2211,7 +2218,7 @@
                         </div>
                         <div class="pf-c-form__group-control">
                             <div class="pf-c-select pf-m-expanded">
-                                <input class="pf-c-form-control" type="text" style="width:60%" id="form-input-update-ingress-placement-hosts" name="form-input-update-ingress-placement-hosts" disabled/>
+                                <input class="pf-c-form-control" type="text" style="width:60%" id="form-input-update-ingress-placement-hosts" name="form-input-update-ingress-placement-hosts" readonly/>
                                 <button class="pf-c-select__toggle" type="button" style="width: 60%;" id="button-update-ingress-glue-hosts-list-setting" aria-haspopup="true" aria-expanded="true" aria-labelledby="select-checkbox-expanded-toggle">
                                     <div class="pf-c-select__toggle-wrapper">
                                         <span class="pf-c-select__toggle-text">선택하십시오.</span>
@@ -2260,6 +2267,13 @@
                             <input class="pf-c-form-control" style="width:50%" type="text" id="form-input-update-ingress-monitor-port" name="form-input-update-ingress-monitor-port" />
                         </div>
                     </div>
+                    <div class="pf-c-form__group">
+                        <div class="pf-c-form__group-label" style="margin-left: 25px;">
+                            <label class="pf-c-check pf-c-select__menu-item">
+                                <span class="pf-c-check__label" style="color: #c9190b;font-size: 14px;"><i class="fas fa-fw fa-exclamation-circle" aria-hidden="true"></i> 수정시 서비스가 잠시 중단될 수 있으며, 서비스를 사용중인 경우 확인이 필요합니다.</span>
+                            </label>
+                        </div>
+                    </div>
                 </section>
             </form>
             <footer class="pf-c-modal-box__footer">
@@ -2282,14 +2296,14 @@
                 <div id="ingress-text"></div>
                 <label class="pf-c-check pf-c-select__menu-item" style="margin-top: 20px;">
                     <input class="pf-c-check__input" type="checkbox" id="input-checkbox-ingress-remove" value="remove"/>
-                    <span class="pf-c-check__label" style="color: #c9190b;"><i class="fas fa-fw fa-exclamation-circle" aria-hidden="true"></i>예, 확실히 삭제합니다.</span>
+                    <span class="pf-c-check__label" style="color: #c9190b;"><i class="fas fa-fw fa-exclamation-circle" aria-hidden="true"></i> 예, 확실히 삭제합니다.</span>
                 </label>
             </div>
             <footer class="pf-c-modal-box__footer">
                 <button id="button-execution-modal-remove-ingress" aria-disabled="false" class="pf-c-button pf-m-primary" type="button" data-ouia-safe="true">실행</button>
                 <button id="button-cancel-modal-remove-ingress" aria-disabled="false" class="pf-c-button pf-m-link" type="button" data-ouia-safe="true">취소</button>
             </footer>
-            <input type="text" id="ingress-id" name="ingress-id" value="" style="display:none" disabled/>
+            <input type="text" id="ingress-id" name="ingress-id" value="" style="display:none" readonly/>
         </div>
     </div>
 </div>
@@ -2325,7 +2339,7 @@
                         </div>
                         <div class="pf-c-form__group-control">
                             <div class="pf-c-select pf-m-expanded">
-                                <input class="pf-c-form-control" type="text" style="width:60%" id="form-input-iscsi-placement-hosts" name="form-input-iscsi-placement-hosts" disabled/>
+                                <input class="pf-c-form-control" type="text" style="width:60%" id="form-input-iscsi-placement-hosts" name="form-input-iscsi-placement-hosts" readonly/>
                                 <button class="pf-c-select__toggle" type="button" style="width: 60%;" id="button-iscsi-glue-hosts-list-setting" aria-haspopup="true" aria-expanded="true" aria-labelledby="select-checkbox-expanded-toggle">
                                     <div class="pf-c-select__toggle-wrapper">
                                         <span class="pf-c-select__toggle-text">선택하십시오.</span>
@@ -2461,7 +2475,7 @@
                         </div>
                         <div class="pf-c-form__group-control">
                             <div class="pf-c-select pf-m-expanded">
-                                <input class="pf-c-form-control" type="text" style="width:60%" id="form-input-update-iscsi-placement-hosts" name="form-input-update-iscsi-placement-hosts" disabled/>
+                                <input class="pf-c-form-control" type="text" style="width:60%" id="form-input-update-iscsi-placement-hosts" name="form-input-update-iscsi-placement-hosts" readonly/>
                                 <button class="pf-c-select__toggle" type="button" style="width: 60%;" id="button-update-iscsi-glue-hosts-list-setting" aria-haspopup="true" aria-expanded="true" aria-labelledby="select-checkbox-expanded-toggle">
                                     <div class="pf-c-select__toggle-wrapper">
                                         <span class="pf-c-select__toggle-text">선택하십시오.</span>
@@ -2522,6 +2536,13 @@
                             <input class="pf-c-form-control" style="width:50%" type="password" id="form-input-update-iscsi-service-api-password" name="form-input-update-iscsi-service-api-password"/>
                         </div>
                     </div>
+                    <div class="pf-c-form__group">
+                        <div class="pf-c-form__group-label" style="margin-left: 25px;">
+                            <label class="pf-c-check pf-c-select__menu-item">
+                                <span class="pf-c-check__label" style="color: #c9190b;font-size: 14px;"><i class="fas fa-fw fa-exclamation-circle" aria-hidden="true"></i> 수정시 서비스가 잠시 중단될 수 있으며, 서비스를 사용중인 경우 확인이 필요합니다.</span>
+                            </label>
+                        </div>
+                    </div>
                 </section>
             </form>
             <footer class="pf-c-modal-box__footer">
@@ -2544,14 +2565,14 @@
                 <div id="iscsi-service-text"></div>
                 <label class="pf-c-check pf-c-select__menu-item" style="margin-top: 20px;">
                     <input class="pf-c-check__input" type="checkbox" id="input-checkbox-iscsi-service-remove" value="remove"/>
-                    <span class="pf-c-check__label" style="color: #c9190b;"><i class="fas fa-fw fa-exclamation-circle" aria-hidden="true"></i>예, 확실히 삭제합니다.</span>
+                    <span class="pf-c-check__label" style="color: #c9190b;"><i class="fas fa-fw fa-exclamation-circle" aria-hidden="true"></i> 예, 확실히 삭제합니다.</span>
                 </label>
             </div>
             <footer class="pf-c-modal-box__footer">
                 <button id="button-execution-modal-remove-iscsi-service" aria-disabled="false" class="pf-c-button pf-m-primary" type="button" data-ouia-safe="true">실행</button>
                 <button id="button-cancel-modal-remove-iscsi-service" aria-disabled="false" class="pf-c-button pf-m-link" type="button" data-ouia-safe="true">취소</button>
             </footer>
-            <input type="text" id="iscsi-service-id" name="iscsi-service-id" value="" style="display:none" disabled/>
+            <input type="text" id="iscsi-service-id" name="iscsi-service-id" value="" style="display:none" readonly/>
         </div>
     </div>
 </div>
@@ -2586,7 +2607,7 @@
                         </div>
                         <div class="pf-c-form__group-control">
                             <div class="pf-c-select pf-m-expanded">
-                                <input class="pf-c-form-control" type="text" style="width:60%" id="form-input-iscsi-portal" name="form-input-iscsi-portal" disabled/>
+                                <input class="pf-c-form-control" type="text" style="width:60%" id="form-input-iscsi-portal" name="form-input-iscsi-portal" readonly/>
                                 <button class="pf-c-select__toggle" type="button" style="width: 60%;" id="button-iscsi-portal-list-setting" aria-haspopup="true" aria-expanded="true" aria-labelledby="select-checkbox-expanded-toggle">
                                     <div class="pf-c-select__toggle-wrapper">
                                         <span class="pf-c-select__toggle-text">선택하십시오.</span>
@@ -2657,7 +2678,7 @@
                         </div>
                         <div class="pf-c-form__group-control">
                             <div class="pf-c-select pf-m-expanded">
-                                <input class="pf-c-form-control" type="text" style="width:60%" id="form-input-iscsi-image" name="form-input-iscsi-image" disabled/>
+                                <input class="pf-c-form-control" type="text" style="width:60%" id="form-input-iscsi-image" name="form-input-iscsi-image" readonly/>
                                 <button class="pf-c-select__toggle" type="button" style="width: 60%;" id="button-iscsi-image-list-setting" aria-haspopup="true" aria-expanded="true" aria-labelledby="select-checkbox-expanded-toggle">
                                     <div class="pf-c-select__toggle-wrapper">
                                         <span class="pf-c-select__toggle-text">선택하십시오.</span>
@@ -2729,7 +2750,7 @@
                         </div>
                         <div class="pf-c-form__group-control">
                             <div class="pf-c-select pf-m-expanded">
-                                <input class="pf-c-form-control" type="text" style="width:60%" id="form-input-update-iscsi-portal" name="form-input-update-iscsi-portal" disabled/>
+                                <input class="pf-c-form-control" type="text" style="width:60%" id="form-input-update-iscsi-portal" name="form-input-update-iscsi-portal" readonly/>
                                 <button class="pf-c-select__toggle" type="button" style="width: 60%;" id="button-update-iscsi-portal-list-setting" aria-haspopup="true" aria-expanded="true" aria-labelledby="select-checkbox-expanded-toggle">
                                     <div class="pf-c-select__toggle-wrapper">
                                         <span class="pf-c-select__toggle-text">선택하십시오.</span>
@@ -2754,7 +2775,7 @@
                         </div>
                         <div class="pf-c-form__group-control">
                             <div class="pf-c-select pf-m-expanded">
-                                <input class="pf-c-form-control" type="text" style="width:60%" id="form-input-update-iscsi-image" name="form-input-update-iscsi-image" disabled/>
+                                <input class="pf-c-form-control" type="text" style="width:60%" id="form-input-update-iscsi-image" name="form-input-update-iscsi-image" readonly/>
                                 <button class="pf-c-select__toggle" type="button" style="width: 60%;" id="button-update-iscsi-image-list-setting" aria-haspopup="true" aria-expanded="true" aria-labelledby="select-checkbox-expanded-toggle">
                                     <div class="pf-c-select__toggle-wrapper">
                                         <span class="pf-c-select__toggle-text">선택하십시오.</span>
@@ -2792,14 +2813,14 @@
                 <div id="iscsi-target-text"></div>
                 <label class="pf-c-check pf-c-select__menu-item" style="margin-top: 20px;">
                     <input class="pf-c-check__input" type="checkbox" id="input-checkbox-iscsi-target-remove" value="remove"/>
-                    <span class="pf-c-check__label" style="color: #c9190b;"><i class="fas fa-fw fa-exclamation-circle" aria-hidden="true"></i>예, 확실히 삭제합니다.</span>
+                    <span class="pf-c-check__label" style="color: #c9190b;"><i class="fas fa-fw fa-exclamation-circle" aria-hidden="true"></i> 예, 확실히 삭제합니다.</span>
                 </label>
             </div>
             <footer class="pf-c-modal-box__footer">
                 <button id="button-execution-modal-remove-iscsi-target" aria-disabled="false" class="pf-c-button pf-m-primary" type="button" data-ouia-safe="true">실행</button>
                 <button id="button-cancel-modal-remove-iscsi-target" aria-disabled="false" class="pf-c-button pf-m-link" type="button" data-ouia-safe="true">취소</button>
             </footer>
-            <input type="text" id="iscsi-target-iqn-id" name="iscsi-target-iqn-id" value="" style="display:none" disabled/>
+            <input type="text" id="iscsi-target-iqn-id" name="iscsi-target-iqn-id" value="" style="display:none" readonly/>
         </div>
     </div>
 </div>
@@ -2834,7 +2855,7 @@
                         </div>
                         <div class="pf-c-form__group-control">
                             <div class="pf-c-select pf-m-expanded">
-                                <input class="pf-c-form-control" type="text" style="width:60%" id="form-input-nvmeof-placement-hosts" name="form-input-nvmeof-placement-hosts" disabled/>
+                                <input class="pf-c-form-control" type="text" style="width:60%" id="form-input-nvmeof-placement-hosts" name="form-input-nvmeof-placement-hosts" readonly/>
                                 <button class="pf-c-select__toggle" type="button" style="width: 60%;" id="button-nvmeof-glue-hosts-list-setting" aria-haspopup="true" aria-expanded="true" aria-labelledby="select-checkbox-expanded-toggle">
                                     <div class="pf-c-select__toggle-wrapper">
                                         <span class="pf-c-select__toggle-text">선택하십시오.</span>
@@ -2871,14 +2892,14 @@
                 <div id="nvmeof-service-text"></div>
                 <label class="pf-c-check pf-c-select__menu-item" style="margin-top: 20px;">
                     <input class="pf-c-check__input" type="checkbox" id="input-checkbox-nvmeof-service-remove" value="remove"/>
-                    <span class="pf-c-check__label" style="color: #c9190b;"><i class="fas fa-fw fa-exclamation-circle" aria-hidden="true"></i>예, 확실히 삭제합니다.</span>
+                    <span class="pf-c-check__label" style="color: #c9190b;"><i class="fas fa-fw fa-exclamation-circle" aria-hidden="true"></i> 예, 확실히 삭제합니다.</span>
                 </label>
             </div>
             <footer class="pf-c-modal-box__footer">
                 <button id="button-execution-modal-remove-nvmeof-service" aria-disabled="false" class="pf-c-button pf-m-primary" type="button" data-ouia-safe="true">실행</button>
                 <button id="button-cancel-modal-remove-nvmeof-service" aria-disabled="false" class="pf-c-button pf-m-link" type="button" data-ouia-safe="true">취소</button>
             </footer>
-            <input type="text" id="nvmeof-service-id" name="nvmeof-service-id" value="" style="display:none" disabled/>
+            <input type="text" id="nvmeof-service-id" name="nvmeof-service-id" value="" style="display:none" readonly/>
         </div>
     </div>
 </div>
@@ -2916,7 +2937,7 @@
                         </div>
                         <!-- <div class="pf-c-form__group-control">
                             <div class="pf-c-select pf-m-expanded">
-                                <input class="pf-c-form-control" type="text" style="width:60%" id="form-input-nvmeof-ip" name="form-input-nvmeof-ip" disabled/>
+                                <input class="pf-c-form-control" type="text" style="width:60%" id="form-input-nvmeof-ip" name="form-input-nvmeof-ip" readonly/>
                                 <button class="pf-c-select__toggle" type="button" style="width: 60%;" id="button-nvmeof-portal-list-setting" aria-haspopup="true" aria-expanded="true" aria-labelledby="select-checkbox-expanded-toggle">
                                     <div class="pf-c-select__toggle-wrapper">
                                         <span class="pf-c-select__toggle-text">선택하십시오.</span>
@@ -2988,14 +3009,14 @@
                 <div id="nvmeof-target-text"></div>
                 <label class="pf-c-check pf-c-select__menu-item" style="margin-top: 20px;">
                     <input class="pf-c-check__input" type="checkbox" id="input-checkbox-nvmeof-target-remove" value="remove"/>
-                    <span class="pf-c-check__label" style="color: #c9190b;"><i class="fas fa-fw fa-exclamation-circle" aria-hidden="true"></i>예, 확실히 삭제합니다.</span>
+                    <span class="pf-c-check__label" style="color: #c9190b;"><i class="fas fa-fw fa-exclamation-circle" aria-hidden="true"></i> 예, 확실히 삭제합니다.</span>
                 </label>
             </div>
             <footer class="pf-c-modal-box__footer">
                 <button id="button-execution-modal-remove-nvmeof-target" aria-disabled="false" class="pf-c-button pf-m-primary" type="button" data-ouia-safe="true">실행</button>
                 <button id="button-cancel-modal-remove-nvmeof-target" aria-disabled="false" class="pf-c-button pf-m-link" type="button" data-ouia-safe="true">취소</button>
             </footer>
-            <input type="text" id="nvmeof-target-nqn-id" name="nvmeof-target-nqn-id" value="" style="display:none" disabled/>
+            <input type="text" id="nvmeof-target-nqn-id" name="nvmeof-target-nqn-id" value="" style="display:none" readonly/>
         </div>
     </div>
 </div>
@@ -3022,7 +3043,7 @@
                             </label>
                         </div>
                         <div class="pf-c-form__group-control">
-                            <input class="pf-c-form-control" style="width:50%" type="text" id="form-input-smb-hostname" name="form-input-smb-hostname" disabled/>
+                            <input class="pf-c-form-control" style="width:50%" type="text" id="form-input-smb-hostname" name="form-input-smb-hostname" readonly/>
                         </div>
                     </div>
                     <div class="pf-c-form__group">
@@ -3044,7 +3065,7 @@
                             </label>
                         </div>
                         <div class="pf-c-form__group-control">
-                            <input class="pf-c-form-control" style="width:50%" type="text" id="form-input-smb-actual-shared-path" name="form-input-smb-actual-shared-path" value="/fs/smb" disabled/>
+                            <input class="pf-c-form-control" style="width:50%" type="text" id="form-input-smb-actual-shared-path" name="form-input-smb-actual-shared-path" value="/fs/smb" readonly/>
                         </div>
                     </div>
                     <div class="pf-c-form__group">
@@ -3117,14 +3138,14 @@
                 <div id="smb-service-text"></div>
                 <label class="pf-c-check pf-c-select__menu-item" style="margin-top: 20px;">
                     <input class="pf-c-check__input" type="checkbox" id="input-checkbox-smb-service-remove" value="remove"/>
-                    <span class="pf-c-check__label" style="color: #c9190b;"><i class="fas fa-fw fa-exclamation-circle" aria-hidden="true"></i>예, 확실히 삭제합니다.</span>
+                    <span class="pf-c-check__label" style="color: #c9190b;"><i class="fas fa-fw fa-exclamation-circle" aria-hidden="true"></i> 예, 확실히 삭제합니다.</span>
                 </label>
             </div>
             <footer class="pf-c-modal-box__footer">
                 <button id="button-execution-modal-remove-smb-service" aria-disabled="false" class="pf-c-button pf-m-primary" type="button" data-ouia-safe="true">실행</button>
                 <button id="button-cancel-modal-remove-smb-service" aria-disabled="false" class="pf-c-button pf-m-link" type="button" data-ouia-safe="true">취소</button>
             </footer>
-            <input type="text" id="smb-service-hostname" name="smb-service-hostname" value="" style="display:none" disabled/>
+            <input type="text" id="smb-service-hostname" name="smb-service-hostname" value="" style="display:none" readonly/>
         </div>
     </div>
 </div>
@@ -3193,7 +3214,7 @@
                             <input class="pf-c-form-control" style="width:50%" type="password" id="form-input-smb-create-user-password" name="form-input-smb-create-user-password"/>
                         </div>
                     </div>
-                    <input class="pf-c-form-control" type="text" id="form-input-smb-create-user-hostname" name="form-input-smb-create-user-hostname" style="display:none" disabled/>
+                    <input class="pf-c-form-control" type="text" id="form-input-smb-create-user-hostname" name="form-input-smb-create-user-hostname" style="display:none" readonly/>
                 </section>
             </form>
             <footer class="pf-c-modal-box__footer">
@@ -3259,7 +3280,7 @@
                 <button id="button-execution-modal-update-smb-user" aria-disabled="false" class="pf-c-button pf-m-primary" type="button" data-ouia-safe="true">실행</button>
                 <button id="button-cancel-modal-update-smb-user" aria-disabled="false" class="pf-c-button pf-m-link" type="button" data-ouia-safe="true">취소</button>
             </footer>
-            <input type="text" id="smb-update-user-hostname" name="smb-update-user-hostname" value="" style="display:none" disabled/>
+            <input type="text" id="smb-update-user-hostname" name="smb-update-user-hostname" value="" style="display:none" readonly/>
         </div>
     </div>
 </div>
@@ -3298,7 +3319,7 @@
                 <button id="button-execution-modal-remove-smb-user" aria-disabled="false" class="pf-c-button pf-m-primary" type="button" data-ouia-safe="true">실행</button>
                 <button id="button-cancel-modal-remove-smb-user" aria-disabled="false" class="pf-c-button pf-m-link" type="button" data-ouia-safe="true">취소</button>
             </footer>
-            <input type="text" id="smb-remove-user-hostname" name="smb-remove-user-hostname" value="" style="display:none" disabled/>
+            <input type="text" id="smb-remove-user-hostname" name="smb-remove-user-hostname" value="" style="display:none" readonly/>
         </div>
     </div>
 </div>
@@ -3315,14 +3336,14 @@
                 <div id="object-gateway-text"></div>
                 <label class="pf-c-check pf-c-select__menu-item" style="margin-top: 20px;">
                     <input class="pf-c-check__input" type="checkbox" id="input-checkbox-object-gateway-remove" value="remove"/>
-                    <span class="pf-c-check__label" style="color: #c9190b;"><i class="fas fa-fw fa-exclamation-circle" aria-hidden="true"></i>예, 확실히 삭제합니다.</span>
+                    <span class="pf-c-check__label" style="color: #c9190b;"><i class="fas fa-fw fa-exclamation-circle" aria-hidden="true"></i> 예, 확실히 삭제합니다.</span>
                 </label>
             </div>
             <footer class="pf-c-modal-box__footer">
                 <button id="button-execution-modal-remove-object-gateway" aria-disabled="false" class="pf-c-button pf-m-primary" type="button" data-ouia-safe="true">실행</button>
                 <button id="button-cancel-modal-remove-object-gateway" aria-disabled="false" class="pf-c-button pf-m-link" type="button" data-ouia-safe="true">취소</button>
             </footer>
-            <input type="text" id="object-gateway-id" name="object-gateway-id-id" value="" style="display:none" disabled/>
+            <input type="text" id="object-gateway-id" name="object-gateway-id-id" value="" style="display:none" readonly/>
         </div>
     </div>
 </div>
@@ -3357,7 +3378,7 @@
                         </div>
                         <div class="pf-c-form__group-control">
                             <div class="pf-c-select pf-m-expanded">
-                                <input class="pf-c-form-control" type="text" style="width:60%" id="form-input-object-gateway-placement-hosts" name="form-input-object-gateway-placement-hosts" disabled/>
+                                <input class="pf-c-form-control" type="text" style="width:60%" id="form-input-object-gateway-placement-hosts" name="form-input-object-gateway-placement-hosts" readonly/>
                                 <button class="pf-c-select__toggle" type="button" style="width: 60%;" id="button-object-gateway-glue-hosts-list-setting" aria-haspopup="true" aria-expanded="true" aria-labelledby="select-checkbox-expanded-toggle">
                                     <div class="pf-c-select__toggle-wrapper">
                                         <span class="pf-c-select__toggle-text">선택하십시오.</span>
@@ -3399,7 +3420,7 @@
                             </label>
                         </div>
                         <div class="pf-c-form__group-control">
-                            <input class="pf-c-form-control" style="width:50%" type="text" id="form-input-object-gateway-zone-group" name="form-input-object-gateway-zone-group" value="default" disabled/>
+                            <input class="pf-c-form-control" style="width:50%" type="text" id="form-input-object-gateway-zone-group" name="form-input-object-gateway-zone-group" value="default" readonly/>
                         </div>
                     </div>
                     <div class="pf-c-form__group">
@@ -3410,7 +3431,7 @@
                             </label>
                         </div>
                         <div class="pf-c-form__group-control">
-                            <input class="pf-c-form-control" style="width:50%" type="text" id="form-input-object-gateway-zone" name="form-input-object-gateway-zone" value="default" disabled/>
+                            <input class="pf-c-form-control" style="width:50%" type="text" id="form-input-object-gateway-zone" name="form-input-object-gateway-zone" value="default" readonly/>
                         </div>
                     </div>
                     <div class="pf-c-form__group">
@@ -3452,7 +3473,7 @@
                             </label>
                         </div>
                         <div class="pf-c-form__group-control">
-                            <input class="pf-c-form-control" style="width:50%" type="text" id="form-input-update-object-gateway-id" name="form-input-update-object-gateway-id" disabled/>
+                            <input class="pf-c-form-control" style="width:50%" type="text" id="form-input-update-object-gateway-id" name="form-input-update-object-gateway-id" readonly/>
                         </div>
                     </div>
                     <div class="pf-c-form__group">
@@ -3464,7 +3485,7 @@
                         </div>
                         <div class="pf-c-form__group-control">
                             <div class="pf-c-select pf-m-expanded">
-                                <input class="pf-c-form-control" type="text" style="width:60%" id="form-input-update-object-gateway-placement-hosts" name="form-input-update-object-gateway-placement-hosts" disabled/>
+                                <input class="pf-c-form-control" type="text" style="width:60%" id="form-input-update-object-gateway-placement-hosts" name="form-input-update-object-gateway-placement-hosts" readonly/>
                                 <button class="pf-c-select__toggle" type="button" style="width: 60%;" id="button-update-object-gateway-glue-hosts-list-setting" aria-haspopup="true" aria-expanded="true" aria-labelledby="select-checkbox-expanded-toggle">
                                     <div class="pf-c-select__toggle-wrapper">
                                         <span class="pf-c-select__toggle-text">선택하십시오.</span>
@@ -3488,7 +3509,7 @@
                             </label>
                         </div>
                         <div class="pf-c-form__group-control">
-                            <input class="pf-c-form-control" style="width:50%" type="text" id="form-input-update-object-gateway-zone-group" name="form-input-update-object-gateway-zone-group" value="default" disabled/>
+                            <input class="pf-c-form-control" style="width:50%" type="text" id="form-input-update-object-gateway-zone-group" name="form-input-update-object-gateway-zone-group" value="default" readonly/>
                         </div>
                     </div>
                     <div class="pf-c-form__group">
@@ -3499,7 +3520,7 @@
                             </label>
                         </div>
                         <div class="pf-c-form__group-control">
-                            <input class="pf-c-form-control" style="width:50%" type="text" id="form-input-update-object-gateway-zone" name="form-input-update-object-gateway-zone" value="default" disabled/>
+                            <input class="pf-c-form-control" style="width:50%" type="text" id="form-input-update-object-gateway-zone" name="form-input-update-object-gateway-zone" value="default" readonly/>
                         </div>
                     </div>
                     <div class="pf-c-form__group">
@@ -3511,6 +3532,13 @@
                         </div>
                         <div class="pf-c-form__group-control">
                             <input class="pf-c-form-control" style="width:50%" type="text" id="form-input-update-object-gateway-port" name="form-input-update-object-gateway-port"/>
+                        </div>
+                    </div>
+                    <div class="pf-c-form__group">
+                        <div class="pf-c-form__group-label" style="margin-left: 25px;">
+                            <label class="pf-c-check pf-c-select__menu-item">
+                                <span class="pf-c-check__label" style="color: #c9190b;font-size: 14px;"><i class="fas fa-fw fa-exclamation-circle" aria-hidden="true"></i> 수정시 서비스가 잠시 중단될 수 있으며, 서비스를 사용중인 경우 확인이 필요합니다.</span>
+                            </label>
                         </div>
                     </div>
                 </section>
@@ -3535,14 +3563,14 @@
                 <div id="object-gateway-user-text"></div>
                 <label class="pf-c-check pf-c-select__menu-item" style="margin-top: 20px;">
                     <input class="pf-c-check__input" type="checkbox" id="input-checkbox-object-gateway-user-remove" value="remove"/>
-                    <span class="pf-c-check__label" style="color: #c9190b;"><i class="fas fa-fw fa-exclamation-circle" aria-hidden="true"></i>예, 확실히 삭제합니다.</span>
+                    <span class="pf-c-check__label" style="color: #c9190b;"><i class="fas fa-fw fa-exclamation-circle" aria-hidden="true"></i> 예, 확실히 삭제합니다.</span>
                 </label>
             </div>
             <footer class="pf-c-modal-box__footer">
                 <button id="button-execution-modal-remove-object-gateway-user" aria-disabled="false" class="pf-c-button pf-m-primary" type="button" data-ouia-safe="true">실행</button>
                 <button id="button-cancel-modal-remove-object-gateway-user" aria-disabled="false" class="pf-c-button pf-m-link" type="button" data-ouia-safe="true">취소</button>
             </footer>
-            <input type="text" id="object-gateway-user-id" name="object-gateway-user-id" value="" style="display:none" disabled/>
+            <input type="text" id="object-gateway-user-id" name="object-gateway-user-id" value="" style="display:none" readonly/>
         </div>
     </div>
 </div>
@@ -3617,7 +3645,7 @@
                             </label>
                         </div>
                         <div class="pf-c-form__group-control">
-                            <input class="pf-c-form-control" style="width:50%" type="text" id="form-input-update-object-gateway-user-name" name="form-input-update-object-gateway-user-name" disabled/>
+                            <input class="pf-c-form-control" style="width:50%" type="text" id="form-input-update-object-gateway-user-name" name="form-input-update-object-gateway-user-name" readonly/>
                         </div>
                     </div>
                     <div class="pf-c-form__group">
@@ -3808,7 +3836,7 @@
                             </label>
                         </div>
                         <div class="pf-c-form__group-control">
-                            <input class="pf-c-form-control" style="width:50%" type="text" id="form-input-quota-update-object-gateway-user-name" name="form-input-quota-update-object-gateway-user-name" disabled/>
+                            <input class="pf-c-form-control" style="width:50%" type="text" id="form-input-quota-update-object-gateway-user-name" name="form-input-quota-update-object-gateway-user-name" readonly/>
                         </div>
                     </div>
                     <div class="pf-c-form__group">
@@ -3839,7 +3867,7 @@
                 <button id="button-execution-modal-update-object-gateway-user-quota" aria-disabled="false" class="pf-c-button pf-m-primary" type="button" data-ouia-safe="true">실행</button>
                 <button id="button-cancel-modal-update-object-gateway-user-quota" aria-disabled="false" class="pf-c-button pf-m-link" type="button" data-ouia-safe="true">취소</button>
             </footer>
-            <!-- <input type="text" id="form-input-quota-update-object-gateway-user-id" name="form-input-quota-update-object-gateway-user-id" value="" style="display:none" disabled/> -->
+            <!-- <input type="text" id="form-input-quota-update-object-gateway-user-id" name="form-input-quota-update-object-gateway-user-id" value="" style="display:none" readonly/> -->
         </div>
     </div>
 </div>
@@ -3857,14 +3885,14 @@
                 <div id="object-gateway-bucket-text"></div>
                 <label class="pf-c-check pf-c-select__menu-item" style="margin-top: 20px;">
                     <input class="pf-c-check__input" type="checkbox" id="input-checkbox-object-gateway-bucket-remove" value="remove"/>
-                    <span class="pf-c-check__label" style="color: #c9190b;"><i class="fas fa-fw fa-exclamation-circle" aria-hidden="true"></i>예, 확실히 삭제합니다.</span>
+                    <span class="pf-c-check__label" style="color: #c9190b;"><i class="fas fa-fw fa-exclamation-circle" aria-hidden="true"></i> 예, 확실히 삭제합니다.</span>
                 </label>
             </div>
             <footer class="pf-c-modal-box__footer">
                 <button id="button-execution-modal-remove-object-gateway-bucket" aria-disabled="false" class="pf-c-button pf-m-primary" type="button" data-ouia-safe="true">실행</button>
                 <button id="button-cancel-modal-remove-object-gateway-bucket" aria-disabled="false" class="pf-c-button pf-m-link" type="button" data-ouia-safe="true">취소</button>
             </footer>
-            <input type="text" id="object-gateway-bucket-id" name="object-gateway-bucket-id" value="" style="display:none" disabled/>
+            <input type="text" id="object-gateway-bucket-id" name="object-gateway-bucket-id" value="" style="display:none" readonly/>
         </div>
     </div>
 </div>
@@ -3931,7 +3959,7 @@
                             </label>
                         </div>
                         <div class="pf-c-form__group-control">
-                            <input class="pf-c-form-control" style="width:50%" type="text" id="form-input-update-object-gateway-bucket-name" name="form-input-update-object-gateway-bucket-name" disabled/>
+                            <input class="pf-c-form-control" style="width:50%" type="text" id="form-input-update-object-gateway-bucket-name" name="form-input-update-object-gateway-bucket-name" readonly/>
                             <input class="pf-c-form-control" style="width:50%" type="text" id="form-input-update-object-gateway-bucket-id" name="form-input-update-object-gateway-bucket-id" hidden/>
                         </div>
                     </div>

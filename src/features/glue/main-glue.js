@@ -7,39 +7,40 @@
 
 // document.ready 영역 시작
 pluginpath = '/usr/share/cockpit/ablestack';
-api_ip = '';
-api_port = '8080';
+glue_api_ip = '';
+glue_api_port = '8080';
 
 var console_log = true;
 
 $(document).ready(function(){
-    $('#div-modal-wizard-gateway-vm').load("./src/features/glue/gateway-vm-wizard.html");
-    $('#div-modal-wizard-gateway-vm').hide();
+    // $('#div-modal-wizard-gateway-vm').load("./src/features/glue/gateway-vm-wizard.html");
+    // $('#div-modal-wizard-gateway-vm').hide();
 
-    $('#dropdown-menu-storage-system-status').hide();
-    $('#dropdown-menu-iscsi-status').hide();
+    // $('#dropdown-menu-storage-system-status').hide();
+    // $('#dropdown-menu-iscsi-status').hide();
+
     // gluefs 구성 화면 로드
-    $('#div-modal-gluefs-construction').load("./src/features/glue/gluefs-construction.html");
-    $('#div-modal-gluefs-construction').hide();
+    // $('#div-modal-gluefs-construction').load("./src/features/glue/gluefs-construction.html");
+    // $('#div-modal-gluefs-construction').hide();
     // nfs 구성 화면 로드
-    $('#div-modal-nfs-construction').load("./src/features/glue/nfs-construction.html");
-    $('#div-modal-nfs-construction').hide();
+    // $('#div-modal-nfs-construction').load("./src/features/glue/nfs-construction.html");
+    // $('#div-modal-nfs-construction').hide();
     // smb 구성 화면 로드
-    $('#div-modal-smb-construction').load("./src/features/glue/smb-construction.html");
-    $('#div-modal-smb-construction').hide();
+    // $('#div-modal-smb-construction').load("./src/features/glue/smb-construction.html");
+    // $('#div-modal-smb-construction').hide();
 
-    $('#menu-item-set-gluefs-delete').hide();
-    $('#menu-item-set-nfs-delete').hide();
-    $('#menu-item-set-smb-delete').hide();
-    $('#menu-item-set-iscsi-delete').hide();
-    $('#menu-item-set-iscsi-service-control').hide();
-    $('#menu-item-set-iscsi-target-create').hide();
-    $('#menu-item-set-iscsi-acl-connect').hide();
+    // $('#menu-item-set-gluefs-delete').hide();
+    // $('#menu-item-set-nfs-delete').hide();
+    // $('#menu-item-set-smb-delete').hide();
+    // $('#menu-item-set-iscsi-delete').hide();
+    // $('#menu-item-set-iscsi-service-control').hide();
+    // $('#menu-item-set-iscsi-target-create').hide();
+    // $('#menu-item-set-iscsi-acl-connect').hide();
 
     cockpit.script(["cat /etc/hosts | grep 'scvm-mngt' | awk '{print $1}'"])
     .then(function (ip) {
         if(ip != ""){
-            api_ip = ip;
+            glue_api_ip = ip;
             topTabAction("button-tab-glue-vm");
             scanHostKey();
             gwvmInfoSet();
@@ -87,44 +88,44 @@ $('#card-action-gateway-vm-status').on('click', function(){
     $('#dropdown-menu-gateway-vm-status').toggle();
 });
 
-$('#button-open-modal-wizard-gateway-vm').on('click', function(){
-    $('#div-modal-wizard-gateway-vm').show();
-});
+// $('#button-open-modal-wizard-gateway-vm').on('click', function(){
+//     $('#div-modal-wizard-gateway-vm').show();
+// });
 
 // 파일 시스템 눈금 클릭 시
-$('#card-action-storage-cluster-system-status').on('click',function(){
+// $('#card-action-storage-cluster-system-status').on('click',function(){
 
-    if( $('#gluefs-status').text() != 'Health Err' || $('#nfs-status').text() != 'Health Err' || $('#smb-status').text() != 'Health Err'){
-        $('#menu-item-set-filesystem-control').removeClass('pf-m-disabled');
-        $('#menu-item-set-filesystem-control').addClass('pf-m-enabled');
-    }else{
-        $('#menu-item-set-filesystem-control').removeClass('pf-m-enabled');
-        $('#menu-item-set-filesystem-control').addClass('pf-m-disabeld');
-    }
-    $('#dropdown-menu-storage-system-status').toggle();
-});
+//     if( $('#gluefs-status').text() != 'Health Err' || $('#nfs-status').text() != 'Health Err' || $('#smb-status').text() != 'Health Err'){
+//         $('#menu-item-set-filesystem-control').removeClass('pf-m-disabled');
+//         $('#menu-item-set-filesystem-control').addClass('pf-m-enabled');
+//     }else{
+//         $('#menu-item-set-filesystem-control').removeClass('pf-m-enabled');
+//         $('#menu-item-set-filesystem-control').addClass('pf-m-disabeld');
+//     }
+//     $('#dropdown-menu-storage-system-status').toggle();
+// });
 
 // iscsi 눈금 클릭 시
-$('#card-action-storage-cluster-iscsi-status').on('click', function(){
-        if($('#iscsi-status').text() == "Health Err"){
-            $('#menu-item-set-iscsi-delete').hide();
-            $('#menu-item-set-iscsi-service-control').hide();
-            $('#menu-item-set-iscsi-target-create').hide();
-            $('#menu-item-set-iscsi-acl-connect').hide();
-            $('#menu-item-set-iscsi-construction').show();
-        }else{
-            $('#menu-item-set-iscsi-delete').show();
-            $('#menu-item-set-iscsi-service-control').show();
-            $('#menu-item-set-iscsi-target-create').show();
-            $('#menu-item-set-iscsi-acl-connect').show();
-            $('#menu-item-set-iscsi-construction').hide();
-        }
-    $('#dropdown-menu-iscsi-status').toggle();
-});
+// $('#card-action-storage-cluster-iscsi-status').on('click', function(){
+//         if($('#iscsi-status').text() == "Health Err"){
+//             $('#menu-item-set-iscsi-delete').hide();
+//             $('#menu-item-set-iscsi-service-control').hide();
+//             $('#menu-item-set-iscsi-target-create').hide();
+//             $('#menu-item-set-iscsi-acl-connect').hide();
+//             $('#menu-item-set-iscsi-construction').show();
+//         }else{
+//             $('#menu-item-set-iscsi-delete').show();
+//             $('#menu-item-set-iscsi-service-control').show();
+//             $('#menu-item-set-iscsi-target-create').show();
+//             $('#menu-item-set-iscsi-acl-connect').show();
+//             $('#menu-item-set-iscsi-construction').hide();
+//         }
+//     $('#dropdown-menu-iscsi-status').toggle();
+// });
 
 /** 스토리지 서비스 구성 관련 action start */
 $('#button-glue-api-server-connect').on('click', function(){
-    window.open('https://'+api_ip+':'+api_port+'/swagger/index.html');
+    window.open('https://'+glue_api_ip+':'+glue_api_port+'/swagger/index.html');
 });
 
 /** 스토리지 서비스 구성 관련 action start */
@@ -145,14 +146,13 @@ $('#menu-item-gateway-vm-setup').on('click', function(){
 
 /** 스토리지 서비스 구성 관련 action start */
 $('#menu-item-gateway-vm-setup2').on('click', function(){
-
     $('#div-modal-gateway-vm-setup').show();
 });
 
 // iscsi 구성 화면 닫기
-$('#div-modal-iscsi-close, #button-cancel-iscsi').on('click', function(){
-    $('#div-modal-iscsi').hide();
-});
+// $('#div-modal-iscsi-close, #button-cancel-iscsi').on('click', function(){
+//     $('#div-modal-iscsi').hide();
+// });
 // iscsi 구성
 $('#button-execution-iscsi').on('click', function(){
     $('#div-modal-iscsi').hide();
@@ -211,7 +211,6 @@ $('#modal-status-alert-button-close1, #modal-status-alert-button-close2').on('cl
 
 // help 팝업 이벤트 처리 시작
 $('i[name=icon-help-action]').on('click',function(e){
-    console.log(e.target.id);
     $("#modal-help-title").html("");
     // $("#modal-help-body").html("");
     
@@ -305,123 +304,123 @@ $('#button-close-file-system-control, #button-cancel-modal-file-system-control')
     $('#div-modal-file-system-control').hide();
 });
 // 파일 시스템 서비스 실행 버튼 클릭 시
-$('#button-execution-modal-file-system-control').on('click',function(){
-    var service_name = $('#form-select-file-system-service-control').val();
-    var service_action = $('#form-select-service-control-action').val();
+// $('#button-execution-modal-file-system-control').on('click',function(){
+//     var service_name = $('#form-select-file-system-service-control').val();
+//     var service_action = $('#form-select-service-control-action').val();
 
-    if(service_name == 'gluefs'){
-            $('#div-modal-file-system-control').hide();
-            $('#div-modal-spinner-header-txt').text('GlueFS 서비스 제어 중');
-            $('#div-modal-spinner').show();
+//     if(service_name == 'gluefs'){
+//             $('#div-modal-file-system-control').hide();
+//             $('#div-modal-spinner-header-txt').text('GlueFS 서비스 제어 중');
+//             $('#div-modal-spinner').show();
 
-            var cmd = ['python3', pluginpath + '/python/glue/gluefs.py', 'daemon', '--control', service_action];
-            cockpit.spawn(cmd).then(function(data){
-                var retVal = JSON.parse(data);
-                var retVal_code = JSON.parse(retVal.code);
+//             var cmd = ['python3', pluginpath + '/python/glue/gluefs.py', 'daemon', '--control', service_action];
+//             cockpit.spawn(cmd).then(function(data){
+//                 var retVal = JSON.parse(data);
+//                 var retVal_code = JSON.parse(retVal.code);
 
-                $('#div-modal-spinner').hide();
+//                 $('#div-modal-spinner').hide();
 
-                if(service_action == 'stop'){
-                    if(retVal_code == 200){
-                        $('#modal-status-alert-title').text("GlueFS 서비스 제어");
-                        $('#modal-status-alert-body').text("GlueFS 서비스가 정지되었습니다.");
-                        $('#div-modal-status-alert').show();
-                    }
-                    else{
-                        $('#modal-status-alert-title').text("GlueFS 서비스 제어");
-                        $('#modal-status-alert-body').text("GlueFS 서비스를 정지 시키는 데 실패했습니다.");
-                        $('#div-modal-status-alert').show();
-                    }
-                }
-                else{
-                    if(retVal_code == 200){
-                        $('#modal-status-alert-title').text("GlueFS 서비스 제어");
-                        $('#modal-status-alert-body').text("GlueFS 서비스가 시작되었습니다.");
-                        $('#div-modal-status-alert').show();
-                    }
-                    else{
-                        $('#modal-status-alert-title').text("GlueFS 서비스 제어");
-                        $('#modal-status-alert-body').text("GlueFS 서비스를 시작 시키는 데 실패했습니다.");
-                        $('#div-modal-status-alert').show();
-                    }
-                }
+//                 if(service_action == 'stop'){
+//                     if(retVal_code == 200){
+//                         $('#modal-status-alert-title').text("GlueFS 서비스 제어");
+//                         $('#modal-status-alert-body').text("GlueFS 서비스가 정지되었습니다.");
+//                         $('#div-modal-status-alert').show();
+//                     }
+//                     else{
+//                         $('#modal-status-alert-title').text("GlueFS 서비스 제어");
+//                         $('#modal-status-alert-body').text("GlueFS 서비스를 정지 시키는 데 실패했습니다.");
+//                         $('#div-modal-status-alert').show();
+//                     }
+//                 }
+//                 else{
+//                     if(retVal_code == 200){
+//                         $('#modal-status-alert-title').text("GlueFS 서비스 제어");
+//                         $('#modal-status-alert-body').text("GlueFS 서비스가 시작되었습니다.");
+//                         $('#div-modal-status-alert').show();
+//                     }
+//                     else{
+//                         $('#modal-status-alert-title').text("GlueFS 서비스 제어");
+//                         $('#modal-status-alert-body').text("GlueFS 서비스를 시작 시키는 데 실패했습니다.");
+//                         $('#div-modal-status-alert').show();
+//                     }
+//                 }
 
-            });
-    }
-    else if(service_name == 'nfs'){
-        $('#div-modal-file-system-control').hide();
-        $('#div-modal-spinner-header-txt').text('NFS 서비스 제어 중');
-        $('#div-modal-spinner').show();
+//             });
+//     }
+//     else if(service_name == 'nfs'){
+//         $('#div-modal-file-system-control').hide();
+//         $('#div-modal-spinner-header-txt').text('NFS 서비스 제어 중');
+//         $('#div-modal-spinner').show();
 
-        var cmd = ['python3', pluginpath + '/python/glue/nfs.py', 'daemon', '--control', service_action];
-        cockpit.spawn(cmd).then(function(data){
-            var retVal = JSON.parse(data);
-            var retVal_code = JSON.parse(retVal.code);
-            $('#div-modal-spinner').hide();
-            if(service_action == 'stop'){
-                if(retVal_code == 200){
-                    $('#modal-status-alert-title').text("NFS 서비스 제어");
-                    $('#modal-status-alert-body').text("NFS 서비스가 정지되었습니다.");
-                    $('#div-modal-status-alert').show();
-                }
-                else{
-                    $('#modal-status-alert-title').text("NFS 서비스 제어");
-                    $('#modal-status-alert-body').text("NFS 서비스를 정지 시키는 데 실패했습니다.");
-                    $('#div-modal-status-alert').show();
-                }
-            }
-            else{
-                if(retVal_code == 200){
-                    $('#modal-status-alert-title').text("NFS 서비스 제어");
-                    $('#modal-status-alert-body').text("NFS 서비스가 시작되었습니다.");
-                    $('#div-modal-status-alert').show();
-                }
-                else{
-                    $('#modal-status-alert-title').text("NFS 서비스 제어");
-                    $('#modal-status-alert-body').text("NFS 서비스를 시작 시키는 데 실패했습니다.");
-                    $('#div-modal-status-alert').show();
-                }
-            }
-        });
-        }
-    else if(service_name == 'smb'){
-        $('#div-modal-file-system-control').hide();
-        $('#div-modal-spinner-header-txt').text('SMB 서비스 제어 중');
-        $('#div-modal-spinner').show();
+//         var cmd = ['python3', pluginpath + '/python/glue/nfs.py', 'daemon', '--control', service_action];
+//         cockpit.spawn(cmd).then(function(data){
+//             var retVal = JSON.parse(data);
+//             var retVal_code = JSON.parse(retVal.code);
+//             $('#div-modal-spinner').hide();
+//             if(service_action == 'stop'){
+//                 if(retVal_code == 200){
+//                     $('#modal-status-alert-title').text("NFS 서비스 제어");
+//                     $('#modal-status-alert-body').text("NFS 서비스가 정지되었습니다.");
+//                     $('#div-modal-status-alert').show();
+//                 }
+//                 else{
+//                     $('#modal-status-alert-title').text("NFS 서비스 제어");
+//                     $('#modal-status-alert-body').text("NFS 서비스를 정지 시키는 데 실패했습니다.");
+//                     $('#div-modal-status-alert').show();
+//                 }
+//             }
+//             else{
+//                 if(retVal_code == 200){
+//                     $('#modal-status-alert-title').text("NFS 서비스 제어");
+//                     $('#modal-status-alert-body').text("NFS 서비스가 시작되었습니다.");
+//                     $('#div-modal-status-alert').show();
+//                 }
+//                 else{
+//                     $('#modal-status-alert-title').text("NFS 서비스 제어");
+//                     $('#modal-status-alert-body').text("NFS 서비스를 시작 시키는 데 실패했습니다.");
+//                     $('#div-modal-status-alert').show();
+//                 }
+//             }
+//         });
+//         }
+//     else if(service_name == 'smb'){
+//         $('#div-modal-file-system-control').hide();
+//         $('#div-modal-spinner-header-txt').text('SMB 서비스 제어 중');
+//         $('#div-modal-spinner').show();
 
-        var cmd = ['python3', pluginpath + '/python/glue/smb.py', service_action,'-sn','smb'];
-        cockpit.spawn(cmd).then(function(data){
-            var retVal = JSON.parse(data);
-            $('#div-modal-spinner').hide();
-            if(service_action == 'stop'){
-                if(retVal.code == 200){
-                    $('#modal-status-alert-title').text("SMB 서비스 제어");
-                    $('#modal-status-alert-body').text("SMB 서비스가 정지되었습니다.");
-                    $('#div-modal-status-alert').show();
+//         var cmd = ['python3', pluginpath + '/python/glue/smb.py', service_action,'-sn','smb'];
+//         cockpit.spawn(cmd).then(function(data){
+//             var retVal = JSON.parse(data);
+//             $('#div-modal-spinner').hide();
+//             if(service_action == 'stop'){
+//                 if(retVal.code == 200){
+//                     $('#modal-status-alert-title').text("SMB 서비스 제어");
+//                     $('#modal-status-alert-body').text("SMB 서비스가 정지되었습니다.");
+//                     $('#div-modal-status-alert').show();
 
-                    localStorage.setItem('smb','stop');
-                }
-                else{
-                    $('#modal-status-alert-title').text("SMB 서비스 제어");
-                    $('#modal-status-alert-body').text("SMB 서비스를 정지 시키는 데 실패했습니다.");
-                    $('#div-modal-status-alert').show();
-                }
-            }
-            else{
-                if(retVal.code == 200){
-                    $('#modal-status-alert-title').text("SMB 서비스 제어");
-                    $('#modal-status-alert-body').text("SMB 서비스가 시작되었습니다.");
-                    $('#div-modal-status-alert').show();
-                }
-                else{
-                    $('#modal-status-alert-title').text("SMB 서비스 제어");
-                    $('#modal-status-alert-body').text("SMB 서비스를 시작 시키는 데 실패했습니다.");
-                    $('#div-modal-status-alert').show();
-                }
-            }
-        });
-    }
-});
+//                     localStorage.setItem('smb','stop');
+//                 }
+//                 else{
+//                     $('#modal-status-alert-title').text("SMB 서비스 제어");
+//                     $('#modal-status-alert-body').text("SMB 서비스를 정지 시키는 데 실패했습니다.");
+//                     $('#div-modal-status-alert').show();
+//                 }
+//             }
+//             else{
+//                 if(retVal.code == 200){
+//                     $('#modal-status-alert-title').text("SMB 서비스 제어");
+//                     $('#modal-status-alert-body').text("SMB 서비스가 시작되었습니다.");
+//                     $('#div-modal-status-alert').show();
+//                 }
+//                 else{
+//                     $('#modal-status-alert-title').text("SMB 서비스 제어");
+//                     $('#modal-status-alert-body').text("SMB 서비스를 시작 시키는 데 실패했습니다.");
+//                     $('#div-modal-status-alert').show();
+//                 }
+//             }
+//         });
+//     }
+// });
 // iscsi 서비스 제어 버튼 클릭 시
 $('#menu-item-set-iscsi-service-control').on('click', function(){
     $('#div-modal-iscsi-control').show();
@@ -1131,17 +1130,15 @@ function gwvmInfoSet(){
     $("#gwvm-cluster-icon").attr('class','fas fa-fw fa-exclamation-triangle');
     
     //디테일 정보 가져오기
-    fetch('https://'+api_ip+':'+api_port+'/api/v1/gwvm/detail/cell',{
+    fetch('https://'+glue_api_ip+':'+glue_api_port+'/api/v1/gwvm/detail/cell',{
         method: 'GET'
     }).then(res => res.json()).then(data => {
         var retDetailVal = JSON.parse(data.Message);
-        console.log(retDetailVal)
         if (retDetailVal.code == "200" || retDetailVal.val["role"] == 'Running') {
-            fetch('https://'+api_ip+':'+api_port+'/api/v1/gwvm/cell',{
+            fetch('https://'+glue_api_ip+':'+glue_api_port+'/api/v1/gwvm/cell',{
                 method: 'GET'
             }).then(res => res.json()).then(data => {
                 var retVal = JSON.parse(data.Message);
-                console.log(retVal)
                 if(retVal.code == "200"){
                     if(retVal.val["role"] == "Started"){
                         $("#gwvm-status").text(retDetailVal.val["role"]);
@@ -1209,7 +1206,6 @@ function gwvmInfoSet(){
         } else if (retDetailVal.code == "400") {
             allDisableConfig("Not configured");
             stateBeforeConfig();
-            
             console.log("Not configured");
         } else {
             allDisableConfig(retDetailVal.val["role"]);
@@ -1347,7 +1343,7 @@ $('#button-storage-dashboard-connect').on('click', function(){
  * History  : 2024.02.22 최초 작성
  */
 function glueVmList(){
-    fetch('https://'+api_ip+':'+api_port+'/api/v1/glue/hosts',{
+    fetch('https://'+glue_api_ip+':'+glue_api_port+'/api/v1/glue/hosts',{
         method: 'GET'
     }).then(res => res.json()).then(data => {
         $('#glue-vm-list tr').remove();
@@ -1587,7 +1583,7 @@ function setSelectHostsCheckbox(div_id, form_input_id, selectHosts){
     $('fieldset[name="fieldset-glue-host-list"]').remove();
     $('#'+form_input_id).val('');
     //호스트 리스트 불러와서
-    fetch('https://'+api_ip+':'+api_port+'/api/v1/glue/hosts',{
+    fetch('https://'+glue_api_ip+':'+glue_api_port+'/api/v1/glue/hosts',{
         method: 'GET'
     }).then(res => res.json()).then(data => {
         $('#'+div_id+' fieldset').remove();
@@ -1674,7 +1670,7 @@ function setSmbUserSelectBox(select_box_id, data){
 }
 
 function setGlueFsSelectBox(fs_select_box_id, path_select_box_id, selected_gluefs_id){
-    fetch('https://'+api_ip+':'+api_port+'/api/v1/gluefs',{
+    fetch('https://'+glue_api_ip+':'+glue_api_port+'/api/v1/gluefs',{
         method: 'GET',
         headers: {
             'accept': 'application/json',
@@ -1722,7 +1718,7 @@ function setGlueFsVolumeGroupSelectBox(gluefs_name, path_select_box_id, selected
         $('#'+path_select_box_id).append(el);
         return
     }
-    fetch('https://'+api_ip+':'+api_port+'/api/v1/gluefs/subvolume/group?vol_name='+gluefs_name,{
+    fetch('https://'+glue_api_ip+':'+glue_api_port+'/api/v1/gluefs/subvolume/group?vol_name='+gluefs_name,{
         method: 'GET',
         headers: {
             'accept': 'application/json',
@@ -1767,7 +1763,7 @@ function setGlueFsVolumeGroupSelectBox(gluefs_name, path_select_box_id, selected
 }
 
 function setNfsClusterSelectBox(select_box_id, selected_cluster_id){
-    fetch('https://'+api_ip+':'+api_port+'/api/v1/nfs',{
+    fetch('https://'+glue_api_ip+':'+glue_api_port+'/api/v1/nfs',{
         method: 'GET',
         headers: {
             'accept': 'application/json',
@@ -1801,7 +1797,7 @@ function setNfsClusterSelectBox(select_box_id, selected_cluster_id){
 }
 
 function setIngressBackendSelectBox(select_box_id){
-    fetch('https://'+api_ip+':'+api_port+'/api/v1/service',{
+    fetch('https://'+glue_api_ip+':'+glue_api_port+'/api/v1/service',{
         method: 'GET',
         headers: {
             'accept': 'application/json',
@@ -1825,7 +1821,7 @@ function setIngressBackendSelectBox(select_box_id){
 }
 
 function setPoolSelectBox(select_box_id, selected_pool_id){
-    fetch('https://'+api_ip+':'+api_port+'/api/v1/pool?pool_type=rbd',{
+    fetch('https://'+glue_api_ip+':'+glue_api_port+'/api/v1/pool?pool_type=rbd',{
         method: 'GET',
         headers: {
             'accept': 'application/json',
@@ -1856,11 +1852,15 @@ function setPoolSelectBox(select_box_id, selected_pool_id){
 }
 
 function setIscsiPortalCheckbox(div_id, form_input_id, portals_json){
+    $('#'+div_id+' fieldset').remove();
+    $('input[name=iscsi-image-list]').remove();
+    $('input[type=checkbox][name="iscsi-portal-list"]').remove();
+
     //호스트 리스트 불러와서
-    fetch('https://'+api_ip+':'+api_port+'/api/v1/service?service_type=iscsi',{
+    fetch('https://'+glue_api_ip+':'+glue_api_port+'/api/v1/service?service_type=iscsi',{
         method: 'GET'
     }).then(res => res.json()).then(iscsi_service => {
-        fetch('https://'+api_ip+':'+api_port+'/api/v1/glue/hosts',{
+        fetch('https://'+glue_api_ip+':'+glue_api_port+'/api/v1/glue/hosts',{
             method: 'GET'
         }).then(res => res.json()).then(data => {
             var iscsi = [];
@@ -1873,7 +1873,6 @@ function setIscsiPortalCheckbox(div_id, form_input_id, portals_json){
             //중복 제거
             const uniquePortalArray = iscsi.filter((value, index, self) => self.indexOf(value) === index);
             
-            $('#'+div_id+' fieldset').remove();
             let insert_tr = "";
             insert_tr += '<fieldset class="pf-c-select__menu-fieldset" aria-label="Select input">';
             if(portals_json==null){
@@ -1891,40 +1890,42 @@ function setIscsiPortalCheckbox(div_id, form_input_id, portals_json){
                 }
             }else{
                 for(var i=0; i < data.length; i++){
-                    var ip_address_boolon = false;
-                    var addr_boolon = false;
-    
-                    for(var j=0; j < portals_json.length; j++){
-                        if(portals_json[j].ip == data[i].ip_address){
-                            ip_address_boolon = true;
+                    if(uniquePortalArray.includes(data[i].hostname)){
+                        var ip_address_boolon = false;
+                        var addr_boolon = false;
+        
+                        for(var j=0; j < portals_json.length; j++){
+                            if(portals_json[j].ip == data[i].ip_address){
+                                ip_address_boolon = true;
+                            }
+                            if(portals_json[j].ip == data[i].addr){
+                                addr_boolon = true;
+                            }
                         }
-                        if(portals_json[j].ip == data[i].addr){
-                            addr_boolon = true;
+                        
+                        if(!ip_address_boolon){
+                            insert_tr += '    <label class="pf-c-check pf-c-select__menu-item">';
+                            insert_tr += '        <input class="pf-c-check__input" type="checkbox" id="iscsi-portal-list-'+i+'" name="iscsi-portal-list" value="'+data[i].hostname+':'+data[i].ip_address+'"/>';
+                            insert_tr += '        <span class="pf-c-check__label">'+data[i].hostname+':'+data[i].ip_address+'</span>';
+                            insert_tr += '    </label>';
+                        }else{
+                            insert_tr += '    <label class="pf-c-check pf-c-select__menu-item">';
+                            insert_tr += '        <input class="pf-c-check__input" type="checkbox" id="iscsi-portal-list-'+i+'" name="iscsi-portal-list" value="'+data[i].hostname+':'+data[i].ip_address+'" checked/>';
+                            insert_tr += '        <span class="pf-c-check__label">'+data[i].hostname+':'+data[i].ip_address+'</span>';
+                            insert_tr += '    </label>';
                         }
-                    }
-                    
-                    if(!ip_address_boolon){
-                        insert_tr += '    <label class="pf-c-check pf-c-select__menu-item">';
-                        insert_tr += '        <input class="pf-c-check__input" type="checkbox" id="iscsi-portal-list-'+i+'" name="iscsi-portal-list" value="'+data[i].hostname+':'+data[i].ip_address+'"/>';
-                        insert_tr += '        <span class="pf-c-check__label">'+data[i].hostname+':'+data[i].ip_address+'</span>';
-                        insert_tr += '    </label>';
-                    }else{
-                        insert_tr += '    <label class="pf-c-check pf-c-select__menu-item">';
-                        insert_tr += '        <input class="pf-c-check__input" type="checkbox" id="iscsi-portal-list-'+i+'" name="iscsi-portal-list" value="'+data[i].hostname+':'+data[i].ip_address+'" checked/>';
-                        insert_tr += '        <span class="pf-c-check__label">'+data[i].hostname+':'+data[i].ip_address+'</span>';
-                        insert_tr += '    </label>';
-                    }
-    
-                    if(!addr_boolon){
-                        insert_tr += '    <label class="pf-c-check pf-c-select__menu-item">';
-                        insert_tr += '        <input class="pf-c-check__input" type="checkbox" id="iscsi-portal-list-'+i+'" name="iscsi-portal-list" value="'+data[i].hostname+':'+data[i].addr+'"/>';
-                        insert_tr += '        <span class="pf-c-check__label">'+data[i].hostname+':'+data[i].addr+'</span>';
-                        insert_tr += '    </label>';
-                    }else{
-                        insert_tr += '    <label class="pf-c-check pf-c-select__menu-item">';
-                        insert_tr += '        <input class="pf-c-check__input" type="checkbox" id="iscsi-portal-list-'+i+'" name="iscsi-portal-list" value="'+data[i].hostname+':'+data[i].addr+'" checked/>';
-                        insert_tr += '        <span class="pf-c-check__label">'+data[i].hostname+':'+data[i].addr+'</span>';
-                        insert_tr += '    </label>';
+        
+                        if(!addr_boolon){
+                            insert_tr += '    <label class="pf-c-check pf-c-select__menu-item">';
+                            insert_tr += '        <input class="pf-c-check__input" type="checkbox" id="iscsi-portal-list-'+i+'" name="iscsi-portal-list" value="'+data[i].hostname+':'+data[i].addr+'"/>';
+                            insert_tr += '        <span class="pf-c-check__label">'+data[i].hostname+':'+data[i].addr+'</span>';
+                            insert_tr += '    </label>';
+                        }else{
+                            insert_tr += '    <label class="pf-c-check pf-c-select__menu-item">';
+                            insert_tr += '        <input class="pf-c-check__input" type="checkbox" id="iscsi-portal-list-'+i+'" name="iscsi-portal-list" value="'+data[i].hostname+':'+data[i].addr+'" checked/>';
+                            insert_tr += '        <span class="pf-c-check__label">'+data[i].hostname+':'+data[i].addr+'</span>';
+                            insert_tr += '    </label>';
+                        }
                     }
                 }
     
@@ -1974,7 +1975,7 @@ function setIscsiPortalCheckbox(div_id, form_input_id, portals_json){
 
 function setImageSelectBox(div_id, form_input_id, disks_json){
     //호스트 리스트 불러와서
-    fetch('https://'+api_ip+':'+api_port+'/api/v1/image',{
+    fetch('https://'+glue_api_ip+':'+glue_api_port+'/api/v1/image',{
         method: 'GET'
     }).then(res => res.json()).then(data => {
         $('#'+div_id+' fieldset').remove();
@@ -2061,7 +2062,7 @@ function setImageSelectBox(div_id, form_input_id, disks_json){
 function setRgwUserSelectBox(select_box_id, selected_user_id){
     $('#'+select_box_id).empty();
     $('#'+select_box_id).append('<option value="" selected>불러오는 중...</option>');
-    fetch('https://'+api_ip+':'+api_port+'/api/v1/rgw/user',{
+    fetch('https://'+glue_api_ip+':'+glue_api_port+'/api/v1/rgw/user',{
         method: 'GET',
         headers: {
             'accept': 'application/json',
@@ -2094,7 +2095,7 @@ function setRgwUserSelectBox(select_box_id, selected_user_id){
 function setRgwBucketSelectBox(select_box_id, selected_bucket_id){
     $('#'+select_box_id).empty();
     $('#'+select_box_id).append('<option value="" selected>불러오는 중...</option>');
-    fetch('https://'+api_ip+':'+api_port+'/api/v1/rgw/bucket?detail=false',{
+    fetch('https://'+glue_api_ip+':'+glue_api_port+'/api/v1/rgw/bucket?detail=false',{
         method: 'GET',
         headers: {
             'accept': 'application/json',
@@ -2126,7 +2127,7 @@ function setRgwBucketSelectBox(select_box_id, selected_bucket_id){
 
 async function duplicatImageNameCheck(pool_name, image_name){
     var duplication_yn = false;
-    await fetch('https://'+api_ip+':'+api_port+'/api/v1/image?pool_name='+pool_name,{
+    await fetch('https://'+glue_api_ip+':'+glue_api_port+'/api/v1/image?pool_name='+pool_name,{
         method: 'GET',
         headers: {
             'accept': 'application/json',
@@ -2147,7 +2148,7 @@ async function duplicatImageNameCheck(pool_name, image_name){
 }
 
 function setNvmeofHostIpSelectBox(select_box_id, selected_host_ip){
-    fetch('https://'+api_ip+':'+api_port+'/api/v1/service?service_type=nvmeof',{
+    fetch('https://'+glue_api_ip+':'+glue_api_port+'/api/v1/service?service_type=nvmeof',{
         method: 'GET',
         headers: {
             'accept': 'application/json',
@@ -2175,4 +2176,61 @@ function setNvmeofHostIpSelectBox(select_box_id, selected_host_ip){
     }).catch(function(data){
         console.log("setNvmeofHostIpSelectBox error : "+data);
     });
+}
+
+/**
+ * Meathod Name : checkForNameDuplicates
+ * Date Created : 2024.05.08
+ * Writer  : 배태주
+ * Description : 테이블 리스트에서 중복된 이름이 있는지 확인하는 함수
+ * Parameter : 없음
+ * Return  : 없음
+ * History  : 2024.05.08 최초 작성
+ */
+function checkForNameDuplicates(table_list_id, compare_index, name_val){
+    var check_boolean = false;
+    $('#'+table_list_id).children('tr').each(function(){
+        if($(this).children('td:eq('+compare_index+')').text() == name_val){
+            check_boolean = true;
+        }
+    });
+    return check_boolean;
+}
+
+/**
+ * Meathod Name : checkForNameDuplicates1
+ * Date Created : 2024.05.08
+ * Writer  : 배태주
+ * Description : 테이블 리스트에서 중복된 이름이 있는지 확인하는 함수
+ * Parameter : 없음
+ * Return  : 없음
+ * History  : 2024.05.08 최초 작성
+ */
+async function checkForNameDuplicates1(storage_type, name_val){
+    var duplication_yn = false;
+
+    if(storage_type == "gluefs"){
+        await fetch('https://'+glue_api_ip+':'+glue_api_port+'/api/v1/gluefs',{
+            method: 'GET',
+            headers: {
+                'accept': 'application/json',
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        }).then(res => res.json()).then(data => {
+            if(data.list.length != 0){
+                $('#gluefs-list tr').remove();
+                for(var i=0; i < data.list.length; i++){
+                    if(data.list[i].name == name_val){
+                        duplication_yn = true;
+                    }
+                }
+            }
+            createLoggerInfo("duplicatImageNameCheck success");
+        }).catch(function(data){
+            duplication_yn = false;
+            console.log("duplicatImageNameCheck error : "+data);
+        });
+    }
+
+    return duplication_yn;
 }

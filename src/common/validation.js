@@ -234,7 +234,7 @@ function integerCheck(number) {
  * History  : 2024.03.21 최초 작성
  */
 function pseudoCheck(pseudo) {
-  var regex = /^[/][a-zA-Z][a-zA-Z0-9]*$/;
+  var regex = /([/][a-zA-Z][a-zA-Z0-9]*)+$/;
   return regex.test(pseudo)
 }
 
@@ -282,4 +282,32 @@ function nameCheck2(name) {
 function imageNameCheck(name) {
   var regex = /^[a-zA-Z][a-zA-Z0-9._-]*$/;
   return regex.test(name)
+}
+
+/**
+ * Meathod Name : checkIqn
+ * Date Created : 2024.05.08
+ * Writer  : 배태주
+ * Description : iqn id를 검사하는 함수
+ * Parameter : 없음
+ * Return  : 없음
+ * History  : 2024.05.08 최초 작성
+ */
+function checkIqn(iqn) {
+  var regex = /^iqn.(19[0-9][0-9]|20[0-9][0-9])-(0[1-9]|1[1-2])(.[a-zA-z0-9]+)+:[a-zA-z0-9]+$/;
+  return regex.test(iqn)
+}
+
+/**
+ * Meathod Name : checkNqn
+ * Date Created : 2024.05.08
+ * Writer  : 배태주
+ * Description : iqn id를 검사하는 함수
+ * Parameter : 없음
+ * Return  : 없음
+ * History  : 2024.05.08 최초 작성
+ */
+function checkNqn(nqn) {
+  var regex = /^nqn.(19[0-9][0-9]|20[0-9][0-9])-(0[1-9]|1[1-2])(.[a-zA-z0-9]+)+:[a-zA-z0-9]+$/;
+  return regex.test(nqn)
 }

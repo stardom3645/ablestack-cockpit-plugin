@@ -8,7 +8,7 @@
 function nvmeofServiceList(){
     //조회
     $('#button-nvmeof-service-search').html("<svg class='pf-c-spinner pf-m-md' role='progressbar' aria-valuetext='Loading...' viewBox='0 0 100 100' ><circle class='pf-c-spinner__path' cx='50' cy='50' r='45' fill='none'></circle></svg>");
-    fetch('https://'+api_ip+':'+api_port+'/api/v1/service?service_type=nvmeof',{
+    fetch('https://'+glue_api_ip+':'+glue_api_port+'/api/v1/service?service_type=nvmeof',{
         method: 'GET',
         headers: {
             'accept': 'application/json',
@@ -96,7 +96,7 @@ $('#button-execution-modal-create-nvmeof-service').on('click', function(){
         $("#modal-status-alert-title").html("NVMe-oF Service 생성 실패");
         $("#modal-status-alert-body").html("NVMe-oF Service 생성을 실패하였습니다.");
     
-        fetch('https://'+api_ip+':'+api_port+'/api/v1/nvmeof',{
+        fetch('https://'+glue_api_ip+':'+glue_api_port+'/api/v1/nvmeof',{
             method: 'POST',
             headers: {
                 'accept': 'application/json',
@@ -155,7 +155,7 @@ $('#button-execution-modal-remove-nvmeof-service').on('click', function(){
     
         $("#modal-status-alert-title").html("NVMe-of Service 삭제 실패");
         $("#modal-status-alert-body").html("NVMe-of Service 삭제를 실패하였습니다.");
-        fetch('https://'+api_ip+':'+api_port+'/api/v1/service/'+nvmeof_service_id,{
+        fetch('https://'+glue_api_ip+':'+glue_api_port+'/api/v1/service/'+nvmeof_service_id,{
             method: 'DELETE',
             headers: {
                 'accept': 'application/json',
@@ -193,7 +193,7 @@ function nvmeofServiceCreateInitInputValue(){
 function nvmeofTargetList(){
     //조회
     $('#button-nvmeof-target-search').html("<svg class='pf-c-spinner pf-m-md' role='progressbar' aria-valuetext='Loading...' viewBox='0 0 100 100' ><circle class='pf-c-spinner__path' cx='50' cy='50' r='45' fill='none'></circle></svg>");
-    fetch('https://'+api_ip+':'+api_port+'/api/v1/nvmeof/target',{
+    fetch('https://'+glue_api_ip+':'+glue_api_port+'/api/v1/nvmeof/target',{
         method: 'GET',
         headers: {
             'accept': 'application/json',
@@ -202,7 +202,6 @@ function nvmeofTargetList(){
     }).then(res => res.json()).then(data => {
         if(data.length > 0 || (data.code != undefined && data.code!="no_gateways_defined")){
             $('#nvmeof-target-list tr').remove();
-            console.log(data)
             for(var i=0; i < data.length; i++){
                 let insert_tr = "";
                 insert_tr += '<tr role="row">';
@@ -298,7 +297,7 @@ $('#button-execution-modal-create-nvmeof-target').on('click', function(){
         $("#modal-status-alert-title").html("NVMe-oF Target 생성 실패");
         $("#modal-status-alert-body").html("NVMe-oF Target 생성을 실패하였습니다.");
     
-        fetch('https://'+api_ip+':'+api_port+'/api/v1/nvmeof/target',{
+        fetch('https://'+glue_api_ip+':'+glue_api_port+'/api/v1/nvmeof/target',{
             method: 'POST',
             headers: {
                 'accept': 'application/json',
@@ -353,7 +352,7 @@ $('#button-execution-modal-remove-nvmeof-target').on('click', function(){
     
         $("#modal-status-alert-title").html("NVMe-of Target 삭제 실패");
         $("#modal-status-alert-body").html("NVMe-of Target 삭제를 실패하였습니다.");
-        fetch('https://'+api_ip+':'+api_port+'/api/v1/nvmeof/subsystem?subsystem_nqn_id='+nqn_id,{
+        fetch('https://'+glue_api_ip+':'+glue_api_port+'/api/v1/nvmeof/subsystem?subsystem_nqn_id='+nqn_id,{
             method: 'DELETE',
             headers: {
                 'accept': 'application/json',
@@ -442,6 +441,9 @@ function nvmeofCreateValidateCheck(){
     if (service_id == "") {
         alert("이름을 입력해주세요.");
         validate_check = false;
+    } else if (checkForNameDuplicates("nvmeof-service-list", 0, 'nvmeof.'+service_id)) {
+        alert(service_id + "는 이미 사용중인 이름입니다.");
+        validate_check = false;
     } else if (host_cnt == 0) {
         alert("배치 호스트를 선택해주세요.");
         validate_check = false;
@@ -461,6 +463,9 @@ function nvmeofTargetCreateValidateCheck(){
 
     if (nqn_id == "") {
         alert("IQN을 입력해주세요.");
+        validate_check = false;
+    } else if (!checkNqn(nqn_id)) {
+        alert("NQN 생성 규칙을 확인해주세요.");
         validate_check = false;
     } else if (potal_ip == "") {
         alert("IP를 입력해주세요.");

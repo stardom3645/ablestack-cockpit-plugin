@@ -8,7 +8,7 @@
 function iscsiServiceList(){
     //조회
     $('#button-iscsi-service-search').html("<svg class='pf-c-spinner pf-m-md' role='progressbar' aria-valuetext='Loading...' viewBox='0 0 100 100' ><circle class='pf-c-spinner__path' cx='50' cy='50' r='45' fill='none'></circle></svg>");
-    fetch('https://'+api_ip+':'+api_port+'/api/v1/service?service_type=iscsi',{
+    fetch('https://'+glue_api_ip+':'+glue_api_port+'/api/v1/service?service_type=iscsi',{
         method: 'GET',
         headers: {
             'accept': 'application/json',
@@ -102,7 +102,7 @@ $('#button-execution-modal-create-iscsi-service').on('click', function(){
         $("#modal-status-alert-title").html("iSCSI Service 생성 실패");
         $("#modal-status-alert-body").html("iSCSI Service 생성을 실패하였습니다.");
     
-        fetch('https://'+api_ip+':'+api_port+'/api/v1/iscsi',{
+        fetch('https://'+glue_api_ip+':'+glue_api_port+'/api/v1/iscsi',{
             method: 'POST',
             headers: {
                 'accept': 'application/json',
@@ -131,7 +131,7 @@ $('#button-execution-modal-create-iscsi-service').on('click', function(){
 /** iSCSI Service create 관련 action end */
 /** iSCSI Service update 관련 action start */
 function iscsiServiceEdit(iscsi_id){
-    fetch('https://'+api_ip+':'+api_port+'/api/v1/service?service_type=iscsi&service_name='+iscsi_id,{
+    fetch('https://'+glue_api_ip+':'+glue_api_port+'/api/v1/service?service_type=iscsi&service_name='+iscsi_id,{
         method: 'GET',
         headers: {
             'accept': 'application/json',
@@ -176,13 +176,13 @@ $('#button-execution-modal-update-iscsi-service').on('click', function(){
         });
     
         $('#div-modal-update-iscsi-service').hide();
-        $('#div-modal-spinner-header-txt').text('iSCSI Service를 생성하고 있습니다.');
+        $('#div-modal-spinner-header-txt').text('iSCSI Service를 수정하고 있습니다.');
         $('#div-modal-spinner').show();
     
-        $("#modal-status-alert-title").html("iSCSI Service 생성 실패");
-        $("#modal-status-alert-body").html("iSCSI Service 생성을 실패하였습니다.");
+        $("#modal-status-alert-title").html("iSCSI Service 수정 실패");
+        $("#modal-status-alert-body").html("iSCSI Service 수정을 실패하였습니다.");
     
-        fetch('https://'+api_ip+':'+api_port+'/api/v1/iscsi',{
+        fetch('https://'+glue_api_ip+':'+glue_api_port+'/api/v1/iscsi',{
             method: 'POST',
             headers: {
                 'accept': 'application/json',
@@ -192,8 +192,8 @@ $('#button-execution-modal-update-iscsi-service').on('click', function(){
         }).then(res => res.json()).then(data => {
             $('#div-modal-spinner').hide();
             if(data == "Success"){
-                $("#modal-status-alert-title").html("iSCSI Service 생성 완료");
-                $("#modal-status-alert-body").html("iSCSI Service 생성을 완료하였습니다.");
+                $("#modal-status-alert-title").html("iSCSI Service 수정 완료");
+                $("#modal-status-alert-body").html("iSCSI Service 수정을 완료하였습니다.");
                 $('#div-modal-status-alert').show();
                 iscsiServiceList();
                 createLoggerInfo("iSCSI Service update success");
@@ -240,7 +240,7 @@ $('#button-execution-modal-remove-iscsi-service').on('click', function(){
     
         $("#modal-status-alert-title").html("iSCSI Service 삭제 실패");
         $("#modal-status-alert-body").html("iSCSI Service 삭제를 실패하였습니다.");
-        fetch('https://'+api_ip+':'+api_port+'/api/v1/service/'+iscsi_service_id,{
+        fetch('https://'+glue_api_ip+':'+glue_api_port+'/api/v1/service/'+iscsi_service_id,{
             method: 'DELETE',
             headers: {
                 'accept': 'application/json',
@@ -282,7 +282,7 @@ function iscsiServiceCreateInitInputValue(){
 function iscsiTargetList(){
     //조회
     $('#button-iscsi-target-search').html("<svg class='pf-c-spinner pf-m-md' role='progressbar' aria-valuetext='Loading...' viewBox='0 0 100 100' ><circle class='pf-c-spinner__path' cx='50' cy='50' r='45' fill='none'></circle></svg>");
-    fetch('https://'+api_ip+':'+api_port+'/api/v1/iscsi/target',{
+    fetch('https://'+glue_api_ip+':'+glue_api_port+'/api/v1/iscsi/target',{
         method: 'GET',
         headers: {
             'accept': 'application/json',
@@ -418,7 +418,7 @@ $('#button-execution-modal-create-iscsi-target').on('click', async function(){
     
             var size = $('#form-input-target-image-size').val();
             //이미지 생성
-            fetch('https://'+api_ip+':'+api_port+'/api/v1/image',{
+            fetch('https://'+glue_api_ip+':'+glue_api_port+'/api/v1/image',{
                 method: 'POST',
                 headers: {
                     'accept': 'application/json',
@@ -453,7 +453,7 @@ function createIscsiTarget(body_val){
     $("#modal-status-alert-title").html("iSCSI Target 생성 실패");
     $("#modal-status-alert-body").html("iSCSI Target 생성을 실패하였습니다.");
 
-    fetch('https://'+api_ip+':'+api_port+'/api/v1/iscsi/target',{
+    fetch('https://'+glue_api_ip+':'+glue_api_port+'/api/v1/iscsi/target',{
         method: 'POST',
         headers: {
             'accept': 'application/json',
@@ -483,7 +483,7 @@ function createIscsiTarget(body_val){
 /** iSCSI target update 관련 action start */
 function iscsiTargeEdit(iqn_id){
     iscsiTargetUpdateInitInputValue();
-    fetch('https://'+api_ip+':'+api_port+'/api/v1/iscsi/target?iqn_id='+iqn_id,{
+    fetch('https://'+glue_api_ip+':'+glue_api_port+'/api/v1/iscsi/target?iqn_id='+iqn_id,{
         method: 'GET',
         headers: {
             'accept': 'application/json',
@@ -545,7 +545,7 @@ $('#button-execution-modal-update-iscsi-target').on('click', function(){
         $("#modal-status-alert-title").html("iSCSI Target 수정 실패");
         $("#modal-status-alert-body").html("iSCSI Target 수정을 실패하였습니다.");
     
-        fetch('https://'+api_ip+':'+api_port+'/api/v1/iscsi/target',{
+        fetch('https://'+glue_api_ip+':'+glue_api_port+'/api/v1/iscsi/target',{
             method: 'PUT',
             headers: {
                 'accept': 'application/json',
@@ -554,7 +554,6 @@ $('#button-execution-modal-update-iscsi-target').on('click', function(){
             body: body_val
         }).then(res => res.json()).then(data => {
             $('#div-modal-spinner').hide();
-            console.log(data)
             if(data == null || data == "Success" || data.name == "iscsi/target/edit"){
                 $("#modal-status-alert-title").html("iSCSI Target 수정 완료");
                 $("#modal-status-alert-body").html("iSCSI Target 수정을 완료하였습니다.");
@@ -606,7 +605,7 @@ $('#button-execution-modal-remove-iscsi-target').on('click', function(){
     
         $("#modal-status-alert-title").html("iSCSI Target 삭제 실패");
         $("#modal-status-alert-body").html("iSCSI Target 삭제를 실패하였습니다.");
-        fetch('https://'+api_ip+':'+api_port+'/api/v1/iscsi/target?iqn_id='+iqn_id,{
+        fetch('https://'+glue_api_ip+':'+glue_api_port+'/api/v1/iscsi/target?iqn_id='+iqn_id,{
             method: 'DELETE',
             headers: {
                 'accept': 'application/json',
@@ -704,6 +703,9 @@ function iscsiCreateValidateCheck(){
     if (service_id == "") {
         alert("이름을 입력해주세요.");
         validate_check = false;
+    } else if (checkForNameDuplicates("iscsi-service-list", 0, 'iscsi.'+service_id)) {
+        alert(service_id + "는 이미 사용중인 이름입니다.");
+        validate_check = false;
     } else if (host_cnt == 0) {
         alert("배치 호스트를 선택해주세요.");
         validate_check = false;
@@ -792,6 +794,9 @@ async function iscsiTargetCreateValidateCheck(){
     
     if (iqn_id == "") {
         alert("IQN을 입력해주세요.");
+        validate_check = false;
+    } else if (!checkIqn(iqn_id)) {
+        alert("IQN 생성 규칙을 확인해주세요.");
         validate_check = false;
     } else if (portal_cnt == 0) {
         alert("포탈을 선택해주세요.");

@@ -95,7 +95,7 @@ $('#button-execution-modal-gateway-wizard-confirm').on('click', function () {
         // 스토리지 ip
         var snb_ip = $('#form-input-gateway-vm-storage-nic-ip').val();
 
-        fetch('https://'+api_ip+':'+api_port+'/api/v1/gwvm/cell',{
+        fetch('https://'+glue_api_ip+':'+glue_api_port+'/api/v1/gwvm/cell',{
             method: 'POST',
             headers: {
                 'accept': 'application/json',
