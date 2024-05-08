@@ -990,7 +990,7 @@
 <!-- 게이트웨이 가상머신 배포 마법사: Modal 영역 시작 -->
 <div id="div-modal-gateway-vm-setup" class="pf-c-backdrop" style="display:none;">
     <div class="pf-l-bullseye">
-        <div class="pf-c-modal-box pf-m-sm" role="dialog" aria-modal="true" aria-label="Mold Service Control" style="width: 1000px;">
+        <div class="pf-c-modal-box pf-m-sm" role="dialog" aria-modal="true" aria-label="Mold Service Control" style="width: 800px;">
             <button id="button-close-modal-gateway-vm-create" aria-disabled="false" aria-label="Close" class="pf-c-button pf-m-plain" type="button">
                 <i class="fas fa-times" aria-hidden="true"></i>
             </button>
@@ -1005,7 +1005,7 @@
                                 <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
                             </label>
                             <div class="pf-c-dropdown">
-                                <select class="pf-c-form-control" id="form-select-gateway-hypervisor" name="form-select-gateway-hypervisor" style="width: 180px;">
+                                <select class="pf-c-form-control" id="form-select-gateway-hypervisor" name="form-select-gateway-hypervisor" style="width: 180px; margin-left: 20px;">
                                     <option value="cell" selected>Cell - PCS</option>
                                 </select>
                             </div>
@@ -1018,28 +1018,28 @@
                                 <span class="pf-c-form__label-text">관리 NIC</span>
                                 <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
                             </label>
-                            <select class="pf-c-form-control" id="form-select-gateway-vm-mngt-nic-parent" name="form-select-gateway-vm-mngt-nic-parent" style="width: 180px;">
+                            <select class="pf-c-form-control" id="form-select-gateway-vm-mngt-nic-parent" name="form-select-gateway-vm-mngt-nic-parent" style="width: 180px; margin-left: 40px;">
                                 <option value="" selected>선택하십시오.</option>
                             </select>
-                            <label class="pf-c-form__label" for="form-input-gateway-vm-mngt-nic-ip" style="margin-left: 10px;width: 120px;">
+                            <label class="pf-c-form__label" for="form-input-gateway-vm-mngt-nic-ip" style="margin-left: 30px;width: 120px;">
                                 <span class="pf-c-form__label-text">관리 NIC IP</span>
                                 <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
                             </label>
-                            <input class="pf-c-form-control" style="width: 200px;" type="text" id="form-input-gateway-vm-mngt-nic-ip" name="form-input-gateway-vm-mngt-nic-ip" placeholder="xxx.xxx.xxx.xxx 형식"/>
+                            <input class="pf-c-form-control" style="width: 200px; margin-left: 45px;" type="text" id="form-input-gateway-vm-mngt-nic-ip" name="form-input-gateway-vm-mngt-nic-ip" placeholder="xxx.xxx.xxx.xxx 형식"/>
                         </div>
                         <div class="pf-c-form__group-label" style="margin-left: 20px;">
                             <label class="pf-c-form__label" for="form-select-gateway-vm-storage-nic-parent" style="width: 120px;">
                                 <span class="pf-c-form__label-text">스토리지 NIC</span>
                                 <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
                             </label>
-                            <select class="pf-c-form-control" id="form-select-gateway-vm-storage-nic-parent" name="form-select-gateway-vm-storage-nic-parent" style="width: 180px;">
+                            <select class="pf-c-form-control" id="form-select-gateway-vm-storage-nic-parent" name="form-select-gateway-vm-storage-nic-parent" style="width: 180px; margin-left: 16px;">
                                 <option value="" selected>선택하십시오.</option>
                             </select>
-                            <label class="pf-c-form__label" for="form-input-gateway-vm-storage-nic-ip" style="margin-left: 10px;width: 120px;">
+                            <label class="pf-c-form__label" for="form-input-gateway-vm-storage-nic-ip" style="margin-left: 30px;width: 120px;">
                                 <span class="pf-c-form__label-text">스토리지 NIC IP</span>
                                 <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
                             </label>
-                            <input class="pf-c-form-control" style="width: 200px;" type="text" id="form-input-gateway-vm-storage-nic-ip" name="form-input-gateway-vm-storage-nic-ip" placeholder="xxx.xxx.xxx.xxx 형식"/>
+                            <input class="pf-c-form-control" style="width: 200px; margin-left: 20px;" type="text" id="form-input-gateway-vm-storage-nic-ip" name="form-input-gateway-vm-storage-nic-ip" placeholder="xxx.xxx.xxx.xxx 형식"/>
                         </div>
                     </div>
                 </section>
