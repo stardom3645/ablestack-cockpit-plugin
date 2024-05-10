@@ -18,6 +18,7 @@ from ablestack import *
 from sh import python3
 from sh import ssh
 from python_hosts import Hosts, HostsEntry
+from pyfstab import Fstab, Entry
 
 json_file_path = pluginpath+"/tools/properties/cluster.json"
 hosts_file_path = "/etc/hosts"
@@ -317,6 +318,32 @@ def remove(args):
         # 결과값 리턴
         return createReturn(code=500, val="Please check the \"cluster.json\" file. : "+e)
 
+def createHugePageFS():
+    if not os.path.exists("/hugepages"):
+        os.mkdir("/hugepages")
+    with open("/etc/fstab", "r") as f:
+        fstab = Fstab().read_file(f)
+    flag = False
+    for entry in fstab.entries:
+        if entry.dir == "/hugepages":
+            flag = True
+    if flag == False:
+        fstab.entries.append(
+            Entry(
+                "hugetlbfs",
+                "/hugepages",
+                "hugetlbfs",
+                "defaults",
+                0,
+                0
+            )
+        )
+        formatted = str(fstab)
+        with open("/etc/fstab", "w") as f:
+            f.write(formatted)
+    os.system("mount -a")
+
+
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     # parser 생성
@@ -328,6 +355,8 @@ if __name__ == '__main__':
 
     # 로깅을 위한 logger 생성, 모든 인자에 default 인자가 있음.
     logger = createLogger(verbosity=logging.CRITICAL, file_log_level=logging.ERROR, log_file='test.log')
+
+    createHugePageFS()
 
     # 실제 로직 부분 호출 및 결과 출력
     if args.action == 'insert':

@@ -599,8 +599,7 @@ function CardCloudClusterStatus(){
                     }else if (ccvmStatus.ccvm == 'true'){
                         sessionStorage.setItem("ccvm_bootstrap_status","true");
                         console.log('ccvm true in')
-                        html_text = '<a class="pf-c-dropdown__menu-item" href="#" id="menu-item-linkto-storage-center-ccvm" onclick="cccc_link_go()">클라우드센터 연결</a>'
-                        $('#ccvm-after-bootstrap-run').html(html_text);
+                        $('#ccvm-after-bootstrap-run').html('<a class="pf-c-dropdown__menu-item" href="#" id="menu-item-linkto-storage-center-ccvm" onclick="cccc_link_go()">클라우드센터 연결</a>');
                         $('#ccvm-before-bootstrap-run').html('');
                     }
                 }).catch(function(data){

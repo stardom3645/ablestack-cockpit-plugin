@@ -13,6 +13,7 @@ import sys
 import fileinput
 import random
 import os
+import sh
 
 from ablestack import *
 
@@ -332,6 +333,48 @@ def createScvmXml(args):
         #print(e)
         return createReturn(code=500, val={})
 
+def createHugePageConfig(args):
+    try:
+
+        # limits
+        template_file = pluginpath + '/tools/vmconfig/scvm/limits-template.conf'
+        os.system("yes|cp -f " + pluginpath + "/tools/xml-template/limits-template.conf " + template_file)
+
+        with open(template_file, mode="rt") as fi:
+            file=fi.read()
+            
+        file = file.replace('{memory}', str(args.memory * 1024 * 1024))
+
+        with open(template_file, mode="wt") as fi:
+            fi.write(file)
+        
+        os.system("mv " + template_file + " /etc/security/limits.conf")
+        
+        # sysctl
+        template_file = pluginpath + '/tools/vmconfig/scvm/sysctl-template.conf'
+        os.system("yes|cp -f " + pluginpath + "/tools/xml-template/sysctl-template.conf " + template_file)
+
+        with open(template_file, mode="rt") as fi:
+            file=fi.read()
+            
+        file = file.replace('{memory}', str(args.memory * 1024))
+
+        with open(template_file, mode="wt") as fi:
+            fi.write(file)
+            
+        os.system("mv " + template_file + " /etc/sysctl.conf")
+        sysctl = sh.Command("/usr/sbin/sysctl")
+        sysctl("-p")
+        sysctl("-a")
+
+        # 결과값 리턴
+        return createReturn(code=200, val={})
+
+    except Exception as e:
+        # 결과값 리턴
+        # print(e)
+        return createReturn(code=500, val={})
+
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     # parser 생성
@@ -345,5 +388,6 @@ if __name__ == '__main__':
     logger = createLogger(verbosity=logging.CRITICAL, file_log_level=logging.ERROR, log_file='test.log')
 
     # 실제 로직 부분 호출 및 결과 출력
+    ret = createHugePageConfig(args)
     ret = createScvmXml(args)
     print(ret)
