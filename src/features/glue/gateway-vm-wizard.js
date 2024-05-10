@@ -10,12 +10,11 @@ var console_log = true;
 
 /* Document Ready 이벤트 처리 시작 */
 $(document).ready(function(){
-
     //관리네트워크 리스트 초기 세팅
-    setNicBridge('form-select-gateway-vm-mngt-nic-parent',"10.10.2.1");
+    setNicBridge('form-select-gateway-vm-mngt-nic-parent',"ablecube");
 
     //스토리지네트워크 리스트 초기 세팅
-    setNicBridge('form-select-gateway-vm-storage-nic-parent',"10.10.2.1");
+    setNicBridge('form-select-gateway-vm-storage-nic-parent',"ablecube");
 
 });
 /* Document Ready 이벤트 처리 끝 */
@@ -62,7 +61,7 @@ $('#button-execution-modal-gateway-vm-create').on('click', function () {
 $('#button-cancel-modal-gateway-vm-create').on('click', function () {
     $('#div-modal-gateway-vm-setup').hide();
     //상태값 초기화 겸 페이지 리로드
-    location.reload();
+    // location.reload();
 });
 
 $('#button-close-modal-gateway-vm-create').on('click', function () {
@@ -96,14 +95,18 @@ $('#button-execution-modal-gateway-wizard-confirm').on('click', function () {
         // 스토리지 ip
         var snb_ip = $('#form-input-gateway-vm-storage-nic-ip').val();
 
-        var cmd = ['python3', pluginpath + '/python/gwvm/gwvm_create.py',"create","-mnb",mngt_nic,"-mi",mngt_ip,"-snb",snb_nic,"-si",snb_ip];
-
-        if(console_log){console.log(cmd);}
-        cockpit.spawn(cmd).then(function(data){
+        fetch('https://'+glue_api_ip+':'+glue_api_port+'/api/v1/gwvm/cell',{
+            method: 'POST',
+            headers: {
+                'accept': 'application/json',
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: 'hypervisorType=cell&gwvmMngtNicParen='+mngt_nic+'&gwvmMngtNicIp='+mngt_ip+'&gwvmStorageNicParent='+snb_nic+'&gwvmStorageNicIp='+snb_ip
+        }).then(res => res.json()).then(data => {
             $('#div-modal-spinner').hide();
-            var retVal = JSON.parse(data);
+            var retVal = JSON.parse(data.Message);
+            console.log(retVal)
             if(retVal.code == "200"){
-
                 $("#modal-status-alert-title").html("스토리지 게이트웨이 서비스 가상머신 구성 완료");
                 $("#modal-status-alert-body").html("스토리지 게이트웨이 서비스 가상머신 구성을 완료하였습니다.");
                 $('#div-modal-status-alert').show();
@@ -112,8 +115,7 @@ $('#button-execution-modal-gateway-wizard-confirm').on('click', function () {
                 $('#div-modal-status-alert').show();
                 createLoggerInfo(retVal.val);
             }
-        })
-        .catch(function(data){
+        }).catch(function(data){
             $('#div-modal-spinner').hide();
             $('#div-modal-status-alert').show();
             createLoggerInfo("스토리지 서비스 구성 실패");

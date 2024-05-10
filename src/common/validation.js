@@ -167,3 +167,147 @@ function checkEmail(email) {
   }
   return false;
 }
+
+/**
+ * Meathod Name : nameCheck
+ * Date Created : 2024.03.21
+ * Writer  : 배태주
+ * Description : 이름 검사하는 함수
+ * Parameter : 없음
+ * Return  : 없음
+ * History  : 2024.03.21 최초 작성
+ */
+function nameCheck(name) {
+  var regex = /^[a-zA-Z][a-zA-Z0-9_-]*$/;
+  return regex.test(name)
+}
+
+/**
+ * Meathod Name : pathNameCheck
+ * Date Created : 2024.03.21
+ * Writer  : 배태주
+ * Description : 경로 이름 검사하는 함수
+ * Parameter : 없음
+ * Return  : 없음
+ * History  : 2024.03.21 최초 작성
+ */
+function pathNameCheck(path) {
+  var regex = /^[a-zA-Z0-9_-]*$/;
+  return regex.test(path)
+}
+
+/**
+ * Meathod Name : numberCheck
+ * Date Created : 2024.03.21
+ * Writer  : 배태주
+ * Description : 숫자를 검사하는 함수
+ * Parameter : 없음
+ * Return  : 없음
+ * History  : 2024.03.21 최초 작성
+ */
+function numberCheck(number) {
+  var regex = /^[0-9]*$/;
+  return regex.test(number)
+}
+
+/**
+ * Meathod Name : integerCheck
+ * Date Created : 2024.04.09
+ * Writer  : 배태주
+ * Description : 정수를 검사하는 함수
+ * Parameter : 없음
+ * Return  : 없음
+ * History  : 2024.04.09 최초 작성
+ */
+function integerCheck(number) {
+  var regex = /^(-?)[0-9]+$/;
+  return regex.test(number)
+}
+
+/**
+ * Meathod Name : pseudoCheck
+ * Date Created : 2024.03.21
+ * Writer  : 배태주
+ * Description : 내보내기 경로를 검사하는 함수
+ * Parameter : 없음
+ * Return  : 없음
+ * History  : 2024.03.21 최초 작성
+ */
+function pseudoCheck(pseudo) {
+  var regex = /([/][a-zA-Z][a-zA-Z0-9]*)+$/;
+  return regex.test(pseudo)
+}
+
+/**
+ * Meathod Name : unavailableIdCheck
+ * Date Created : 2024.03.22
+ * Writer  : 배태주
+ * Description : 사용할수 없는 계정을 검사하는 함수
+ * Parameter : 없음
+ * Return  : 없음
+ * History  : 2024.03.22 최초 작성
+ */
+function unavailableIdCheck(id) {
+  var unavailable_id = ["ablecloud","root","ceph","cloud","scvm","ccvm","gwvm"]
+  if(unavailable_id.includes(id)) {
+    return true
+  } else {
+    return false
+  }  
+}
+
+/**
+ * Meathod Name : nameCheck2
+ * Date Created : 2024.03.21
+ * Writer  : 배태주
+ * Description : 이름 검사하는 함수 공백허용
+ * Parameter : 없음
+ * Return  : 없음
+ * History  : 2024.03.21 최초 작성
+ */
+function nameCheck2(name) {
+  var regex = /^[a-zA-Z0-9_-\s]*$/;
+  return regex.test(name)
+}
+
+/**
+ * Meathod Name : imageNameCheck
+ * Date Created : 2024.04.25
+ * Writer  : 배태주
+ * Description : 이미지 이름 검사하는 함수
+ * Parameter : 없음
+ * Return  : 없음
+ * History  : 2024.04.25 최초 작성
+ */
+function imageNameCheck(name) {
+  var regex = /^[a-zA-Z][a-zA-Z0-9._-]*$/;
+  return regex.test(name)
+}
+
+/**
+ * Meathod Name : checkIqn
+ * Date Created : 2024.05.08
+ * Writer  : 배태주
+ * Description : iqn id를 검사하는 함수
+ * Parameter : 없음
+ * Return  : 없음
+ * History  : 2024.05.08 최초 작성
+ */
+function checkIqn(iqn) {
+  var regex = /^iqn.(19[0-9][0-9]|20[0-9][0-9])-(0[1-9]|1[1-2])(.[a-zA-z0-9]+)+:[a-zA-z0-9]+$/;
+  return regex.test(iqn)
+}
+
+/**
+ * Meathod Name : checkNqn
+ * Date Created : 2024.05.08
+ * Writer  : 배태주
+ * Description : iqn id를 검사하는 함수
+ * Parameter : 없음
+ * Return  : 없음
+ * History  : 2024.05.08 최초 작성
+ */
+function checkNqn(nqn) {
+  var regex = /^nqn.(19[0-9][0-9]|20[0-9][0-9])-(0[1-9]|1[1-2])(.[a-zA-z0-9]+)+:[a-zA-z0-9]+$/;
+  return regex.test(nqn)
+}

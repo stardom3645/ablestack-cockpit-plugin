@@ -90,13 +90,12 @@ def createGwvmXml(args):
         slot_hex_num = generateDecToHex()
         br_num = 0
 
-        os.system("mkdir "+pluginpath+"/tools/vmconfig/gwvm")
+        os.system("mkdir -p"+pluginpath+"/tools/vmconfig/gwvm")
         os.system("yes|cp -f "+pluginpath+"/tools/xml-template/gwvm-xml-template.xml "+pluginpath+"/tools/vmconfig/gwvm/gwvm-temp.xml")
 
         template_file = pluginpath+'/tools/vmconfig/gwvm/gwvm-temp.xml'
 
         with fileinput.FileInput(template_file, inplace=True, backup='.bak' ) as fi:
-
             for line in fi:
 
                 if '<!--memory-->' in line:
@@ -106,7 +105,7 @@ def createGwvmXml(args):
                 elif '<!--gwvm_cloudinit-->' in line:
                     cci_txt = "    <disk type='file' device='cdrom'>\n"
                     cci_txt += "      <driver name='qemu' type='raw'/>\n"
-                    cci_txt += "      <source file='"+pluginpath+"/tools/vmconfig/gwvm/gwvm-cloudinit.iso'/>\n"
+                    cci_txt += "      <source file='/var/lib/libvirt/images/gwvm-cloudinit.iso'/>\n"
                     cci_txt += "      <target dev='sdz' bus='sata'/>\n"
                     cci_txt += "      <readonly/>\n"
                     cci_txt += "      <shareable/>\n"
@@ -144,7 +143,7 @@ def createGwvmXml(args):
                         line = ''
 
                 # 라인 수정
-                sys.write(line)
+                sys.stdout.write(line)
 
         for host_name in args.host_names:
             ret_num = 0
