@@ -43,12 +43,16 @@ $(document).ready(function(){
             glue_api_ip = ip;
             topTabAction("button-tab-glue-vm");
             scanHostKey();
-            gwvmInfoSet();
             glueVmList();
-        
+            cockpit.script(["scp -q -o StrictHostKeyChecking=no root@ablecube:/usr/share/cockpit/ablestack/tools/properties/cluster.json /usr/share/cockpit/ablestack/tools/properties/cluster.json"])
+            .then(function () {
+                gwvmInfoSet();
+            })
+            .catch(function (error) {
+                alert("초기 cluster.json 파일 복사 실패 : "+error);
+            });        
             setInterval(() => {
                 gwvmInfoSet(),glueVmList()
-                // ,gluefsList(),nfsClusterList(),nfsExportList(),iscsiServiceList(),smbServiceList()
             }, 15000);
         }else{
             alert("/etc/hosts 파일에 호스트 해당명이 없습니다. /etc/hosts 파일을 확인해주세요.");
