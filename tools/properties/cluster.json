@@ -3,6 +3,10 @@
         "ccvm": {
             "ip": ""
         },
+        "gwvm": {
+            "ip": "",
+            "pn": ""
+        },
         "mngtNic": {
             "cidr": "",
             "gw": "",

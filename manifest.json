@@ -14,10 +14,10 @@
                     "url": "https://docs.ablecloud.io/1.0%20Allo/administration/cube/ablestack-guide/"
                 }
             ],
-            "path": "main.html",
+            "path": "index.html",
             "order": "200"
         }
     },
 
-    "content-security-policy": "img-src * data: 'unsafe-inline'; default-src 'self' 'unsafe-inline' 'unsafe-eval'; script-src 'self' 'unsafe-inline' 'unsafe-eval'"
+    "content-security-policy": "img-src * data: 'unsafe-inline'; default-src 'self' 'unsafe-inline' 'unsafe-eval'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; connect-src 'self' *"
 }
