@@ -733,16 +733,6 @@
                         <!-- NVMe-oF target 카드 영역 끝-->
                     </div>
                 </div>
-
-
-
-
-
-
-
-
-
-
                 <div class="pf-l-grid__item pf-m-12-col" id="div-smb-service-card" hidden>
                     <div class="pf-l-grid pf-m-gutter">
                         <!-- SMB 서비스 카드 영역 시작-->
@@ -1146,7 +1136,7 @@
 </div> -->
 <!-- 파일 시스템 : Modal 영역 끝-->
 <!-- 파일 시스템 : Modal 영여 시작-->
-<div id="div-modal-iscsi-control" class="pf-c-backdrop" style="display:none">
+<!-- <div id="div-modal-iscsi-control" class="pf-c-backdrop" style="display:none">
     <div class="pf-l-bullseye">
         <div class="pf-c-modal-box pf-m-sm" role="dialog" aria-modal="true" aria-label="iscsi Control">
             <button id="button-close-iscsi-control" aria-disabled="false" aria-label="Close" class="pf-c-button pf-m-plain" type="button">
@@ -1173,11 +1163,11 @@
             </footer>
         </div>
     </div>
-</div>
+</div> -->
 <!-- 파일 시스템 : Modal 영역 끝-->
 
 <!-- smb/nfs/gluefs/iscsi 삭제 : Modal 영역 시작-->
-<div id="div-modal-all-delete" class="pf-c-backdrop" style="display:none">
+<!-- <div id="div-modal-all-delete" class="pf-c-backdrop" style="display:none">
     <div class="pf-l-bullseye">
         <div class="pf-c-modal-box pf-m-sm" role="dialog" aria-modal="true" aria-label="SMB/NFS/GlueFS Delete">
             <button id="button-close-modal-delete" aria-disabled="false" aria-label="Close" class="pf-c-button pf-m-plain" type="button">
@@ -1194,7 +1184,7 @@
             </footer>
         </div>
     </div>
-</div>
+</div> -->
 <!-- smb/nfs/gluefs 삭제 : Modal 영역 끝-->
 
 <!-- 상태 alert : Modal 영역 시작 -->
@@ -1234,38 +1224,6 @@
     </div>
 </div>
 <!-- 도움말 : Modal 영역 끝 -->
-
-
-<!-- 기본 Modal : Modal 영역 시작 -->
-<!-- <div id="div-modal-iscsi" class="pf-c-backdrop" style="display:none">
-    <div class="pf-l-bullseye">
-        <div class="pf-c-modal-box pf-m-sm" role="dialog" aria-modal="true" aria-label="iscsi construction">
-            <button id="div-modal-iscsi-close" aria-disabled="false" aria-label="Close" class="pf-c-button pf-m-plain" type="button">
-                <i class="fas fa-times" aria-hidden="true"></i>
-            </button>
-            <header class="pf-c-modal-box__header"><h1 class="pf-c-modal-box__title"><span class="pf-c-modal-box__title-text" id="modal-title-iscsi"></span></h1></header>
-            <div class="pf-c-modal-box__body">
-                <div id="modal-body-iscsi"></div>
-            </div>
-            <footer class="pf-c-modal-box__footer">
-                <button id="button-execution-iscsi" aria-disabled="false" class="pf-c-button pf-m-primary" type="button" data-ouia-safe="true">실행</button>
-                <button id="button-cancel-iscsi" aria-disabled="false" class="pf-c-button pf-m-link" type="button" data-ouia-safe="true">취소</button>
-            </footer>
-        </div>
-    </div>
-</div> -->
-<!-- 기본 Modal : Modal 영역 끝 -->
-
-<!-- 스토리지센터VM 배포 마법사 : ./src/features/storage-vm-wizard.html을 내용으로 load -->
-<!-- <div class="pf-c-backdrop" id="div-modal-wizard-gateway-vm"></div> -->
-
-<!-- <div class="pf-c-backdrop" id="div-modal-gluefs-construction"></div>
-<div class="pf-c-backdrop" id="div-modal-nfs-construction"></div>
-<div class="pf-c-backdrop" id="div-modal-smb-construction"></div> -->
-
-<!-- 클러스터 구성 준비 마법사 : ./src/features/cluster-config-prepare.html을 내용으로 load -->
-<!-- <div class="pf-c-backdrop" id="div-modal-wizard-cluster-config-prepare"></div> -->
-
 
 <!-- 게이트웨이 VM 시작 : Modal 영역 시작 -->
 <div id="div-modal-start-gateway-vm" class="pf-c-backdrop" style="display:none">
@@ -2308,7 +2266,6 @@
     </div>
 </div>
 <!-- ingress 삭제 : Modal 영역 끝 -->
-
 <!-- iscsi service 생성 : Modal 영역 시작 -->
 <div id="div-modal-create-iscsi-service" class="pf-c-backdrop" style="display:none">
     <div class="pf-l-bullseye">
@@ -2389,9 +2346,6 @@
                             <input class="pf-c-form-control" style="width:50%" type="text" id="form-input-iscsi-service-pool" name="form-input-iscsi-service-pool"/>
                         </div>
                     </div> -->
-
-
-                    
                     <div class="pf-c-form__group">
                         <div class="pf-c-form__group-label" style="margin-left: 20px;">
                             <label class="pf-c-form__label" for="form-input-iscsi-service-api-port" style="margin-left: 10px;width: 120px;">
@@ -3021,10 +2975,6 @@
     </div>
 </div>
 <!-- NVMe-oF target 삭제 : Modal 영역 끝 -->
-
-
-
-
 <!-- smb service 생성 : Modal 영역 시작 -->
 <div id="div-modal-create-smb-service" class="pf-c-backdrop" style="display:none">
     <div class="pf-l-bullseye">
@@ -3679,88 +3629,7 @@
     </div>
 </div>
 <!-- object gateway user 수정 : Modal 영역 끝 -->
-
 <!-- object gateway user s3 key 조회 : Modal 영역 시작 -->
-<!-- <div id="div-modal-search-object-gateway-user-s3key" class="pf-c-backdrop" style="display:none">
-    <div class="pf-l-bullseye">
-        <div class="pf-c-modal-box pf-m-sm" role="dialog" aria-modal="true" aria-label="Search Object Gateway User" style="width: 600px;">
-            <button id="button-close-modal-search-object-gateway-user-s3key" aria-disabled="false" aria-label="Close" class="pf-c-button pf-m-plain" type="button">
-                <i class="fas fa-times" aria-hidden="true"></i>
-            </button>
-            <header class="pf-c-modal-box__header"><h1 class="pf-c-modal-box__title"><span class="pf-c-modal-box__title-text">S3 키 조회</span></h1></header>
-            <form novalidate class="pf-c-form pf-m-horizontal" style="margin-left:15px;margin-top:10px">
-                <section class="pf-c-form__section">
-                    <div class="pf-c-form__field-group">
-                        <div class="pf-c-form__field-group-header"  style="padding-bottom:8px; margin-left: 20px;">
-                            <div class="pf-c-form__field-group-header-main">
-                                <div class="pf-c-form__field-group-header-title">
-                                    <div class="pf-c-form__field-group-header-title-text">key1</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="pf-c-form__field-group-body" style="padding-top:0px;">
-                            <div class="pf-c-form__group" style="padding:0px;">
-                                <div class="pf-c-form__group-label" style="margin-left: 20px;">
-                                    <label class="pf-c-form__label" for="form-input-search-object-gateway-user-access-key" style="margin-left: 10px;width: 120px;">
-                                        <span class="pf-c-form__label-text">접근 키</span>
-                                    </label>
-                                </div>
-                                <div class="pf-c-form__group-control">
-                                    <input class="pf-c-form-control" style="width:70%" type="text" id="form-input-search-object-gateway-user-access-key" name="form-input-search-object-gateway-user-access-key"  />
-                                </div>
-                            </div>
-                            <div class="pf-c-form__group" style="padding:0px;">
-                                <div class="pf-c-form__group-label" style="margin-left: 20px;">
-                                    <label class="pf-c-form__label" for="form-input-search-object-gateway-user-secret-key" style="margin-left: 10px;width: 120px;">
-                                        <span class="pf-c-form__label-text">비밀 키</span>
-                                    </label>
-                                </div>
-                                <div class="pf-c-form__group-control">
-                                    <input class="pf-c-form-control" style="width:70%" type="text" id="form-input-search-object-gateway-user-secret-key" name="form-input-search-object-gateway-user-secret-key" />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="pf-c-form__field-group">
-                        <div class="pf-c-form__field-group-header"  style="padding-bottom:8px; margin-left: 20px;">
-                            <div class="pf-c-form__field-group-header-main">
-                                <div class="pf-c-form__field-group-header-title">
-                                    <div class="pf-c-form__field-group-header-title-text">key1</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="pf-c-form__field-group-body" style="padding-top:0px;">
-                            <div class="pf-c-form__group" style="padding:0px;">
-                                <div class="pf-c-form__group-label" style="margin-left: 20px;">
-                                    <label class="pf-c-form__label" for="form-input-search-object-gateway-user-access-key" style="margin-left: 10px;width: 120px;">
-                                        <span class="pf-c-form__label-text">접근 키</span>
-                                    </label>
-                                </div>
-                                <div class="pf-c-form__group-control">
-                                    <input class="pf-c-form-control" style="width:70%" type="text" id="form-input-search-object-gateway-user-access-key" name="form-input-search-object-gateway-user-access-key"  />
-                                </div>
-                            </div>
-                            <div class="pf-c-form__group" style="padding:0px;">
-                                <div class="pf-c-form__group-label" style="margin-left: 20px;">
-                                    <label class="pf-c-form__label" for="form-input-search-object-gateway-user-secret-key" style="margin-left: 10px;width: 120px;">
-                                        <span class="pf-c-form__label-text">비밀 키</span>
-                                    </label>
-                                </div>
-                                <div class="pf-c-form__group-control">
-                                    <input class="pf-c-form-control" style="width:70%" type="text" id="form-input-search-object-gateway-user-secret-key" name="form-input-search-object-gateway-user-secret-key" />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-            </form>
-            <footer class="pf-c-modal-box__footer">
-                <button id="button-execution-modal-search-object-gateway-user-s3key" aria-disabled="false" class="pf-c-button pf-m-primary" type="button" data-ouia-safe="true">실행</button>
-                <button id="button-cancel-modal-search-object-gateway-user-s3key" aria-disabled="false" class="pf-c-button pf-m-link" type="button" data-ouia-safe="true">취소</button>
-            </footer>
-        </div>
-    </div>
-</div> -->
 <div id="div-modal-search-object-gateway-user-s3key" class="pf-c-backdrop" style="display:none">
     <div class="pf-l-bullseye">
         <div class="pf-c-modal-box pf-m-sm" role="dialog" aria-modal="true" aria-label="Search Object Gateway User" style="width: 600px;">
@@ -3817,7 +3686,6 @@
     </div>
 </div>
 <!-- object gateway user s3 key 조회 : Modal 영역 끝 -->
-
 <!-- object gateway user quota 생성 : Modal 영역 시작 -->
 <div id="div-modal-update-object-gateway-user-quota" class="pf-c-backdrop" style="display:none">
     <div class="pf-l-bullseye">
@@ -3872,7 +3740,6 @@
     </div>
 </div>
 <!-- object gateway user quota 생성 : Modal 영역 끝 -->
-
 <!-- object gateway bucket 삭제 : Modal 영역 시작 -->
 <div id="div-modal-remove-object-gateway-bucket" class="pf-c-backdrop" style="display:none">
     <div class="pf-l-bullseye">
@@ -3987,29 +3854,6 @@
     </div>
 </div>
 <!-- object gateway bucket 수정 : Modal 영역 끝 -->
-
-
-
-
-<!-- 실행완료 : Modal 영역 시작 -->
-<div id="div-modal-start-cloud-vm" class="pf-c-backdrop" style="display:none">
-    <div class="pf-l-bullseye">
-        <div class="pf-c-modal-box pf-m-sm" role="dialog" aria-modal="true" aria-label="Cloud VM start">
-            <button id="button-close-modal-cloud-vm-start" aria-disabled="false" aria-label="Close" class="pf-c-button pf-m-plain" type="button">
-                <i class="fas fa-times" aria-hidden="true"></i>
-            </button>
-            <header class="pf-c-modal-box__header"><h1 class="pf-c-modal-box__title"><span class="pf-c-modal-box__title-text">클라우드센터VM 시작</span></h1></header>
-            <div class="pf-c-modal-box__body">
-                <div>클라우드센터VM을 시작하시겠습니까?</div>
-            </div>
-            <footer class="pf-c-modal-box__footer">
-                <button id="button-execution-modal-cloud-vm-start" aria-disabled="false" class="pf-c-button pf-m-primary" type="button" data-ouia-safe="true">실행</button>
-                <button id="button-cancel-modal-cloud-vm-start" aria-disabled="false" class="pf-c-button pf-m-link" type="button" data-ouia-safe="true">취소</button>
-            </footer>
-        </div>
-    </div>
-</div>
-<!-- 실행완료 : Modal 영역 끝 -->
 
 <!-- 모달 영역 끝  -->
 
