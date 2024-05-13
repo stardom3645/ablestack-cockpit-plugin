@@ -28,12 +28,20 @@ firewall-cmd --list-all 2>&1 | tee -a $LOGFILE
 scp -q -o StrictHostKeyChecking=no root@scvm-mngt:/etc/ceph/* /etc/ceph/
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> 7525f05 (삼바 방화벽 설정 및 spec 파일 추가)
 # hostname=$(hostname)
 # ip=$(hostname -i)
 
 # ceph orch host add $hostname $ip
 
+<<<<<<< HEAD
 >>>>>>> 05b952d (테스트 개선사항 반영)
+=======
+=======
+>>>>>>> 0d87bff (삼바 방화벽 설정 및 spec 파일 추가)
+>>>>>>> 7525f05 (삼바 방화벽 설정 및 spec 파일 추가)
 # Delete bootstrap script file
 rm -rf /root/bootstrap.sh
