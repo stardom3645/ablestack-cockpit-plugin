@@ -36,18 +36,22 @@ scp -q -o StrictHostKeyChecking=no root@scvm-mngt:/usr/share/cockpit/ablestack/s
 <<<<<<< HEAD
 =======
 =======
+<<<<<<< HEAD
 >>>>>>> 398d54f (테스트 개선사항 반영)
+=======
+>>>>>>> 7525f05 (삼바 방화벽 설정 및 spec 파일 추가)
+>>>>>>> ed9f2a9 (삼바 방화벽 설정 및 spec 파일 추가)
 # hostname=$(hostname)
 # ip=$(hostname -i)
 
 # ceph orch host add $hostname $ip
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> 0d87bff (삼바 방화벽 설정 및 spec 파일 추가)
 =======
 >>>>>>> 05b952d (테스트 개선사항 반영)
 >>>>>>> 398d54f (테스트 개선사항 반영)
->>>>>>> 728ce68 (테스트 개선사항 반영)
 # Delete bootstrap script file
 rm -rf /root/bootstrap.sh
