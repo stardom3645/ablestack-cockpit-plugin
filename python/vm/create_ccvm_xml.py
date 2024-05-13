@@ -143,7 +143,7 @@ def createCcvmXml(args):
                         line = ''
 
                 # 라인 수정
-                sys.write(line)
+                sys.stdout.write(line)
 
         for host_name in args.host_names:
 
