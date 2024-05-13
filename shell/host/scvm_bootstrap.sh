@@ -119,6 +119,7 @@ do
   ssh -o StrictHostKeyChecking=no $host systemctl enable --now process-exporter
   ssh -o StrictHostKeyChecking=no $host systemctl enable --now glue-api.service
   ssh -o StrictHostKeyChecking=no $host firewall-cmd --add-port=8080/tcp --permanent
+  ssh -o StrictHostKeyChecking=no $host firewall-cmd --add-service=samba --permanent
   ssh -o StrictHostKeyChecking=no $host firewall-cmd --reload
 done
 
