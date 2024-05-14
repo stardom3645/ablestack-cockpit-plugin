@@ -203,10 +203,9 @@ $('#menu-item-gateway-vm-setup2').on('click', function(){
 // });
 
 // div-modal-alert-button-confirm 클릭시
-// $('#modal-status-alert-button-confirm').on('click',function(){
-//     $('#div-modal-status-alert').hide();
-//     // location.reload();
-// });
+$('#modal-status-alert-button-confirm').on('click',function(){
+    $('#div-modal-status-alert').hide();
+});
 
 // alert modal 닫기
 $('#modal-status-alert-button-close1, #modal-status-alert-button-close2').on('click', function(){
