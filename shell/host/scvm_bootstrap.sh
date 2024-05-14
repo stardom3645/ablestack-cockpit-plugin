@@ -117,10 +117,10 @@ do
   ssh -o StrictHostKeyChecking=no $host /usr/bin/mv -f /usr/share/ablestack/ablestack-wall/process-exporter/scvm_process.yml /usr/share/ablestack/ablestack-wall/process-exporter/process.yml
   ssh -o StrictHostKeyChecking=no $host systemctl enable --now node-exporter
   ssh -o StrictHostKeyChecking=no $host systemctl enable --now process-exporter
-  ssh -o StrictHostKeyChecking=no $host systemctl enable --now glue-api.service
   ssh -o StrictHostKeyChecking=no $host firewall-cmd --add-port=8080/tcp --permanent
   ssh -o StrictHostKeyChecking=no $host firewall-cmd --add-service=samba --permanent
   ssh -o StrictHostKeyChecking=no $host firewall-cmd --reload
+  ssh -o StrictHostKeyChecking=no $host systemctl enable --now glue-api.service
 done
 
 exit
