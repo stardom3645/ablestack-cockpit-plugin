@@ -101,7 +101,7 @@ $('#button-execution-modal-gateway-wizard-confirm').on('click', function () {
                 'accept': 'application/json',
                 'Content-Type': 'application/x-www-form-urlencoded'
             },
-            body: 'hypervisorType=cell&gwvmMngtNicParen='+mngt_nic+'&gwvmMngtNicIp='+mngt_ip+'&gwvmStorageNicParent='+snb_nic+'&gwvmStorageNicIp='+snb_ip
+            body: 'hypervisorType=cell&gwvmMngtNicParent='+mngt_nic+'&gwvmMngtNicIp='+mngt_ip+'&gwvmStorageNicParent='+snb_nic+'&gwvmStorageNicIp='+snb_ip
         }).then(res => res.json()).then(data => {
             $('#div-modal-spinner').hide();
             var retVal = JSON.parse(data.Message);
