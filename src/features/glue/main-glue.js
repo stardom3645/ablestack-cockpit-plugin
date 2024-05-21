@@ -1821,6 +1821,37 @@ function setIngressBackendSelectBox(select_box_id){
     });
 }
 
+function setSingleImageSelectBox(select_box_id, selected_image_id){
+    fetch('https://'+glue_api_ip+':'+glue_api_port+'/api/v1/image',{
+        method: 'GET',
+        headers: {
+            'accept': 'application/json',
+            'Content-Type': 'application/x-www-form-urlencoded'
+        }
+    }).then(res => res.json()).then(data => {
+        $('#'+select_box_id).empty();
+        var el ='';
+        el += '<option value="" selected>선택하십시오.</option>';
+
+        for(var i=0; i < data.length; i++){
+            if(selected_image_id == null){
+                el += '<option value="'+data[i]+'">'+data[i]+'</option>';
+            } else {
+                if(selected_image_id != data[i]){
+                    el += '<option value="'+data[i]+'">'+data[i]+'</option>';
+                }else{
+                    el += '<option value="'+data[i]+'" selected>'+data[i]+'</option>';
+                }
+            }
+        }
+
+        $('#'+select_box_id).append(el);
+        createLoggerInfo("setNfsClusterSelectBox success");
+    }).catch(function(data){
+        console.log("setNfsClusterSelectBox error : "+data);
+    });
+}
+
 function setPoolSelectBox(select_box_id, selected_pool_id){
     fetch('https://'+glue_api_ip+':'+glue_api_port+'/api/v1/pool?pool_type=rbd',{
         method: 'GET',
@@ -2156,24 +2187,47 @@ function setNvmeofHostIpSelectBox(select_box_id, selected_host_ip){
             'Content-Type': 'application/x-www-form-urlencoded'
         }
     }).then(res => res.json()).then(data => {
-        $('#'+select_box_id).empty();
-        var el ='';
-        el += '<option value="" selected>선택하십시오.</option>';
+        fetch('https://'+glue_api_ip+':'+glue_api_port+'/api/v1/glue/hosts',{
+            method: 'GET'
+        }).then(res => res.json()).then(hosts_data => {
+            
+            $('#'+select_box_id).empty();
+            var el ='';
+            el += '<option value="" selected>선택하십시오.</option>';
 
-        for(var i=0; i < data.length; i++){
-            if(selected_host_ip == null){
-                el += '<option value="'+data[i]+'">'+data[i]+'</option>';
-            } else {
-                if(selected_host_ip != data[i]){
-                    el += '<option value="'+data[i]+'">'+data[i]+'</option>';
-                }else{
-                    el += '<option value="'+data[i]+'" selected>'+data[i]+'</option>';
+
+            var host_ip = [];
+
+            for(var i=0; i < data.length; i++){
+                for(var j=0; j < hosts_data.length ; j++){
+                    for(var x=0; x < data[i].placement.hosts.length ; x++){
+                        if(hosts_data[j].hostname == data[i].placement.hosts[x]){
+                            host_ip.push(hosts_data[j].ip_address)
+                        }    
+                    }
                 }
             }
-        }
-
-        $('#'+select_box_id).append(el);
-        createLoggerInfo("setNvmeofHostIpSelectBox success");
+            
+            //중복 제거
+            const uniqueHostIpArray = host_ip.filter((value, index, self) => self.indexOf(value) === index);
+    
+            for(var i=0; i < uniqueHostIpArray.length; i++){
+                if(selected_host_ip == null){
+                    el += '<option value="'+uniqueHostIpArray[i]+'">'+uniqueHostIpArray[i]+'</option>';
+                } else {
+                    if(selected_host_ip != uniqueHostIpArray[i]){
+                        el += '<option value="'+uniqueHostIpArray[i]+'">'+uniqueHostIpArray[i]+'</option>';
+                    }else{
+                        el += '<option value="'+uniqueHostIpArray[i]+'" selected>'+uniqueHostIpArray[i]+'</option>';
+                    }
+                }
+            }
+    
+            $('#'+select_box_id).append(el);
+            createLoggerInfo("setNvmeofHostIpSelectBox success");
+        }).catch(function(data){
+            console.log("setNvmeofHostIpSelectBox error : "+data);
+        });
     }).catch(function(data){
         console.log("setNvmeofHostIpSelectBox error : "+data);
     });

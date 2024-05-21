@@ -651,9 +651,9 @@ function iqnIdCreate(){
 }
 
 $('#form-checkbox-existing-image-use-yn').on('change', function(){
-    setiscsiImage();
+    setIscsiImage();
 });
-function setiscsiImage(){
+function setIscsiImage(){
     var yn_bool = $('input[type=checkbox][id="form-checkbox-existing-image-use-yn"]').is(":checked");
     if(yn_bool){
         $('#div-target-new-rbd-pool').hide();
@@ -679,7 +679,7 @@ function iscsiTargetCreateInitInputValue(){
     $('#form-input-iscsi-image').val("");
     
     $('input[type=checkbox][id="form-checkbox-existing-image-use-yn"]').prop("checked", false);
-    setiscsiImage();
+    setIscsiImage();
 }
 
 // iscsi target 수정 입력값 초기화
