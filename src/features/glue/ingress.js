@@ -23,6 +23,7 @@ function ingressList(){
                 insert_tr += '<tr role="row">';
                 insert_tr += '    <td role="cell" data-label="이름" id="ingress-name">'+data[i].service_name+'</td>';
                 insert_tr += '    <td role="cell" data-label="백엔드 서비스" id="ingress-backend-service-name">'+data[i].service_id+'</td>';
+                insert_tr += '    <td role="cell" data-label="상태" id="ingress-placement-hosts">'+data[i].status.running+"/"+data[i].status.size+'</td>';
                 insert_tr += '    <td role="cell" data-label="배치 호스트" id="ingress-placement-hosts">'+data[i].placement.hosts+'</td>';
                 insert_tr += '    <td role="cell" data-label="가상 IP" id="ingress-virtual-ip">'+data[i].spec.virtual_ip+'</td>';
                 insert_tr += '    <td role="cell" data-label="프론트엔드 PORT" id="ingress-frontend-port">'+data[i].spec.frontend_port+'</td>';

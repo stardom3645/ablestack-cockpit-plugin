@@ -364,6 +364,7 @@
                                             <thead>
                                                 <tr role="row">
                                                     <th role="columnheader" scope="col">이름</th>
+                                                    <th role="columnheader" scope="col">상태</th>
                                                     <th role="columnheader" scope="col">호스트 명</th>
                                                     <th role="columnheader" scope="col">IP</th>
                                                     <th role="columnheader" scope="col">PORT</th>
@@ -419,7 +420,7 @@
                                                     <th role="columnheader" scope="col">내보내기 경로</th>
                                                     <th role="columnheader" scope="col">클러스터 이름</th>
                                                     <th role="columnheader" scope="col">GlueFS 이름 (경로)</th>
-                                                    <th role="columnheader" scope="col">Bucket 이름</th>
+                                                    <!-- <th role="columnheader" scope="col">Bucket 이름</th> -->
                                                     <th role="columnheader" scope="col">프로토콜</th>
                                                     <th role="columnheader" scope="col">접근 타입</th>
                                                     <th role="columnheader" scope="col">Squash</th>
@@ -480,6 +481,7 @@
                                                 <tr role="row">
                                                     <th role="columnheader" scope="col">이름</th>
                                                     <th role="columnheader" scope="col">백엔드 서비스</th>
+                                                    <th role="columnheader" scope="col">상태</th>
                                                     <th role="columnheader" scope="col">배치 호스트</th>
                                                     <th role="columnheader" scope="col">가상 IP</th>
                                                     <th role="columnheader" scope="col">프론트엔드 PORT</th>
@@ -795,11 +797,6 @@
                         <!-- SMB 서비스 카드 영역 끝-->
                     </div>
                 </div>
-                
-
-
-
-
                 <div class="pf-l-grid__item pf-m-12-col" id="div-object-gateway-card" hidden>
                     <div class="pf-l-grid pf-m-gutter">
                         <!-- Object Gateway 카드 영역 시작-->
@@ -819,7 +816,9 @@
                                             <thead>
                                                 <tr role="row">
                                                     <th role="columnheader" scope="col">이름</th>
+                                                    <th role="columnheader" scope="col">상태</th>
                                                     <th role="columnheader" scope="col">호스트 명</th>
+                                                    <th role="columnheader" scope="col">IP</th>
                                                     <th role="columnheader" scope="col">PORT</th>
                                                     <th class="pf-c-table__icon" style="width:10%" role="columnheader" scope="col"></th>
                                                 </tr>
@@ -1761,7 +1760,7 @@
                         <div class="pf-c-dropdown">
                             <select class="pf-c-form-control" id="form-select-storage-type" name="form-select-storage-type" style="width: 180px;">
                                 <option value="CEPH" selected>GlueFS</option>
-                                <option value="RGW">Object Gateway</option>
+                                <!-- <option value="RGW">Object Gateway</option> -->
                             </select>
                         </div>
                     </div>
@@ -1913,7 +1912,7 @@
                         <div class="pf-c-dropdown">
                             <select class="pf-c-form-control" id="form-select-update-storage-type" name="form-select-update-storage-type" style="width: 180px;">
                                 <option value="CEPH" selected>GlueFS</option>
-                                <option value="RGW">Object Gateway</option>
+                                <!-- <option value="RGW">Object Gateway</option> -->
                             </select>
                         </div>
                     </div>
@@ -2349,7 +2348,7 @@
                     <div class="pf-c-form__group">
                         <div class="pf-c-form__group-label" style="margin-left: 20px;">
                             <label class="pf-c-form__label" for="form-input-iscsi-service-api-port" style="margin-left: 10px;width: 120px;">
-                                <span class="pf-c-form__label-text">PORT</span>
+                                <span class="pf-c-form__label-text">API PORT</span>
                                 <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
                             </label>
                         </div>
@@ -2460,7 +2459,7 @@
                     <div class="pf-c-form__group">
                         <div class="pf-c-form__group-label" style="margin-left: 20px;">
                             <label class="pf-c-form__label" for="form-input-update-iscsi-service-api-port" style="margin-left: 10px;width: 120px;">
-                                <span class="pf-c-form__label-text">PORT</span>
+                                <span class="pf-c-form__label-text">API PORT</span>
                                 <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
                             </label>
                         </div>
@@ -2585,7 +2584,7 @@
                             </label>
                         </div>
                         <div class="pf-c-form__group-control">
-                            <input class="pf-c-check__input" type="checkbox" style="margin-top: 8px;" id="form-checkbox-existing-image-use-yn" name="form-checkbox-existing-image-use-yn" value="scvm1"/>
+                            <input class="pf-c-check__input" type="checkbox" style="margin-top: 8px;" id="form-checkbox-existing-image-use-yn" name="form-checkbox-existing-image-use-yn"/>
                         </div>
                     </div>
                     <div class="pf-c-form__group" id="div-target-new-rbd-pool">
@@ -2879,7 +2878,7 @@
                             <input class="pf-c-form-control" style="width:80%" type="text" id="form-input-nqn-id" name="form-input-nqn-id"/>
                         </div>
                     </div>
-                    <div class="pf-c-form__group">
+                    <!-- <div class="pf-c-form__group">
                         <div class="pf-c-form__group-label" style="margin-left: 20px;">
                             <label class="pf-c-form__label" for="form-input-nvmeof-ip" style="margin-left: 10px;width: 120px;">
                                 <span class="pf-c-form__label-text">포탈 IP</span>
@@ -2889,24 +2888,32 @@
                         <div class="pf-c-form__group-control">
                             <input class="pf-c-form-control" style="width:50%" type="text" id="form-input-nvmeof-ip" name="form-input-nvmeof-ip"/>
                         </div>
-                        <!-- <div class="pf-c-form__group-control">
-                            <div class="pf-c-select pf-m-expanded">
-                                <input class="pf-c-form-control" type="text" style="width:60%" id="form-input-nvmeof-ip" name="form-input-nvmeof-ip" readonly/>
-                                <button class="pf-c-select__toggle" type="button" style="width: 60%;" id="button-nvmeof-portal-list-setting" aria-haspopup="true" aria-expanded="true" aria-labelledby="select-checkbox-expanded-toggle">
-                                    <div class="pf-c-select__toggle-wrapper">
-                                        <span class="pf-c-select__toggle-text">선택하십시오.</span>
-                                    </div>
-                                    <span class="pf-c-select__toggle-arrow">
-                                        <i class="fas fa-times" aria-hidden="true"></i>
-                                        <i class="fas fa-caret-down" aria-hidden="true"></i>
-                                    </span>
-                                </button>
-                                <div class="pf-c-select__menu" style="min-width: 60%;display: none;" id="div-nvmeof-ip-list">
-                                </div>
-                            </div>
-                        </div> -->
-                    </div>
+                    </div> -->
                     <div class="pf-c-form__group" id="div-target-new-rbd-pool">
+                        <div class="pf-c-form__group-label" style="margin-left: 20px;">
+                            <label class="pf-c-form__label" for="form-select-nvmeof-ip" style="margin-left: 10px;width: 120px;">
+                                <span class="pf-c-form__label-text">포탈 IP</span>
+                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                            </label>
+                        </div>
+                        <div class="pf-c-dropdown">
+                            <select class="pf-c-form-control" id="form-select-nvmeof-ip" name="form-select-nvmeof-ip" style="width: 50%;">
+                                <option value="" selected>선택하십시오.</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="pf-c-form__group">
+                        <div class="pf-c-form__group-label" style="margin-left: 20px;">
+                            <label class="pf-c-form__label" for="form-checkbox-nvmeof-existing-image-use-yn" style="margin-left: 10px;width: 120px;">
+                                <span class="pf-c-form__label-text">기존 이미지 사용</span>
+                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                            </label>
+                        </div>
+                        <div class="pf-c-form__group-control">
+                            <input class="pf-c-check__input" type="checkbox" style="margin-top: 8px;" id="form-checkbox-nvmeof-existing-image-use-yn" name="form-checkbox-nvmeof-existing-image-use-yn"/>
+                        </div>
+                    </div>
+                    <div class="pf-c-form__group" id="div-nvmeof-target-new-rbd-pool">
                         <div class="pf-c-form__group-label" style="margin-left: 20px;">
                             <label class="pf-c-form__label" for="form-select-nvmeof-target-image-pool" style="margin-left: 10px;width: 120px;">
                                 <span class="pf-c-form__label-text">데이터 풀</span>
@@ -2919,7 +2926,7 @@
                             </select>
                         </div>
                     </div>
-                    <div class="pf-c-form__group" id="div-target-new-image-name">
+                    <div class="pf-c-form__group" id="div-nvmeof-target-new-image-name">
                         <div class="pf-c-form__group-label" style="margin-left: 20px;">
                             <label class="pf-c-form__label" for="form-input-nvmeof-target-image-name" style="margin-left: 10px;width: 120px;">
                                 <span class="pf-c-form__label-text">이미지 명</span>
@@ -2930,7 +2937,7 @@
                             <input class="pf-c-form-control" style="width:80%" type="text" id="form-input-nvmeof-target-image-name" name="form-input-nvmeof-target-image-name"/>
                         </div>
                     </div>
-                    <div class="pf-c-form__group" id="div-target-image-size">
+                    <div class="pf-c-form__group" id="div-nvmeof-target-image-size">
                         <div class="pf-c-form__group-label" style="margin-left: 20px;">
                             <label class="pf-c-form__label" for="form-input-nvmeof-target-image-size" style="margin-left: 10px;width: 120px;">
                                 <span class="pf-c-form__label-text">용량(GiB)</span>
@@ -2939,6 +2946,20 @@
                         </div>
                         <div class="pf-c-form__group-control">
                             <input class="pf-c-form-control" style="width:50%" type="text" id="form-input-nvmeof-target-image-size" name="form-input-nvmeof-target-image-size"/>
+                        </div>
+                    </div>
+
+                    <div class="pf-c-form__group" id="div-nvmeof-target-image-name">
+                        <div class="pf-c-form__group-label" style="margin-left: 20px;">
+                            <label class="pf-c-form__label" for="form-select-nvmeof-target-image-name" style="margin-left: 10px;width: 120px;">
+                                <span class="pf-c-form__label-text">이미지 명</span>
+                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                            </label>
+                        </div>
+                        <div class="pf-c-dropdown">
+                            <select class="pf-c-form-control" id="form-select-nvmeof-target-image-name" name="form-select-nvmeof-target-image-name" style="width: 50%;">
+                                <option value="" selected>선택하십시오.</option>
+                            </select>
                         </div>
                     </div>
                 </section>

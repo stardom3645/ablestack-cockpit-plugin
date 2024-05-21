@@ -16,39 +16,61 @@ function objectGatewayList(){
         }
     }).then(res => res.json()).then(data => {
         if(data.length != 0){
-            $('#object-gateway-list tr').remove();
-            for(var i=0; i < data.length; i++){
-                let insert_tr = "";
-                insert_tr += '<tr role="row">';
-                insert_tr += '    <td role="cell" data-label="이름">'+data[i].service_name+'</td>';
-                insert_tr += '    <td role="cell" data-label="호스트 명">'+data[i].placement.hosts+'</td>';
-                insert_tr += '    <td role="cell" data-label="PORT">'+data[i].status.ports+'</td>';
-                insert_tr += '    <td class="pf-c-table__icon" role="cell" data-label="편집">';
-                insert_tr += '        <div class="pf-c-dropdown">';
-                insert_tr += '            <button class="pf-c-dropdown__toggle pf-m-plain" id="card-action-object-gateway'+i+'" onclick="toggleAction(\'dropdown-menu-card-action-object-gateway\','+i+')" aria-expanded="false" type="button" aria-label="Actions">';
-                insert_tr += '                <i class="fas fa-ellipsis-v" aria-hidden="true"></i>';
-                insert_tr += '            </button>';
-                insert_tr += '            <ul class="pf-c-dropdown__menu pf-m-align-right" aria-labelledby="card-action-object-gateway'+i+'" id="dropdown-menu-card-action-object-gateway'+i+'">';
-                insert_tr += '                <li>';
-                insert_tr += '                    <button class="pf-c-dropdown__menu-item pf-m-enabled" type="button" onclick=\'objectGatewayEdit("'+data[i].service_name+'")\' >Object Gateway 수정</button>';
-                insert_tr += '                    <button class="pf-c-dropdown__menu-item pf-m-enabled" type="button" onclick=\'objectGatewayDelete("'+data[i].service_name+'")\' >Object Gateway 삭제</button>';
-                insert_tr += '                </li>';
-                insert_tr += '            </ul>';
-                insert_tr += '        </div>';
-                insert_tr += '    </td>';
-                insert_tr += '</tr>';
-    
-                $("#object-gateway-list:last").append(insert_tr);
-                $('#dropdown-menu-card-action-object-gateway'+i).hide();
-            }
+            fetch('https://'+glue_api_ip+':'+glue_api_port+'/api/v1/glue/hosts',{
+                method: 'GET'
+            }).then(res => res.json()).then(hosts_data => {
+                $('#object-gateway-list tr').remove();
+                for(var i=0; i < data.length; i++){
+                    var host_ip = [];
+                    
+                    for(var j=0; j < hosts_data.length ; j++){
+                        for(var x=0; x < data[i].placement.hosts.length ; x++){
+                            
+                            if(hosts_data[j].hostname == data[i].placement.hosts[x]){
+                                host_ip.push(hosts_data[j].ip_address)
+                            }    
+                        }
+                    }
+
+                    let insert_tr = "";
+                    insert_tr += '<tr role="row">';
+                    insert_tr += '    <td role="cell" data-label="이름">'+data[i].service_name+'</td>';
+                    insert_tr += '    <td role="cell" data-label="상태">'+data[i].status.running+"/"+data[i].status.size+'</td>';
+                    insert_tr += '    <td role="cell" data-label="호스트 명">'+data[i].placement.hosts+'</td>';
+                    insert_tr += '    <td role="cell" data-label="IP">'+host_ip+'</td>';
+                    insert_tr += '    <td role="cell" data-label="PORT">'+data[i].status.ports+'</td>';
+                    insert_tr += '    <td class="pf-c-table__icon" role="cell" data-label="편집">';
+                    insert_tr += '        <div class="pf-c-dropdown">';
+                    insert_tr += '            <button class="pf-c-dropdown__toggle pf-m-plain" id="card-action-object-gateway'+i+'" onclick="toggleAction(\'dropdown-menu-card-action-object-gateway\','+i+')" aria-expanded="false" type="button" aria-label="Actions">';
+                    insert_tr += '                <i class="fas fa-ellipsis-v" aria-hidden="true"></i>';
+                    insert_tr += '            </button>';
+                    insert_tr += '            <ul class="pf-c-dropdown__menu pf-m-align-right" aria-labelledby="card-action-object-gateway'+i+'" id="dropdown-menu-card-action-object-gateway'+i+'">';
+                    insert_tr += '                <li>';
+                    insert_tr += '                    <button class="pf-c-dropdown__menu-item pf-m-enabled" type="button" onclick=\'objectGatewayEdit("'+data[i].service_name+'")\' >Object Gateway 수정</button>';
+                    insert_tr += '                    <button class="pf-c-dropdown__menu-item pf-m-enabled" type="button" onclick=\'objectGatewayDelete("'+data[i].service_name+'")\' >Object Gateway 삭제</button>';
+                    insert_tr += '                </li>';
+                    insert_tr += '            </ul>';
+                    insert_tr += '        </div>';
+                    insert_tr += '    </td>';
+                    insert_tr += '</tr>';
+        
+                    $("#object-gateway-list:last").append(insert_tr);
+                    $('#dropdown-menu-card-action-object-gateway'+i).hide();
+                }
+            }).catch(function(data){
+                console.log("error : "+data);
+                //조회되는 데이터가 없음
+                noList("object-gateway-list",5);
+                $('#button-object-gateway-search').html("<i class='fas fa-fw fa-redo' aria-hidden='true'></i>");
+            });
         }else{
-            noList("object-gateway-list",3);
+            noList("object-gateway-list",5);
         }
         $('#button-object-gateway-search').html("<i class='fas fa-fw fa-redo' aria-hidden='true'></i>");
     }).catch(function(data){
         console.log("error : "+data);
         //조회되는 데이터가 없음
-        noList("object-gateway-list",7);
+        noList("object-gateway-list",5);
         $('#button-object-gateway-search').html("<i class='fas fa-fw fa-redo' aria-hidden='true'></i>");
     });
 }
@@ -159,13 +181,13 @@ $('#button-execution-modal-update-object-gateway').on('click', function(){
     if(objectGatewayUpdateValidateCheck()){
         var body_val = "";
 
-        var service_name = $('#form-input-update-object-gateway-id').val();
+        var service_id = $('#form-input-update-object-gateway-id').val();
         // var zonegroup_name = $('#form-input-update-object-gateway-zone-group').val();
         // var zone_name = $('#form-input-update-object-gateway-zone').val();
         var port = $('#form-input-update-object-gateway-port').val();
         
-        // body_val +="service_name="+service_name+"&zonegroup_name="+zonegroup_name+"&zone_name="+zone_name+"&port="+port
-        body_val +="service_name="+service_name+"&port="+port
+        // body_val +="service_id="+service_id+"&zonegroup_name="+zonegroup_name+"&zone_name="+zone_name+"&port="+port
+        body_val +="service_id="+service_id+"&port="+port
         
         $('input[type=checkbox][name="glue-hosts-list"]').each(function() {
             if(this.checked){
@@ -173,8 +195,6 @@ $('#button-execution-modal-update-object-gateway').on('click', function(){
             }
         });
 
-        alert(body_val);
-        
         $('#div-modal-update-object-gateway').hide();
         $('#div-modal-spinner-header-txt').text('Object Gateway를 수정하고 있습니다.');
         $('#div-modal-spinner').show();
