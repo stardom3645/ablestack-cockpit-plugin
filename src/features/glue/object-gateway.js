@@ -60,17 +60,17 @@ function objectGatewayList(){
             }).catch(function(data){
                 console.log("error : "+data);
                 //조회되는 데이터가 없음
-                noList("object-gateway-list",5);
+                noList("object-gateway-list",6);
                 $('#button-object-gateway-search').html("<i class='fas fa-fw fa-redo' aria-hidden='true'></i>");
             });
         }else{
-            noList("object-gateway-list",5);
+            noList("object-gateway-list",6);
         }
         $('#button-object-gateway-search').html("<i class='fas fa-fw fa-redo' aria-hidden='true'></i>");
     }).catch(function(data){
         console.log("error : "+data);
         //조회되는 데이터가 없음
-        noList("object-gateway-list",5);
+        noList("object-gateway-list",6);
         $('#button-object-gateway-search').html("<i class='fas fa-fw fa-redo' aria-hidden='true'></i>");
     });
 }
@@ -331,13 +331,13 @@ function objectGatewayUserList(){
                 $('#dropdown-menu-card-action-object-gateway-user'+i).hide();
             }
         }else{
-            noList("object-gateway-user-list",7);
+            noList("object-gateway-user-list",8);
         }
         $('#button-object-gateway-user-search').html("<i class='fas fa-fw fa-redo' aria-hidden='true'></i>");
     }).catch(function(data){
         console.log("error : "+data);
         //조회되는 데이터가 없음
-        noList("object-gateway-usert-list",7);
+        noList("object-gateway-usert-list",8);
         $('#button-object-gateway-user-search').html("<i class='fas fa-fw fa-redo' aria-hidden='true'></i>");
     });
 }
@@ -718,7 +718,7 @@ function objectGatewayBucketList(){
                 insert_tr += '    <td role="cell" data-label="오브젝트">'+(data[i]["usage"]["rgw.main"] == null ? 0 : data[i]["usage"]["rgw.main"]["num_objects"])+'</td>';
                 insert_tr += '    <td role="cell" data-label="오브젝트 제한">'+(data[i].bucket_quota.max_objects == -1 ? "제한 없음" : data[i].bucket_quota.max_objects)+'</td>';
                 insert_tr += '    <td class="pf-c-table__icon" role="cell" data-label="편집">';
-                insert_tr += '         <div class="pf-c-dropdown">';
+                insert_tr += '         <div class="pf-c-dropdown pf-m-top">';
                 insert_tr += '            <button class="pf-c-dropdown__toggle pf-m-plain" id="card-action-object-gateway-bucket'+i+'" onclick="toggleAction(\'dropdown-menu-card-action-object-gateway-bucket\','+i+')" aria-expanded="false" type="button" aria-label="Actions">';
                 insert_tr += '                <i class="fas fa-ellipsis-v" aria-hidden="true"></i>';
                 insert_tr += '            </button>';

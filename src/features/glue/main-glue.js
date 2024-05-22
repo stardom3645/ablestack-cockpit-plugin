@@ -68,11 +68,15 @@ $('html').on('click', function(e){
         $('.pf-c-dropdown__menu, .pf-m-align-right').hide();
     }
     
-    // if(!$(e.target).hasClass('pf-c-check__input') || ){
-    //     if(!$(e.target).hasClass('pf-c-select__toggle') || !$(e.target).hasClass('pf-c-select__menu-item') || !$(e.target).hasClass('pf-c-select__menu')){
-    //         $('.pf-c-select__menu').hide();
-    //     }
-    // }
+    //배치 호스트, iscsi 포털 체크 박스 다른 영역 클릭시 메뉴 닫기
+    if(!($(e.target).hasClass('pf-c-select__toggle')
+        || $(e.target).hasClass('pf-c-select__menu')
+        || $(e.target).hasClass('pf-c-check__input')
+        || $(e.target).hasClass('pf-c-check pf-c-select__menu-item')
+        || $(e.target).hasClass('pf-c-check__label'))
+    ){
+        $('.pf-c-select__menu').hide();
+    }
 });
 
 // 상태 보기 드롭다운 메뉴를 활성화한 상태에서 다른 영역을 클릭 했을 경우 메뉴 닫기 (pareant html 클릭할 때 작동)
