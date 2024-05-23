@@ -82,7 +82,7 @@ def create(args):
         return_val = "The ping test failed. Check ablecube cube hosts and scvms network IPs. Please check the config.json file."
         
         # 호스트의 cluster.json 파일 scvm에 복사
-        os.system("rm -f "+json_file_path)
+        # os.system("rm -f "+json_file_path)
         os.system("scp -q -o StrictHostKeyChecking=no root@"+ablecube_host+":" + json_file_path + " " + json_file_path)
 
         host_list = []
@@ -183,12 +183,10 @@ def create(args):
 
             # gwvm xml 생성
             result = json.loads(python3(pluginpath + '/python/gwvm/create_gwvm_xml.py', '-c', cpu_core, '-m', memory_gb, '-mnb', mngt_nic, '-snb', pn_nic, '-hns', pcs_cluster_list ))
-            # result로 에러 체크
 
             # gwvm pcs 클러스터 배포
             result = json.loads(python3(pluginpath + '/python/pcs/pcsExehost.py' ))
             pcs_exe_ip = result["val"]
-            # pcs_exe_ip = '10.10.2.1'
             ret = ssh('-o', 'StrictHostKeyChecking=no', '-o', 'ConnectTimeout=5', pcs_exe_ip, "python3 " + pluginpath + "/python/gwvm/create_gwvm_setup_pcs_cluster.py").strip()
 
             # gwvm 부팅 완료 대기
@@ -209,12 +207,9 @@ def create(args):
             # bootstrap.sh 실행
             ret = ssh('-o', 'StrictHostKeyChecking=no', '-o', 'ConnectTimeout=5', mngt_ip, "sh /root/bootstrap.sh").strip()
 
-            # gwvm 재부팅 시, 마운트 재설정
-            # ssh('-o', 'StrictHostKeyChecking=no', '-o', 'ConnectTimeout=5', mngt_ip, 'echo "/usr/bin/mount -t ceph admin@.fs=/ /fs" >>/etc/rc.d/rc.local').strip()
-            # ssh('-o', 'StrictHostKeyChecking=no', '-o', 'ConnectTimeout=5', mngt_ip, 'echo -e "\n[Install]\nWantedBy=multi-user.target" >> /usr/lib/systemd/system/rc-local.service').strip()
-            # ssh('-o', 'StrictHostKeyChecking=no', '-o', 'ConnectTimeout=5', mngt_ip, 'chmod +x /etc/rc.d/rc.local').strip()
-            # ssh('-o', 'StrictHostKeyChecking=no', '-o', 'ConnectTimeout=5', mngt_ip, 'systemctl daemon-reload').strip()
-            # ssh('-o', 'StrictHostKeyChecking=no', '-o', 'ConnectTimeout=5', mngt_ip, 'systemctl enable --now rc-local.service').strip()
+            gwvm_add_check = os.system("ceph orch host add "+host_name+" "+pn_ip+" > /dev/null 2>&1")
+            if gwvm_add_check != 0:
+                return createReturn(code=500, val="gwvm did not add glue cluster. : "+e)   
             
             return createReturn(code=200, val="Gateway VM Create Success")
         else:

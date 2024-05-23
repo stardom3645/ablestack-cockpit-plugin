@@ -185,7 +185,7 @@ $('#button-execution-modal-remove-gluefs').on('click', function(){
                 gluefsList();
                 createLoggerInfo("gluefs remove success");
             } else if(data == "Please Subvolume Group Check"){
-                $("#modal-status-alert-body").html("GlueFS를 삭제하려면 SubVlolume을 모두 제거해야 합니다.");
+                $("#modal-status-alert-body").html("GlueFS를 삭제하려면 SubVolume을 모두 제거해야 합니다.");
                 $('#div-modal-status-alert').show();
                 gluefsList();
                 createLoggerInfo("gluefs remove success");
