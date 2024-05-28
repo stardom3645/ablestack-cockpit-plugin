@@ -85,7 +85,7 @@ $('#button-execution-modal-create-nvmeof-service').on('click', function(){
         
         $('input[type=checkbox][name="glue-hosts-list"]').each(function() {
             if(this.checked){
-                body_val += "&hostname="+this.value;
+                body_val += "&hosts="+this.value;
             }
         });
     
@@ -107,7 +107,7 @@ $('#button-execution-modal-create-nvmeof-service').on('click', function(){
             $('#div-modal-spinner').hide();
             if(data == "Success"){
                 $("#modal-status-alert-title").html("NVMe-oF Service 생성 완료");
-                $("#modal-status-alert-body").html("NVMe-oF Service 생성을 완료하였습니다.");
+                $("#modal-status-alert-body").html("NVMe-oF Service 생성을 완료하였습니다.<br/>조회 버튼을 클릭하여 서비스 상태를 확인할 수 있습니다.");
                 $('#div-modal-status-alert').show();
                 nvmeofServiceList();
                 createLoggerInfo("NVMe-oF Service create success");
@@ -167,11 +167,11 @@ $('#button-execution-modal-remove-nvmeof-service').on('click', function(){
                 $("#modal-status-alert-title").html("NVMe-of Service 삭제 완료");
                 $("#modal-status-alert-body").html("NVMe-of Service 삭제를 완료하였습니다.");
                 $('#div-modal-status-alert').show();
-                nvmeofServiceList();
                 createLoggerInfo("NVMe-of Service remove success");
             }else{
                 $('#div-modal-status-alert').show();
             }
+            nvmeofServiceList();
         }).catch(function(data){
             $('#div-modal-spinner').hide();
             $('#div-modal-status-alert').show();
