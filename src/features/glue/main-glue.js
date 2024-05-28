@@ -23,8 +23,7 @@ $(document).ready(function(){
             cockpit.script(["scp -q -o StrictHostKeyChecking=no root@ablecube:/usr/share/cockpit/ablestack/tools/properties/cluster.json /usr/share/cockpit/ablestack/tools/properties/cluster.json"])
             .then(function () {
                 gwvmInfoSet();
-            })
-            .catch(function (error) {
+            }).catch(function (error) {
                 alert("초기 cluster.json 파일 복사 실패 : "+error);
             });        
             setInterval(() => {
@@ -145,7 +144,7 @@ $('i[name=icon-help-action]').on('click',function(e){
         $("#modal-help-body").html("Object Gateway Bucket은 연관된 오브젝트(파일)를 그룹핑한 최상위 디렉토리이며, 사용자별 여러개의 버킷을 생성하여 사용할 수 있습니다.");
     } else if (e.target.id == "icon-help-ingress-service") {
         $("#modal-help-title").html("INGRESS Service 도움말");
-        $("#modal-help-body").html("NFS, OBJECT GATEWAY 서비스에 대한 INGRESS 서비스를 배포하면 가상 IP를 통한 안적적 접근이 가능하고, SCVM 장애 발생시 SCVM간 페일오버가 가능합니다.");
+        $("#modal-help-body").html("NFS, OBJECT GATEWAY 서비스에 대한 INGRESS 서비스를 배포하면 가상 IP를 통한 안적적 접근이 가능하고, SCVM 장애 발생시 SCVM간 페일오버가 가능합니다. INGRESS 서비스는 배치한 호스트 마다 haproxy와 keepalived 데몬이 동작합니다.");
     } else if (e.target.id == "icon-help-iscsi-service") {
         $("#modal-help-title").html("iSCSI Service 도움말");
         $("#modal-help-body").html("iSCSI 게이트웨이 서비스는 RBD(RADOS 블록 장치) 이미지를 SCSI 디스크로 내보내는 HA(고가용성) iSCSI Target을 제공합니다. iSCSI 프로토콜을 사용하면 클라이언트(이니시에이터)가 TCP/IP 네트워크를 통해 스토리지 장치(대상)에 SCSI 명령을 보낼 수 있으므로 클라이언트가 Glue 블록 스토리지에 액세스할 수 있습니다.");
@@ -507,7 +506,7 @@ function glueVmList(){
 }
 
 // glue 배치 호스트 리스트 기능
-$('#button-glue-hosts-list-setting, #button-update-nfs-glue-hosts-list-setting, #button-ingress-glue-hosts-list-setting, #button-update-ingress-glue-hosts-list-setting, #button-iscsi-glue-hosts-list-setting, #button-nvmeof-glue-hosts-list-setting, #button-update-iscsi-glue-hosts-list-setting, #button-object-gateway-glue-hosts-list-setting, #button-update-object-gateway-glue-hosts-list-setting').on('click', function(e){
+$('#button-gluefs-glue-hosts-list-setting, #button-glue-hosts-list-setting, #button-update-nfs-glue-hosts-list-setting, #button-smb-glue-hosts-list-setting, #button-ingress-glue-hosts-list-setting, #button-update-ingress-glue-hosts-list-setting, #button-iscsi-glue-hosts-list-setting, #button-nvmeof-glue-hosts-list-setting, #button-update-iscsi-glue-hosts-list-setting, #button-object-gateway-glue-hosts-list-setting, #button-update-object-gateway-glue-hosts-list-setting').on('click', function(e){
     $('#'+e.target.parentElement.children[2].id).toggle();
 });
 
@@ -630,7 +629,7 @@ function topTabAction(button_id){
             break;
         case 'button-tab-ingress':
             $('div[name="div-help-content"]').remove();
-            setHelpInfoContent("INGRESS Service","NFS, OBJECT GATEWAY 서비스에 대한 INGRESS 서비스를 배포하면 가상 IP를 통해 안적적 접근이 가능하고, SCVM 장애 발생시 SCVM간 페일오버가 가능합니다.");
+            setHelpInfoContent("INGRESS Service","NFS, OBJECT GATEWAY 서비스에 대한 INGRESS 서비스를 배포하면 가상 IP를 통해 안적적 접근이 가능하고, SCVM 장애 발생시 SCVM간 페일오버가 가능합니다. INGRESS 서비스는 배치한 호스트 마다 haproxy와 keepalived 데몬이 동작합니다.");
             ingressList();
             $('#div-ingress-card').show();
             break;

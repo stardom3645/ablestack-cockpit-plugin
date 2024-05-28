@@ -113,7 +113,7 @@ $('#button-execution-modal-create-object-gateway').on('click', function(){
         
         $('input[type=checkbox][name="glue-hosts-list"]').each(function() {
             if(this.checked){
-                body_val += "&hostname="+this.value
+                body_val += "&hosts="+this.value
             }
         });
         
@@ -135,7 +135,7 @@ $('#button-execution-modal-create-object-gateway').on('click', function(){
             $('#div-modal-spinner').hide();
             if(data == "Success"){
                 $("#modal-status-alert-title").html("Object Gateway 생성 완료");
-                $("#modal-status-alert-body").html("Object Gateway 생성을 완료하였습니다.");
+                $("#modal-status-alert-body").html("Object Gateway 생성을 완료하였습니다.<br/>조회 버튼을 클릭하여 서비스 상태를 확인할 수 있습니다.");
                 $('#div-modal-status-alert').show();
                 objectGatewayList();
                 createLoggerInfo("Object Gateway create success");
@@ -397,6 +397,9 @@ $('#button-execution-modal-remove-object-gateway-user').on('click', function(){
                 $('#div-modal-status-alert').show();
                 objectGatewayUserList();
                 createLoggerInfo("object gateway user remove success");
+            }else if(data.code=="500" && data.message =="could not remove user: unable to remove user, must specify purge data to remove user with buckets"){
+                $("#modal-status-alert-body").html("Object Gateway User 삭제를 실패하였습니다.<br/>사용자가 버킷을 사용중입니다. 확인후 삭제해주세요.");
+                $('#div-modal-status-alert').show();
             }else{
                 $('#div-modal-status-alert').show();
             }
@@ -798,6 +801,9 @@ $('#button-execution-modal-remove-object-gateway-bucket').on('click', function()
                 $('#div-modal-status-alert').show();
                 objectGatewayBucketList();
                 createLoggerInfo("object gateway bucket remove success");
+            }else if(data.include("non-empty bucket")){
+                $("#modal-status-alert-body").html("Object Gateway Bucket 삭제를 실패하였습니다.<br/>오브젝트가 존재하여 삭제할 수 없습니다.");
+                $('#div-modal-status-alert').show();
             }else{
                 $('#div-modal-status-alert').show();
             }
