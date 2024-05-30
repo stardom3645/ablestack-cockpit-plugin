@@ -87,6 +87,10 @@ $('#button-execution-modal-gateway-wizard-confirm').on('click', function () {
 
     if(hypervisor == "cell"){
         // 관리 nic
+        var cpu = $('select#form-select-gateway-vm-compute-cpu option:checked').val();
+        // 관리 nic
+        var memory = $('select#form-select-gateway-vm-compute-memory option:checked').val();
+        // 관리 nic
         var mngt_nic = $('select#form-select-gateway-vm-mngt-nic-parent option:checked').val();
         // 관리 ip
         var mngt_ip = $('#form-input-gateway-vm-mngt-nic-ip').val();
@@ -101,7 +105,7 @@ $('#button-execution-modal-gateway-wizard-confirm').on('click', function () {
                 'accept': 'application/json',
                 'Content-Type': 'application/x-www-form-urlencoded'
             },
-            body: 'hypervisorType=cell&gwvmMngtNicParent='+mngt_nic+'&gwvmMngtNicIp='+mngt_ip+'&gwvmStorageNicParent='+snb_nic+'&gwvmStorageNicIp='+snb_ip
+            body: 'hypervisorType=cell&gwvmCpu='+cpu+'&gwvmMemory='+memory+'&gwvmMngtNicParent='+mngt_nic+'&gwvmMngtNicIp='+mngt_ip+'&gwvmStorageNicParent='+snb_nic+'&gwvmStorageNicIp='+snb_ip
         }).then(res => res.json()).then(data => {
             $('#div-modal-spinner').hide();
             var retVal = JSON.parse(data.Message);

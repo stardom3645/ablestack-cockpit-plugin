@@ -42,6 +42,8 @@ def createArgumentParser():
 
     # 인자 추가: https://docs.python.org/ko/3/library/argparse.html#the-add-argument-method
     parser.add_argument('action', choices=['create'], help='choose one of the actions')
+    parser.add_argument('-c', '--cpu', metavar='[cpu cores]', type=int, help='input Value to cpu cores', required=True)
+    parser.add_argument('-m', '--memory', metavar='[memory gb]', type=int, help='input Value to memory GB', required=True)
     #--management-network-bridge br0                                        | 1택, 필수
     parser.add_argument('-mnb', '--management-network-bridge', metavar='[bridge name]', type=str, help='input Value to bridge name of the management network', required=True)
     parser.add_argument('-mi', '--mngt-ip', metavar='Management IP', help="관리 네트워크 IP", required=True)
@@ -101,8 +103,8 @@ def create(args):
                     return createReturn(code=500, val="python3 gwvm_config.py create error : Please check if CUBEs and SCVMs are running.")
 
             host_name="gwvm"
-            cpu_core = 16
-            memory_gb = 32
+            cpu_core = args.cpu
+            memory_gb = args.memory
             mngt_nic = args.management_network_bridge
             mngt_ip = args.mngt_ip
 
