@@ -665,7 +665,7 @@ function setIscsiImage(){
         $('#div-target-new-image-name').show();
         $('#div-target-image-size').show();
         $('#div-target-image-name').hide();
-        $('#form-input-target-image-name').val($('#form-input-iqn-id').val());
+        $('#form-input-target-image-name').val($('#form-input-iqn-id').val().replace(':', '.'));
     }
 }
 

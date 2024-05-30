@@ -424,7 +424,7 @@ function setNvmeofImage(){
         $('#div-nvmeof-target-new-image-name').show();
         $('#div-nvmeof-target-image-size').show();
         $('#div-nvmeof-target-image-name').hide();
-        $('#form-input-nvmeof-target-image-name').val($('#form-input-nqn-id').val());
+        $('#form-input-nvmeof-target-image-name').val($('#form-input-nqn-id').val().replace(':', '.'));
     }
 }
 

@@ -143,8 +143,9 @@ $('#button-execution-modal-create-smb-service').on('click', function(){
         var path = $('#form-input-smb-actual-shared-path').val();
         var fs_name = $('#form-select-smb-gluefs-name option:selected').val();
         var volume_path = $('#form-select-smb-gluefs-path option:selected').val();
+        var cache_policy = $('#form-select-smb-csc-policy option:selected').val();
         
-        var body_val = "folder_name="+folder_name+"&path="+path+"&fs_name="+fs_name+"&volume_path="+volume_path
+        var body_val = "folder_name="+folder_name+"&path="+path+"&fs_name="+fs_name+"&volume_path="+volume_path+"&cache_policy="+cache_policy
         
         var create_type = $('#smb-service-create-type').val();
         if (create_type == "multi") {
@@ -324,7 +325,6 @@ $('#button-execution-modal-create-smb-user').on('click', function(){
         var username = $('#form-input-smb-create-user-name').val();
         var password = $('#form-input-smb-create-user-password').val();
     
-        
         var body_val = "hosts="+hosts+"&username="+username+"&password="+password    
         
         $('#div-modal-create-smb-user').hide();
@@ -486,6 +486,7 @@ $('#button-execution-modal-remove-smb-user').on('click', function(){
 // smb 생성 입력값 초기화
 function smbServiceCreateInitInputValue(){
     $('#form-input-smb-share-folder-name').val("");
+    $('#form-select-smb-csc-policy').val("true");
     $('#form-input-smb-user-name').val("");
     $('#form-input-smb-user-password').val("");
 
