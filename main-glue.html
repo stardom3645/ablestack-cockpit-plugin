@@ -1001,6 +1001,33 @@
                         </div>
                     </div>
                     <div class="pf-c-modal-box__body">
+                        <div>컴퓨트 구성</div>
+                        <div class="pf-c-form__group-label" style="margin-left: 20px;">
+                            <label class="pf-c-form__label" for="form-select-gateway-vm-compute-cpu" style="width: 120px;">
+                                <span class="pf-c-form__label-text">CPU Core</span>
+                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                            </label>
+                            <div class="pf-c-dropdown">
+                                <select class="pf-c-form-control" id="form-select-gateway-vm-compute-cpu" name="form-select-gateway-vm-compute-cpu" style="width: 180px; margin-left: 29px;">
+                                    <option value="8" selected>8 vCore</option>
+                                    <option value="16" >16 vCore</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="pf-c-form__group-label" style="margin-left: 20px;">
+                            <label class="pf-c-form__label" for="form-select-gateway-vm-compute-memory" style="width: 120px;">
+                                <span class="pf-c-form__label-text">Memory</span>
+                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                            </label>
+                            <div class="pf-c-dropdown">
+                                <select class="pf-c-form-control" id="form-select-gateway-vm-compute-memory" name="form-select-gateway-vm-compute-memory" style="width: 180px; margin-left: 39px;">
+                                    <option value="16" selected>16 GiB</option>
+                                    <option value="32" >32 GiB</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pf-c-modal-box__body">
                         <div>네트워크 구성</div>
                         <div class="pf-c-form__group-label" style="margin-left: 20px;">
                             <label class="pf-c-form__label" for="form-select-gateway-vm-mngt-nic-parent" style="width: 120px;">
