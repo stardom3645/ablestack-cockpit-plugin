@@ -136,7 +136,7 @@ $('#button-execution-modal-create-gluefs').on('click', function(){
             $('#div-modal-spinner').hide();
             if(data == "Success"){
                 $("#modal-status-alert-title").html("Glue File System 생성 완료");
-                $("#modal-status-alert-body").html("Glue File System 생성을 완료하였습니다.<br/>조회 버튼을 클릭하여 상태가 active인지 확인 가능합니다.");
+                $("#modal-status-alert-body").html("Glue File System 생성을 완료하였습니다.<br/>새로고침 버튼을 클릭하여 상태가 active인지 확인 가능합니다.");
                 $('#div-modal-status-alert').show();
                 gluefsList();
                 createLoggerInfo("gluefs create success");
