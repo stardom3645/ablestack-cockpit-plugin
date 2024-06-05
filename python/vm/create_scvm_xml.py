@@ -316,7 +316,7 @@ def createScvmXml(args):
                         # <!--nic_passthrough--> 주석제거
                         line = ''
                 # 라인 수정
-                sys.write(line)
+                sys.stdout.write(line)
 
         # 작업파일 삭제 및 이름 변경
         os.system("mv "+pluginpath+"/tools/vmconfig/scvm/scvm-temp.xml "+pluginpath+"/tools/vmconfig/scvm/scvm.xml")
@@ -342,26 +342,26 @@ def createHugePageConfig(args):
 
         with open(template_file, mode="rt") as fi:
             file=fi.read()
-            
+
         file = file.replace('{memory}', str(args.memory * 1024 * 1024))
 
         with open(template_file, mode="wt") as fi:
             fi.write(file)
-        
+
         os.system("mv " + template_file + " /etc/security/limits.conf")
-        
+
         # sysctl
         template_file = pluginpath + '/tools/vmconfig/scvm/sysctl-template.conf'
         os.system("yes|cp -f " + pluginpath + "/tools/xml-template/sysctl-template.conf " + template_file)
 
         with open(template_file, mode="rt") as fi:
             file=fi.read()
-            
+
         file = file.replace('{memory}', str(args.memory * 1024))
 
         with open(template_file, mode="wt") as fi:
             fi.write(file)
-            
+
         os.system("mv " + template_file + " /etc/sysctl.conf")
         sysctl = sh.Command("/usr/sbin/sysctl")
         sysctl("-p")

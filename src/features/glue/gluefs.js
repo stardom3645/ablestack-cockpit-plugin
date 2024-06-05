@@ -89,6 +89,7 @@ $('#button-gluefs-search').on('click', function(){
 /** glue fs create 관련 action start */
 $('#button-gluefs-create').on('click', function(){
     gluefsCreateInitInputValue();
+    setSelectHostsCheckbox('div-gluefs-glue-hosts-list','form-input-gluefs-placement-hosts');
     $('#div-modal-create-gluefs').show();
 });
 
@@ -102,7 +103,20 @@ $('#button-cancel-modal-create-gluefs').on('click', function(){
 
 $('#button-execution-modal-create-gluefs').on('click', function(){
     if(gluefsValidateCheck()){
+        var body_val = "";
         var gluefs_id = $('#form-input-glue-fs-name').val()
+
+        var cnt_num = 0;
+        $('input[type=checkbox][name="glue-hosts-list"]').each(function() {
+            if(this.checked){
+                if(cnt_num == 0){
+                    body_val += "hosts="+this.value
+                    cnt_num++;
+                }else{
+                    body_val += "&hosts="+this.value
+                }
+            }
+        });
         
         $('#div-modal-create-gluefs').hide();
         $('#div-modal-spinner-header-txt').text('Glue File System을 생성하고 있습니다.');
@@ -116,12 +130,13 @@ $('#button-execution-modal-create-gluefs').on('click', function(){
             headers: {
                 'accept': 'application/json',
                 'Content-Type': 'application/x-www-form-urlencoded'
-            }
+            },
+            body: body_val
         }).then(res => res.json()).then(data => {
             $('#div-modal-spinner').hide();
             if(data == "Success"){
                 $("#modal-status-alert-title").html("Glue File System 생성 완료");
-                $("#modal-status-alert-body").html("Glue File System 생성을 완료하였습니다.");
+                $("#modal-status-alert-body").html("Glue File System 생성을 완료하였습니다.<br/>조회 버튼을 클릭하여 상태가 active인지 확인 가능합니다.");
                 $('#div-modal-status-alert').show();
                 gluefsList();
                 createLoggerInfo("gluefs create success");
@@ -185,7 +200,7 @@ $('#button-execution-modal-remove-gluefs').on('click', function(){
                 gluefsList();
                 createLoggerInfo("gluefs remove success");
             } else if(data == "Please Subvolume Group Check"){
-                $("#modal-status-alert-body").html("GlueFS를 삭제하려면 SubVlolume을 모두 제거해야 합니다.");
+                $("#modal-status-alert-body").html("GlueFS를 삭제하려면 SubVolume을 모두 제거해야 합니다.");
                 $('#div-modal-status-alert').show();
                 gluefsList();
                 createLoggerInfo("gluefs remove success");
@@ -465,6 +480,7 @@ function gluefsSubvolumeGroupCreateInitInputValue(){
 function gluefsValidateCheck(){
     var validate_check = true;
     var gluefs_id = $('#form-input-glue-fs-name').val();
+    var host_cnt = $('input[type=checkbox][name="glue-hosts-list"]:checked').length
 
     if (gluefs_id == "") {
         alert("GlueFS 이름를 입력해주세요.");
@@ -475,7 +491,10 @@ function gluefsValidateCheck(){
     }  else if (!nameCheck(gluefs_id)) {
         alert("GlueFS 이름 생성 규칙은 영문, 숫자 특수문자 '-','_' 만 입력 가능하고 영문으로 시작해야 합니다.");
         validate_check = false;
-    }
+    } else if (host_cnt == 0) {
+        alert("배치 호스트를 선택해주세요.");
+        validate_check = false;
+    } 
  
     return validate_check;
 }

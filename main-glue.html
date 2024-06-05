@@ -34,6 +34,16 @@
                         </button>
                     </li>
                     <li class="pf-c-tabs__item">
+                        <button type="button" class="pf-c-tabs__link" id="button-tab-smb">
+                            <span class="pf-c-tabs__item-text">SMB</span>
+                        </button>
+                    </li>
+                    <li class="pf-c-tabs__item">
+                        <button type="button" class="pf-c-tabs__link" id="button-tab-object-gateway">
+                            <span class="pf-c-tabs__item-text">OBJECT GATEWAY</span>
+                        </button>
+                    </li>                    
+                    <li class="pf-c-tabs__item">
                         <button type="button" class="pf-c-tabs__link" id="button-tab-ingress">
                             <span class="pf-c-tabs__item-text">INGRESS</span>
                         </button>
@@ -46,16 +56,6 @@
                     <li class="pf-c-tabs__item">
                         <button type="button" class="pf-c-tabs__link" id="button-tab-nvmeof">
                             <span class="pf-c-tabs__item-text">NVMe-oF</span>
-                        </button>
-                    </li>
-                    <li class="pf-c-tabs__item">
-                        <button type="button" class="pf-c-tabs__link" id="button-tab-smb">
-                            <span class="pf-c-tabs__item-text">SMB</span>
-                        </button>
-                    </li>
-                    <li class="pf-c-tabs__item">
-                        <button type="button" class="pf-c-tabs__link" id="button-tab-object-gateway">
-                            <span class="pf-c-tabs__item-text">OBJECT GATEWAY</span>
                         </button>
                     </li>
                 </ul>
@@ -364,6 +364,7 @@
                                             <thead>
                                                 <tr role="row">
                                                     <th role="columnheader" scope="col">이름</th>
+                                                    <th role="columnheader" scope="col">상태</th>
                                                     <th role="columnheader" scope="col">호스트 명</th>
                                                     <th role="columnheader" scope="col">IP</th>
                                                     <th role="columnheader" scope="col">PORT</th>
@@ -419,7 +420,7 @@
                                                     <th role="columnheader" scope="col">내보내기 경로</th>
                                                     <th role="columnheader" scope="col">클러스터 이름</th>
                                                     <th role="columnheader" scope="col">GlueFS 이름 (경로)</th>
-                                                    <th role="columnheader" scope="col">Bucket 이름</th>
+                                                    <!-- <th role="columnheader" scope="col">Bucket 이름</th> -->
                                                     <th role="columnheader" scope="col">프로토콜</th>
                                                     <th role="columnheader" scope="col">접근 타입</th>
                                                     <th role="columnheader" scope="col">Squash</th>
@@ -480,6 +481,7 @@
                                                 <tr role="row">
                                                     <th role="columnheader" scope="col">이름</th>
                                                     <th role="columnheader" scope="col">백엔드 서비스</th>
+                                                    <th role="columnheader" scope="col">상태</th>
                                                     <th role="columnheader" scope="col">배치 호스트</th>
                                                     <th role="columnheader" scope="col">가상 IP</th>
                                                     <th role="columnheader" scope="col">프론트엔드 PORT</th>
@@ -698,9 +700,9 @@
                                         <table class="pf-c-table pf-m-compact pf-m-grid-lg" role="grid" aria-label="This is a compact table example">
                                             <thead>
                                                 <tr role="row">
-                                                    <th role="columnheader" scope="col">NQN</th>
+                                                    <th role="columnheader" style="width:25%" scope="col">NQN</th>
                                                     <th role="columnheader" scope="col">포탈 IP</th>
-                                                    <th role="columnheader" scope="col">디스크 정보(풀/이미지명)</th>
+                                                    <th role="columnheader" style="width:25%" scope="col">디스크 정보(풀/이미지명)</th>
                                                     <th role="columnheader" scope="col">세션 수</th>
                                                     <th class="pf-c-table__icon" style="width:10%" role="columnheader" scope="col"></th>
                                                 </tr>
@@ -743,7 +745,7 @@
                                     &nbsp;<i class="pf-icon-help" aria-hidden="true" id="icon-help-smb-service" name="icon-help-action"></i>
                                     <div class="pf-c-card__actions">
                                         <button style="font-size: 0.83rem;" class="pf-c-button pf-m-secondary pf-m-inline" id="button-smb-service-search" aria-disabled="false" type="button" data-ouia-safe="true" ><i class="fas fa-fw fa-redo" aria-hidden="true"></i></button>
-                                        <!-- <button style="font-size: 0.83rem;" class="pf-c-button pf-m-secondary pf-m-inline" id="button-smb-service-create" aria-disabled="false" type="button" data-ouia-safe="true" >추가</button> -->
+                                        <button style="font-size: 0.83rem;" class="pf-c-button pf-m-secondary pf-m-inline" id="button-smb-service-multi-create" aria-disabled="false" type="button" data-ouia-safe="true" >다중 구성</button>
                                     </div>
                                 </div>
                                 <div class="pf-c-card__body">
@@ -754,8 +756,8 @@
                                                     <th role="columnheader" scope="col">호스트</th>
                                                     <th role="columnheader" scope="col">IP</th>
                                                     <th role="columnheader" scope="col">상태</th>
+                                                    <th role="columnheader" scope="col">보안 타입</th>
                                                     <th role="columnheader" scope="col">유저 수</th>
-                                                    <th role="columnheader" scope="col">PORT</th>
                                                     <th role="columnheader" scope="col">SMB 공유 폴더</th>
                                                     <th role="columnheader" scope="col">SMB 마운트 경로</th>
                                                     <th role="columnheader" scope="col">GlueFS 이름 (경로)</th>
@@ -795,11 +797,6 @@
                         <!-- SMB 서비스 카드 영역 끝-->
                     </div>
                 </div>
-                
-
-
-
-
                 <div class="pf-l-grid__item pf-m-12-col" id="div-object-gateway-card" hidden>
                     <div class="pf-l-grid pf-m-gutter">
                         <!-- Object Gateway 카드 영역 시작-->
@@ -819,7 +816,9 @@
                                             <thead>
                                                 <tr role="row">
                                                     <th role="columnheader" scope="col">이름</th>
+                                                    <th role="columnheader" scope="col">상태</th>
                                                     <th role="columnheader" scope="col">호스트 명</th>
+                                                    <th role="columnheader" scope="col">IP</th>
                                                     <th role="columnheader" scope="col">PORT</th>
                                                     <th class="pf-c-table__icon" style="width:10%" role="columnheader" scope="col"></th>
                                                 </tr>
@@ -997,6 +996,33 @@
                             <div class="pf-c-dropdown">
                                 <select class="pf-c-form-control" id="form-select-gateway-hypervisor" name="form-select-gateway-hypervisor" style="width: 180px; margin-left: 20px;">
                                     <option value="cell" selected>Cell - PCS</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pf-c-modal-box__body">
+                        <div>컴퓨트 구성</div>
+                        <div class="pf-c-form__group-label" style="margin-left: 20px;">
+                            <label class="pf-c-form__label" for="form-select-gateway-vm-compute-cpu" style="width: 120px;">
+                                <span class="pf-c-form__label-text">CPU Core</span>
+                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                            </label>
+                            <div class="pf-c-dropdown">
+                                <select class="pf-c-form-control" id="form-select-gateway-vm-compute-cpu" name="form-select-gateway-vm-compute-cpu" style="width: 180px; margin-left: 29px;">
+                                    <option value="8" selected>8 vCore</option>
+                                    <option value="16" >16 vCore</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="pf-c-form__group-label" style="margin-left: 20px;">
+                            <label class="pf-c-form__label" for="form-select-gateway-vm-compute-memory" style="width: 120px;">
+                                <span class="pf-c-form__label-text">Memory</span>
+                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                            </label>
+                            <div class="pf-c-dropdown">
+                                <select class="pf-c-form-control" id="form-select-gateway-vm-compute-memory" name="form-select-gateway-vm-compute-memory" style="width: 180px; margin-left: 39px;">
+                                    <option value="16" selected>16 GiB</option>
+                                    <option value="32" >32 GiB</option>
                                 </select>
                             </div>
                         </div>
@@ -1351,6 +1377,31 @@
                         </div>
                         <div class="pf-c-form__group-control">
                             <input class="pf-c-form-control" style="width:50%" type="text" id="form-input-glue-fs-name" name="form-input-glue-fs-name"/>
+                        </div>
+                    </div>
+                    <div class="pf-c-form__group">
+                        <div class="pf-c-form__group-label" style="margin-left: 20px;">
+                            <label class="pf-c-form__label" for="button-gluefs-glue-hosts-list-setting" style="margin-left: 10px;width: 120px;">
+                                <span class="pf-c-form__label-text">배치 호스트</span>
+                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                            </label>
+                        </div>
+                        <div class="pf-c-form__group-control">
+                            <div class="pf-c-select pf-m-expanded">
+                                <input class="pf-c-form-control" type="text" style="width:60%" id="form-input-gluefs-placement-hosts" name="form-input-gluefs-placement-hosts" readonly/>
+                                <button class="pf-c-select__toggle" type="button" style="width: 60%;" id="button-gluefs-glue-hosts-list-setting" aria-haspopup="true" aria-expanded="true" aria-labelledby="select-checkbox-expanded-toggle">
+                                    <div class="pf-c-select__toggle-wrapper">
+                                        <span class="pf-c-select__toggle-text">선택하십시오.</span>
+                                    </div>
+                                    <span class="pf-c-select__toggle-arrow">
+                                        <i class="fas fa-times" aria-hidden="true"></i>
+                                        <i class="fas fa-caret-down" aria-hidden="true"></i>
+                                    </span>
+                                </button>
+                                <!-- <div class="pf-c-select__menu" style="min-width: 60%;height: 250px;overflow: auto;"> -->
+                                <div class="pf-c-select__menu" style="min-width: 60%;display: none;" id="div-gluefs-glue-hosts-list">
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </section>
@@ -1761,7 +1812,7 @@
                         <div class="pf-c-dropdown">
                             <select class="pf-c-form-control" id="form-select-storage-type" name="form-select-storage-type" style="width: 180px;">
                                 <option value="CEPH" selected>GlueFS</option>
-                                <option value="RGW">Object Gateway</option>
+                                <!-- <option value="RGW">Object Gateway</option> -->
                             </select>
                         </div>
                     </div>
@@ -1913,7 +1964,7 @@
                         <div class="pf-c-dropdown">
                             <select class="pf-c-form-control" id="form-select-update-storage-type" name="form-select-update-storage-type" style="width: 180px;">
                                 <option value="CEPH" selected>GlueFS</option>
-                                <option value="RGW">Object Gateway</option>
+                                <!-- <option value="RGW">Object Gateway</option> -->
                             </select>
                         </div>
                     </div>
@@ -2349,7 +2400,7 @@
                     <div class="pf-c-form__group">
                         <div class="pf-c-form__group-label" style="margin-left: 20px;">
                             <label class="pf-c-form__label" for="form-input-iscsi-service-api-port" style="margin-left: 10px;width: 120px;">
-                                <span class="pf-c-form__label-text">PORT</span>
+                                <span class="pf-c-form__label-text">API PORT</span>
                                 <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
                             </label>
                         </div>
@@ -2460,7 +2511,7 @@
                     <div class="pf-c-form__group">
                         <div class="pf-c-form__group-label" style="margin-left: 20px;">
                             <label class="pf-c-form__label" for="form-input-update-iscsi-service-api-port" style="margin-left: 10px;width: 120px;">
-                                <span class="pf-c-form__label-text">PORT</span>
+                                <span class="pf-c-form__label-text">API PORT</span>
                                 <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
                             </label>
                         </div>
@@ -2581,11 +2632,11 @@
                         <div class="pf-c-form__group-label" style="margin-left: 20px;">
                             <label class="pf-c-form__label" for="form-checkbox-existing-image-use-yn" style="margin-left: 10px;width: 120px;">
                                 <span class="pf-c-form__label-text">기존 이미지 사용</span>
-                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                                <!-- <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span> -->
                             </label>
                         </div>
                         <div class="pf-c-form__group-control">
-                            <input class="pf-c-check__input" type="checkbox" style="margin-top: 8px;" id="form-checkbox-existing-image-use-yn" name="form-checkbox-existing-image-use-yn" value="scvm1"/>
+                            <input class="pf-c-check__input" type="checkbox" style="margin-top: 8px;" id="form-checkbox-existing-image-use-yn" name="form-checkbox-existing-image-use-yn"/>
                         </div>
                     </div>
                     <div class="pf-c-form__group" id="div-target-new-rbd-pool">
@@ -2879,7 +2930,7 @@
                             <input class="pf-c-form-control" style="width:80%" type="text" id="form-input-nqn-id" name="form-input-nqn-id"/>
                         </div>
                     </div>
-                    <div class="pf-c-form__group">
+                    <!-- <div class="pf-c-form__group">
                         <div class="pf-c-form__group-label" style="margin-left: 20px;">
                             <label class="pf-c-form__label" for="form-input-nvmeof-ip" style="margin-left: 10px;width: 120px;">
                                 <span class="pf-c-form__label-text">포탈 IP</span>
@@ -2889,24 +2940,32 @@
                         <div class="pf-c-form__group-control">
                             <input class="pf-c-form-control" style="width:50%" type="text" id="form-input-nvmeof-ip" name="form-input-nvmeof-ip"/>
                         </div>
-                        <!-- <div class="pf-c-form__group-control">
-                            <div class="pf-c-select pf-m-expanded">
-                                <input class="pf-c-form-control" type="text" style="width:60%" id="form-input-nvmeof-ip" name="form-input-nvmeof-ip" readonly/>
-                                <button class="pf-c-select__toggle" type="button" style="width: 60%;" id="button-nvmeof-portal-list-setting" aria-haspopup="true" aria-expanded="true" aria-labelledby="select-checkbox-expanded-toggle">
-                                    <div class="pf-c-select__toggle-wrapper">
-                                        <span class="pf-c-select__toggle-text">선택하십시오.</span>
-                                    </div>
-                                    <span class="pf-c-select__toggle-arrow">
-                                        <i class="fas fa-times" aria-hidden="true"></i>
-                                        <i class="fas fa-caret-down" aria-hidden="true"></i>
-                                    </span>
-                                </button>
-                                <div class="pf-c-select__menu" style="min-width: 60%;display: none;" id="div-nvmeof-ip-list">
-                                </div>
-                            </div>
-                        </div> -->
-                    </div>
+                    </div> -->
                     <div class="pf-c-form__group" id="div-target-new-rbd-pool">
+                        <div class="pf-c-form__group-label" style="margin-left: 20px;">
+                            <label class="pf-c-form__label" for="form-select-nvmeof-ip" style="margin-left: 10px;width: 120px;">
+                                <span class="pf-c-form__label-text">포탈 IP</span>
+                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                            </label>
+                        </div>
+                        <div class="pf-c-dropdown">
+                            <select class="pf-c-form-control" id="form-select-nvmeof-ip" name="form-select-nvmeof-ip" style="width: 50%;">
+                                <option value="" selected>선택하십시오.</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="pf-c-form__group">
+                        <div class="pf-c-form__group-label" style="margin-left: 20px;">
+                            <label class="pf-c-form__label" for="form-checkbox-nvmeof-existing-image-use-yn" style="margin-left: 10px;width: 120px;">
+                                <span class="pf-c-form__label-text">기존 이미지 사용</span>
+                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                            </label>
+                        </div>
+                        <div class="pf-c-form__group-control">
+                            <input class="pf-c-check__input" type="checkbox" style="margin-top: 8px;" id="form-checkbox-nvmeof-existing-image-use-yn" name="form-checkbox-nvmeof-existing-image-use-yn"/>
+                        </div>
+                    </div>
+                    <div class="pf-c-form__group" id="div-nvmeof-target-new-rbd-pool">
                         <div class="pf-c-form__group-label" style="margin-left: 20px;">
                             <label class="pf-c-form__label" for="form-select-nvmeof-target-image-pool" style="margin-left: 10px;width: 120px;">
                                 <span class="pf-c-form__label-text">데이터 풀</span>
@@ -2919,7 +2978,7 @@
                             </select>
                         </div>
                     </div>
-                    <div class="pf-c-form__group" id="div-target-new-image-name">
+                    <div class="pf-c-form__group" id="div-nvmeof-target-new-image-name">
                         <div class="pf-c-form__group-label" style="margin-left: 20px;">
                             <label class="pf-c-form__label" for="form-input-nvmeof-target-image-name" style="margin-left: 10px;width: 120px;">
                                 <span class="pf-c-form__label-text">이미지 명</span>
@@ -2930,7 +2989,7 @@
                             <input class="pf-c-form-control" style="width:80%" type="text" id="form-input-nvmeof-target-image-name" name="form-input-nvmeof-target-image-name"/>
                         </div>
                     </div>
-                    <div class="pf-c-form__group" id="div-target-image-size">
+                    <div class="pf-c-form__group" id="div-nvmeof-target-image-size">
                         <div class="pf-c-form__group-label" style="margin-left: 20px;">
                             <label class="pf-c-form__label" for="form-input-nvmeof-target-image-size" style="margin-left: 10px;width: 120px;">
                                 <span class="pf-c-form__label-text">용량(GiB)</span>
@@ -2939,6 +2998,20 @@
                         </div>
                         <div class="pf-c-form__group-control">
                             <input class="pf-c-form-control" style="width:50%" type="text" id="form-input-nvmeof-target-image-size" name="form-input-nvmeof-target-image-size"/>
+                        </div>
+                    </div>
+
+                    <div class="pf-c-form__group" id="div-nvmeof-target-image-name">
+                        <div class="pf-c-form__group-label" style="margin-left: 20px;">
+                            <label class="pf-c-form__label" for="form-select-nvmeof-target-image-name" style="margin-left: 10px;width: 120px;">
+                                <span class="pf-c-form__label-text">이미지 명</span>
+                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                            </label>
+                        </div>
+                        <div class="pf-c-dropdown">
+                            <select class="pf-c-form-control" id="form-select-nvmeof-target-image-name" name="form-select-nvmeof-target-image-name" style="width: 50%;">
+                                <option value="" selected>선택하십시오.</option>
+                            </select>
                         </div>
                     </div>
                 </section>
@@ -2982,10 +3055,35 @@
             <button id="button-close-modal-create-smb-service" aria-disabled="false" aria-label="Close" class="pf-c-button pf-m-plain" type="button">
                 <i class="fas fa-times" aria-hidden="true"></i>
             </button>
-            <header class="pf-c-modal-box__header"><h1 class="pf-c-modal-box__title"><span class="pf-c-modal-box__title-text">SMB Service 생성</span></h1></header>
+            <header class="pf-c-modal-box__header"><h1 class="pf-c-modal-box__title"><span class="pf-c-modal-box__title-text" id="span-header-create-smb-service">SMB Service 생성</span></h1></header>
             <form novalidate class="pf-c-form pf-m-horizontal" style="margin-left:15px;margin-top:10px">
                 <section class="pf-c-form__section">
-                    <div class="pf-c-form__group">
+                    <input type="text" id="smb-service-create-type" name="smb-update-user-hostname" value="" style="display:none" readonly/>
+                    <div class="pf-c-form__group" id="div-smb-multi-host" style="display: none;">
+                        <div class="pf-c-form__group-label" style="margin-left: 20px;">
+                            <label class="pf-c-form__label" for="button-smb-glue-hosts-list-setting" style="margin-left: 10px;width: 120px;">
+                                <span class="pf-c-form__label-text">호스트</span>
+                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                            </label>
+                        </div>
+                        <div class="pf-c-form__group-control">
+                            <div class="pf-c-select pf-m-expanded">
+                                <input class="pf-c-form-control" type="text" style="width:60%" id="form-input-smb-placement-hosts" name="form-input-smb-placement-hosts" readonly/>
+                                <button class="pf-c-select__toggle" type="button" style="width: 60%;" id="button-smb-glue-hosts-list-setting" aria-haspopup="true" aria-expanded="true" aria-labelledby="select-checkbox-expanded-toggle">
+                                    <div class="pf-c-select__toggle-wrapper">
+                                        <span class="pf-c-select__toggle-text">선택하십시오.</span>
+                                    </div>
+                                    <span class="pf-c-select__toggle-arrow">
+                                        <i class="fas fa-times" aria-hidden="true"></i>
+                                        <i class="fas fa-caret-down" aria-hidden="true"></i>
+                                    </span>
+                                </button>
+                                <div class="pf-c-select__menu" style="min-width: 60%;display: none;" id="div-smb-glue-hosts-list">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pf-c-form__group" id="div-smb-single-host" style="display: none;">
                         <div class="pf-c-form__group-label" style="margin-left: 20px;">
                             <label class="pf-c-form__label" for="form-input-smb-hostname" style="margin-left: 10px;width: 120px;">
                                 <span class="pf-c-form__label-text">호스트</span>
@@ -3020,28 +3118,6 @@
                     </div>
                     <div class="pf-c-form__group">
                         <div class="pf-c-form__group-label" style="margin-left: 20px;">
-                            <label class="pf-c-form__label" for="form-input-smb-user-name" style="margin-left: 10px;width: 120px;">
-                                <span class="pf-c-form__label-text">사용자 이름</span>
-                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
-                            </label>
-                        </div>
-                        <div class="pf-c-form__group-control">
-                            <input class="pf-c-form-control" style="width:50%" type="text" id="form-input-smb-user-name" name="form-input-smb-user-name"/>
-                        </div>
-                    </div>
-                    <div class="pf-c-form__group">
-                        <div class="pf-c-form__group-label" style="margin-left: 20px;">
-                            <label class="pf-c-form__label" for="form-input-smb-user-password" style="margin-left: 10px;width: 120px;">
-                                <span class="pf-c-form__label-text">비밀번호</span>
-                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
-                            </label>
-                        </div>
-                        <div class="pf-c-form__group-control">
-                            <input class="pf-c-form-control" style="width:50%" type="password" autoComplete="off" id="form-input-smb-user-password" name="form-input-smb-user-password"/>
-                        </div>
-                    </div>
-                    <div class="pf-c-form__group">
-                        <div class="pf-c-form__group-label" style="margin-left: 20px;">
                             <label class="pf-c-form__label" for="form-select-smb-gluefs-name" style="margin-left: 10px;width: 120px;">
                                 <span class="pf-c-form__label-text">GlueFS 이름</span>
                                 <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
@@ -3064,6 +3140,90 @@
                             <select class="pf-c-form-control" style="width:50%" id="form-select-smb-gluefs-path" name="form-select-smb-gluefs-path">
                                 <option value="" selected>선택하십시오.</option>
                             </select>
+                        </div>
+                    </div>
+                    <div class="pf-c-form__group">
+                        <div class="pf-c-form__group-label" style="margin-left: 20px;">
+                            <label class="pf-c-form__label" for="form-checkbox-smb-ad-use-yn" style="margin-left: 10px;width: 120px;">
+                                <span class="pf-c-form__label-text">AD 사용</span>
+                                <!-- <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span> -->
+                            </label>
+                        </div>
+                        <div class="pf-c-form__group-control">
+                            <input class="pf-c-check__input" type="checkbox" style="margin-top: 8px;" id="form-checkbox-smb-ad-use-yn" name="form-checkbox-smb-ad-use-yn"/>
+                        </div>
+                    </div>
+                    <div class="pf-c-form__group" id="div-smb-user-name">
+                        <div class="pf-c-form__group-label" style="margin-left: 20px;">
+                            <label class="pf-c-form__label" for="form-input-smb-user-name" style="margin-left: 10px;width: 120px;">
+                                <span class="pf-c-form__label-text">User 이름</span>
+                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                            </label>
+                        </div>
+                        <div class="pf-c-form__group-control">
+                            <input class="pf-c-form-control" style="width:50%" type="text" id="form-input-smb-user-name" name="form-input-smb-user-name"/>
+                        </div>
+                    </div>
+                    <div class="pf-c-form__group" id="div-smb-user-password">
+                        <div class="pf-c-form__group-label" style="margin-left: 20px;">
+                            <label class="pf-c-form__label" for="form-input-smb-user-password" style="margin-left: 10px;width: 120px;">
+                                <span class="pf-c-form__label-text">User 비밀번호</span>
+                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                            </label>
+                        </div>
+                        <div class="pf-c-form__group-control">
+                            <input class="pf-c-form-control" style="width:50%" type="password" autoComplete="off" id="form-input-smb-user-password" name="form-input-smb-user-password"/>
+                        </div>
+                    </div>
+                    <div class="pf-c-form__group" id="div-smb-ad-user-name" style="display: none;">
+                        <div class="pf-c-form__group-label" style="margin-left: 20px;">
+                            <label class="pf-c-form__label" for="form-input-smb-ad-user-name" style="margin-left: 10px;width: 120px;">
+                                <span class="pf-c-form__label-text">AD User 이름</span>
+                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                            </label>
+                        </div>
+                        <div class="pf-c-form__group-control">
+                            <input class="pf-c-form-control" style="width:50%" type="text" id="form-input-smb-ad-user-name" name="form-input-smb-ad-user-name"/>
+                        </div>
+                    </div>
+                    <div class="pf-c-form__group" id="div-smb-ad-user-password" style="display: none;">
+                        <div class="pf-c-form__group-label" style="margin-left: 20px;">
+                            <label class="pf-c-form__label" for="form-input-smb-ad-user-password" style="margin-left: 10px;width: 120px;">
+                                <span class="pf-c-form__label-text">AD User 비밀번호</span>
+                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                            </label>
+                        </div>
+                        <div class="pf-c-form__group-control">
+                            <input class="pf-c-form-control" style="width:50%" type="text" id="form-input-smb-ad-user-password" name="form-input-smb-ad-user-password"/>
+                        </div>
+                    </div>
+                    <div class="pf-c-form__group" id="div-smb-ad-realm" style="display: none;">
+                        <div class="pf-c-form__group-label" style="margin-left: 20px;">
+                            <label class="pf-c-form__label" for="form-input-smb-ad-realm" style="margin-left: 10px;width: 120px;">
+                                <span class="pf-c-form__label-text">AD Realm</span>
+                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                            </label>
+                        </div>
+                        <div class="pf-c-form__group-control">
+                            <input class="pf-c-form-control" style="width:50%" type="text" id="form-input-smb-ad-realm" name="form-input-smb-ad-realm"/>
+                        </div>
+                    </div>
+                    <div class="pf-c-form__group" id="div-smb-ad-dns" style="display: none;">
+                        <div class="pf-c-form__group-label" style="margin-left: 20px;">
+                            <label class="pf-c-form__label" for="form-input-smb-ad-dns" style="margin-left: 10px;width: 120px;">
+                                <span class="pf-c-form__label-text">AD DNS IP</span>
+                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                            </label>
+                        </div>
+                        <div class="pf-c-form__group-control">
+                            <input class="pf-c-form-control" style="width:50%" type="text" id="form-input-smb-ad-dns" name="form-input-smb-ad-dns"/>
+                        </div>
+                    </div>
+                    <div class="pf-c-form__group" id="div-smb-multi-create-info">
+                        <div class="pf-c-form__group-label" style="margin-left: 25px;">
+                            <label class="pf-c-check pf-c-select__menu-item">
+                                <span class="pf-c-check__label" style="color: #c9190b;font-size: 14px;"><i class="fas fa-fw fa-exclamation-circle" aria-hidden="true"></i> 다중 생성시 선택한 모든 호스트에 SMB 서비스를 초기구성합니다.</span>
+                            </label>
                         </div>
                     </div>
                 </section>
@@ -3525,14 +3685,14 @@
     </div>
 </div>
 <!-- object gateway user 삭제 : Modal 영역 끝 -->
-<!-- object gateway user 생성 : Modal 영역 시작 -->
+<!-- object gateway user admin 생성 : Modal 영역 시작 -->
 <div id="div-modal-create-object-gateway-user" class="pf-c-backdrop" style="display:none">
     <div class="pf-l-bullseye">
-        <div class="pf-c-modal-box pf-m-sm" role="dialog" aria-modal="true" aria-label="Create Object Gateway User">
+        <div class="pf-c-modal-box pf-m-sm" role="dialog" aria-modal="true" aria-label="Create Object Gateway Admin User">
             <button id="button-close-modal-create-object-gateway-user" aria-disabled="false" aria-label="Close" class="pf-c-button pf-m-plain" type="button">
                 <i class="fas fa-times" aria-hidden="true"></i>
             </button>
-            <header class="pf-c-modal-box__header"><h1 class="pf-c-modal-box__title"><span class="pf-c-modal-box__title-text">Object Gateway User 생성</span></h1></header>
+            <header class="pf-c-modal-box__header"><h1 class="pf-c-modal-box__title"><span class="pf-c-modal-box__title-text">Object Gateway Admin User 생성</span></h1></header>
             <form novalidate class="pf-c-form pf-m-horizontal" style="margin-left:15px;margin-top:10px">
                 <section class="pf-c-form__section">
                     <div class="pf-c-form__group">

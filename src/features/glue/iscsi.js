@@ -113,7 +113,7 @@ $('#button-execution-modal-create-iscsi-service').on('click', function(){
             $('#div-modal-spinner').hide();
             if(data == "Success"){
                 $("#modal-status-alert-title").html("iSCSI Service 생성 완료");
-                $("#modal-status-alert-body").html("iSCSI Service 생성을 완료하였습니다.");
+                $("#modal-status-alert-body").html("iSCSI Service 생성을 완료하였습니다.<br/>조회 버튼을 클릭하여 서비스 상태를 확인할 수 있습니다.");
                 $('#div-modal-status-alert').show();
                 iscsiServiceList();
                 createLoggerInfo("iSCSI Service create success");
@@ -252,11 +252,11 @@ $('#button-execution-modal-remove-iscsi-service').on('click', function(){
                 $("#modal-status-alert-title").html("iSCSI Service 삭제 완료");
                 $("#modal-status-alert-body").html("iSCSI Service 삭제를 완료하였습니다.");
                 $('#div-modal-status-alert').show();
-                iscsiServiceList();
                 createLoggerInfo("iSCSI Service remove success");
             }else{
                 $('#div-modal-status-alert').show();
             }
+            iscsiServiceList();
         }).catch(function(data){
             $('#div-modal-spinner').hide();
             $('#div-modal-status-alert').show();
@@ -401,7 +401,7 @@ $('#button-execution-modal-create-iscsi-target').on('click', async function(){
         $('input[type=checkbox][name="iscsi-portal-list"]').each(function() {
             if(this.checked){
                 var portalInfo = this.value.split(':');
-                body_val += "&hostname="+portalInfo[0];
+                body_val += "&hosts="+portalInfo[0];
             }
         });
         
@@ -527,7 +527,7 @@ $('#button-execution-modal-update-iscsi-target').on('click', function(){
         $('input[type=checkbox][name="iscsi-portal-list"]').each(function() {
             if(this.checked){
                 var portalInfo = this.value.split(':');
-                body_val += "&hostname="+portalInfo[0];
+                body_val += "&hosts="+portalInfo[0];
             }
         });
         
@@ -651,9 +651,9 @@ function iqnIdCreate(){
 }
 
 $('#form-checkbox-existing-image-use-yn').on('change', function(){
-    setiscsiImage();
+    setIscsiImage();
 });
-function setiscsiImage(){
+function setIscsiImage(){
     var yn_bool = $('input[type=checkbox][id="form-checkbox-existing-image-use-yn"]').is(":checked");
     if(yn_bool){
         $('#div-target-new-rbd-pool').hide();
@@ -679,7 +679,7 @@ function iscsiTargetCreateInitInputValue(){
     $('#form-input-iscsi-image').val("");
     
     $('input[type=checkbox][id="form-checkbox-existing-image-use-yn"]').prop("checked", false);
-    setiscsiImage();
+    setIscsiImage();
 }
 
 // iscsi target 수정 입력값 초기화

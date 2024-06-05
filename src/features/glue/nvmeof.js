@@ -85,7 +85,7 @@ $('#button-execution-modal-create-nvmeof-service').on('click', function(){
         
         $('input[type=checkbox][name="glue-hosts-list"]').each(function() {
             if(this.checked){
-                body_val += "&hostname="+this.value;
+                body_val += "&hosts="+this.value;
             }
         });
     
@@ -107,7 +107,7 @@ $('#button-execution-modal-create-nvmeof-service').on('click', function(){
             $('#div-modal-spinner').hide();
             if(data == "Success"){
                 $("#modal-status-alert-title").html("NVMe-oF Service 생성 완료");
-                $("#modal-status-alert-body").html("NVMe-oF Service 생성을 완료하였습니다.");
+                $("#modal-status-alert-body").html("NVMe-oF Service 생성을 완료하였습니다.<br/>조회 버튼을 클릭하여 서비스 상태를 확인할 수 있습니다.");
                 $('#div-modal-status-alert').show();
                 nvmeofServiceList();
                 createLoggerInfo("NVMe-oF Service create success");
@@ -167,11 +167,11 @@ $('#button-execution-modal-remove-nvmeof-service').on('click', function(){
                 $("#modal-status-alert-title").html("NVMe-of Service 삭제 완료");
                 $("#modal-status-alert-body").html("NVMe-of Service 삭제를 완료하였습니다.");
                 $('#div-modal-status-alert').show();
-                nvmeofServiceList();
                 createLoggerInfo("NVMe-of Service remove success");
             }else{
                 $('#div-modal-status-alert').show();
             }
+            nvmeofServiceList();
         }).catch(function(data){
             $('#div-modal-spinner').hide();
             $('#div-modal-status-alert').show();
@@ -267,6 +267,8 @@ $('#button-nvmeof-target-create').on('click', function(){
     $('#form-input-nqn-id').val(nqnIdCreate());
     $('#form-input-nvmeof-target-image-name').val($('#form-input-nqn-id').val().replace(':', '.'));
     // setIscsiPortalCheckbox('div-iscsi-portal-list','form-input-iscsi-portal');
+    setNvmeofHostIpSelectBox('form-select-nvmeof-ip');
+    setSingleImageSelectBox('form-select-nvmeof-target-image-name');
     setPoolSelectBox('form-select-nvmeof-target-image-pool');
     $('#div-modal-create-nvmeof-target').show();
 });
@@ -281,15 +283,23 @@ $('#button-cancel-modal-create-nvmeof-target').on('click', function(){
 
 $('#button-execution-modal-create-nvmeof-target').on('click', function(){
     if(nvmeofTargetCreateValidateCheck()){
+        var yn_bool = $('input[type=checkbox][id="form-checkbox-nvmeof-existing-image-use-yn"]').is(":checked");
+
         var subsystem_nqn_id = $('#form-input-nqn-id').val();
-        var gateway_ip = $('#form-input-nvmeof-ip').val();
-        var pool_name = $('#form-select-nvmeof-target-image-pool option:selected').val();
-        var image_name = $('#form-input-nvmeof-target-image-name').val();
-        var size = $('#form-input-nvmeof-target-image-size').val();
-        
-        var body_val = "subsystem_nqn_id="+subsystem_nqn_id+"&gateway_ip="+gateway_ip+"&pool_name="+pool_name+"&image_name="+image_name+"&size="+size
-        
-    
+        var gateway_ip = $('#form-select-nvmeof-ip option:selected').val();
+        var body_val = "subsystem_nqn_id="+subsystem_nqn_id+"&gateway_ip="+gateway_ip
+
+        if(yn_bool == true){
+            var image_info = $('#form-select-nvmeof-target-image-name option:selected').val().split('/');
+            body_val += "&pool_name="+image_info[0];
+            body_val += "&image_name="+image_info[1];
+        }else{
+            var pool_name = $('#form-select-nvmeof-target-image-pool option:selected').val();
+            var image_name = $('#form-input-nvmeof-target-image-name').val();
+            var size = $('#form-input-nvmeof-target-image-size').val();
+            body_val += "&pool_name="+pool_name+"&image_name="+image_name+"&size="+size
+        }
+
         $('#div-modal-create-nvmeof-target').hide();
         $('#div-modal-spinner-header-txt').text('NVMe-oF Target를 생성하고 있습니다.');
         $('#div-modal-spinner').show();
@@ -310,16 +320,17 @@ $('#button-execution-modal-create-nvmeof-target').on('click', function(){
                 $("#modal-status-alert-title").html("NVMe-oF Target 생성 완료");
                 $("#modal-status-alert-body").html("NVMe-oF Target 생성을 완료하였습니다.");
                 $('#div-modal-status-alert').show();
-                nvmeofTargetList();
                 createLoggerInfo("NVMe-oF Target create success");
             }else{
                 $('#div-modal-status-alert').show();
             }
+            nvmeofTargetList();
         }).catch(function(data){
             $('#div-modal-spinner').hide();
             $('#div-modal-status-alert').show();
             createLoggerInfo("NVMe-oF Target create error : "+ data);
             console.log('button-execution-modal-create-nvmeof-target : '+data);
+            nvmeofTargetList();
         });
     }
 });
@@ -365,11 +376,11 @@ $('#button-execution-modal-remove-nvmeof-target').on('click', function(){
                 $("#modal-status-alert-title").html("NVMe-of Target 삭제 완료");
                 $("#modal-status-alert-body").html("NVMe-of Target 삭제를 완료하였습니다.");
                 $('#div-modal-status-alert').show();
-                nvmeofTargetList();
                 createLoggerInfo("NVMe-of Target remove success");
             }else{
                 $('#div-modal-status-alert').show();
             }
+            nvmeofTargetList();
         }).catch(function(data){
             $('#div-modal-spinner').hide();
             $('#div-modal-status-alert').show();
@@ -397,32 +408,36 @@ function nqnIdCreate(){
     return nqn_id;
 }
 
-// $('#form-checkbox-existing-image-use-yn').on('change', function(){
-//     setiscsiImage();
-// });
-// function setiscsiImage(){
-//     var yn_bool = $('input[type=checkbox][id="form-checkbox-existing-image-use-yn"]').is(":checked");
-//     if(yn_bool){
-//         $('#div-target-new-rbd-pool').hide();
-//         $('#div-target-new-image-name').hide();
-//         $('#div-target-image-size').hide();
-//         $('#div-target-image-name').show();
-//     }else{
-//         $('#div-target-new-rbd-pool').show();
-//         $('#div-target-new-image-name').show();
-//         $('#div-target-image-size').show();
-//         $('#div-target-image-name').hide();
-//         $('#form-input-target-image-name').val($('#form-input-iqn-id').val());
-//     }
-// }
+$('#form-checkbox-nvmeof-existing-image-use-yn').on('change', function(){
+    setNvmeofImage();
+});
+
+function setNvmeofImage(){
+    var yn_bool = $('input[type=checkbox][id="form-checkbox-nvmeof-existing-image-use-yn"]').is(":checked");
+    if(yn_bool){
+        $('#div-nvmeof-target-new-rbd-pool').hide();
+        $('#div-nvmeof-target-new-image-name').hide();
+        $('#div-nvmeof-target-image-size').hide();
+        $('#div-nvmeof-target-image-name').show();
+    }else{
+        $('#div-nvmeof-target-new-rbd-pool').show();
+        $('#div-nvmeof-target-new-image-name').show();
+        $('#div-nvmeof-target-image-size').show();
+        $('#div-nvmeof-target-image-name').hide();
+        $('#form-input-nvmeof-target-image-name').val($('#form-input-nqn-id').val());
+    }
+}
 
 // nvmeof target 생성 입력값 초기화
 function nvmeofTargetCreateInitInputValue(){
     $('#form-input-nqn-id').val("");
-    $('#form-input-nvmeof-ip').val("");
+    $('#form-select-nvmeof-ip').val("");
     $('#form-select-nvmeof-target-image-pool').val("");
     $('#form-input-nvmeof-target-image-name').val("");
     $('#form-input-nvmeof-target-image-size').val("");
+
+    $('input[type=checkbox][id="form-checkbox-nvmeof-existing-image-use-yn"]').prop("checked", false);
+    setNvmeofImage();
 }
 
 // nvmeof target 수정 입력값 초기화
@@ -456,10 +471,12 @@ function nvmeofTargetCreateValidateCheck(){
     var validate_check = true;
 
     var nqn_id = $('#form-input-nqn-id').val();
-    var potal_ip = $('#form-input-nvmeof-ip').val();
+    var potal_ip = $('#form-select-nvmeof-ip option:selected').val();
     var pool = $('#form-select-nvmeof-target-image-pool option:selected').val();
     var image_name = $('#form-input-nvmeof-target-image-name').val();
     var size = $('#form-input-nvmeof-target-image-size').val();
+    var yn_bool = $('input[type=checkbox][id="form-checkbox-nvmeof-existing-image-use-yn"]').is(":checked");
+    var image_name_selected = $('#form-select-nvmeof-target-image-name option:selected').val();
 
     if (nqn_id == "") {
         alert("IQN을 입력해주세요.");
@@ -468,31 +485,38 @@ function nvmeofTargetCreateValidateCheck(){
         alert("NQN 생성 규칙을 확인해주세요.");
         validate_check = false;
     } else if (potal_ip == "") {
-        alert("IP를 입력해주세요.");
+        alert("포탈 IP를 입력해주세요.");
         validate_check = false;
     } else if (!checkIp(potal_ip)){
-        alert("IP 유형이 올바르지 않습니다.");
+        alert("포탈 IP 유형이 올바르지 않습니다.");
         validate_check = true;
         return false;
-    } else if (pool == "") {
-        alert("데이터 풀을 입력해주세요.");
-        validate_check = false;
-    } else if (image_name == "") {
-        alert("이미지 명을 입력해주세요.");
-        validate_check = false;
-    } else if (!imageNameCheck(image_name)) {
-        alert("이미지 명 생성 규칙은 영문, 숫자 특수문자 '-','_','.' 만 입력 가능하고 영문으로 시작해야 합니다.");
-        validate_check = false;
-    } else if (size == "") {
-        alert("용량을 입력해주세요.");
-        validate_check = false;
-    } else if (!numberCheck(size)) {
-        alert("용량은 숫자만 입력해주세요.");
-        validate_check = false;
-    } else if (size < 1 || size > 5000) {
-        alert("용량은 1부터 5000까지 입력 가능합니다.");
-        validate_check = false;
+    } else if (yn_bool == true){
+        if (image_name_selected == "") {
+            alert("이미지 명을 입력해주세요.");
+            validate_check = false;
+        }
+    } else{
+        if (pool == "") {
+            alert("데이터 풀을 입력해주세요.");
+            validate_check = false;
+        } else if (image_name == "") {
+            alert("이미지 명을 입력해주세요.");
+            validate_check = false;
+        } else if (!imageNameCheck(image_name)) {
+            alert("이미지 명 생성 규칙은 영문, 숫자 특수문자 '-','_','.' 만 입력 가능하고 영문으로 시작해야 합니다.");
+            validate_check = false;
+        } else if (size == "") {
+            alert("용량을 입력해주세요.");
+            validate_check = false;
+        } else if (!numberCheck(size)) {
+            alert("용량은 숫자만 입력해주세요.");
+            validate_check = false;
+        } else if (size < 1 || size > 5000) {
+            alert("용량은 1부터 5000까지 입력 가능합니다.");
+            validate_check = false;
+        }
     }
- 
+
     return validate_check;
 }

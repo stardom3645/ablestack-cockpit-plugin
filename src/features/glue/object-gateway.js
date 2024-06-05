@@ -16,39 +16,61 @@ function objectGatewayList(){
         }
     }).then(res => res.json()).then(data => {
         if(data.length != 0){
-            $('#object-gateway-list tr').remove();
-            for(var i=0; i < data.length; i++){
-                let insert_tr = "";
-                insert_tr += '<tr role="row">';
-                insert_tr += '    <td role="cell" data-label="이름">'+data[i].service_name+'</td>';
-                insert_tr += '    <td role="cell" data-label="호스트 명">'+data[i].placement.hosts+'</td>';
-                insert_tr += '    <td role="cell" data-label="PORT">'+data[i].status.ports+'</td>';
-                insert_tr += '    <td class="pf-c-table__icon" role="cell" data-label="편집">';
-                insert_tr += '        <div class="pf-c-dropdown">';
-                insert_tr += '            <button class="pf-c-dropdown__toggle pf-m-plain" id="card-action-object-gateway'+i+'" onclick="toggleAction(\'dropdown-menu-card-action-object-gateway\','+i+')" aria-expanded="false" type="button" aria-label="Actions">';
-                insert_tr += '                <i class="fas fa-ellipsis-v" aria-hidden="true"></i>';
-                insert_tr += '            </button>';
-                insert_tr += '            <ul class="pf-c-dropdown__menu pf-m-align-right" aria-labelledby="card-action-object-gateway'+i+'" id="dropdown-menu-card-action-object-gateway'+i+'">';
-                insert_tr += '                <li>';
-                insert_tr += '                    <button class="pf-c-dropdown__menu-item pf-m-enabled" type="button" onclick=\'objectGatewayEdit("'+data[i].service_name+'")\' >Object Gateway 수정</button>';
-                insert_tr += '                    <button class="pf-c-dropdown__menu-item pf-m-enabled" type="button" onclick=\'objectGatewayDelete("'+data[i].service_name+'")\' >Object Gateway 삭제</button>';
-                insert_tr += '                </li>';
-                insert_tr += '            </ul>';
-                insert_tr += '        </div>';
-                insert_tr += '    </td>';
-                insert_tr += '</tr>';
-    
-                $("#object-gateway-list:last").append(insert_tr);
-                $('#dropdown-menu-card-action-object-gateway'+i).hide();
-            }
+            fetch('https://'+glue_api_ip+':'+glue_api_port+'/api/v1/glue/hosts',{
+                method: 'GET'
+            }).then(res => res.json()).then(hosts_data => {
+                $('#object-gateway-list tr').remove();
+                for(var i=0; i < data.length; i++){
+                    var host_ip = [];
+                    
+                    for(var j=0; j < hosts_data.length ; j++){
+                        for(var x=0; x < data[i].placement.hosts.length ; x++){
+                            
+                            if(hosts_data[j].hostname == data[i].placement.hosts[x]){
+                                host_ip.push(hosts_data[j].ip_address)
+                            }    
+                        }
+                    }
+
+                    let insert_tr = "";
+                    insert_tr += '<tr role="row">';
+                    insert_tr += '    <td role="cell" data-label="이름">'+data[i].service_name+'</td>';
+                    insert_tr += '    <td role="cell" data-label="상태">'+data[i].status.running+"/"+data[i].status.size+'</td>';
+                    insert_tr += '    <td role="cell" data-label="호스트 명">'+data[i].placement.hosts+'</td>';
+                    insert_tr += '    <td role="cell" data-label="IP">'+host_ip+'</td>';
+                    insert_tr += '    <td role="cell" data-label="PORT">'+data[i].status.ports+'</td>';
+                    insert_tr += '    <td class="pf-c-table__icon" role="cell" data-label="편집">';
+                    insert_tr += '        <div class="pf-c-dropdown">';
+                    insert_tr += '            <button class="pf-c-dropdown__toggle pf-m-plain" id="card-action-object-gateway'+i+'" onclick="toggleAction(\'dropdown-menu-card-action-object-gateway\','+i+')" aria-expanded="false" type="button" aria-label="Actions">';
+                    insert_tr += '                <i class="fas fa-ellipsis-v" aria-hidden="true"></i>';
+                    insert_tr += '            </button>';
+                    insert_tr += '            <ul class="pf-c-dropdown__menu pf-m-align-right" aria-labelledby="card-action-object-gateway'+i+'" id="dropdown-menu-card-action-object-gateway'+i+'">';
+                    insert_tr += '                <li>';
+                    insert_tr += '                    <button class="pf-c-dropdown__menu-item pf-m-enabled" type="button" onclick=\'objectGatewayEdit("'+data[i].service_name+'")\' >Object Gateway 수정</button>';
+                    insert_tr += '                    <button class="pf-c-dropdown__menu-item pf-m-enabled" type="button" onclick=\'objectGatewayDelete("'+data[i].service_name+'")\' >Object Gateway 삭제</button>';
+                    insert_tr += '                </li>';
+                    insert_tr += '            </ul>';
+                    insert_tr += '        </div>';
+                    insert_tr += '    </td>';
+                    insert_tr += '</tr>';
+        
+                    $("#object-gateway-list:last").append(insert_tr);
+                    $('#dropdown-menu-card-action-object-gateway'+i).hide();
+                }
+            }).catch(function(data){
+                console.log("error : "+data);
+                //조회되는 데이터가 없음
+                noList("object-gateway-list",6);
+                $('#button-object-gateway-search').html("<i class='fas fa-fw fa-redo' aria-hidden='true'></i>");
+            });
         }else{
-            noList("object-gateway-list",3);
+            noList("object-gateway-list",6);
         }
         $('#button-object-gateway-search').html("<i class='fas fa-fw fa-redo' aria-hidden='true'></i>");
     }).catch(function(data){
         console.log("error : "+data);
         //조회되는 데이터가 없음
-        noList("object-gateway-list",7);
+        noList("object-gateway-list",6);
         $('#button-object-gateway-search').html("<i class='fas fa-fw fa-redo' aria-hidden='true'></i>");
     });
 }
@@ -91,7 +113,7 @@ $('#button-execution-modal-create-object-gateway').on('click', function(){
         
         $('input[type=checkbox][name="glue-hosts-list"]').each(function() {
             if(this.checked){
-                body_val += "&hostname="+this.value
+                body_val += "&hosts="+this.value
             }
         });
         
@@ -113,7 +135,7 @@ $('#button-execution-modal-create-object-gateway').on('click', function(){
             $('#div-modal-spinner').hide();
             if(data == "Success"){
                 $("#modal-status-alert-title").html("Object Gateway 생성 완료");
-                $("#modal-status-alert-body").html("Object Gateway 생성을 완료하였습니다.");
+                $("#modal-status-alert-body").html("Object Gateway 생성을 완료하였습니다.<br/>조회 버튼을 클릭하여 서비스 상태를 확인할 수 있습니다.");
                 $('#div-modal-status-alert').show();
                 objectGatewayList();
                 createLoggerInfo("Object Gateway create success");
@@ -159,13 +181,13 @@ $('#button-execution-modal-update-object-gateway').on('click', function(){
     if(objectGatewayUpdateValidateCheck()){
         var body_val = "";
 
-        var service_name = $('#form-input-update-object-gateway-id').val();
+        var service_id = $('#form-input-update-object-gateway-id').val();
         // var zonegroup_name = $('#form-input-update-object-gateway-zone-group').val();
         // var zone_name = $('#form-input-update-object-gateway-zone').val();
         var port = $('#form-input-update-object-gateway-port').val();
         
-        // body_val +="service_name="+service_name+"&zonegroup_name="+zonegroup_name+"&zone_name="+zone_name+"&port="+port
-        body_val +="service_name="+service_name+"&port="+port
+        // body_val +="service_id="+service_id+"&zonegroup_name="+zonegroup_name+"&zone_name="+zone_name+"&port="+port
+        body_val +="service_id="+service_id+"&port="+port
         
         $('input[type=checkbox][name="glue-hosts-list"]').each(function() {
             if(this.checked){
@@ -173,8 +195,6 @@ $('#button-execution-modal-update-object-gateway').on('click', function(){
             }
         });
 
-        alert(body_val);
-        
         $('#div-modal-update-object-gateway').hide();
         $('#div-modal-spinner-header-txt').text('Object Gateway를 수정하고 있습니다.');
         $('#div-modal-spinner').show();
@@ -311,13 +331,13 @@ function objectGatewayUserList(){
                 $('#dropdown-menu-card-action-object-gateway-user'+i).hide();
             }
         }else{
-            noList("object-gateway-user-list",7);
+            noList("object-gateway-user-list",8);
         }
         $('#button-object-gateway-user-search').html("<i class='fas fa-fw fa-redo' aria-hidden='true'></i>");
     }).catch(function(data){
         console.log("error : "+data);
         //조회되는 데이터가 없음
-        noList("object-gateway-usert-list",7);
+        noList("object-gateway-usert-list",8);
         $('#button-object-gateway-user-search').html("<i class='fas fa-fw fa-redo' aria-hidden='true'></i>");
     });
 }
@@ -377,6 +397,9 @@ $('#button-execution-modal-remove-object-gateway-user').on('click', function(){
                 $('#div-modal-status-alert').show();
                 objectGatewayUserList();
                 createLoggerInfo("object gateway user remove success");
+            }else if(data.code=="500" && data.message =="could not remove user: unable to remove user, must specify purge data to remove user with buckets"){
+                $("#modal-status-alert-body").html("Object Gateway User 삭제를 실패하였습니다.<br/>사용자가 버킷을 사용중입니다. 확인후 삭제해주세요.");
+                $('#div-modal-status-alert').show();
             }else{
                 $('#div-modal-status-alert').show();
             }
@@ -698,7 +721,7 @@ function objectGatewayBucketList(){
                 insert_tr += '    <td role="cell" data-label="오브젝트">'+(data[i]["usage"]["rgw.main"] == null ? 0 : data[i]["usage"]["rgw.main"]["num_objects"])+'</td>';
                 insert_tr += '    <td role="cell" data-label="오브젝트 제한">'+(data[i].bucket_quota.max_objects == -1 ? "제한 없음" : data[i].bucket_quota.max_objects)+'</td>';
                 insert_tr += '    <td class="pf-c-table__icon" role="cell" data-label="편집">';
-                insert_tr += '         <div class="pf-c-dropdown">';
+                insert_tr += '         <div class="pf-c-dropdown pf-m-top">';
                 insert_tr += '            <button class="pf-c-dropdown__toggle pf-m-plain" id="card-action-object-gateway-bucket'+i+'" onclick="toggleAction(\'dropdown-menu-card-action-object-gateway-bucket\','+i+')" aria-expanded="false" type="button" aria-label="Actions">';
                 insert_tr += '                <i class="fas fa-ellipsis-v" aria-hidden="true"></i>';
                 insert_tr += '            </button>';
@@ -778,6 +801,9 @@ $('#button-execution-modal-remove-object-gateway-bucket').on('click', function()
                 $('#div-modal-status-alert').show();
                 objectGatewayBucketList();
                 createLoggerInfo("object gateway bucket remove success");
+            }else if(data.include("non-empty bucket")){
+                $("#modal-status-alert-body").html("Object Gateway Bucket 삭제를 실패하였습니다.<br/>오브젝트가 존재하여 삭제할 수 없습니다.");
+                $('#div-modal-status-alert').show();
             }else{
                 $('#div-modal-status-alert').show();
             }

@@ -23,6 +23,7 @@ function ingressList(){
                 insert_tr += '<tr role="row">';
                 insert_tr += '    <td role="cell" data-label="이름" id="ingress-name">'+data[i].service_name+'</td>';
                 insert_tr += '    <td role="cell" data-label="백엔드 서비스" id="ingress-backend-service-name">'+data[i].service_id+'</td>';
+                insert_tr += '    <td role="cell" data-label="상태" id="ingress-placement-hosts">'+data[i].status.running+"/"+data[i].status.size+'</td>';
                 insert_tr += '    <td role="cell" data-label="배치 호스트" id="ingress-placement-hosts">'+data[i].placement.hosts+'</td>';
                 insert_tr += '    <td role="cell" data-label="가상 IP" id="ingress-virtual-ip">'+data[i].spec.virtual_ip+'</td>';
                 insert_tr += '    <td role="cell" data-label="프론트엔드 PORT" id="ingress-frontend-port">'+data[i].spec.frontend_port+'</td>';
@@ -93,7 +94,7 @@ $('#button-execution-modal-create-ingress').on('click', function(){
         
         $('input[type=checkbox][name="glue-hosts-list"]').each(function() {
             if(this.checked){
-                body_val += "&hostname="+this.value
+                body_val += "&hosts="+this.value
             }
         });
         
@@ -104,13 +105,13 @@ $('#button-execution-modal-create-ingress').on('click', function(){
         body_val += "&virtual_ip="+virtual_ip+"&frontend_port="+frontend_port+"&monitor_port="+monitor_port
         
         $('#div-modal-create-ingress').hide();
-        $('#div-modal-spinner-header-txt').text('INGRESS를 생성하고 있습니다.');
+        $('#div-modal-spinner-header-txt').text('INGRESS Service를 생성하고 있습니다.');
         $('#div-modal-spinner').show();
     
-        $("#modal-status-alert-title").html("INGRESS 생성 실패");
-        $("#modal-status-alert-body").html("INGRESS 생성을 실패하였습니다.");
+        $("#modal-status-alert-title").html("INGRESS Service 생성 실패");
+        $("#modal-status-alert-body").html("INGRESS Service 생성을 실패하였습니다.");
     
-        fetch('https://'+glue_api_ip+':'+glue_api_port+'/api/v1/nfs/ingress',{
+        fetch('https://'+glue_api_ip+':'+glue_api_port+'/api/v1/ingress',{
             method: 'POST',
             headers: {
                 'accept': 'application/json',
@@ -120,18 +121,18 @@ $('#button-execution-modal-create-ingress').on('click', function(){
         }).then(res => res.json()).then(data => {
             $('#div-modal-spinner').hide();
             if(data == "Success"){
-                $("#modal-status-alert-title").html("INGRESS 생성 완료");
-                $("#modal-status-alert-body").html("INGRESS 생성을 완료하였습니다.");
+                $("#modal-status-alert-title").html("INGRESS Service 생성 완료");
+                $("#modal-status-alert-body").html("INGRESS Service 생성을 완료하였습니다.<br/>조회 버튼을 클릭하여 서비스 상태를 확인할 수 있습니다.");
                 $('#div-modal-status-alert').show();
                 ingressList();
-                createLoggerInfo("ingress create success");
+                createLoggerInfo("ingress service create success");
             }else{
                 $('#div-modal-status-alert').show();
             }
         }).catch(function(data){
             $('#div-modal-spinner').hide();
             $('#div-modal-status-alert').show();
-            createLoggerInfo("ingress create error : "+ data);
+            createLoggerInfo("ingress service create error : "+ data);
             console.log('button-execution-modal-create-ingress : '+data);
         });
     }
@@ -176,7 +177,7 @@ $('#button-execution-modal-update-ingress').on('click', function(){
         
         $('input[type=checkbox][name="glue-hosts-list"]').each(function() {
             if(this.checked){
-                body_val += "&hostname="+this.value
+                body_val += "&hosts="+this.value
             }
         });
         
@@ -187,13 +188,13 @@ $('#button-execution-modal-update-ingress').on('click', function(){
         body_val += "&virtual_ip="+virtual_ip+"&frontend_port="+frontend_port+"&monitor_port="+monitor_port
         
         $('#div-modal-update-ingress').hide();
-        $('#div-modal-spinner-header-txt').text('INGRESS를 생성하고 있습니다.');
+        $('#div-modal-spinner-header-txt').text('INGRESS Service를 수정하고 있습니다.');
         $('#div-modal-spinner').show();
     
-        $("#modal-status-alert-title").html("INGRESS 수정 실패");
-        $("#modal-status-alert-body").html("INGRESS 수정을 실패하였습니다.");
+        $("#modal-status-alert-title").html("INGRESS Service 수정 실패");
+        $("#modal-status-alert-body").html("INGRESS Service 수정을 실패하였습니다.");
     
-        fetch('https://'+glue_api_ip+':'+glue_api_port+'/api/v1/nfs/ingress',{
+        fetch('https://'+glue_api_ip+':'+glue_api_port+'/api/v1/ingress',{
             method: 'POST',
             headers: {
                 'accept': 'application/json',
@@ -203,11 +204,11 @@ $('#button-execution-modal-update-ingress').on('click', function(){
         }).then(res => res.json()).then(data => {
             $('#div-modal-spinner').hide();
             if(data == "Success"){
-                $("#modal-status-alert-title").html("INGRESS 수정 완료");
-                $("#modal-status-alert-body").html("INGRESS 수정을 완료하였습니다.");
+                $("#modal-status-alert-title").html("INGRESS Service 수정 완료");
+                $("#modal-status-alert-body").html("INGRESS Service 수정을 완료하였습니다.");
                 $('#div-modal-status-alert').show();
                 ingressList();
-                createLoggerInfo("ingress update success");
+                createLoggerInfo("ingress service update success");
             }else{
                 $('#div-modal-status-alert').show();
             }
