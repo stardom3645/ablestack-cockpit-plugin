@@ -107,7 +107,7 @@ $('#button-execution-modal-create-nvmeof-service').on('click', function(){
             $('#div-modal-spinner').hide();
             if(data == "Success"){
                 $("#modal-status-alert-title").html("NVMe-oF Service 생성 완료");
-                $("#modal-status-alert-body").html("NVMe-oF Service 생성을 완료하였습니다.<br/>조회 버튼을 클릭하여 서비스 상태를 확인할 수 있습니다.");
+                $("#modal-status-alert-body").html("NVMe-oF Service 생성을 완료하였습니다.<br/>새로고침 버튼을 클릭하여 서비스 상태를 확인할 수 있습니다.");
                 $('#div-modal-status-alert').show();
                 nvmeofServiceList();
                 createLoggerInfo("NVMe-oF Service create success");
@@ -424,7 +424,7 @@ function setNvmeofImage(){
         $('#div-nvmeof-target-new-image-name').show();
         $('#div-nvmeof-target-image-size').show();
         $('#div-nvmeof-target-image-name').hide();
-        $('#form-input-nvmeof-target-image-name').val($('#form-input-nqn-id').val());
+        $('#form-input-nvmeof-target-image-name').val($('#form-input-nqn-id').val().replace(':', '.'));
     }
 }
 

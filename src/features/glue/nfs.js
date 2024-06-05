@@ -161,7 +161,7 @@ $('#button-execution-modal-create-nfs-cluster').on('click', function(){
             $('#div-modal-spinner').hide();
             if(data == "Success"){
                 $("#modal-status-alert-title").html("NFS Cluster 생성 완료");
-                $("#modal-status-alert-body").html("NFS Cluster 생성을 완료하였습니다.<br/>조회 버튼을 클릭하여 서비스 상태를 확인할 수 있습니다.");
+                $("#modal-status-alert-body").html("NFS Cluster 생성을 완료하였습니다.<br/>새로고침 버튼을 클릭하여 서비스 상태를 확인할 수 있습니다.");
                 $('#div-modal-status-alert').show();
                 nfsClusterList();
                 nfsExportList();
