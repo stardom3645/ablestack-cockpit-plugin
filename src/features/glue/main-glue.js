@@ -25,7 +25,7 @@ $(document).ready(function(){
                 gwvmInfoSet();
             }).catch(function (error) {
                 alert("초기 cluster.json 파일 복사 실패 : "+error);
-            });        
+            });
             setInterval(() => {
                 gwvmInfoSet(),glueVmList()
             }, 15000);
@@ -42,7 +42,7 @@ $('html').on('click', function(e){
     if(!$(e.target).hasClass('pf-c-dropdown__toggle')){
         $('.pf-c-dropdown__menu, .pf-m-align-right').hide();
     }
-    
+
     //배치 호스트, iscsi 포털 체크 박스 다른 영역 클릭시 메뉴 닫기
     if(!($(e.target).hasClass('pf-c-select__toggle')
         || $(e.target).hasClass('pf-c-select__menu')
@@ -84,7 +84,7 @@ $('#menu-item-gateway-vm-setup').on('click', function(){
         $('#form-input-gateway-vm-mngt-nic-ip').val("");
         $('#form-select-gateway-vm-storage-nic-parent').val("");
         $('#form-input-gateway-vm-storage-nic-ip').val("");
-        
+
         $('#div-modal-gateway-vm-setup').show();
     })
     .catch(function (error) {
@@ -111,7 +111,7 @@ $('#modal-status-alert-button-close1, #modal-status-alert-button-close2').on('cl
 $('i[name=icon-help-action]').on('click',function(e){
     $("#modal-help-title").html("");
     // $("#modal-help-body").html("");
-    
+
     if(e.target.id == "icon-help-glue-vm-status"){
         $("#modal-help-title").html("Glue 가상머신 도움말");
         $("#modal-help-body").html("Glue 스토리지 클러스터를 구성하는 가상머신 상태 정보와 IP 정보를 확인할 수 있습니다.");
@@ -144,7 +144,7 @@ $('i[name=icon-help-action]').on('click',function(e){
         $("#modal-help-body").html("Object Gateway Bucket은 연관된 오브젝트(파일)를 그룹핑한 최상위 디렉토리이며, 사용자별 여러개의 버킷을 생성하여 사용할 수 있습니다.");
     } else if (e.target.id == "icon-help-ingress-service") {
         $("#modal-help-title").html("INGRESS Service 도움말");
-        $("#modal-help-body").html("NFS, OBJECT GATEWAY 서비스에 대한 INGRESS 서비스를 배포하면 가상 IP를 통한 안적적 접근이 가능하고, SCVM 장애 발생시 SCVM간 페일오버가 가능합니다. INGRESS 서비스는 배치한 호스트 마다 haproxy와 keepalived 데몬이 동작합니다.");
+        $("#modal-help-body").html("NFS, OBJECT GATEWAY 서비스에 대한 INGRESS 서비스를 배포하면 가상 IP를 통한 안정적 접근이 가능하고, SCVM 장애 발생시 SCVM간 페일오버가 가능합니다. INGRESS 서비스는 배치한 호스트 마다 haproxy와 keepalived 데몬이 동작합니다.");
     } else if (e.target.id == "icon-help-iscsi-service") {
         $("#modal-help-title").html("iSCSI Service 도움말");
         $("#modal-help-body").html("iSCSI 게이트웨이 서비스는 RBD(RADOS 블록 장치) 이미지를 SCSI 디스크로 내보내는 HA(고가용성) iSCSI Target을 제공합니다. iSCSI 프로토콜을 사용하면 클라이언트(이니시에이터)가 TCP/IP 네트워크를 통해 스토리지 장치(대상)에 SCSI 명령을 보낼 수 있으므로 클라이언트가 Glue 블록 스토리지에 액세스할 수 있습니다.");
@@ -158,8 +158,8 @@ $('i[name=icon-help-action]').on('click',function(e){
         $("#modal-help-title").html("NVMe-oF Target 도움말");
         $("#modal-help-body").html("NVMe-oF Target을 생성하고 관리할 수 있습니다.");
     }
-    
-    
+
+
 
     $('#div-modal-help').show();
 })
@@ -228,7 +228,7 @@ function byteOnlyGib(size){
 
     ret_byte = parseFloat(size)/(1024*1024*1024);
     ret_byte_name = "GiB";
-    
+
 
     var bytes = parseInt(ret_byte);
 
@@ -248,7 +248,7 @@ function gwvmInfoSet(){
     $('#gwvm-status').html("상태 체크 중 &bull;&bull;&bull;&nbsp;&nbsp;&nbsp;<svg class='pf-c-spinner pf-m-md' role='progressbar' aria-valuetext='Loading...' viewBox='0 0 100 100' ><circle class='pf-c-spinner__path' cx='50' cy='50' r='45' fill='none'></circle></svg>");
     $("#gwvm-back-color").attr('class','pf-c-label pf-m-orange');
     $("#gwvm-cluster-icon").attr('class','fas fa-fw fa-exclamation-triangle');
-    
+
     //디테일 정보 가져오기
     fetch('https://'+glue_api_ip+':'+glue_api_port+'/api/v1/gwvm/detail/cell',{
         method: 'GET'
@@ -470,7 +470,7 @@ function glueVmList(){
 
         for(var i=0; i < data.length; i++){
             let insert_tr = "";
-                                                    
+
             insert_tr += '<tr role="row">';
 
             insert_tr += '<tr role="row">';
@@ -585,7 +585,7 @@ function topTabAction(button_id){
         $(this).removeClass('pf-m-current');
     });
     $('#'+button_id).parent().addClass('pf-m-current');
-    
+
     //본문 영역 숨기기 시작
     $('#div-gwvm-card').hide();
     $('#div-glue-vm-card').hide();
@@ -629,7 +629,7 @@ function topTabAction(button_id){
             break;
         case 'button-tab-ingress':
             $('div[name="div-help-content"]').remove();
-            setHelpInfoContent("INGRESS Service","NFS, OBJECT GATEWAY 서비스에 대한 INGRESS 서비스를 배포하면 가상 IP를 통해 안적적 접근이 가능하고, SCVM 장애 발생시 SCVM간 페일오버가 가능합니다. INGRESS 서비스는 배치한 호스트 마다 haproxy와 keepalived 데몬이 동작합니다.");
+            setHelpInfoContent("INGRESS Service","NFS, OBJECT GATEWAY 서비스에 대한 INGRESS 서비스를 배포하면 가상 IP를 통해 안정적 접근이 가능하고, SCVM 장애 발생시 SCVM간 페일오버가 가능합니다. INGRESS 서비스는 배치한 호스트 마다 haproxy와 keepalived 데몬이 동작합니다.");
             ingressList();
             $('#div-ingress-card').show();
             break;
@@ -695,7 +695,7 @@ $('#ul-top-tab-list').on('click', function(e){
     } else if (e.target.className == "pf-c-tabs__link"){
         button_id = e.target.id
     }
-    topTabAction(button_id);    
+    topTabAction(button_id);
 });
 
 
@@ -774,7 +774,7 @@ function setSmbUserSelectBox(select_box_id, data){
     // 초기화
     $('#'+select_box_id).empty();
     var smb_user_list = data.split(",")
-    
+
     var el ='';
 
     el += '<option value="" selected>선택하십시오.</option>';
@@ -1014,7 +1014,7 @@ function setIscsiPortalCheckbox(div_id, form_input_id, portals_json){
             }
             //중복 제거
             const uniquePortalArray = iscsi.filter((value, index, self) => self.indexOf(value) === index);
-            
+
             let insert_tr = "";
             insert_tr += '<fieldset class="pf-c-select__menu-fieldset" aria-label="Select input">';
             if(portals_json==null){
@@ -1035,7 +1035,7 @@ function setIscsiPortalCheckbox(div_id, form_input_id, portals_json){
                     if(uniquePortalArray.includes(data[i].hostname)){
                         var ip_address_boolon = false;
                         var addr_boolon = false;
-        
+
                         for(var j=0; j < portals_json.length; j++){
                             if(portals_json[j].ip == data[i].ip_address){
                                 ip_address_boolon = true;
@@ -1044,7 +1044,7 @@ function setIscsiPortalCheckbox(div_id, form_input_id, portals_json){
                                 addr_boolon = true;
                             }
                         }
-                        
+
                         if(!ip_address_boolon){
                             insert_tr += '    <label class="pf-c-check pf-c-select__menu-item">';
                             insert_tr += '        <input class="pf-c-check__input" type="checkbox" id="iscsi-portal-list-'+i+'" name="iscsi-portal-list" value="'+data[i].hostname+':'+data[i].ip_address+'"/>';
@@ -1056,7 +1056,7 @@ function setIscsiPortalCheckbox(div_id, form_input_id, portals_json){
                             insert_tr += '        <span class="pf-c-check__label">'+data[i].hostname+':'+data[i].ip_address+'</span>';
                             insert_tr += '    </label>';
                         }
-        
+
                         if(!addr_boolon){
                             insert_tr += '    <label class="pf-c-check pf-c-select__menu-item">';
                             insert_tr += '        <input class="pf-c-check__input" type="checkbox" id="iscsi-portal-list-'+i+'" name="iscsi-portal-list" value="'+data[i].hostname+':'+data[i].addr+'"/>';
@@ -1070,7 +1070,7 @@ function setIscsiPortalCheckbox(div_id, form_input_id, portals_json){
                         }
                     }
                 }
-    
+
                 //form_input_id 세팅
                 var el = "";
                 for(var i=0; i < portals_json.length; i++){
@@ -1079,14 +1079,14 @@ function setIscsiPortalCheckbox(div_id, form_input_id, portals_json){
                     }else{
                         el += ", "+portals_json[i].host+":"+portals_json[i].ip
                     }
-                    
+
                 }
                 $('#'+form_input_id).val(el);
             }
-    
+
             insert_tr += '</fieldset>';
             $("#"+div_id).append(insert_tr);
-    
+
             if(form_input_id!=null){
                 // iscis portal 리스트 기능
                 $('input[name=iscsi-portal-list]').on('click', function(){
@@ -1123,12 +1123,12 @@ function setImageSelectBox(div_id, form_input_id, disks_json){
         $('#'+div_id+' fieldset').remove();
         let insert_tr = "";
         insert_tr += '<fieldset class="pf-c-select__menu-fieldset" aria-label="Select input">';
-        
+
         if(data.length > 4){
             div_id
-            $("#"+div_id).css('height', '200px'); 
+            $("#"+div_id).css('height', '200px');
             $("#"+div_id).css('overflow', 'auto');
-        
+
         }
 
         if(disks_json==null){
@@ -1148,7 +1148,7 @@ function setImageSelectBox(div_id, form_input_id, disks_json){
                         disk_boolon = true;
                     }
                 }
-                
+
                 if(!disk_boolon){
                     insert_tr += '    <label class="pf-c-check pf-c-select__menu-item">';
                     insert_tr += '        <input class="pf-c-check__input" type="checkbox" id="iscsi-image-list-'+i+'" name="iscsi-image-list" value="'+data[i]+'"/>';
@@ -1172,7 +1172,7 @@ function setImageSelectBox(div_id, form_input_id, disks_json){
             }
             $('#'+form_input_id).val(el);
         }
-        
+
         insert_tr += '</fieldset>';
         $("#"+div_id).append(insert_tr);
 
@@ -1300,7 +1300,7 @@ function setNvmeofHostIpSelectBox(select_box_id, selected_host_ip){
         fetch('https://'+glue_api_ip+':'+glue_api_port+'/api/v1/glue/hosts',{
             method: 'GET'
         }).then(res => res.json()).then(hosts_data => {
-            
+
             $('#'+select_box_id).empty();
             var el ='';
             el += '<option value="" selected>선택하십시오.</option>';
@@ -1313,14 +1313,14 @@ function setNvmeofHostIpSelectBox(select_box_id, selected_host_ip){
                     for(var x=0; x < data[i].placement.hosts.length ; x++){
                         if(hosts_data[j].hostname == data[i].placement.hosts[x]){
                             host_ip.push(hosts_data[j].ip_address)
-                        }    
+                        }
                     }
                 }
             }
-            
+
             //중복 제거
             const uniqueHostIpArray = host_ip.filter((value, index, self) => self.indexOf(value) === index);
-    
+
             for(var i=0; i < uniqueHostIpArray.length; i++){
                 if(selected_host_ip == null){
                     el += '<option value="'+uniqueHostIpArray[i]+'">'+uniqueHostIpArray[i]+'</option>';
@@ -1332,7 +1332,7 @@ function setNvmeofHostIpSelectBox(select_box_id, selected_host_ip){
                     }
                 }
             }
-    
+
             $('#'+select_box_id).append(el);
             createLoggerInfo("setNvmeofHostIpSelectBox success");
         }).catch(function(data){
