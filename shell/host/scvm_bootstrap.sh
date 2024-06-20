@@ -10,7 +10,7 @@
 set -x
 #scvm의 PN-ip를 갖는 host목록 생성
 conffile=/root/ceph.conf
-imagename="localhost:5000/glue/daemon:latest"
+imagename="localhost:15000/glue/daemon:Diplo"
 hosts=$(grep scvm /etc/hosts| grep -v mngt | grep -v cn | awk {'print $1'})
 scvms=$(grep scvm /etc/hosts| grep -v mngt | grep -v cn | grep scvm | awk {'print $1'})
 allhosts=$(grep -v mngt /etc/hosts | grep -v cn | grep -v localhost | awk {'print $1'})
@@ -39,7 +39,7 @@ podman start registry
 #container image id추출
 image=$(/bin/podman inspect --format {{.ID}},{{.RepoDigests}} $imagename | cut -d "," -f 2 | sed 's/\[//' | sed 's/]//' )
 cephadm --image "$image" bootstrap \
-        --initial-dashboard-user ablecloud \
+        --initial-dashboard-user admin \
         --initial-dashboard-password password \
         --ssh-private-key /root/.ssh/id_rsa \
         --ssh-public-key /root/.ssh/id_rsa.pub \
@@ -56,14 +56,14 @@ cephadm --image "$image" bootstrap \
         ceph config set client rbd_cache_max_dirty 3221225472 && \
         ceph config set client rbd_cache_target_dirty 2147483648 && \
         ceph config set client rbd_cache_max_dirty_age 5.0 && \
-        ceph config set mgr mgr/cephadm/container_image_alertmanager localhost:5000/prom/alertmanager:ablestack && \
-        ceph config set mgr mgr/cephadm/container_image_grafana localhost:5000/ceph/ceph-grafana:ablestack && \
-        ceph config set mgr mgr/cephadm/container_image_node_exporter localhost:5000/prom/node-exporter:ablestack && \
-        ceph config set mgr mgr/cephadm/container_image_prometheus localhost:5000/prom/prometheus:ablestack
-        ceph config set mgr mgr/cephadm/container_image_loki localhost:5000/grafana/loki:ablestack
-        ceph config set mgr mgr/cephadm/container_image_promtail localhost:5000/grafana/promtail:ablestack
-        ceph config set mgr mgr/cephadm/container_image_nvmeof-cli localhost:5000/ceph/nvmeof-cli:1.0.0
-        ceph config set mgr mgr/cephadm/container_image_nvmeof localhost:5000/ceph/nvmeof:1.0.0
+        ceph config set mgr mgr/cephadm/container_image_alertmanager localhost:15000/prometheus/alertmanager:Diplo && \
+        ceph config set mgr mgr/cephadm/container_image_grafana localhost:15000/glue/glue-grafana:Diplo && \
+        ceph config set mgr mgr/cephadm/container_image_node_exporter localhost:15000/prometheus/node-exporter:Diplo && \
+        ceph config set mgr mgr/cephadm/container_image_prometheus localhost:15000/prometheus/prometheus:Diplo
+        ceph config set mgr mgr/cephadm/container_image_loki localhost:15000/grafana/loki:Diplo
+        ceph config set mgr mgr/cephadm/container_image_promtail localhost:15000/grafana/promtail:Diplo
+        ceph config set mgr mgr/cephadm/container_image_nvmeof-cli localhost:15000/glue/nvmeof-cli:Diplo
+        ceph config set mgr mgr/cephadm/container_image_nvmeof localhost:15000/glue/nvmeof:Diplo
 
 #crontab<<EOF
 #* * * * * /usr/local/bin/ipcorrector
@@ -110,16 +110,12 @@ ceph mgr module disable dashboard
 ceph mgr module enable dashboard
 
 ceph config set mon mon_warn_on_insecure_global_id_reclaim_allowed false
-ceph config set mgr mgr/pg_autoscaler/autoscale_profile scale-up
 
 for host in $hosts
 do
   ssh -o StrictHostKeyChecking=no $host /usr/bin/mv -f /usr/share/ablestack/ablestack-wall/process-exporter/scvm_process.yml /usr/share/ablestack/ablestack-wall/process-exporter/process.yml
   ssh -o StrictHostKeyChecking=no $host systemctl enable --now node-exporter
   ssh -o StrictHostKeyChecking=no $host systemctl enable --now process-exporter
-  ssh -o StrictHostKeyChecking=no $host firewall-cmd --add-port=8080/tcp --permanent
-  ssh -o StrictHostKeyChecking=no $host firewall-cmd --add-service=samba --permanent
-  ssh -o StrictHostKeyChecking=no $host firewall-cmd --reload
   ssh -o StrictHostKeyChecking=no $host systemctl enable --now glue-api.service
 done
 
