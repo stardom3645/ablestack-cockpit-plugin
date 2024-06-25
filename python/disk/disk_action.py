@@ -18,12 +18,7 @@ import sh
 import distro
 
 lsblk_cmd = sh.Command('/usr/bin/lsblk')
-if distro.linux_distribution() == ('CentOS Linux', '8', ''):
-    # print('centos8')
-    lspci_cmd = sh.Command('/usr/sbin/lspci')
-else:
-    # print('other')
-    lspci_cmd = sh.Command('/usr/bin/lspci')
+lspci_cmd = sh.Command('/usr/sbin/lspci')
 
 env = os.environ.copy()
 env['LANG'] = "en_US.utf-8"
