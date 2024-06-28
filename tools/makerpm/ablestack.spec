@@ -2,11 +2,11 @@
 # 이 파일은 rpmbuild를 이용하여 ablestack-cockpit-plugin을 빌드하기 위한 내용을 정의한 spec파일입니다.
 # 최초 작성일 : 2021. 04. 02
 
-Name: ablestack
+Name: cube
 Version: %{?version}%{!?version:4.0}
 Release: %{?release}%{!?release:0.wip.el9.noarch}
 Source0: %{name}-%{version}.tar.gz
-Summary: ablestack package
+Summary: ablestack cube package
 
 Group: AbleCloud
 License: None

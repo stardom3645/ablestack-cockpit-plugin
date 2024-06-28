@@ -595,7 +595,7 @@ function CardCloudClusterStatus(){
                         sessionStorage.setItem("ccvm_bootstrap_status","false");
                         console.log('ccvm false in')
                         $('#ccvm-after-bootstrap-run').html('');
-                        $('#ccvm-before-bootstrap-run').html('<a class="pf-c-dropdown__menu-item" href="#" id="menu-item-bootstrap-run-ccvm" onclick="ccvm_bootstrap_run()">Bootstrap 실행</a>');
+                        $('#ccvm-before-bootstrap-run').html('<a class="pf-c-dropdown__menu-item" href="#" id="menu-item-bootstrap-run-ccvm" onclick="ccvm_bootstrap_run()">클라우드센터 구성하기</a>');
                     }else if (ccvmStatus.ccvm == 'true'){
                         sessionStorage.setItem("ccvm_bootstrap_status","true");
                         console.log('ccvm true in')
@@ -728,7 +728,7 @@ function CardCloudClusterStatus(){
  */
 function ccvm_bootstrap_run(){
     $("#modal-status-alert-title").html("클라우드 센터 가상머신 상태 체크");
-    $("#modal-status-alert-body").html("클라우드 센터 가상머신에 cloudinit 실행이 완료되지 않아<br>Bootstrap을 실행할 수 없습니다.<br><br>잠시 후 다시 실행해 주세요.");
+    $("#modal-status-alert-body").html("클라우드센터 가상머신이 구성되지 않아<br>클라우드센터를 구성할 수 없습니다.<br><br>잠시 후 다시 실행해 주세요.");
     createLoggerInfo("ccvm_bootstrap_run() start");
     //scvm ping 체크
     cockpit.spawn(["python3", pluginpath+"/python/cloudinit_status/cloudinit_status.py", "ping", "--target",  "ccvm"])
@@ -742,8 +742,8 @@ function ccvm_bootstrap_run(){
                         console.log('cloudinit-status : '+retVal.val);
                         //cloudinit status: done 일때
                         if(retVal.code == 200 && retVal.val == "status: done"){
-                            $('#modal-title-scvm-status').text("클라우드 센터 가상머신 Bootstrap 실행");
-                            $('#modal-description-scvm-status').html("<p>클라우드 센터 가상머신의 Bootstrap.sh 파일을 실행 하시겠습니까??</p>");
+                            $('#modal-title-scvm-status').text("클라우드센터 구성하기");
+                            $('#modal-description-scvm-status').html("<p>클라우드센터를 구성하시겠습니까?</p>");
                             $('#button-storage-vm-status-update').html("실행");
                             $('#scvm-status-update-cmd').val("bootstrap_ccvm");
                             $('#div-modal-storage-vm-status-update').show();
