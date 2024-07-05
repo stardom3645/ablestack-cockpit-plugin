@@ -14,7 +14,7 @@ hypervisor = 'cell';
 var console_log = true;
 
 $(document).ready(function(){
-    // cluster.json 읽어 오기
+    // glue_conf.json 읽어 오기
     cockpit.spawn(["cat", pluginpath + "/tools/properties/glue_conf.json"])
     .then(function(data){
         var glueConf = JSON.parse(data);
