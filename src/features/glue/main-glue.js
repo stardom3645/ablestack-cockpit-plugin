@@ -9,7 +9,7 @@
 pluginpath = '/usr/share/cockpit/ablestack';
 glue_api_ip = '';
 glue_api_port = '8080';
-hypervisor = 'cell';
+hypervisor = '';
 
 var console_log = true;
 
