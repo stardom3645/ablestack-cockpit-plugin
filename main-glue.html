@@ -760,7 +760,7 @@
                                                     <th role="columnheader" scope="col">유저 수</th>
                                                     <th role="columnheader" scope="col">SMB 공유 폴더</th>
                                                     <th role="columnheader" scope="col">SMB 마운트 경로</th>
-                                                    <th role="columnheader" scope="col">GlueFS 이름 (경로)</th>
+                                                    <th role="columnheader" scope="col">GlueFS 경로<br/>( /{FS 이름}/{볼륨 경로} )</th>
                                                     <!-- <th role="columnheader" scope="col">GlueFS 경로</th> -->
                                                     <th class="pf-c-table__icon" style="width:10%" role="columnheader" scope="col"></th>
                                                 </tr>
@@ -3058,7 +3058,7 @@
             <header class="pf-c-modal-box__header"><h1 class="pf-c-modal-box__title"><span class="pf-c-modal-box__title-text" id="span-header-create-smb-service">SMB Service 생성</span></h1></header>
             <form novalidate class="pf-c-form pf-m-horizontal" style="margin-left:15px;margin-top:10px">
                 <section class="pf-c-form__section">
-                    <input type="text" id="smb-service-create-type" name="smb-update-user-hostname" value="" style="display:none" readonly/>
+                    <input type="text" id="smb-service-create-type" name="smb-service-create-type" value="" style="display:none" readonly/>
                     <div class="pf-c-form__group" id="div-smb-multi-host" style="display: none;">
                         <div class="pf-c-form__group-label" style="margin-left: 20px;">
                             <label class="pf-c-form__label" for="button-smb-glue-hosts-list-setting" style="margin-left: 10px;width: 120px;">
@@ -3107,17 +3107,6 @@
                     </div>
                     <div class="pf-c-form__group">
                         <div class="pf-c-form__group-label" style="margin-left: 20px;">
-                            <label class="pf-c-form__label" for="form-input-smb-actual-shared-path" style="margin-left: 10px;width: 120px;">
-                                <span class="pf-c-form__label-text">SMB 마운트 경로</span>
-                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
-                            </label>
-                        </div>
-                        <div class="pf-c-form__group-control">
-                            <input class="pf-c-form-control" style="width:50%" type="text" id="form-input-smb-actual-shared-path" name="form-input-smb-actual-shared-path" value="/fs/smb" readonly/>
-                        </div>
-                    </div>
-                    <div class="pf-c-form__group">
-                        <div class="pf-c-form__group-label" style="margin-left: 20px;">
                             <label class="pf-c-form__label" for="form-select-smb-gluefs-name" style="margin-left: 10px;width: 120px;">
                                 <span class="pf-c-form__label-text">GlueFS 이름</span>
                                 <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
@@ -3140,6 +3129,17 @@
                             <select class="pf-c-form-control" style="width:50%" id="form-select-smb-gluefs-path" name="form-select-smb-gluefs-path">
                                 <option value="" selected>선택하십시오.</option>
                             </select>
+                        </div>
+                    </div>
+                    <div class="pf-c-form__group">
+                        <div class="pf-c-form__group-label" style="margin-left: 20px;">
+                            <label class="pf-c-form__label" for="form-input-smb-actual-shared-path" style="margin-left: 10px;width: 120px;">
+                                <span class="pf-c-form__label-text">SMB 마운트 경로</span>
+                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                            </label>
+                        </div>
+                        <div class="pf-c-form__group-control">
+                            <input class="pf-c-form-control" style="width:50%" type="text" id="form-input-smb-actual-shared-path" name="form-input-smb-actual-shared-path" readonly/>
                         </div>
                     </div>
                     <div class="pf-c-form__group">
@@ -3274,6 +3274,175 @@
     </div>
 </div>
 <!-- smb service 삭제 : Modal 영역 끝 -->
+ <!-- smb folder 생성 : Modal 영역 시작 -->
+<div id="div-modal-create-smb-folder" class="pf-c-backdrop" style="display:none">
+    <div class="pf-l-bullseye">
+        <div class="pf-c-modal-box pf-m-sm" role="dialog" aria-modal="true" aria-label="Create SMB Folder">
+            <button id="button-close-modal-create-smb-folder" aria-disabled="false" aria-label="Close" class="pf-c-button pf-m-plain" type="button">
+                <i class="fas fa-times" aria-hidden="true"></i>
+            </button>
+            <header class="pf-c-modal-box__header"><h1 class="pf-c-modal-box__title"><span class="pf-c-modal-box__title-text" id="span-header-create-smb-folder">SMB 폴더 생성</span></h1></header>
+            <form novalidate class="pf-c-form pf-m-horizontal" style="margin-left:15px;margin-top:10px">
+                <section class="pf-c-form__section">
+                    <input type="text" id="smb-folder-create-type" name="smb-folder-create-type" value="" style="display:none" readonly/>
+                    <div class="pf-c-form__group" id="div-smb-folder-multi-host" style="display: none;">
+                        <div class="pf-c-form__group-label" style="margin-left: 20px;">
+                            <label class="pf-c-form__label" for="button-smb-folder-glue-hosts-list-setting" style="margin-left: 10px;width: 120px;">
+                                <span class="pf-c-form__label-text">호스트</span>
+                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                            </label>
+                        </div>
+                        <div class="pf-c-form__group-control">
+                            <div class="pf-c-select pf-m-expanded">
+                                <input class="pf-c-form-control" type="text" style="width:60%" id="form-input-smb-folder-placement-hosts" name="form-input-smb-folder-placement-hosts" readonly/>
+                                <button class="pf-c-select__toggle" type="button" style="width: 60%;" id="button-smb-folder-glue-hosts-list-setting" aria-haspopup="true" aria-expanded="true" aria-labelledby="select-checkbox-expanded-toggle">
+                                    <div class="pf-c-select__toggle-wrapper">
+                                        <span class="pf-c-select__toggle-text">선택하십시오.</span>
+                                    </div>
+                                    <span class="pf-c-select__toggle-arrow">
+                                        <i class="fas fa-times" aria-hidden="true"></i>
+                                        <i class="fas fa-caret-down" aria-hidden="true"></i>
+                                    </span>
+                                </button>
+                                <div class="pf-c-select__menu" style="min-width: 60%;display: none;" id="div-smb-folder-glue-hosts-list">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pf-c-form__group" id="div-smb-folder-single-host" style="display: none;">
+                        <div class="pf-c-form__group-label" style="margin-left: 20px;">
+                            <label class="pf-c-form__label" for="form-input-smb-folder-hostname" style="margin-left: 10px;width: 120px;">
+                                <span class="pf-c-form__label-text">호스트</span>
+                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                            </label>
+                        </div>
+                        <div class="pf-c-form__group-control">
+                            <input class="pf-c-form-control" style="width:50%" type="text" id="form-input-smb-folder-hostname" name="form-input-smb-folder-hostname" readonly/>
+                        </div>
+                    </div>
+                    <div class="pf-c-form__group">
+                        <div class="pf-c-form__group-label" style="margin-left: 20px;">
+                            <label class="pf-c-form__label" for="form-input-smb-folder-share-folder-name" style="margin-left: 10px;width: 120px;">
+                                <span class="pf-c-form__label-text">SMB 공유 폴더 명</span>
+                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                            </label>
+                        </div>
+                        <div class="pf-c-form__group-control">
+                            <input class="pf-c-form-control" style="width:50%" type="text" id="form-input-smb-folder-share-folder-name" name="form-input-smb-folder-share-folder-name"/>
+                        </div>
+                    </div>
+                    <div class="pf-c-form__group">
+                        <div class="pf-c-form__group-label" style="margin-left: 20px;">
+                            <label class="pf-c-form__label" for="form-select-smb-folder-gluefs-name" style="margin-left: 10px;width: 120px;">
+                                <span class="pf-c-form__label-text">GlueFS 이름</span>
+                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                            </label>
+                        </div>
+                        <div class="pf-c-dropdown">
+                            <select class="pf-c-form-control" style="width:50%" id="form-select-smb-folder-gluefs-name" name="form-select-smb-folder-gluefs-name">
+                                <option value="" selected>선택하십시오.</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="pf-c-form__group">
+                        <div class="pf-c-form__group-label" style="margin-left: 20px;">
+                            <label class="pf-c-form__label" for="form-select-smb-folder-gluefs-path" style="margin-left: 10px;width: 120px;">
+                                <span class="pf-c-form__label-text">GlueFS 경로</span>
+                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                            </label>
+                        </div>
+                        <div class="pf-c-dropdown">
+                            <select class="pf-c-form-control" style="width:50%" id="form-select-smb-folder-gluefs-path" name="form-select-smb-folder-gluefs-path">
+                                <option value="" selected>선택하십시오.</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="pf-c-form__group">
+                        <div class="pf-c-form__group-label" style="margin-left: 20px;">
+                            <label class="pf-c-form__label" for="form-input-smb-folder-actual-shared-path" style="margin-left: 10px;width: 120px;">
+                                <span class="pf-c-form__label-text">SMB 마운트 경로</span>
+                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                            </label>
+                        </div>
+                        <div class="pf-c-form__group-control">
+                            <input class="pf-c-form-control" style="width:50%" type="text" id="form-input-smb-folder-actual-shared-path" name="form-input-smb-folder-actual-shared-path" readonly/>
+                        </div>
+                    </div>
+                    <div class="pf-c-form__group">
+                        <div class="pf-c-form__group-label" style="margin-left: 20px;">
+                            <label class="pf-c-form__label" for="form-select-smb-folder-csc-policy" style="margin-left: 10px;width: 120px;">
+                                <span class="pf-c-form__label-text">캐시 정책</span>
+                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                            </label>
+                        </div>
+                        <div class="pf-c-dropdown">
+                            <select class="pf-c-form-control" style="width:50%" id="form-select-smb-folder-csc-policy" name="form-select-smb-folder-csc-policy">
+                                <option value="true" selected>설정</option>
+                                <option value="false">미설정</option>
+                            </select>
+                        </div>
+                    </div>
+
+
+
+                    <!-- <div class="pf-c-form__group" id="div-smb-multi-create-info">
+                        <div class="pf-c-form__group-label" style="margin-left: 25px;">
+                            <label class="pf-c-check pf-c-select__menu-item">
+                                <span class="pf-c-check__label" style="color: #c9190b;font-size: 14px;"><i class="fas fa-fw fa-exclamation-circle" aria-hidden="true"></i> 다중 생성시 선택한 모든 호스트에 SMB 서비스를 초기구성합니다.</span>
+                            </label>
+                        </div>
+                    </div> -->
+                    <input class="pf-c-form-control" type="hidden" id="form-input-smb-folder-path-json" name="form-input-smb-folder-path-json" readonly/>
+                    <!-- <input class="pf-c-form-control" type="text" id="form-input-smb-create-user-hostname" name="form-input-smb-create-user-hostname" style="display:none" readonly/> -->
+                </section>
+            </form>
+            <footer class="pf-c-modal-box__footer">
+                <button id="button-execution-modal-create-smb-folder" aria-disabled="false" class="pf-c-button pf-m-primary" type="button" data-ouia-safe="true">실행</button>
+                <button id="button-cancel-modal-create-smb-folder" aria-disabled="false" class="pf-c-button pf-m-link" type="button" data-ouia-safe="true">취소</button>
+            </footer>
+        </div>
+    </div>
+</div>
+<!-- smb folder 생성 : Modal 영역 끝 -->
+<!-- smb folder 삭제 : Modal 영역 시작 -->
+<div id="div-modal-remove-smb-folder" class="pf-c-backdrop" style="display:none">
+    <div class="pf-l-bullseye">
+        <div class="pf-c-modal-box pf-m-sm" role="dialog" aria-modal="true" aria-label="Remove SMB Folder">
+            <button id="button-close-modal-remove-smb-folder" aria-disabled="false" aria-label="Close" class="pf-c-button pf-m-plain" type="button">
+                <i class="fas fa-times" aria-hidden="true"></i>
+            </button>
+            <header class="pf-c-modal-box__header"><h1 class="pf-c-modal-box__title"><span class="pf-c-modal-box__title-text">SMB 폴더 삭제</span></h1></header>
+            <div class="pf-c-modal-box__body">
+                <div>삭제할 폴더를 선택해 주세요.</div>
+                <div style="color: var(--pf-global--danger-color--100);margin-bottom:10px;"></div>
+            </div>
+
+            <form novalidate class="pf-c-form pf-m-horizontal" style="margin-left:15px;margin-top:10px">
+                <section class="pf-c-form__section">
+                    <div class="pf-c-form__group">
+                        <div class="pf-c-form__group-label" style="margin-left: 20px;">
+                            <label class="pf-c-form__label" for="form-select-remove-smb-folder" style="width: 120px;">
+                                <span class="pf-c-form__label-text">공유 폴더</span>
+                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                            </label>
+                        </div>
+                        <div class="pf-c-dropdown">
+                            <select class="pf-c-form-control" id="form-select-remove-smb-folder" name="form-select-remove-smb-folder" style="width: 180px;">
+                                <option value="" selected>선택하십시오.</option>
+                            </select>
+                        </div>
+                    </div>
+                </section>
+            </form>
+            <footer class="pf-c-modal-box__footer">
+                <button id="button-execution-modal-remove-smb-folder" aria-disabled="false" class="pf-c-button pf-m-primary" type="button" data-ouia-safe="true">실행</button>
+                <button id="button-cancel-modal-remove-smb-folder" aria-disabled="false" class="pf-c-button pf-m-link" type="button" data-ouia-safe="true">취소</button>
+            </footer>
+            <input type="text" id="smb-folder-remove-hostname" name="smb-folder-remove-hostname" value="" style="display:none" readonly/>
+        </div>
+    </div>
+</div>
+<!-- smb folder 삭제 : Modal 영역 끝 -->
 <!-- smb user 목록 조회 : Modal 영역 시작 -->
 <div id="div-modal-search-smb-user" class="pf-c-backdrop" style="display:none">
     <div class="pf-l-bullseye">
@@ -3443,7 +3612,7 @@
                 <button id="button-execution-modal-remove-smb-user" aria-disabled="false" class="pf-c-button pf-m-primary" type="button" data-ouia-safe="true">실행</button>
                 <button id="button-cancel-modal-remove-smb-user" aria-disabled="false" class="pf-c-button pf-m-link" type="button" data-ouia-safe="true">취소</button>
             </footer>
-            <input type="text" id="smb-remove-user-hostname" name="smb-remove-user-hostname" value="" style="display:none" readonly/>
+            <input type="text" id="smb-user-remove-hostname" name="smb-user-remove-hostname" value="" style="display:none" readonly/>
         </div>
     </div>
 </div>

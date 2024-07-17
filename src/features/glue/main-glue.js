@@ -812,6 +812,28 @@ function setSmbUserSelectBox(select_box_id, data){
     createLoggerInfo("setSmbUserSelectBox success");
 }
 
+function setSmbFolderSelectBox(select_box_id, path_json_data){
+    // 초기화
+    $('#'+select_box_id).empty();
+    
+    var el ='';
+    el += '<option value="" selected>선택하십시오.</option>';
+    
+    if(path_json_data != undefined){
+        path_list = Object.keys(path_json_data);
+        for(var i=0; i<Object.keys(path_json_data).length; i++){
+            folder_name = path_list[i];
+            // fs mount 경로 = path
+            path = path_json_data[path_list[i]].path;
+            
+            el += '<option value="'+path+'">'+path_list[i]+'</option>';
+        }
+    }
+
+    $('#'+select_box_id).append(el);
+    createLoggerInfo("setSmbFolderSelectBox success");
+}
+
 function setGlueFsSelectBox(fs_select_box_id, path_select_box_id, selected_gluefs_id){
     fetch('https://'+glue_api_ip+':'+glue_api_port+'/api/v1/gluefs',{
         method: 'GET',
@@ -886,8 +908,6 @@ function setGlueFsVolumeGroupSelectBox(gluefs_name, path_select_box_id, selected
                     }
                 }
             }
-        } else {
-            el += '<option value="/">/</option>';
         }
         $('#'+path_select_box_id).append(el);
         createLoggerInfo("setGlueFsVolumeGroupSelectBox success");
