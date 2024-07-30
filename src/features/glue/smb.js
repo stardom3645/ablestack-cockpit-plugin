@@ -29,48 +29,39 @@ function smbServiceList(){
                 var folder_name = "-";
                 var path = "-";
                 var volume_path = "-";
+                var mount_yn = "-";
 
-                if(i == 0 && data[i].path_list != undefined){
+                if(data[i].path_list != undefined){
                     path_list = Object.keys(data[i].path_list);
                     for(var j=0; j<Object.keys(data[i].path_list).length; j++){
                         if(j == 0){
+                            if(data[i].path_list[path_list[j]].mount_yn == "true"){
+                                mount_yn = "OK";
+                            } else {
+                                mount_yn = "No mount";
+                            }
+
                             folder_name = path_list[j];
                             // fs mount 경로 = path
-                            path = data[i].path_list[path_list[j]].path;
+                            path = data[i].path_list[path_list[j]].path+" ("+mount_yn+")";
                             // fs 경로 = voluem_path
                             volume_path = data[i].path_list[path_list[j]].path;
                         }else{
+                            if(data[i].path_list[path_list[j]].mount_yn == "true"){
+                                mount_yn = "OK";
+                            } else {
+                                mount_yn = "No mount";
+                            }
+
                             folder_name += "<br/>"+path_list[j];
                             // fs mount 경로 = path
-                            path += "<br/>"+data[i].path_list[path_list[j]].path;
+                            path += "<br/>"+data[i].path_list[path_list[j]].path+" ("+mount_yn+")";
                             // fs 경로 = voluem_path
                             volume_path += "<br/>"+data[i].path_list[path_list[j]].path;
                         }
                     }
                 }
 
-                // var security_type = data[i].security_type;
-                // if(data[i].security_type==null || data[i].security_type==""){
-                //     security_type = "-";
-                // }
-
-                // if(data[i].folder_name!=null || data[i].folder_name!=""){
-                //     folder_name = data[i].folder_name;
-                //     // folder_name = "-";
-                // }
-                // if(data[i].path!=null || data[i].path!=""){
-                //     path = data[i].path;
-                //     // path = "-";
-                // }
-                // // if(data[i].fs_name!=null || data[i].fs_name!=""){
-                // //     fs_name = data[i].fs_name;
-                // //     // fs_name = "-";
-                // // }
-                // if(data[i].volume_path!=null || data[i].volume_path!=""){
-                //     volume_path = data[i].volume_path;
-                //     // volume_path = "-";
-                // }
-    
                 insert_tr += '<tr role="row">';
                 insert_tr += '    <td role="cell" data-label="호스트">'+data[i].hostname+'</td>';
                 insert_tr += '    <td role="cell" data-label="IP">'+data[i].ip_address+'</td>';
@@ -81,9 +72,8 @@ function smbServiceList(){
                 }else{
                     insert_tr += '    <td role="cell" data-label="유저 수">-</td>';
                 }
-
                 insert_tr += '    <td role="cell" data-label="SMB 공유 폴더">'+folder_name+'</td>';
-                insert_tr += '    <td role="cell" data-label="SMB 마운트 경로">'+path+'</td>';
+                insert_tr += '    <td role="cell" data-label="SMB 마운트 경로 (상태)">'+path+'</td>';
                 insert_tr += '    <td role="cell" data-label="GlueFS 경로({FS 이름}/{볼륨 경로})">'+volume_path+'</td>';
 
                 // insert_tr += '    <td role="cell" data-label="PORT" id="smb-service-volume-path">'+volume_path+'</td>';
