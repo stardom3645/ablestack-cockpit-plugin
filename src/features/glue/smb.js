@@ -18,6 +18,7 @@ function smbServiceList(){
         $('#smb-service-list tr').remove();
 
         for(var i=0; i < data.length; i++){
+            console.log(data[i]);
             if(!(data[i] == null || data[i] == undefined || data[i] == NaN || data[i] == "" || data[i] == 'null')){
                 let insert_tr = "";
     
@@ -30,7 +31,6 @@ function smbServiceList(){
                 var path = "-";
                 var volume_path = "-";
                 var mount_yn = "-";
-
                 if(data[i].path_list != undefined){
                     path_list = Object.keys(data[i].path_list);
                     for(var j=0; j<Object.keys(data[i].path_list).length; j++){
@@ -99,6 +99,8 @@ function smbServiceList(){
                 }else if(data[i].security_type == 'ads'){
                     if(data[i].status[0] == 'active'){
                         insert_tr += '                    <button class="pf-c-dropdown__menu-item pf-m-enabled" type="button" id="menu-item-set-smb-service-remove" onclick=\'smbServiceDelete("'+data[i].hostname+'")\' >SMB 서비스 삭제</button>';
+                        insert_tr += '                    <button class="pf-c-dropdown__menu-item pf-m-enabled" type="button" id="menu-item-set-smb-service-remove" onclick=\'smbFolderCreate("'+data[i].hostname+'",'+JSON.stringify(data[i].path_list)+')\' >공유 폴더 추가</button>';
+                        insert_tr += '                    <button class="pf-c-dropdown__menu-item pf-m-enabled" type="button" id="menu-item-set-smb-service-remove" onclick=\'smbFolderDelete("'+data[i].hostname+'",'+JSON.stringify(data[i].path_list)+')\' >공유 폴더 삭제</button>';
                     }else{
                         insert_tr += '                    <button class="pf-c-dropdown__menu-item pf-m-enabled" type="button" id="menu-item-set-smb-service-remove" onclick=\'smbServiceCreate("'+data[i].hostname+'")\' >SMB 서비스 구성</button>';
                     }
