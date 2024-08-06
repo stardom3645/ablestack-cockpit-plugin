@@ -317,8 +317,8 @@ $('#span-modal-wizard-cluster-config-finish-db-dump-file-download').on('click', 
  * History  : 2021.04.10 최초 작성
  */
 function scvm_bootstrap_run(){
-    $("#modal-status-alert-title").html("스토리지 센터 가상머신 상태 체크");
-    $("#modal-status-alert-body").html("스토리지 센터 가상머신에 cloudinit 실행이 완료되지 않아<br>Bootstrap을 실행할 수 없습니다.<br><br>잠시 후 다시 실행해 주세요.");
+    $("#modal-status-alert-title").html("스토리지센터 가상머신 상태 체크");
+    $("#modal-status-alert-body").html("스토리지센터 가상머신이 구성되지 않아<br>스토리지센터를 구성할 수 없습니다.<br><br>잠시 후 다시 실행해 주세요.");
     createLoggerInfo("scvm_bootstrap_run() start");
     //scvm ping 체크
     cockpit.spawn(["python3", pluginpath+"/python/cloudinit_status/cloudinit_status.py", "ping", "--target",  "scvm"])
@@ -332,8 +332,8 @@ function scvm_bootstrap_run(){
                         console.log(retVal.val);
                         //cloudinit status: done 일때
                         if(retVal.code == 200 && retVal.val == "status: done"){
-                            $('#modal-title-scvm-status').text("스토리지 센터 가상머신 Bootstrap 실행");
-                            $('#modal-description-scvm-status').html("<p>스토리지 센터 가상머신의 Bootstrap.sh 파일을 실행 하시겠습니까??</p>");
+                            $('#modal-title-scvm-status').text("스토리지센터 구성하기");
+                            $('#modal-description-scvm-status').html("<p>스토리지센터를 구성하시겠습니까?</p>");
                             $('#button-storage-vm-status-update').html("실행");
                             $('#scvm-status-update-cmd').val("bootstrap");
                             $('#div-modal-storage-vm-status-update').show();
@@ -572,7 +572,7 @@ function checkStorageClusterStatus(){
             if(retVal.val.bootstrap.scvm == "false"){ //bootstrap.sh 실행 전
                 sessionStorage.setItem("scvm_bootstrap_status","false");
                 $("#scvm-after-bootstrap-run").html("");
-                $("#scvm-before-bootstrap-run").html("<a class='pf-c-dropdown__menu-item' href='#' id='menu-item-bootstrap-run' onclick='scvm_bootstrap_run()'>Bootstrap 실행</a>");
+                $("#scvm-before-bootstrap-run").html("<a class='pf-c-dropdown__menu-item' href='#' id='menu-item-bootstrap-run' onclick='scvm_bootstrap_run()'>스토리지센터 구성하기</a>");
             }else{  //bootstrap.sh 실행 후
                 sessionStorage.setItem("scvm_bootstrap_status","true");
                 $("#scvm-after-bootstrap-run").html("<a class='pf-c-dropdown__menu-item' href='#' id='menu-item-linkto-storage-center' onclick='scc_link_go()'>스토리지센터 연결</a>");
@@ -891,7 +891,7 @@ function checkDeployStatus(){
             showRibbon('warning','스토리지센터 및 클라우드센터 VM이 배포되지 않았습니다. 스토리지센터 VM 배포를 진행하십시오.');
         }else{
             if(step3!="true"){
-                showRibbon('warning','스토리지센터 대시보드에 연결할 수 있도록 스토리지센터 VM Bootstrap 실행 작업을 진행하십시오.');
+                showRibbon('warning','스토리지센터 대시보드에 연결할 수 있도록 스토리지센터 구성 작업을 진행하십시오.');
             }else{
                 if(step8!="true" && step4=="HEALTH_ERR"||step4==null){
                     // 스토리지센터 연결 버튼 show
@@ -916,7 +916,7 @@ function checkDeployStatus(){
                             showRibbon('warning','클라우드센터 VM이 배포되지 않았습니다. 클라우드센터 VM 배포를 진행하십시오.');
                         }else{
                             if(step8!="true" && step7!="true"){
-                                showRibbon('warning','클라우드센터에 연결할 수 있도록 클라우드센터 VM Bootstrap 실행 작업을 진행하십시오.');
+                                showRibbon('warning','클라우드센터에 연결할 수 있도록 클라우드센터 구성 작업을 진행하십시오.');
                             }else{
                                 // 스토리지센터 연결 버튼, 클라우드센터 연결 버튼 show, 모니터링센터 구성 버튼 show
                                 $('#button-link-storage-center-dashboard').show();
