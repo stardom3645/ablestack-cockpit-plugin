@@ -2,13 +2,13 @@
 # 이 파일은 rpmbuild를 이용하여 ablestack-cockpit-plugin을 빌드하기 위한 내용을 정의한 spec파일입니다.
 # 최초 작성일 : 2021. 04. 02
 
-Name: ablestack
-Version: %{?version}%{!?version:4.0}
+Name: ablecube
+Version: %{?version}%{!?version:4.1}
 Release: %{?release}%{!?release:0.wip.el9.noarch}
 Source0: %{name}-%{version}.tar.gz
-Summary: ablestack package
+Summary: ablestack cube package
 
-Group: AbleCloud
+Group: ABLECLOUD
 License: None
 URL: https://github.com/ablecloud-team/ablestack-cockpit-plugin.git
 BuildRoot: %(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
@@ -33,7 +33,7 @@ Requires: /bin/bash
 %install
 rm -rf $RPM_BUILD_ROOT
 mkdir -p $RPM_BUILD_ROOT/usr/share/cockpit/ablestack
-cp -r $RPM_BUILD_ROOT/../../../{README.md,css,images,main.html,manifest.json,sample,shell,src,tools,python,index.html,index.js,main-glue.html} $RPM_BUILD_ROOT/usr/share/cockpit/ablestack
+cp -r $RPM_BUILD_ROOT/../../../{README.md,css,images,main.html,manifest.json,sample,shell,src,tools,python,index.html,index.js,main-glue.html,main-glue-no-permission.html} $RPM_BUILD_ROOT/usr/share/cockpit/ablestack
 
 %post
 #echo 'AbleStack script'

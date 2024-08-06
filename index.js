@@ -10,7 +10,14 @@ $(document).ready(function(){
     cockpit.script(["hostname"])
     .then(function (hostname) {
         if (hostname.includes("scvm")) {
-            $('#index-page').load("main-glue.html");
+            cockpit.script(["whoami"])
+            .then(function (whoami) {
+                if(whoami.includes("root")){
+                    $('#index-page').load("main-glue.html");
+                }else{
+                    $('#index-page').load("main-glue-no-permission.html");
+                }
+            })            
         } else {
             $('#index-page').load("main.html");
         }
