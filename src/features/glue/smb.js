@@ -18,6 +18,7 @@ function smbServiceList(){
         $('#smb-service-list tr').remove();
 
         for(var i=0; i < data.length; i++){
+            console.log(data[i]);
             if(!(data[i] == null || data[i] == undefined || data[i] == NaN || data[i] == "" || data[i] == 'null')){
                 let insert_tr = "";
     
@@ -25,27 +26,42 @@ function smbServiceList(){
                 if(data[i].users!=null){
                     user_cnt = data[i].users.length
                 }
-                // var security_type = data[i].security_type;
-                // if(data[i].security_type==null || data[i].security_type==""){
-                //     security_type = "-";
-                // }
-                var folder_name = data[i].folder_name;
-                if(data[i].folder_name==null || data[i].folder_name==""){
-                    folder_name = "-";
+
+                var folder_name = "-";
+                var path = "-";
+                var volume_path = "-";
+                var mount_yn = "-";
+                if(data[i].path_list != undefined){
+                    path_list = Object.keys(data[i].path_list);
+                    for(var j=0; j<Object.keys(data[i].path_list).length; j++){
+                        if(j == 0){
+                            if(data[i].path_list[path_list[j]].mount_yn == "true"){
+                                mount_yn = "OK";
+                            } else {
+                                mount_yn = "No mount";
+                            }
+
+                            folder_name = path_list[j];
+                            // fs mount 경로 = path
+                            path = data[i].path_list[path_list[j]].path+" ("+mount_yn+")";
+                            // fs 경로 = voluem_path
+                            volume_path = data[i].path_list[path_list[j]].path;
+                        }else{
+                            if(data[i].path_list[path_list[j]].mount_yn == "true"){
+                                mount_yn = "OK";
+                            } else {
+                                mount_yn = "No mount";
+                            }
+
+                            folder_name += "<br/>"+path_list[j];
+                            // fs mount 경로 = path
+                            path += "<br/>"+data[i].path_list[path_list[j]].path+" ("+mount_yn+")";
+                            // fs 경로 = voluem_path
+                            volume_path += "<br/>"+data[i].path_list[path_list[j]].path;
+                        }
+                    }
                 }
-                var path = data[i].path;
-                if(data[i].path==null || data[i].path==""){
-                    path = "-";
-                }
-                var fs_name = data[i].fs_name;
-                if(data[i].fs_name==null || data[i].fs_name==""){
-                    fs_name = "-";
-                }
-                var volume_path = data[i].volume_path;
-                if(data[i].volume_path==null || data[i].volume_path==""){
-                    volume_path = "-";
-                }
-    
+
                 insert_tr += '<tr role="row">';
                 insert_tr += '    <td role="cell" data-label="호스트">'+data[i].hostname+'</td>';
                 insert_tr += '    <td role="cell" data-label="IP">'+data[i].ip_address+'</td>';
@@ -56,10 +72,10 @@ function smbServiceList(){
                 }else{
                     insert_tr += '    <td role="cell" data-label="유저 수">-</td>';
                 }
-
                 insert_tr += '    <td role="cell" data-label="SMB 공유 폴더">'+folder_name+'</td>';
-                insert_tr += '    <td role="cell" data-label="SMB 마운트 경로">'+path+'</td>';
-                insert_tr += '    <td role="cell" data-label="GlueFS 이름(경로)">'+fs_name+' ( '+volume_path+' )</td>';
+                insert_tr += '    <td role="cell" data-label="SMB 마운트 경로 (상태)">'+path+'</td>';
+                insert_tr += '    <td role="cell" data-label="GlueFS 경로({FS 이름}/{볼륨 경로})">'+volume_path+'</td>';
+
                 // insert_tr += '    <td role="cell" data-label="PORT" id="smb-service-volume-path">'+volume_path+'</td>';
                 insert_tr += '    <td class="pf-c-table__icon" role="cell" data-label="편집">';
                 insert_tr += '        <div class="pf-c-dropdown">';
@@ -71,6 +87,8 @@ function smbServiceList(){
                 if(data[i].security_type == 'normal'){
                     if(data[i].status == 'active'){
                         insert_tr += '                    <button class="pf-c-dropdown__menu-item pf-m-enabled" type="button" id="menu-item-set-smb-service-remove" onclick=\'smbServiceDelete("'+data[i].hostname+'")\' >SMB 서비스 삭제</button>';
+                        insert_tr += '                    <button class="pf-c-dropdown__menu-item pf-m-enabled" type="button" id="menu-item-set-smb-service-remove" onclick=\'smbFolderCreate("'+data[i].hostname+'",'+JSON.stringify(data[i].path_list)+')\' >공유 폴더 추가</button>';
+                        insert_tr += '                    <button class="pf-c-dropdown__menu-item pf-m-enabled" type="button" id="menu-item-set-smb-service-remove" onclick=\'smbFolderDelete("'+data[i].hostname+'",'+JSON.stringify(data[i].path_list)+')\' >공유 폴더 삭제</button>';
                         insert_tr += '                    <button class="pf-c-dropdown__menu-item pf-m-enabled" type="button" id="menu-item-set-smb-service-remove" onclick=\'smbUserList("'+data[i].users+'")\' >유저 목록</button>';
                         insert_tr += '                    <button class="pf-c-dropdown__menu-item pf-m-enabled" type="button" id="menu-item-set-smb-service-remove" onclick=\'smbUserCreate("'+data[i].hostname+'")\' >유저 생성</button>';
                         insert_tr += '                    <button class="pf-c-dropdown__menu-item pf-m-enabled" type="button" id="menu-item-set-smb-service-remove" onclick=\'smbUserPasswdUpdate("'+data[i].hostname+'","'+data[i].users+'")\' >유저 비밀번호 변경</button>';
@@ -81,6 +99,8 @@ function smbServiceList(){
                 }else if(data[i].security_type == 'ads'){
                     if(data[i].status[0] == 'active'){
                         insert_tr += '                    <button class="pf-c-dropdown__menu-item pf-m-enabled" type="button" id="menu-item-set-smb-service-remove" onclick=\'smbServiceDelete("'+data[i].hostname+'")\' >SMB 서비스 삭제</button>';
+                        insert_tr += '                    <button class="pf-c-dropdown__menu-item pf-m-enabled" type="button" id="menu-item-set-smb-service-remove" onclick=\'smbFolderCreate("'+data[i].hostname+'",'+JSON.stringify(data[i].path_list)+')\' >공유 폴더 추가</button>';
+                        insert_tr += '                    <button class="pf-c-dropdown__menu-item pf-m-enabled" type="button" id="menu-item-set-smb-service-remove" onclick=\'smbFolderDelete("'+data[i].hostname+'",'+JSON.stringify(data[i].path_list)+')\' >공유 폴더 삭제</button>';
                     }else{
                         insert_tr += '                    <button class="pf-c-dropdown__menu-item pf-m-enabled" type="button" id="menu-item-set-smb-service-remove" onclick=\'smbServiceCreate("'+data[i].hostname+'")\' >SMB 서비스 구성</button>';
                     }
@@ -105,6 +125,14 @@ function smbServiceList(){
         $('#button-smb-service-search').html("<i class='fas fa-fw fa-redo' aria-hidden='true'></i>");
     });
 }
+
+$('#form-select-smb-gluefs-path').on('change', function(){
+    $('#form-input-smb-actual-shared-path').val("/"+$('#form-select-smb-gluefs-name').val()+$('#form-select-smb-gluefs-path').val())
+});
+
+$('#form-select-smb-folder-gluefs-path').on('change', function(){
+    $('#form-input-smb-folder-actual-shared-path').val("/"+$('#form-select-smb-folder-gluefs-name').val()+$('#form-select-smb-folder-gluefs-path').val())
+});
 
 /** smb-service search 관련 action start */
 $('#button-smb-service-search').on('click', function(){
@@ -271,6 +299,151 @@ $('#button-execution-modal-remove-smb-service').on('click', function(){
 });
 /** SMB Service delete 관련 action end */
 
+/** SMB Folder create 관련 action start */
+function smbFolderCreate(hostname, path){
+    setSmbFolderHostInput("single");
+    smbFolderCreateInitInputValue();
+    $('#form-input-smb-folder-hostname').val(hostname);
+    $('#form-input-smb-folder-path-json').val(JSON.stringify(path));
+    setGlueFsSelectBox("form-select-smb-folder-gluefs-name","form-select-smb-folder-gluefs-path");
+    $('#div-modal-create-smb-folder').show();
+}
+
+$('#button-smb-folder-multi-create').on('click', function(){
+    setSmbFolderHostInput("multi");
+    smbFolderCreateInitInputValue();
+    setSelectHostsCheckbox('div-smb-folder-glue-hosts-list','form-input-smb-folder-placement-hosts');
+    setGlueFsSelectBox("form-select-smb-folder-gluefs-name","form-select-smb-folder-gluefs-path");
+    $('#div-modal-create-smb-folder').show();
+});
+
+$('#button-close-modal-create-smb-folder').on('click', function(){
+    $('#div-modal-create-smb-folder').hide();
+});
+
+$('#button-cancel-modal-create-smb-folder').on('click', function(){
+    $('#div-modal-create-smb-folder').hide();
+});
+
+$('#button-execution-modal-create-smb-folder').on('click', function(){
+    if(smbFolderCreateValidateCheck()){
+        var folder_name = $('#form-input-smb-folder-share-folder-name').val();
+        var path = $('#form-input-smb-folder-actual-shared-path').val();
+        var fs_name = $('#form-select-smb-folder-gluefs-name option:selected').val();
+        var volume_path = $('#form-select-smb-folder-gluefs-path option:selected').val();
+        var cache_policy = $('#form-select-smb-folder-csc-policy option:selected').val();
+        
+        var body_val = "folder_name="+folder_name+"&path="+path+"&fs_name="+fs_name+"&volume_path="+volume_path+"&cache_policy="+cache_policy
+        
+        var create_type = $('#smb-folder-create-type').val();
+        if (create_type == "multi") {
+            $('input[type=checkbox][name="glue-hosts-list"]').each(function() {
+                if(this.checked){
+                    body_val += "&hosts="+this.value;
+                }
+            });
+        }else{
+            var hosts = $('#form-input-smb-folder-hostname').val();
+            body_val += "&hosts="+hosts
+        }
+
+        $('#div-modal-create-smb-folder').hide();
+        $('#div-modal-spinner-header-txt').text('SMB 폴더를 생성하고 있습니다.');
+        $('#div-modal-spinner').show();
+    
+        $("#modal-status-alert-title").html("SMB 폴더 생성 실패");
+        $("#modal-status-alert-body").html("SMB 폴더 생성을 실패하였습니다.");
+    
+        fetch('https://'+glue_api_ip+':'+glue_api_port+'/api/v1/smb/folder',{
+            method: 'POST',
+            headers: {
+                'accept': 'application/json',
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: body_val
+        }).then(res => res.json()).then(data => {
+            $('#div-modal-spinner').hide();
+            if(data == "Success"){
+                $("#modal-status-alert-title").html("SMB 폴더 생성 완료");
+                $("#modal-status-alert-body").html("SMB 폴더 생성을 완료하였습니다.");
+                $('#div-modal-status-alert').show();
+                smbServiceList();
+                createLoggerInfo("SMB Folder create success");
+            }else{
+                $('#div-modal-status-alert').show();
+            }
+        }).catch(function(data){
+            $('#div-modal-spinner').hide();
+            $('#div-modal-status-alert').show();
+            createLoggerInfo("SMB Folder create error : "+ data);
+            console.log('button-execution-modal-create-smb- : '+data);
+        });
+    }
+});
+/** SMB Folder create 관련 action end */
+
+/** SMB Folder delete 관련 action start */
+function smbFolderDelete(hostname, path){
+    
+    $('#smb-folder-remove-hostname').val(hostname);
+    setSmbFolderSelectBox("form-select-remove-smb-folder",path)
+    
+    $('#div-modal-remove-smb-folder').show();
+}
+
+$('#menu-item-smb-folder-remove').on('click', function(){
+    $('#div-modal-remove-smb-folder').show();
+});
+
+$('#button-close-modal-remove-smb-folder').on('click', function(){
+    $('#div-modal-remove-smb-folder').hide();
+});
+
+$('#button-cancel-modal-remove-smb-folder').on('click', function(){
+    $('#div-modal-remove-smb-folder').hide();
+});
+
+$('#button-execution-modal-remove-smb-folder').on('click', function(){
+    if(smbFolderDeleteValidateCheck()){
+        var hosts = $('#smb-folder-remove-hostname').val()
+        var folder_name = $('select#form-select-remove-smb-folder option:checked').text();
+        var path = $('select#form-select-remove-smb-folder option:checked').val();
+        // path = /gluefs/volumes/smb -> 첫번째 gluefs 가 fs의 이름임
+        var fs_name = path.split("/")[1];
+
+        $('#div-modal-remove-smb-folder').hide();
+        $('#div-modal-spinner-header-txt').text('SMB 폴더를 삭제하고 있습니다.');
+        $('#div-modal-spinner').show();
+    
+        $("#modal-status-alert-title").html("SMB 폴더 삭제 실패");
+        $("#modal-status-alert-body").html("SMB 폴더 삭제를 실패하였습니다.");
+        fetch('https://'+glue_api_ip+':'+glue_api_port+'/api/v1/smb/folder?hosts='+hosts+'&folder_name='+folder_name+'&path='+path+'&fs_name='+fs_name,{
+            method: 'DELETE',
+            headers: {
+                'accept': 'application/json',
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        }).then(res => res.json()).then(data => {
+            $('#div-modal-spinner').hide();
+            if(data == "Success"){
+                $("#modal-status-alert-title").html("SMB 폴더 삭제 완료");
+                $("#modal-status-alert-body").html("SMB 폴더 삭제를 완료하였습니다.");
+                $('#div-modal-status-alert').show();
+                smbServiceList();
+                createLoggerInfo("SMB Folder remove success");
+            }else{
+                $('#div-modal-status-alert').show();
+            }
+        }).catch(function(data){
+            $('#div-modal-spinner').hide();
+            $('#div-modal-status-alert').show();
+            createLoggerInfo("SMB Folder remove error : "+ data);
+            console.log('button-execution-modal-remove-smb-folder : '+data);
+        });
+    }
+});
+/** SMB Folder delete 관련 action end */
+
 /** SMB User List 관련 action start */
 function smbUserList(users){
     $('#smb-user-list tr').remove();
@@ -427,7 +600,7 @@ $('#button-execution-modal-update-smb-user').on('click', function(){
 
 /** SMB User delete 관련 action start */
 function smbUserDelete(hostname, users){
-    $('#smb-remove-user-hostname').val(hostname);
+    $('#smb-user-remove-hostname').val(hostname);
     setSmbUserSelectBox("form-select-remove-smb-user",users)
     
     $('#div-modal-remove-smb-user').show();
@@ -447,7 +620,7 @@ $('#button-cancel-modal-remove-smb-user').on('click', function(){
 
 $('#button-execution-modal-remove-smb-user').on('click', function(){
     if(smbUserDeleteValidateCheck()){
-        var hosts = $('#smb-remove-user-hostname').val()
+        var hosts = $('#smb-user-remove-hostname').val()
         var username = $('select#form-select-remove-smb-user option:checked').val();
         
         $('#div-modal-remove-smb-user').hide();
@@ -489,6 +662,7 @@ function smbServiceCreateInitInputValue(){
     $('#form-select-smb-csc-policy').val("true");
     $('#form-input-smb-user-name').val("");
     $('#form-input-smb-user-password').val("");
+    $('#form-input-smb-actual-shared-path').val("");
 
     var init_txt = '<option value="" selected>선택하십시오.</option>';
     $('#form-select-smb-gluefs-name option').remove();
@@ -503,6 +677,19 @@ function smbServiceCreateInitInputValue(){
 
     $('input[type=checkbox][id="form-checkbox-smb-ad-use-yn"]').prop("checked", false);
     setSmbAdUse();
+}
+
+// smb 폴더 생성 입력값 초기화
+function smbFolderCreateInitInputValue(){
+    $('#form-input-smb-folder-share-folder-name').val("");
+    $('#form-select-smb-folder-csc-policy').val("true");
+    $('#form-input-smb-folder-actual-shared-path').val("");
+
+    var init_txt = '<option value="" selected>선택하십시오.</option>';
+    $('#form-select-smb-folder-gluefs-name option').remove();
+    $('#form-select-smb-folder-gluefs-name:last').append(init_txt);
+    $('#form-select-smb-folder-gluefs-path option').remove();
+    $('#form-select-smb-folder-gluefs-path:last').append(init_txt);
 }
 
 // smb user 생성 입력값 초기화
@@ -532,6 +719,23 @@ function setSmbHostInput(type){
     }
     $('#smb-service-create-type').val(type);
 }
+
+function setSmbFolderHostInput(type){
+    if(type == "multi"){
+        $('#span-header-create-smb-folder').text("SMB 폴더 다중 생성");
+        $('#div-smb-folder-multi-host').show();
+        $('#div-smb-folder-single-host').hide();
+        // $('#div-smb-folder-multi-create-info').show();
+
+    }else if(type == "single"){
+        $('#span-header-create-smb-service').text("SMB 폴더 생성");
+        $('#div-smb-folder-multi-host').hide();
+        $('#div-smb-folder-single-host').show();
+        // $('#div-smb-multi-create-info').hide();
+    }
+    $('#smb-folder-create-type').val(type);
+}
+
 
 $('#form-checkbox-smb-ad-use-yn').on('change', function(){
     setSmbAdUse();
@@ -625,6 +829,56 @@ function smbServiceCreateValidateCheck(){
     return validate_check;
 }
 
+function smbFolderCreateValidateCheck(){
+    var validate_check = true;
+
+    var create_type = $('#smb-folder-create-type').val();
+    var host_cnt = $('input[type=checkbox][name="glue-hosts-list"]:checked').length
+
+    var folder_name = $('#form-input-smb-folder-share-folder-name').val();
+    var fs_name = $('#form-select-smb-folder-gluefs-name option:selected').val();
+    var volume_path = $('#form-select-smb-folder-gluefs-path option:selected').val();
+    var path = $('#form-input-smb-folder-actual-shared-path').val();
+    var path_json_data = JSON.parse($('#form-input-smb-folder-path-json').val());
+
+    if (create_type == "multi" && host_cnt == 0) {
+        alert("배치 호스트를 선택해주세요.");
+        validate_check = false;
+    } else if (folder_name == "") {
+        alert("SMB 공유 폴더 명을 입력해주세요.");
+        validate_check = false;
+    } else if(!nameCheck(folder_name)) {
+        alert("SMB 공유 폴더 명 생성 규칙은 영문, 숫자 특수문자 '-','_' 만 입력 가능합니다.");
+        validate_check = false;
+    } else if (fs_name == "") {
+        alert("GlueFS 이름을 선택해주세요.");
+        validate_check = false;
+    } else if (volume_path == undefined || volume_path == "") {
+        alert("GlueFS 경로를 선택해주세요.");
+        validate_check = false;
+    } else if (Object.keys(path_json_data).length > 0) { // 빈값이면 아니면서
+        var path_list = Object.keys(path_json_data);
+        console.log(path_list)
+        for(var i=0; i<Object.keys(path_json_data).length; i++){
+            folder_name_chkval = path_list[i];
+            // fs mount 경로 = path
+            path_chkval = path_json_data[path_list[i]].path;
+
+            if(folder_name == folder_name_chkval){
+                alert("이미 사용중인 공유 폴더명 입니다.");
+                validate_check = false;
+                break;
+            }else if(path == path_chkval){
+                alert("이미 사용중인 GlueFS 경로입니다.");
+                validate_check = false;
+                break;
+            }
+        }
+    }
+    
+    return validate_check;
+}
+
 function smbUserCreateValidateCheck(){
     var validate_check = true;
 
@@ -682,6 +936,19 @@ function smbUserDeleteValidateCheck(){
 
     if (username == "") {
         alert("사용자를 선택해주세요.");
+        validate_check = false;
+    }
+
+    return validate_check;
+}
+
+function smbFolderDeleteValidateCheck(){
+    var validate_check = true;
+
+    var folder = $('select#form-select-remove-smb-folder option:checked').val();
+
+    if (folder == "") {
+        alert("공유 폴더를 선택해주세요.");
         validate_check = false;
     }
 

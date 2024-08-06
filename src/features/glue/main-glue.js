@@ -9,30 +9,51 @@
 pluginpath = '/usr/share/cockpit/ablestack';
 glue_api_ip = '';
 glue_api_port = '8080';
+hypervisor = '';
 
 var console_log = true;
 
 $(document).ready(function(){
-    cockpit.script(["cat /etc/hosts | grep 'scvm-mngt' | awk '{print $1}'"])
-    .then(function (ip) {
-        if(ip != ""){
-            glue_api_ip = ip;
-            topTabAction("button-tab-glue-vm");
-            scanHostKey();
-            glueVmList();
-            cockpit.script(["scp -q -o StrictHostKeyChecking=no root@ablecube:/usr/share/cockpit/ablestack/tools/properties/cluster.json /usr/share/cockpit/ablestack/tools/properties/cluster.json"])
-            .then(function () {
-                gwvmInfoSet();
-            }).catch(function (error) {
-                alert("초기 cluster.json 파일 복사 실패 : "+error);
-            });
-            setInterval(() => {
-                gwvmInfoSet(),glueVmList()
-            }, 15000);
-        }else{
-            alert("/etc/hosts 파일에 호스트 해당명이 없습니다. /etc/hosts 파일을 확인해주세요.");
-        }
+    // glue_conf.json 읽어 오기
+    cockpit.spawn(["cat", pluginpath + "/tools/properties/glue_conf.json"])
+    .then(function(data){
+        var glueConf = JSON.parse(data);
+        glue_api_port = glueConf.apiPort;
+        hypervisor = glueConf.hypervisor;
+
+        cockpit.script(["cat /etc/hosts | grep 'scvm-mngt' | awk '{print $1}'"])
+        .then(function (ip) {
+            if(ip != ""){
+                glue_api_ip = ip;
+                topTabAction("button-tab-glue-vm");
+                scanHostKey();
+                glueVmList();
+
+                if(hypervisor == 'cell'){
+                    cockpit.script(["scp -q -o StrictHostKeyChecking=no root@ablecube:/usr/share/cockpit/ablestack/tools/properties/cluster.json /usr/share/cockpit/ablestack/tools/properties/cluster.json"])
+                    .then(function () {
+                        gwvmInfoSet();
+                    }).catch(function (error) {
+                        alert("초기 cluster.json 파일 복사 실패 : "+error);
+                    });
+                    setInterval(() => {
+                        gwvmInfoSet(),glueVmList()
+                    }, 15000);
+                }else{
+                    setInterval(() => {
+                        glueVmList()
+                    }, 15000);
+                }
+
+            }else{
+                alert("/etc/hosts 파일에 호스트 해당명이 없습니다. /etc/hosts 파일을 확인해주세요.");
+            }
+        })
     })
+    .catch(function(data){
+        createLoggerInfo("glue_conf.json 파일 읽기 실패");
+        console.log("glue_conf.json 파일 읽기 실패" + data);
+    });
 });
 // document.ready 영역 끝
 
@@ -607,9 +628,11 @@ function topTabAction(button_id){
         case 'button-tab-glue-vm':
             $('div[name="div-help-content"]').remove();
             setHelpInfoContent("Glue 가상머신","Glue 스토리지 클러스터를 구성하는 Glue 가상머신 상태 정보와 IP 정보를 확인할 수 있습니다. 해당 Glue 가상머신을 통해 다양한 스토리지 서비스를 제공합니다.");
-            setHelpInfoContent("게이트웨이 가상머신","스토리지 서비스 게이트웨이 전용 가상머신이며, 선택적으로 해당 가상머신을 구성하여 사용할 수 있습니다.");
-            $('#div-gwvm-card').show();
             $('#div-glue-vm-card').show();
+            if(hypervisor == 'cell'){
+                setHelpInfoContent("게이트웨이 가상머신","스토리지 서비스 게이트웨이 전용 가상머신이며, 선택적으로 해당 가상머신을 구성하여 사용할 수 있습니다.");
+                $('#div-gwvm-card').show();
+            }
             break;
         case 'button-tab-gluefs':
             $('div[name="div-help-content"]').remove();
@@ -789,6 +812,28 @@ function setSmbUserSelectBox(select_box_id, data){
     createLoggerInfo("setSmbUserSelectBox success");
 }
 
+function setSmbFolderSelectBox(select_box_id, path_json_data){
+    // 초기화
+    $('#'+select_box_id).empty();
+    
+    var el ='';
+    el += '<option value="" selected>선택하십시오.</option>';
+    
+    if(path_json_data != undefined){
+        path_list = Object.keys(path_json_data);
+        for(var i=0; i<Object.keys(path_json_data).length; i++){
+            folder_name = path_list[i];
+            // fs mount 경로 = path
+            path = path_json_data[path_list[i]].path;
+            
+            el += '<option value="'+path+'">'+path_list[i]+'</option>';
+        }
+    }
+
+    $('#'+select_box_id).append(el);
+    createLoggerInfo("setSmbFolderSelectBox success");
+}
+
 function setGlueFsSelectBox(fs_select_box_id, path_select_box_id, selected_gluefs_id){
     fetch('https://'+glue_api_ip+':'+glue_api_port+'/api/v1/gluefs',{
         method: 'GET',
@@ -863,8 +908,6 @@ function setGlueFsVolumeGroupSelectBox(gluefs_name, path_select_box_id, selected
                     }
                 }
             }
-        } else {
-            el += '<option value="/">/</option>';
         }
         $('#'+path_select_box_id).append(el);
         createLoggerInfo("setGlueFsVolumeGroupSelectBox success");
