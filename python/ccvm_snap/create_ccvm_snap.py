@@ -32,7 +32,7 @@ def createArgumentParser():
     '''
     # 참조: https://docs.python.org/ko/3/library/argparse.html
     # 프로그램 설명
-    parser = argparse.ArgumentParser(description='장애조치 클러스터 구성할 호스트의 네트워크 연결 상태를 확인하는 프로그램',
+    parser = argparse.ArgumentParser(description='ccvm snap 자동 생성하는 프로그램',
                                         epilog='copyrightⓒ 2021 All rights reserved by ABLECLOUD™',
                                         usage='%(prog)s arguments')
 

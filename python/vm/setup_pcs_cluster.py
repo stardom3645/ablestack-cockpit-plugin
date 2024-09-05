@@ -95,7 +95,7 @@ def setupPcsCluster(args):
     domid_check = 0
     cnt_num = 0
     while True:
-        time.sleep(1)
+        time.sleep(5)
         cnt_num += 1
         domid_check = os.system("virsh domid ccvm > /dev/null")
         if domid_check == 0 or cnt_num > 300:

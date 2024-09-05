@@ -51,16 +51,22 @@ for vm in vms:
             v = items[1].strip()
             vm[k] = v
         # ret = virsh_cmd("domblkinfo", domain=vm['Name'], all=True, _env=env).splitlines()
-        ret = ssh('-o', 'StrictHostKeyChecking=no', 'ccvm-mngt', '/usr/bin/df', '-h').splitlines()
+        ret = ssh('-o', 'StrictHostKeyChecking=no', '-o', 'ConnectTimeout=1', 'ccvm-mngt', '/usr/bin/df', '-h').splitlines()
         ret.reverse()
         vm['blk'] = ret
         for line in ret[:]:
-            if 'root' in line:
+            if 'rl-root' in line:
                 items = line.split(maxsplit=5)
                 vm['DISK_CAP'] = items[1]
                 vm['DISK_ALLOC'] = items[2]
                 vm['DISK_PHY'] = items[3]
                 vm['DISK_USAGE_RATE'] = items[4]
+            if 'rl-nfs' in line:
+                items = line.split(maxsplit=5)
+                vm['SECOND_DISK_CAP'] = items[1]
+                vm['SECOND_DISK_ALLOC'] = items[2]
+                vm['SECOND_DISK_PHY'] = items[3]
+                vm['SECOND_DISK_USAGE_RATE'] = items[4]
         if vm['State'] == "running":
             ret = virsh_cmd('domifaddr', domain=vm['Name'], source='agent', interface='enp0s20',
                             full=True).splitlines()
@@ -79,7 +85,7 @@ for vm in vms:
                     vm['nictype'] = items[1]
                     vm['nicbridge'] = items[2]
         try:
-            ret = ssh('-o', 'StrictHostKeyChecking=no', 'ccvm-mngt', '/usr/sbin/route', '-n', '|', 'grep', '-P', '"^0.0.0.0|UG"').splitlines()
+            ret = ssh('-o', 'StrictHostKeyChecking=no', '-o', 'ConnectTimeout=1', 'ccvm-mngt', '/usr/sbin/route', '-n', '|', 'grep', '-P', '"^0.0.0.0|UG"').splitlines()
             for line in ret[:]:
                 items = line.split()
                 vm['GW'] = items[1]
@@ -87,7 +93,7 @@ for vm in vms:
             pass
         # DNS 정보 확인
         try:
-            ret = ssh('-o', 'StrictHostKeyChecking=no', 'ccvm-mngt', '/usr/bin/cat', '-n', '/etc/resolv.conf', '|', 'awk', "'$1 == 2 {print $3}'").splitlines()
+            ret = ssh('-o', 'StrictHostKeyChecking=no', '-o', 'ConnectTimeout=1', 'ccvm-mngt', '/usr/bin/cat', '-n', '/etc/resolv.conf', '|', 'awk', "'$1 == 2 {print $3}'").splitlines()
             for line in ret[:]:
                 items = line.split()
                 vm['DNS'] = items[0]
@@ -95,11 +101,11 @@ for vm in vms:
             pass
 
         try :
-            vm['MOLD_SERVICE_STATUE'] = ssh('-o', 'StrictHostKeyChecking=no', 'ccvm-mngt', 'systemctl is-active cloudstack-management.service').splitlines()
+            vm['MOLD_SERVICE_STATUE'] = ssh('-o', 'StrictHostKeyChecking=no', '-o', 'ConnectTimeout=1', 'ccvm-mngt', 'systemctl is-active cloudstack-management.service').splitlines()
         except Exception as e:
             vm['MOLD_SERVICE_STATUE'] = 'inactive'.splitlines()
         try :
-            vm['MOLD_DB_STATUE'] = ssh('-o', 'StrictHostKeyChecking=no', 'ccvm-mngt', 'systemctl is-active mysqld').splitlines()
+            vm['MOLD_DB_STATUE'] = ssh('-o', 'StrictHostKeyChecking=no', '-o', 'ConnectTimeout=1', 'ccvm-mngt', 'systemctl is-active mysqld').splitlines()
         except Exception as e:
             vm['MOLD_DB_STATUE'] = 'inactive'.splitlines()
 

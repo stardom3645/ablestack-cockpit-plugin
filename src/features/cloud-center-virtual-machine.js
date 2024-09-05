@@ -122,6 +122,9 @@ class CloudCenterVirtualMachine {
                     $("#div-cloud-vm-disk-text").text(
                         vm['DISK_CAP'] + " (사용가능 " +vm['DISK_PHY'] + " / 사용률 " + vm['DISK_USAGE_RATE'] + ")"
                     );
+                    $("#div-cloud-vm-secondary-disk-text").text(
+                        vm['SECOND_DISK_CAP'] + " (사용가능 " +vm['SECOND_DISK_PHY'] + " / 사용률 " + vm['SECOND_DISK_USAGE_RATE'] + ")"
+                    );
                     $("#div-cloud-vm-nic-type-text").text(
                         "NIC Type : " + vm['nictype'] + " (Parent : " + vm['nicbridge'] + ")"
                     );

@@ -511,13 +511,11 @@
                                                 id="dropdown-menu-cloud-vm-status">
                                                 <li>
                                                     <button class="pf-c-dropdown__menu-item pf-m-disabled"
-                                                        id="card-action-cloud-vm-change" type="button">클라우드센터VM
-                                                        자원변경</button>
+                                                        id="card-action-cloud-vm-change" type="button">클라우드센터VM 자원변경</button>
                                                 </li>
                                                 <li>
                                                     <button class="pf-c-dropdown__menu-item pf-m-disabled"
-                                                        id="button-mold-service-control" type="button">Mold 서비스
-                                                        제어</button>
+                                                        id="button-mold-service-control" type="button">Mold 서비스 제어</button>
                                                 </li>
                                                 <li>
                                                     <button class="pf-c-dropdown__menu-item pf-m-disabled"
@@ -525,18 +523,19 @@
                                                 </li>
                                                 <li>
                                                     <button class="pf-c-dropdown__menu-item pf-m-disabled"
-                                                        id="button-cloud-vm-snap-backup" type="button">클라우드센터VM 스냅샷
-                                                        백업</button>
+                                                        id="button-mold-secondary-size-expansion" type="button">Mold 세컨더리 용량 추가</button>
                                                 </li>
                                                 <li>
                                                     <button class="pf-c-dropdown__menu-item pf-m-disabled"
-                                                        id="button-cloud-vm-snap-rollback" type="button">클라우드센터VM 스냅샷
-                                                        복구</button>
+                                                        id="button-cloud-vm-snap-backup" type="button">클라우드센터VM 스냅샷 백업</button>
                                                 </li>
                                                 <li>
                                                     <button class="pf-c-dropdown__menu-item pf-m-disabled"
-                                                        id="card-action-cloud-vm-db-dump" type="button">클라우드센터VM DB
-                                                        백업</button>
+                                                        id="button-cloud-vm-snap-rollback" type="button">클라우드센터VM 스냅샷 복구</button>
+                                                </li>
+                                                <li>
+                                                    <button class="pf-c-dropdown__menu-item pf-m-disabled"
+                                                        id="card-action-cloud-vm-db-dump" type="button">클라우드센터VM DB 백업</button>
                                                 </li>
                                             </ul>
                                         </div>
@@ -610,6 +609,15 @@
                                                 <dd class="pf-c-description-list__description">
                                                     <div class="pf-c-description-list__text"
                                                         id="div-cloud-vm-disk-text">N/A GiB</div>
+                                                </dd>
+                                            </div>
+                                            <div class="pf-c-description-list__group">
+                                                <dt class="pf-c-description-list__term">
+                                                    <span class="pf-c-description-list__text">세컨더리 Disk 크기</span>
+                                                </dt>
+                                                <dd class="pf-c-description-list__description">
+                                                    <div class="pf-c-description-list__text"
+                                                        id="div-cloud-vm-secondary-disk-text">N/A GiB</div>
                                                 </dd>
                                             </div>
                                             <div class="pf-c-description-list__group">
@@ -1032,7 +1040,7 @@
             </header>
             <div class="pf-c-modal-box__body">
                 <div>Mold 서비스 제어 명령을 선택해주세요</div>
-                <div id="div-modal-mold-service-control" style="color: var(--pf-global--danger-color--100);"></div>
+                <div style="color: var(--pf-global--danger-color--100);"></div>
                 <div>
                     <div class="pf-c-dropdown">
                         <select class="pf-c-form-control" id="form-select-mold-service-control"
@@ -1069,7 +1077,7 @@
             </header>
             <div class="pf-c-modal-box__body">
                 <div>Mold DB 제어 명령을 선택해주세요</div>
-                <div id="div-modal-mold-db-control" style="color: var(--pf-global--danger-color--100);"></div>
+                <div style="color: var(--pf-global--danger-color--100);"></div>
                 <div>
                     <div class="pf-c-dropdown">
                         <select class="pf-c-form-control" id="form-select-mold-db-control"
@@ -1092,6 +1100,51 @@
     </div>
 </div>
 <!-- mold db 제어 : Modal 영역 끝 -->
+
+<!-- mold secondary 용량 추가 : Modal 영역 시작 -->
+<div id="div-modal-mold-secondary-size-expansion" class="pf-c-backdrop" style="display:none">
+    <div class="pf-l-bullseye">
+        <div class="pf-c-modal-box pf-m-sm" role="dialog" aria-modal="true" aria-label="Mold Secondary Size Expansion">
+            <button id="button-close-mold-secondary-size-expansion" aria-disabled="false" aria-label="Close"
+                class="pf-c-button pf-m-plain" type="button">
+                <i class="fas fa-times" aria-hidden="true"></i>
+            </button>
+            <header class="pf-c-modal-box__header">
+                <h1 class="pf-c-modal-box__title"><span class="pf-c-modal-box__title-text">Mold 세컨더리 용량 추가</span></h1>
+            </header>
+            <div class="pf-c-modal-box__body">
+                <div>추가 확장할 용량을 입력해 주세요. (1회 최대 500GiB)</div>
+                <div style="color: var(--pf-global--danger-color--100);"></div>
+                <form novalidate class="pf-c-form pf-m-horizontal" style="margin-top:10px">
+                    <section class="pf-c-form__section">
+                        <div class="pf-c-form__group">
+                            <div class="pf-c-form__group-label">
+                                <label class="pf-c-form__label" for="form-input-mold-secondary-size-expansion" style="width: 80px;">
+                                    <span class="pf-c-form__label-text">추가 용량</span>
+                                    <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                                </label>
+                            </div>
+                            <div class="pf-c-form__group-control">
+                                <input class="pf-c-form-control" style="width:50%;margin-left: -80px;" type="text" id="form-input-mold-secondary-size-expansion" name="form-input-mold-secondary-size-expansion"/>
+                            </div>
+                        </div>
+                    </section>
+                </form>
+                <label class="pf-c-check pf-c-select__menu-item" style="margin-top: 10px;">
+                    <input class="pf-c-check__input" type="checkbox" id="input-checkbox-mold-secondary-size-expansion" value="resize"/>
+                    <span class="pf-c-check__label" style="color: #c9190b;"><i class="fas fa-fw fa-exclamation-circle" aria-hidden="true"></i>용량 추가 작업시 클라우드센터 가상머신 스냅샷이 모두 삭제되고,<br/>&nbsp;&emsp;클라우드센터 가상머신을 재시작합니다. 그래도 진행하시겠습니까?</span>
+                </label>
+            </div>
+            <footer class="pf-c-modal-box__footer">
+                <button id="button-execution-modal-mold-secondary-size-expansion" aria-disabled="false"
+                    class="pf-c-button pf-m-primary" type="button" data-ouia-safe="true">실행</button>
+                <button id="button-cancel-modal-mold-secondary-size-expansion" aria-disabled="false" class="pf-c-button pf-m-link"
+                    type="button" data-ouia-safe="true">취소</button>
+            </footer>
+        </div>
+    </div>
+</div>
+<!-- mold secondary 용량 추가 : Modal 영역 끝 -->
 
 <!-- 설정파일 다운로드 : Modal 영역 시작 -->
 <div id="div-modal-config-file-download" class="pf-c-backdrop" style="display:none">
