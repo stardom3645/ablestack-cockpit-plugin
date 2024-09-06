@@ -490,7 +490,7 @@ $('#button-execution-modal-mold-db-control').on('click', function(){
 });
 /** Mold DB 제어 modal 관련 action end */
 
-/** Mold 세컨더리 size 확장 제어 관련 action start */
+/** 2차 스토리지 size 확장 제어 관련 action start */
 $('#button-mold-secondary-size-expansion').on('click', function(){
     $('#input-checkbox-mold-secondary-size-expansion').prop('checked',false);
     $('#form-input-mold-secondary-size-expansion').val("");
@@ -509,23 +509,23 @@ $('#button-execution-modal-mold-secondary-size-expansion').on('click', function(
     if($('#input-checkbox-mold-secondary-size-expansion').is(":checked")){
         if(secondarySizeExpansionCheck()){
             $('#div-modal-mold-secondary-size-expansion').hide();
-            $('#div-modal-spinner-header-txt').text('Mold 세컨더리 용량을 추가하고 있습니다.');
+            $('#div-modal-spinner-header-txt').text('2차 스토리지 용량을 추가하고 있습니다.');
             $('#div-modal-spinner').show();
     
-            $("#modal-status-alert-title").html("Mold 세컨더리 용량 추가 실패");
-            $("#modal-status-alert-body").html("Mold 세컨더리 용량  실패하였습니다");
+            $("#modal-status-alert-title").html("2차 스토리지 용량 추가 실패");
+            $("#modal-status-alert-body").html("2차 스토리지 용량  실패하였습니다");
     
-            // Mold 세컨더리 size 확장 작업
+            // 2차 스토리지 size 확장 작업
             var addImageSize = $('#form-input-mold-secondary-size-expansion').val();
             cockpit.spawn(['/usr/bin/python3', pluginpath + '/python/vm/ccvm_secondary_resize.py', '--add-size', addImageSize], { host: pcs_exe_host})
             .then(function(data){
                 $('#div-modal-spinner').hide();
                 var retVal = JSON.parse(data);
                 if(retVal.code == 200){
-                    $("#modal-status-alert-title").html("Mold 세컨더리 용량 추가 완료");
-                    $("#modal-status-alert-body").html("Mold 세컨더리 용량 추가을 완료하였습니다.");
+                    $("#modal-status-alert-title").html("2차 스토리지 용량 추가 완료");
+                    $("#modal-status-alert-body").html("2차 스토리지 용량 추가을 완료하였습니다.");
                     $('#div-modal-status-alert').show();
-                    createLoggerInfo("Mold 세컨더리 size expansion spawn success");
+                    createLoggerInfo("2차 스토리지 size expansion spawn success");
                 } else {
                     $('#div-modal-status-alert').show();
                     createLoggerInfo(retVal.val);
@@ -533,7 +533,7 @@ $('#button-execution-modal-mold-secondary-size-expansion').on('click', function(
             }).catch(function(data){
                 $('#div-modal-spinner').hide();
                 $('#div-modal-status-alert').show();
-                createLoggerInfo("Mold 세컨더리 size expansion spawn error : " + data);
+                createLoggerInfo("2차 스토리지 size expansion spawn error : " + data);
             });
         }
     }else{
@@ -561,7 +561,7 @@ function secondarySizeExpansionCheck(){
  
     return validate_check;
 }
-/** Mold 세컨더리 size 확장 제어 관련 action end */
+/** 2차 스토리지 size 확장 제어 관련 action end */
 
 /** 설정파일 다운로드 modal 관련 action start */
 $('#button-config-file-download').on('click', function(){

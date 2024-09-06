@@ -131,7 +131,7 @@ def ccvmSecondaryResize(args):
         result = os.system("ssh -q -o StrictHostKeyChecking=no -o ConnectTimeout=5 ccvm '"+cmd+"'")
         if result != 0:
             return createReturn(code=500, val="ccvm secondary fs capacity expansion failed")
-        # 세컨더리 사이즈 확장 완료
+        # 2차 스토리지 사이즈 확장 완료
         return createReturn(code=200, val="ccvm secondary fs capacity expansion success")
     except Exception as e:
         # 결과값 리턴
