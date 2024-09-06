@@ -517,8 +517,7 @@ $('#button-execution-modal-mold-secondary-size-expansion').on('click', function(
     
             // Mold 세컨더리 size 확장 작업
             var addImageSize = $('#form-input-mold-secondary-size-expansion').val();
-            // alert(pcs_exe_host)
-            cockpit.spawn(['/usr/bin/python3', pluginpath + '/python/vm/ccvm_secondary_resize.py', '--add-size', addImageSize], { host: "10.10.22.2"})
+            cockpit.spawn(['/usr/bin/python3', pluginpath + '/python/vm/ccvm_secondary_resize.py', '--add-size', addImageSize], { host: pcs_exe_host})
             .then(function(data){
                 $('#div-modal-spinner').hide();
                 var retVal = JSON.parse(data);
