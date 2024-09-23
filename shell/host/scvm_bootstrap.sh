@@ -86,6 +86,8 @@ do
   ssh $host "(crontab -l 2>/dev/null; echo \"* * * * * /usr/local/bin/ipcorrector\") | crontab -"
 done
 
+ceph orch apply mon --placement=3
+
 for host in $scvms
 do
   ceph orch host add $(grep $host /etc/hosts | awk {'print $2'}) $host
