@@ -490,6 +490,79 @@ $('#button-execution-modal-mold-db-control').on('click', function(){
 });
 /** Mold DB 제어 modal 관련 action end */
 
+/** 2차 스토리지 size 확장 제어 관련 action start */
+$('#button-mold-secondary-size-expansion').on('click', function(){
+    $('#input-checkbox-mold-secondary-size-expansion').prop('checked',false);
+    $('#form-input-mold-secondary-size-expansion').val("");
+    $('#div-modal-mold-secondary-size-expansion').show();
+});
+
+$('#button-close-mold-secondary-size-expansion').on('click', function(){
+    $('#div-modal-mold-secondary-size-expansion').hide();
+});
+
+$('#button-cancel-modal-mold-secondary-size-expansion').on('click', function(){
+    $('#div-modal-mold-secondary-size-expansion').hide();
+});
+
+$('#button-execution-modal-mold-secondary-size-expansion').on('click', function(){
+    if($('#input-checkbox-mold-secondary-size-expansion').is(":checked")){
+        if(secondarySizeExpansionCheck()){
+            $('#div-modal-mold-secondary-size-expansion').hide();
+            $('#div-modal-spinner-header-txt').text('2차 스토리지 용량을 추가하고 있습니다.');
+            $('#div-modal-spinner').show();
+    
+            $("#modal-status-alert-title").html("2차 스토리지 용량 추가 실패");
+            $("#modal-status-alert-body").html("2차 스토리지 용량  실패하였습니다");
+    
+            // 2차 스토리지 size 확장 작업
+            var addImageSize = $('#form-input-mold-secondary-size-expansion').val();
+            cockpit.spawn(['/usr/bin/python3', pluginpath + '/python/vm/ccvm_secondary_resize.py', '--add-size', addImageSize], { host: pcs_exe_host})
+            .then(function(data){
+                $('#div-modal-spinner').hide();
+                var retVal = JSON.parse(data);
+                if(retVal.code == 200){
+                    $("#modal-status-alert-title").html("2차 스토리지 용량 추가 완료");
+                    $("#modal-status-alert-body").html("2차 스토리지 용량 추가을 완료하였습니다.");
+                    $('#div-modal-status-alert').show();
+                    createLoggerInfo("2차 스토리지 size expansion spawn success");
+                } else {
+                    $('#div-modal-status-alert').show();
+                    createLoggerInfo(retVal.val);
+                }
+            }).catch(function(data){
+                $('#div-modal-spinner').hide();
+                $('#div-modal-status-alert').show();
+                createLoggerInfo("2차 스토리지 size expansion spawn error : " + data);
+            });
+        }
+    }else{
+        alert("용량 추가 작업 진행 여부를 체크해 주세요.");
+    }
+});
+
+function secondarySizeExpansionCheck(){
+    var validate_check = true;
+    var addImageSize = $('#form-input-mold-secondary-size-expansion').val();
+
+    if (addImageSize == "") {
+        alert("추가 용량을 입력해주세요.");
+        validate_check = false;
+    } else if (!numberCheck(addImageSize)) {
+        alert("추가 용량에 숫자만 입력해주세요.");
+        validate_check = false;
+    } else if (addImageSize > 500) {
+        alert("추가 용량은 500 GiB 이하만 입력가능합니다.");
+        validate_check = false;
+    } else if (addImageSize <= 0) {
+        alert("추가 용량은 1 GiB 이상만 입력가능합니다.");
+        validate_check = false;
+    }
+ 
+    return validate_check;
+}
+/** 2차 스토리지 size 확장 제어 관련 action end */
+
 /** 설정파일 다운로드 modal 관련 action start */
 $('#button-config-file-download').on('click', function(){
     $('#div-modal-config-file-download').show();
@@ -666,6 +739,7 @@ function CardCloudClusterStatus(){
                     $("#button-cloud-vm-snap-rollback").addClass('pf-m-disabled');
                     $("#button-mold-service-control").removeClass('pf-m-disabled');
                     $("#button-mold-db-control").removeClass('pf-m-disabled');
+                    $("#button-mold-secondary-size-expansion").removeClass('pf-m-disabled');
                     $("#card-action-cloud-vm-db-dump").removeClass('pf-m-disabled');
                     $("#menu-item-set-auto-shutdown-step-two").removeClass('pf-m-disabled');
 
@@ -686,6 +760,7 @@ function CardCloudClusterStatus(){
                     $("#button-cloud-vm-snap-rollback").removeClass('pf-m-disabled');
                     $("#button-mold-service-control").addClass('pf-m-disabled');
                     $("#button-mold-db-control").addClass('pf-m-disabled');
+                    $("#button-mold-secondary-size-expansion").addClass('pf-m-disabled');
                     $("#card-action-cloud-vm-db-dump").addClass('pf-m-disabled');
                     $("#menu-item-set-auto-shutdown-step-two").addClass('pf-m-disabled');
                 }

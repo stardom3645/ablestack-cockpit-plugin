@@ -62,7 +62,7 @@ def setupPcsCluster(args):
     domid_check = 0
     cnt_num = 0
     while True:
-        time.sleep(1)
+        time.sleep(5)
         cnt_num += 1
         result = json.loads(python3(pluginpath+'/python/pcs/main.py', 'status', '--resource', 'gateway_res'))
         if result['val']['role'] == 'Started':

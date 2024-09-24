@@ -17,7 +17,7 @@ $(document).ready(function(){
     $('#dropdown-menu-storage-cluster-status').hide();
     $('#dropdown-menu-cloud-cluster-status').hide();
     $('#dropdown-menu-storage-vm-status').hide();
-    // $('#dropdown-menu-cloud-vm-status').hide();
+    $('#dropdown-menu-cloud-vm-status').hide();
 
     $('#button-open-modal-wizard-storage-cluster').hide();
     $('#button-open-modal-wizard-storage-vm').hide();
@@ -893,13 +893,13 @@ function checkDeployStatus(){
             if(step3!="true"){
                 showRibbon('warning','스토리지센터 대시보드에 연결할 수 있도록 스토리지센터 구성 작업을 진행하십시오.');
             }else{
-                if(step8!="true" && step4=="HEALTH_ERR"||step4==null){
+                if(step8!="true" && (step4=="HEALTH_ERR"||step4==null)){
                     // 스토리지센터 연결 버튼 show
                     $('#button-open-modal-wizard-cloud-vm').show();
                     $('#button-link-storage-center-dashboard').show();
                     showRibbon('warning','클라우드센터 VM이 배포되지 않았습니다. 스토리지센터에 연결하여 스토리지 클러스터 구성한 후 클라우드센터 VM 배포를 진행하십시오.');
                 }else{
-                    if(step8!="true" && step5=="HEALTH_ERR1"||step5=="HEALTH_ERR2"||step5==null){
+                    if(step8!="true" && (step5=="HEALTH_ERR1"||step5=="HEALTH_ERR2"||step5==null)){
                         //클라우드센터 VM 배포 버튼, 스토리지센터 연결 버튼 show
                         $('#button-open-modal-wizard-cloud-vm').show();
                         $('#button-link-storage-center-dashboard').show();
@@ -909,7 +909,7 @@ function checkDeployStatus(){
                             showRibbon('warning','클라우드센터 클러스터는 구성되었으나 리소스 구성이 되지 않았습니다. 리소스 구성을 진행하십시오.');
                         }
                     }else{
-                        if(step8!="true" && step6=="HEALTH_ERR"||step6==null){
+                        if(step8!="true" && (step6=="HEALTH_ERR"||step6==null)){
                             //클라우드센터 VM 배포 버튼, 스토리지센터 연결 버튼 show
                             $('#button-open-modal-wizard-cloud-vm').show();
                             $('#button-link-storage-center-dashboard').show();
@@ -945,8 +945,7 @@ function checkDeployStatus(){
                                     }
                                     if(step6!="RUNNING"){
                                         msg += '클라우드센터 가상머신이 '+step6+' 상태 입니다.\n';
-                                        msg += '클라우드센터 가상머신 Mold 서비스 , DB 상태를 확인하여 정지상태일 경우 서비스 재시작\n';
-                                        msg += '또는 클라우드센터 클러스터 상태 카드에서 가상머신 시작하여 문제를 해결할 수 있습니다.';
+                                        msg += '클라우드센터 가상머신 Mold 서비스 , DB 상태를 확인하여 정지상태일 경우 서비스 재시작 또는 클라우드센터 클러스터 상태 카드에서 가상머신 시작하여 문제를 해결할 수 있습니다.';
                                         showRibbon('warning', msg);
                                     }
                                 }
