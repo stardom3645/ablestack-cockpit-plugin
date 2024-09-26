@@ -25,6 +25,8 @@
                     <button style="display:none" class="pf-c-button pf-m-link pf-m-inline" type="button"
                         id="button-link-storage-center-dashboard">스토리지센터 대시보드 연결</button>
                     <button style="display:none" class="pf-c-button pf-m-link pf-m-inline" type="button"
+                        id="button-open-modal-wizard-pfmp-vm">파워플렉스 관리 플랫폼 VM 배포</button>
+                    <button style="display:none" class="pf-c-button pf-m-link pf-m-inline" type="button"
                         id="button-link-cloud-center">클라우드센터 연결</button>
                     <button style="display:none" class="pf-c-button pf-m-link pf-m-inline" type="button"
                         id="button-open-modal-wizard-monitoring-center">모니터링센터 구성</button>
@@ -77,6 +79,7 @@
                                                 <!--scvm의 /root/bootstrap.sh 파일 실행 기록이 없을때 표시-->
                                                 <li id="scvm-before-bootstrap-run"></li>
                                                 <li id="scvm-after-update-glue-config"></li>
+                                                <li id="pfmp-bootstrap-run"></li>
                                                 <li class="pf-c-divider" role="separator"></li>
                                                 <li>
                                                     <button class="pf-c-dropdown__menu-item pf-m-disabled" type="button"
@@ -129,7 +132,7 @@
                                                     <div class="pf-c-description-list__text" id="scc-gw">N/A</div>
                                                 </dd>
                                             </div>
-                                            <div class="pf-c-description-list__group">
+                                            <div class="pf-c-description-list__group" id="manage-daemon">
                                                 <dt class="pf-c-description-list__term">
                                                     <span class="pf-c-description-list__text">관리데몬</span>
                                                 </dt>
@@ -137,6 +140,15 @@
                                                     <div class="pf-c-description-list__text" id="scc-mgr">N/A</div>
                                                 </dd>
                                             </div>
+                                            <div class="pf-c-description-list__group" id="protect-domain" style="display: none;">
+                                                <dt class="pf-c-description-list__term">
+                                                    <span class="pf-c-description-list__text">보호도메인</span>
+                                                </dt>
+                                                <dd class="pf-c-description-list__description">
+                                                    <div class="pf-c-description-list__text" id="scc-protect-domain">N/A</div>
+                                                </dd>
+                                            </div>
+
                                             <div class="pf-c-description-list__group">
                                                 <dt class="pf-c-description-list__term">
                                                     <span class="pf-c-description-list__text">스토리지 풀</span>
@@ -523,14 +535,20 @@
                                                 </li>
                                                 <li>
                                                     <button class="pf-c-dropdown__menu-item pf-m-disabled"
-                                                        id="button-mold-secondary-size-expansion" type="button">2차 스토리지 용량 추가</button>
+                                                        id="button-mold-secondary-size-expansion" type="button">Mold 세컨더리 용량 추가</button>
                                                 </li>
                                                 <li>
                                                     <button class="pf-c-dropdown__menu-item pf-m-disabled"
                                                         id="button-cloud-vm-snap-backup" type="button">클라우드센터VM 스냅샷 백업</button>
+                                                        id="button-cloud-vm-snap-backup" type="button">클라우드센터VM 스냅샷 백업</button>
                                                 </li>
                                                 <li>
                                                     <button class="pf-c-dropdown__menu-item pf-m-disabled"
+                                                        id="button-cloud-vm-snap-rollback" type="button">클라우드센터VM 스냅샷 복구</button>
+                                                </li>
+                                                <li>
+                                                    <button class="pf-c-dropdown__menu-item pf-m-disabled"
+                                                        id="card-action-cloud-vm-db-dump" type="button">클라우드센터VM DB 백업</button>
                                                         id="button-cloud-vm-snap-rollback" type="button">클라우드센터VM 스냅샷 복구</button>
                                                 </li>
                                                 <li>
@@ -613,7 +631,7 @@
                                             </div>
                                             <div class="pf-c-description-list__group">
                                                 <dt class="pf-c-description-list__term">
-                                                    <span class="pf-c-description-list__text">2차 스토리지 크기</span>
+                                                    <span class="pf-c-description-list__text">세컨더리 Disk 크기</span>
                                                 </dt>
                                                 <dd class="pf-c-description-list__description">
                                                     <div class="pf-c-description-list__text"
@@ -709,6 +727,9 @@
 
 <!-- 클라우드센터VM 배포 마법사 : ./src/features/cloud-vm-wizard.html을 내용으로 load -->
 <div class="pf-c-backdrop" id="div-modal-wizard-cloud-vm"></div>
+
+<!-- PFMP가상머신 배포 마법사 : ./src/features/pfmp-vm-wizard.html을 내용으로 load -->
+<div class="pf-c-backdrop" id="div-modal-wizard-pfmp-vm"></div>
 
 <!-- Wall 모니터링 센터 구성 마법사 : ./src/features/wall-monitoring-wizard.html을 내용으로 load -->
 <div class="pf-c-backdrop" id="div-modal-wizard-wall-monitoring"></div>
@@ -1110,7 +1131,7 @@
                 <i class="fas fa-times" aria-hidden="true"></i>
             </button>
             <header class="pf-c-modal-box__header">
-                <h1 class="pf-c-modal-box__title"><span class="pf-c-modal-box__title-text">2차 스토리지 용량 추가</span></h1>
+                <h1 class="pf-c-modal-box__title"><span class="pf-c-modal-box__title-text">Mold 세컨더리 용량 추가</span></h1>
             </header>
             <div class="pf-c-modal-box__body">
                 <div>추가 확장할 용량을 입력해 주세요. (1회 최대 500GiB)</div>
@@ -1268,6 +1289,33 @@
     </div>
 </div>
 <!-- Cube 호스트 제거 및 설정정보 초기화 : Modal 영역 끝 -->
+
+<!-- PFMP 설치 : Modal 영역 시작 -->
+<div id="div-modal-pfmp-install" class="pf-c-backdrop" style="display:none">
+    <div class="pf-l-bullseye">
+        <div class="pf-c-modal-box pf-m-sm" role="dialog" aria-modal="true" aria-label="PFMP Install">
+            <button id="button-close-modal-pfmp-install" aria-disabled="false" aria-label="Close"
+                class="pf-c-button pf-m-plain" type="button">
+                <i class="fas fa-times" aria-hidden="true"></i>
+            </button>
+            <header class="pf-c-modal-box__header">
+                <h1 class="pf-c-modal-box__title"><span class="pf-c-modal-box__title-text">PFMP 설치</span>
+                </h1>
+            </header>
+            <div class="pf-c-modal-box__body">
+                <div>PowerFlex Manager PlatForm 설치를 진행하시겠습니까?<br/><br/><i class="fa fa-info-circle fa-lg" aria-hidden="true" style="color: blue;"></i> 설치에는 약 2시간이 소요가 됩니다.</div>
+            </div>
+            <footer class="pf-c-modal-box__footer">
+                <button id="button-execution-modal-pfmp-install" aria-disabled="false"
+                    class="pf-c-button pf-m-primary" type="button" data-ouia-safe="true">실행</button>
+                <button id="button-cancel-modal-pfmp-install" aria-disabled="false" class="pf-c-button pf-m-link"
+                    type="button" data-ouia-safe="true">취소</button>
+            </footer>
+        </div>
+    </div>
+</div>
+<!-- PFMP 설치 : Modal 영역 끝 -->
+
 <!-- 모달 영역 끝  -->
 
 <!-- 클라우드센터VM 용량 변경에 관한 modal : ./src/features/cloud-vm-change.html을 내용으로 load -->

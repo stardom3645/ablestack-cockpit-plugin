@@ -10,6 +10,7 @@ var cur_step_wizard_vm_config = "1";
 var xml_create_cmd;
 var completed = false;
 var option_scvm = "-scvm";
+var os_type = sessionStorage.getItem("os_type");
 
 // Document.ready 시작
 $(document).ready(function(){
@@ -42,6 +43,9 @@ $(document).ready(function(){
 
     //디스크 구성방식 초기 세팅
     setDiskInfo();
+
+    //os type에 대한 마법사 변경 처리
+    setScvmOSTypeProcess();
 
     //관리 NIC용 Bridge 리스트 초기 세팅
     setNicBridge('form-select-storage-vm-mngt-nic');
@@ -450,7 +454,11 @@ $('#form-radio-hosts-new-scvm').on('click', function () {
     // $('#form-input-storage-vm-hosts-file').val("");
 
     $("#form-input-ccvm-mngt-ip").val("");
+    $("#form-input-ccvm-pn-ip").val("");
+    $("#form-input-ccvm-cn-ip").val("");
     $("#form-input-ccvm-mngt-ip").attr('disabled', false);
+    $("#form-input-ccvm-pn-ip").attr('disabled', false);
+    $("#form-input-ccvm-cn-ip").attr('disabled', false);
 });
 
 // Host 파일 준비 방법 중 기존 파일 사용을 클릭하는 경우 Host 프로파일 디비전을 숨기고 Hosts 파일 디비전은 보여준다.
@@ -470,7 +478,11 @@ $('#form-radio-hosts-file-scvm').on('click', function () {
     $('#form-input-cluster-config-host-number-scvm').attr('disabled', 'true');
 
     $("#form-input-ccvm-mngt-ip").val("");
+    $("#form-input-ccvm-pn-ip").val("");
+    $("#form-input-ccvm-cn-ip").val("");
     $("#form-input-ccvm-mngt-ip").attr('disabled', true);
+    $("#form-input-ccvm-pn-ip").attr('disabled', true);
+    $("#form-input-ccvm-cn-ip").attr('disabled', true);
 
     cockpit.spawn(["cat", pluginpath + "/tools/properties/cluster.json"])
     .then(function(data){
@@ -484,65 +496,6 @@ $('#form-radio-hosts-file-scvm').on('click', function () {
 
 });
 
-// Host 파일 준비 중 "현재 호스트 번호"를 변경하는 '+', '-' 기능
-// $('#form-input-cluster-config-current-host-number-plus-scvm').on('click', function () {
-//     let total_host_num_val = $('#form-input-cluster-config-host-number-scvm').val();
-//     let n = $('.bt_up').index(this);
-//     let num = $("#form-input-cluster-config-current-host-number-scvm:eq(" + n + ")").val();
-//     if (num*1 < total_host_num_val*1) {
-//         num = $("#form-input-cluster-config-current-host-number-scvm:eq(" + n + ")").val(num * 1 + 1);
-//     }
-// });
-// $('#form-input-cluster-config-current-host-number-minus-scvm').on('click', function () {
-//     let n = $('.bt_down').index(this);
-//     let num = $("#form-input-cluster-config-current-host-number-scvm:eq(" + n + ")").val();
-//     if (num > 1) {
-//         num = $("#form-input-cluster-config-current-host-number-scvm:eq(" + n + ")").val(num * 1 - 1);
-//         return;
-//     }
-// });
-// $('#form-input-cluster-config-current-host-number-scvm').on('propertychange change keyup paste input', function () {
-//     let total_host_num_val = $('#form-input-cluster-config-host-number-scvm').val();
-//     if (this.value <= 0 || this.value > 99) {
-//         this.value = total_host_num_val;
-//     }else if(this.value*1 > total_host_num_val*1) {
-//         this.value = total_host_num_val;
-//         return;
-//     }
-// });
-
-// Host 파일 준비 중 "구성할 호스트"를 변경하는 '+', '-' 기능
-// $('#form-input-cluster-config-host-number-plus-scvm').on('click', function () {
-//     let n = $('.bt_up').index(this);
-//     let num = $("#form-input-cluster-config-host-number-scvm:eq(" + n + ")").val();
-//     num = $("#form-input-cluster-config-host-number-scvm:eq(" + n + ")").val(num * 1 + 1);
-// });
-// $('#form-input-cluster-config-host-number-minus-scvm').on('click', function () {
-//     let current_host_num_val = $('#form-input-cluster-config-current-host-number-scvm').val();
-//     let n = $('.bt_down').index(this);
-//     let num = $("#form-input-cluster-config-host-number-scvm:eq(" + n + ")").val();
-//     if (current_host_num_val >= num && num != 1) {
-//         $('#form-input-cluster-config-current-host-number-scvm').val(num * 1 - 1)
-//     }
-//     if (num > 1) {
-//         num = $("#form-input-cluster-config-host-number-scvm:eq(" + n + ")").val(num * 1 - 1);
-//         return;
-//     }
-// });
-// $('#form-input-cluster-config-host-number-scvm').on('propertychange change keyup paste input', function () {
-//     let current_host_num_val = $('#form-input-cluster-config-current-host-number-scvm').val();
-//     current_host_num_val = current_host_num_val*1;
-//     if (this.value <= 0 || this.value > 99) {
-//         this.value = 1;
-//         alert("1~99까지의 숫자만 입력할 수 있습니다.")
-//         return;
-//     }else if(this.value < current_host_num_val) {
-//         $('#form-input-cluster-config-current-host-number-scvm').val(this.value)
-//         let option = "-scvm";
-//         changeAlias2(option);
-//         return;
-//     }
-// });
 
 // Host 파일 준비 중 "구성할 호스트"를 변경하는 '+', '-' 기능
 $('#form-input-cluster-config-host-number-plus-scvm').on('click', function () {
@@ -570,108 +523,6 @@ $('#form-input-cluster-config-host-number-scvm').on('change', function () {
         clusterConfigTableChange("form-input-cluster-config-host-number-scvm", "form-table-tbody-cluster-config-new-host-profile-scvm");
     }
 });
-// Host 파일 준비 중 신규생성을 선택한 경우 Host 수에 따라 텍스트 값 변경
-// $('#form-input-cluster-config-host-number-scvm, #form-input-cluster-config-host-number-plus-scvm, #form-input-cluster-config-host-number-minus-scvm' +
-// ', #form-input-cluster-config-current-host-number-scvm, #form-input-cluster-config-current-host-number-plus-scvm, #form-input-cluster-config-current-host-number-minus-scvm').on('change click', function () {
-
-//     let current_host_num_val = $('#form-input-cluster-config-current-host-number-scvm').val();
-//     let total_host_num_val = $('#form-input-cluster-config-host-number-scvm').val();
-//     if (total_host_num_val <= 99 && current_host_num_val <= 99) {
-//         let target_table = $("#form-table-tbody-cluster-config-new-host-profile-scvm");
-//         target_table.empty();
-//         let insert_tr;
-//         insert_tr += "<tr>";
-//         insert_tr += "<td contenteditable='true'>192.168.0.10</td>";
-//         insert_tr += "<td contenteditable='flase'>ccvm-mngt</td>";
-//         insert_tr += "<td contenteditable='flase'>ccvm</td>";
-//         insert_tr += "</tr>";
-
-//         for (let i = 1; i <= total_host_num_val; i++) {
-//             let sum = 0 + i;
-//             insert_tr += "<tr>";
-//             insert_tr += "<td contenteditable='true'>192.168.1."+ sum +"</td>";
-//             insert_tr += "<td contenteditable='true'>ablecube"+ i +"</td>";
-//             if(current_host_num_val == sum) {
-//                 insert_tr += "<td contenteditable='true'>ablecube</td>";
-//             }else {
-//                 insert_tr += "<td contenteditable='flase'></td>";
-//             }
-//             insert_tr += "</tr>";
-//         }
-//         for (let i = 1; i <= total_host_num_val; i++) {
-//             let sum = 0 + i;
-//             insert_tr += "<tr>";
-//             insert_tr += "<td contenteditable='true'>192.168.2."+ sum +"</td>";
-//             insert_tr += "<td contenteditable='flase'>scvm"+ i +"-mngt</td>";
-//             if(current_host_num_val == sum) {
-//                 insert_tr += "<td contenteditable='flase'>scvm-mngt</td>";
-//             }else {
-//                 insert_tr += "<td contenteditable='flase'></td>";
-//             }
-//             insert_tr += "</tr>";
-//         }
-//         for (let i = 1; i <= total_host_num_val; i++) {
-//             let sum = 0 + i;
-//             insert_tr += "<tr>";
-//             insert_tr += "<td contenteditable='true'>100.100.10."+ sum +"</td>";
-//             insert_tr += "<td contenteditable='true'>ablecube"+ i +"-pn" +"</td>";
-//             if(current_host_num_val == sum) {
-//                 insert_tr += "<td contenteditable='true'>ablecube-pn</td>";
-//             }else {
-//                 insert_tr += "<td contenteditable='flase'></td>";
-//             }
-//             insert_tr += "</tr>";
-//         }
-//         for (let i = 1; i <= total_host_num_val; i++) {
-//             let sum = 100 + i;
-//             insert_tr += "<tr>";
-//             insert_tr += "<td contenteditable='true'>100.100.10."+ sum +"</td>";
-//             insert_tr += "<td contenteditable='flase'>scvm"+ i +"</td>";
-//             if(current_host_num_val == sum-100) {
-//                 insert_tr += "<td contenteditable='flase'>scvm</td>";
-//             }else {
-//                 insert_tr += "<td contenteditable='flase'></td>";
-//             }
-//             insert_tr += "</tr>";
-//         }
-//         for (let i = 1; i <= total_host_num_val; i++) {
-//             let sum = 10 + i;
-//             insert_tr += "<tr>";
-//             insert_tr += "<td contenteditable='true'>100.200.10."+ sum +"</td>";
-//             insert_tr += "<td contenteditable='flase'>scvm"+ i +"-cn</td>";
-//             if(current_host_num_val == sum-10) {
-//                 insert_tr += "<td contenteditable='flase'>scvm-cn</td>";
-//             }else {
-//                 insert_tr += "<td contenteditable='flase'></td>";
-//             }
-//             insert_tr += "</tr>";
-//         }
-//         $("#form-table-cluster-config-new-host-profile-scvm").append(insert_tr);
-
-//     } else {
-//         $('#form-input-cluster-config-host-number-scvm').val(99);
-//         $('#form-input-cluster-config-current-host-number-scvm').val(99);
-//         alert("1~99까지의 숫자만 입력할 수 있습니다.");
-//     }
-//     // 기존 파일 사용 시, 현재 호스트 + 또는 - 클릭 시 Alias2 변경
-//     let option = "-scvm";
-//     changeAlias2(option);
-// });
-
-// Hosts 기존 파일 선택 시 hidden textarea 내용을 선택한 파일의 내용으로 변경
-// $('#form-input-storage-vm-hosts-file').on('click', function () {
-//     let hosts_input = document.querySelector('#form-input-storage-vm-hosts-file');
-//     let file_type = "cluster.json";
-//     fileReaderIntoTableFunc(hosts_input, file_type, option_scvm);
-
-//     $('#form-input-storage-vm-hosts-file').val("");
-// });
-// Hosts 기존 파일 선택 시, 파일 선택 취소 시 table 초기화
-// $('#form-input-storage-vm-hosts-file').on('change', function () {
-//     if ($(this).val() == "") {
-//         $('#form-table-tbody-cluster-config-existing-host-profile-scvm tr').remove();
-//     }
-// });
 
 // 마법사 "배포 실행 버튼 모달창"
 $('#button-cancel-modal-storage-wizard-confirm').on('click', function () {
@@ -791,6 +642,7 @@ function deployStorageCenterVM() {
 
     var console_log = true;
 
+    var network_type = $('input[type=radio][name=form-radio-storage-vm-nic-type]:checked').val();
     // 하단 버튼 숨김
     $('#button-next-step-modal-wizard-vm-config').hide();
     $('#button-before-step-modal-wizard-vm-config').hide();
@@ -833,24 +685,27 @@ function deployStorageCenterVM() {
                 var cn_prefix = $('#form-input-storage-vm-cluster-ip').val().split("/")[1];
                 var dns = $('#form-input-storage-vm-dns').val();
 
+                var local_host = "127.0.0.1       localhost localhost.localdomain localhost4 localhost4.localdomain4\n::1     localhost localhost.localdomain localhost6 localhost6.localdomain6\n"
+
                 var create_scvm_cloudinit_cmd = ['python3', pluginpath + '/python/vm/create_scvm_cloudinit.py'
-                                        ,"-f1",pluginpath+"/tools/vmconfig/scvm/hosts","-t1", $("#div-textarea-cluster-config-confirm-hosts-file-scvm").val() // hosts 파일
-                                        ,"-f2",pluginpath+"/tools/vmconfig/scvm/id_rsa","-t2", $("#form-textarea-storage-vm-ssh-private-key-file").val() // ssh 개인 key 파일
-                                        ,"-f3",pluginpath+"/tools/vmconfig/scvm/id_rsa.pub","-t3", $("#form-textarea-storage-vm-ssh-public-key-file").val() // ssh 공개 key 파일
-                                        ,"--hostname",host_name
-                                        ,"--mgmt-ip",mgmt_ip
-                                        ,"--mgmt-prefix",mgmt_prefix
-                                        ,"--pn-ip",pn_ip
-                                        ,"--pn-prefix",pn_prefix
-                                        ,"--cn-ip",cn_ip
-                                        ,"--cn-prefix",cn_prefix
-                                    ];
+                   ,"-f1",pluginpath+"/tools/vmconfig/scvm/hosts","-t1",local_host+$("#div-textarea-cluster-config-confirm-hosts-file-scvm").val() // hosts 파일
+                   ,"-f2",pluginpath+"/tools/vmconfig/scvm/id_rsa","-t2", $("#form-textarea-storage-vm-ssh-private-key-file").val() // ssh 개인 key 파일
+                   ,"-f3",pluginpath+"/tools/vmconfig/scvm/id_rsa.pub","-t3", $("#form-textarea-storage-vm-ssh-public-key-file").val() // ssh 공개 key 파일
+                   ,"--hostname",host_name
+                   ,"--mgmt-ip",mgmt_ip
+                   ,"--mgmt-prefix",mgmt_prefix
+                   ,"--pn-ip",pn_ip
+                   ,"--pn-prefix",pn_prefix
+                   ,"--cn-ip",cn_ip
+                   ,"--cn-prefix",cn_prefix
+                ];
                 if(mgmt_gw != ""){
                     create_scvm_cloudinit_cmd.push('--mgmt-gw',mgmt_gw);
                 }
                 if(dns != ""){
                     create_scvm_cloudinit_cmd.push('--dns',dns);
                 }
+                create_scvm_cloudinit_cmd.push('--network-type', network_type);
                 if(console_log){console.log(create_scvm_cloudinit_cmd);}
                 cockpit.spawn(create_scvm_cloudinit_cmd)
                     .then(function(data){
@@ -876,10 +731,9 @@ function deployStorageCenterVM() {
                                             .then(function(data){
                                                 //결과 값 json으로 return
                                                 var result = JSON.parse(data);
-                                                if(result.code=="200"){
+                                                if(result.code == 200){
                                                     seScvmProgressStep("span-progress-step4",2);
                                                     createLoggerInfo("deployStorageCenterVM success");
-
                                                     //최종 화면 호출
                                                     showDivisionVMConfigFinish();
                                                 } else {
@@ -1295,7 +1149,16 @@ function setReviewInfo(){
     // 변경된 hosts file 내용을 설정 확인에 반영
     let host_file_type = $('input[name=radio-hosts-file-scvm]:checked').val();
 
-    putHostsValueIntoTextarea(host_file_type, option_scvm);
+    cockpit.spawn(["cat", pluginpath + "/tools/properties/cluster.json"])
+    .then(function(data){
+        var json_data = JSON.parse(data);
+        if (json_data.clusterConfig.type == "PowerFlex"){
+            putHostsValueIntoTextarea(host_file_type, option_scvm,"PowerFlex");
+        }else{
+            putHostsValueIntoTextarea(host_file_type, option_scvm);
+        }
+    });
+
 
     var host_name = $('#form-input-storage-vm-hostname').val();
     if(host_name == '') {
@@ -1471,6 +1334,12 @@ function validateStorageVm(){
     }else if(!checkIp($('#form-input-ccvm-mngt-ip').val())){
         alert("CCVM 관리 IP 형식을 확인해주세요.");
         validate_check = false;
+    }else if(os_type == "PowerFlex" && ($('#form-input-ccvm-pn-ip') != "" && !checkIp($('#form-input-ccvm-pn-ip').val()))){
+        alert("CCVM PN IP 형식을 확인해주세요.");
+        validate_check = false;
+    }else if(os_type == "PowerFlex" && ($('#form-input-ccvm-cn-ip') != "" && !checkIp($('#form-input-ccvm-cn-ip').val()))){
+        alert("CCVM CN IP 형식을 확인해주세요.");
+        validate_check = false;
     }else if(!checkHostFormat($("#form-input-storage-vm-hostname").val())){
         alert("호스트명 입력 형식을 확인해주세요.");
         validate_check = false;
@@ -1558,6 +1427,8 @@ function validateStorageVm(){
     $("#form-input-storage-vm-cluster-ip").val("");
     $("#form-input-storage-vm-cluster-vlan").val("");
     $("#form-input-ccvm-mngt-ip").val("");
+    $("#form-input-ccvm-pn-ip").val("");
+    $("#form-input-ccvm-cn-ip").val("");
     $("#form-input-stroage-vm-dns").val("");
 }
 
@@ -1620,4 +1491,39 @@ function validateStorageVm(){
     } else if(setp_num == 4 || setp_num == '4') {   // 4단계 이하 단계 전부 중단된 처리
         seScvmProgressStep("span-progress-step4",3);
     }
+}
+/**
+ * Meathod Name : setScvmOSTypeProcess
+ * Date Created : 2024.09.04
+ * Writer  : 정민철
+ * Description : 스토리지센터 가상머신 마법사에서 OS 타입에 대한 문구 및 정보 처리
+ * Return  : 없음
+ * History  : 2021.03.30 최초 작성
+ */
+function setScvmOSTypeProcess() {
+    cockpit.spawn(["cat", pluginpath + "/tools/properties/cluster.json"])
+    .then(function(data){
+        var json_data = JSON.parse(data);
+        if (json_data.clusterConfig.type == "PowerFlex"){
+            $('input[name="form-radio-storage-vm-nic-type"]').val("bn").trigger("change");
+            //CPU, Memory,root disk 처리
+            $('#form-select-storage-vm-cpu-8').hide();
+            $('#form-select-storage-vm-memory-16').hide();
+            $('#form-select-storage-vm-memory-64').hide();
+            $('#form-select-storage-vm-root-disk-size').text("200 GiB (THIN Provisioning)");
+            //네트워크 구성 할시
+            $('#nic-passthrough-bonding-div').hide();
+            $('#nic-passthrough-div').hide();
+            $('#nic-passthrough').prop('checked', false);
+            $('#bridge-network').prop('checked', true);
+            // 컴퓨터 자원에 대한 내용 수정
+            $('#compute-info-p1').text("PowerFlex Dell에서는 최소 14개의 vCPU를 권장하고 있습니다. 메모리는 최소 32GB를 권장하고 있으며, 향후 32,000개의 볼륨이 있는 클러스터를 관리 할려면, 각 노드당 48GB 메모리가 필요합니다.");
+            $('#compute-info-p2').text("ROOT Disk의 크기는 200GiB를 디스크가 Thin Provisioning 방식으로 제공됩니다.");
+            //네트워크 자원에 대한 내용 수정
+            $('#network-info-p1').text("현재 PowerFlex에선 브릿지 네트워크를 통한 NIC 구성 방식을 선택 해야 합니다. 사전에 브릿지를 호스트에 생성해야 합니다. 서버용 NIC를 목록에서 선택합니다. 복제용 NIC는 스토리지 데이터를 호스트 간에 복제할 때 사용하는 NIC로 서버용 NIC를 같이 사용하도록 설정하거나 단독으로 사용하도록 설정할 수 있습니다.")
+        }else{
+            //CPU, Memory,root disk 처리
+            $('#form-select-storage-vm-memory-48').hide();
+        }
+    });
 }

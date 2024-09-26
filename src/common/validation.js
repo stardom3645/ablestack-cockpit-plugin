@@ -253,7 +253,7 @@ function unavailableIdCheck(id) {
     return true
   } else {
     return false
-  }  
+  }
 }
 
 /**

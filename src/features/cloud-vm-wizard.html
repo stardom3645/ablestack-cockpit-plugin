@@ -1,5 +1,5 @@
-<!-- 
-* File Name : cloud-vm-wizard.html  
+<!--
+* File Name : cloud-vm-wizard.html
 * Date Created : 2020.03.03
 * Writer  : 박동혁
 * Description : ABLESTACK 클라우드센터 VM을 배포하기 위한 절차를 진행하는 마법사 Modal 대화상자
@@ -12,9 +12,9 @@
                 <button class="pf-c-button pf-m-plain pf-c-wizard__close" type="button" aria-label="Close" id="button-close-modal-wizard-cloud-vm">
                     <i class="fas fa-times" aria-hidden="true"></i>
                 </button>
-                <h1 class="pf-c-title pf-m-3xl pf-c-wizard__title">ABLESTACK 클라우드센터 VM 배포 마법사</h1>
-                <p class="pf-c-wizard__description">ABLESTACK 클러스터에 클라우드센터를 실행하는 가상머신 어플라이언스를 배포합니다. </p>
-            </div>    
+                <h1 class="pf-c-title pf-m-3xl pf-c-wizard__title">ABLESTACK 또는 PowerFlex 클라우드센터 VM 배포 마법사</h1>
+                <p class="pf-c-wizard__description">ABLESTACK 또는 PowerFlex 클러스터에 클라우드센터를 실행하는 가상머신 어플라이언스를 배포합니다. </p>
+            </div>
             <div class="pf-c-wizard__outer-wrap">
                 <div class="pf-c-wizard__inner-wrap">
                     <nav class="pf-c-wizard__nav" aria-label="Steps">
@@ -37,6 +37,9 @@
                                 <button class="pf-c-wizard__nav-link" id="nav-button-cloud-vm-additional">추가 네트워크 정보</button>
                             </li>
                             <li class="pf-c-wizard__nav-item">
+                                <button class="pf-c-wizard__nav-link" id="nav-button-cloud-vm-ipmi" style="display: none;">IPMI 정보</button>
+                            </li>
+                            <li class="pf-c-wizard__nav-item">
                                 <button class="pf-c-wizard__nav-link" id="nav-button-cloud-vm-ssh-key">SSH Key 정보</button>
                             </li>
                             <li class="pf-c-wizard__nav-item">
@@ -54,16 +57,17 @@
                         <div class="pf-c-wizard__main-body" id="div-modal-wizard-cloud-vm-overview">
                             <div class="pf-c-content">
                                 <p>
-                                    ABLESTACK 클라우드센터 VM을 배포하기 위해 필요한 정보를 다음과 같이 마법사를 통해 입력받습니다.    
+                                    ABLESTACK 또는 PowerFlex 클라우드센터 VM을 배포하기 위해 필요한 정보를 다음과 같이 마법사를 통해 입력받습니다.
                                 </p>
                                 <ul>
                                     <li>클라우드센터 VM의 HA구성을 위한 클러스터 설정 정보</li>
                                     <li>클라우드센터 VM의 CPU, Memory, Disk, Network에 대한 정보</li>
                                     <li>가상머신의 호스트명 등의 네트워크 정보</li>
+                                    <li id="gfs-li" style="display: none;"></li>
                                     <li>호스트 및 가상머신 간의 상호 SSH 연결을 위한 SSH Key 정보</li>
                                 </ul>
                                 <p>
-                                    필요한 정보를 먼저 준비하십시오. 정보가 준비되었다면 "다음" 버튼을 눌러 클라우드센터 VM 배포를 시작합니다. 
+                                    필요한 정보를 먼저 준비하십시오. 정보가 준비되었다면 "다음" 버튼을 눌러 클라우드센터 VM 배포를 시작합니다.
                                 </p>
                             </div>
                         </div>
@@ -71,7 +75,7 @@
                             <div class="pf-c-content">
                                 <p>
                                     장애조치 클러스터는 클라우드센터 VM이 실행 중인 호스트에 장애가 발생하는 경우 클라우드센터 VM을 안전하게 다른 호스트에서 실행하도록 하기 위해 구성합니다.
-                                    장애조치 클러스터를 구성하기 위해 필요한 정보를 아래에 입력하십시오. 
+                                    장애조치 클러스터를 구성하기 위해 필요한 정보를 아래에 입력하십시오.
                                 </p>
                                 <form novalidate class="pf-c-form pf-m-horizontal" style="margin-left:15px;margin-top:32px">
                                     <section class="pf-c-form__section">
@@ -106,19 +110,6 @@
                                                         <input class="pf-c-form-control" style="width:70%" type="text" id="form-input-cloud-vm-failover-cluster-host1-name" name="form-input-cloud-vm-failover-cluster-host1-name" required />
                                                     </div>
                                                 </div>
-                                                <!--
-                                                <div class="pf-c-form__group" style="padding:0px;">
-                                                    <div class="pf-c-form__group-label">
-                                                        <label class="pf-c-form__label" for="form-input-cloud-vm-failover-cluster-host1-addr">
-                                                            <span class="pf-c-form__label-text">IP Address</span>
-                                                            <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
-                                                        </label>
-                                                    </div>
-                                                    <div class="pf-c-form__group-control">
-                                                        <input class="pf-c-form-control" style="width:70%" type="text" id="form-input-cloud-vm-failover-cluster-host1-addr" name="form-input-cloud-vm-failover-cluster-host1-addr" required />
-                                                    </div>
-                                                </div>
-                                                -->
                                             </div>
                                         </div>
                                         <div class="pf-c-form__field-group">
@@ -141,19 +132,6 @@
                                                         <input class="pf-c-form-control" style="width:70%" type="text" id="form-input-cloud-vm-failover-cluster-host2-name" name="form-input-cloud-vm-failover-cluster-host2-name" required />
                                                     </div>
                                                 </div>
-                                                <!--
-                                                <div class="pf-c-form__group" style="padding:0px;">
-                                                    <div class="pf-c-form__group-label">
-                                                        <label class="pf-c-form__label" for="form-input-cloud-vm-failover-cluster-host2-addr">
-                                                            <span class="pf-c-form__label-text">IP Address</span>
-                                                            <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
-                                                        </label>
-                                                    </div>
-                                                    <div class="pf-c-form__group-control">
-                                                        <input class="pf-c-form-control" style="width:70%" type="text" id="form-input-cloud-vm-failover-cluster-host2-addr" name="form-input-cloud-vm-failover-cluster-host2-addr" required />
-                                                    </div>
-                                                </div>
-                                                -->
                                             </div>
                                         </div>
                                         <div class="pf-c-form__field-group">
@@ -176,19 +154,6 @@
                                                         <input class="pf-c-form-control" style="width:70%" type="text" id="form-input-cloud-vm-failover-cluster-host3-name" name="form-input-cloud-vm-failover-cluster-host3-name" required />
                                                     </div>
                                                 </div>
-                                                <!--
-                                                <div class="pf-c-form__group" style="padding:0px;">
-                                                    <div class="pf-c-form__group-label">
-                                                        <label class="pf-c-form__label" for="form-input-cloud-vm-failover-cluster-host3-addr">
-                                                            <span class="pf-c-form__label-text">IP Address</span>
-                                                            <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
-                                                        </label>
-                                                    </div>
-                                                    <div class="pf-c-form__group-control">
-                                                        <input class="pf-c-form-control" style="width:70%" type="text" id="form-input-cloud-vm-failover-cluster-host3-addr" name="form-input-cloud-vm-failover-cluster-host3-addr" required />
-                                                    </div>
-                                                </div>
-                                                -->
                                             </div>
                                         </div>
                                     </section>
@@ -198,7 +163,7 @@
                         <div class="pf-c-wizard__main-body" id="div-modal-wizard-cloud-vm-compute">
                             <div class="pf-c-content">
                                 <p>
-                                    클라우드센터 VM의 CPU 및 Memory, ROOT Disk 등의 정보를 설정합니다. 
+                                    클라우드센터 VM의 CPU 및 Memory, ROOT Disk 등의 정보를 설정합니다.
                                     아래의 항목에 적합한 값을 선택하여 입력하십시오.
                                 </p>
                                 <form novalidate class="pf-c-form pf-m-horizontal" style="margin-left:15px;margin-top:32px">
@@ -243,7 +208,7 @@
                                             </div>
                                             <div class="pf-c-form__group-label">
                                                 <label class="pf-c-form__label" id="form-select-cloud-vm-root-disk" name="form-select-cloud-vm-root-disk" style="width:40%">
-                                                    <span class="pf-c-form__label-text">150 GiB (THIN Provisioning)</span>
+                                                    <span class="pf-c-form__label-text" id="form-select-cloud-vm-root-disk-size">150 GiB (THIN Provisioning)</span>
                                                 </label>
                                             </div>
                                         </div>
@@ -260,8 +225,8 @@
                                     <div class="pf-c-alert__description">
                                         <p>클라우드센터 VM의 Compute 자원은 클라우드센터가 관리해야 할 호스트의 수에 따라 탄력적으로 선택합니다. </p>
                                         <p>
-                                            가상머신이 컨트롤 할 호스트의 수가 10개 미만이면 8 vCore를, 그 이상이면 16 vCore를 선택하십시오. 
-                                            메모리는 컨트롤할 호스트의 수가 10개 미만이면 16GiB를, 10 ~ 20개 이면 32GiB를, 21개 이상이면 64GiB를 선택해야 합니다. 
+                                            가상머신이 컨트롤 할 호스트의 수가 10개 미만이면 8 vCore를, 그 이상이면 16 vCore를 선택하십시오.
+                                            메모리는 컨트롤할 호스트의 수가 10개 미만이면 16GiB를, 10 ~ 20개 이면 32GiB를, 21개 이상이면 64GiB를 선택해야 합니다.
                                         </p>
                                         <p>ROOT Disk의 크기는 150GiB를 디스크가 Thin Provisioning 방식으로 제공됩니다. </p>
                                     </div>
@@ -271,7 +236,7 @@
                         <div class="pf-c-wizard__main-body" id="div-modal-wizard-cloud-vm-network">
                             <div class="pf-c-content">
                                 <p>
-                                    클라우드센터 VM이 사용할 관리 네트워크용 NIC 정보를 설정합니다. 
+                                    클라우드센터 VM이 사용할 관리 네트워크용 NIC 정보를 설정합니다.
                                     아래의 항목에 적합한 값을 선택하여 입력하십시오.
                                 </p>
                                 <form novalidate class="pf-c-form pf-m-horizontal" style="margin-left:15px;margin-top:32px">
@@ -291,7 +256,7 @@
                                                 <div class="pf-c-check">
                                                     <input class="pf-c-check__input" type="checkbox" id="form-checkbox-svc-network" name="form-checkbox-svc-network" />
                                                     <label class="pf-c-check__label" style="margin-top:5px" for="form-checkbox-svc-network">서비스네트워크</label>
-                                                </div>    
+                                                </div>
                                             </div>
                                         </div>
                                         <div class="pf-c-form__field-group">
@@ -312,6 +277,30 @@
                                                     </div>
                                                     <div class="pf-c-form__group-control">
                                                         <select class="pf-c-form-control" id="form-select-cloud-vm-mngt-parent" name="form-select-cloud-vm-mngt-parent" style="width:40%;">
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="pf-c-form__group" id="powerflex-network-ccvm-pn">
+                                                    <div class="pf-c-form__group-label">
+                                                        <label class="pf-c-form__label" for="form-select-cloud-vm-pn-parent">
+                                                            <span class="pf-c-form__label-text">PN 네트워크</span>
+                                                            <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                                                        </label>
+                                                    </div>
+                                                    <div class="pf-c-form__group-control">
+                                                        <select class="pf-c-form-control" id="form-select-cloud-vm-pn-parent" name="form-select-cloud-vm-pn-parent" style="width:40%;">
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="pf-c-form__group" id="powerflex-network-ccvm-cn">
+                                                    <div class="pf-c-form__group-label">
+                                                        <label class="pf-c-form__label" for="form-select-cloud-vm-cn-parent">
+                                                            <span class="pf-c-form__label-text">CN 네트워크</span>
+                                                            <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                                                        </label>
+                                                    </div>
+                                                    <div class="pf-c-form__group-control">
+                                                        <select class="pf-c-form-control" id="form-select-cloud-vm-cn-parent" name="form-select-cloud-vm-cn-parent" style="width:40%;">
                                                         </select>
                                                     </div>
                                                 </div>
@@ -340,13 +329,347 @@
                                     </p>
                                     <div class="pf-c-alert__description">
                                         <p>클라우드센터에 접근하고자 하는 네트워크 위치에 따라 가상머신에 할당할 네트워크와 네트워크의 상위 브릿지를 선택합니다. </p>
-                                        <p>
-                                            관리네트워크는 호스트를 관리하기 위해 필수적인 네트워크이며, 기본 선택되어 있고, 선택 여부를 변경할 수 없습니다. 
-                                            서비스네트워크는 사용자가 접근하고자 하는 네트워크 위치이며, 관리네트워크와 서비스네트워크가 다른 경우 선택합니다. 
+                                        <p id="cloud-vm-network-p1">
+                                            관리네트워크는 호스트를 관리하기 위해 필수적인 네트워크이며, 기본 선택되어 있고, 선택 여부를 변경할 수 없습니다.
+                                            서비스네트워크는 사용자가 접근하고자 하는 네트워크 위치이며, 관리네트워크와 서비스네트워크가 다른 경우 선택합니다.
                                         </p>
                                         <p>가상머신에 네트워크를 할당하기 전에 반드시 상위 브릿지를 먼저 생성해야 합니다. </p>
                                     </div>
                                 </div>
+                            </div>
+                        </div>
+                        <div class="pf-c-wizard__main-body" id="div-modal-wizard-cloud-vm-ipmi" style="display: none;">
+                            <div class="pf-c-content">
+                                <p>
+                                    클라우드센터 VM에 일반가상화를 위해 필요한 각 호스트의 IPMI 정보를 설정합니다. 아래의 항목에 값을 입력하십시오.
+                                </p>
+                                <form novalidate class="pf-c-form pf-m-horizontal" style="margin-left:15px;margin-top:32px">
+                                    <section class="pf-c-form__section">
+                                        <div class="pf-c-form__group">
+                                            <div class="pf-c-form__group-label">
+                                                <label class="pf-c-form__label">
+                                                    <span class="pf-c-form__label-text">IPMI 구성 준비</span>
+                                                    <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                                                </label>
+                                            </div>
+                                            <div class="pf-c-form__group-control pf-m-inline" style="margin-top:10px">
+                                                <div class="pf-c-radio">
+                                                    <input class="pf-c-radio__input" type="radio" id="form-radio-ipmi-individual-credentials" name="radio-ipmi-ccvm" value="one" checked/>
+                                                    <label class="pf-c-radio__label" for="form-radio-ipmi-individual-credentials">개별 자격 증명</label>
+                                                </div>
+                                                <div class="pf-c-radio">
+                                                    <input class="pf-c-radio__input" type="radio" id="form-radio-ipmi-common-credentials" name="radio-ipmi-ccvm" value="many" />
+                                                    <label class="pf-c-radio__label" for="form-radio-ipmi-common-credentials">공통 자격 증명</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div id="div-individual-credentials">
+                                            <div class="pf-c-form__field-group">
+                                                <div class="pf-c-form__field-group-header"  style="padding-bottom:8px;">
+                                                    <div class="pf-c-form__field-group-header-main">
+                                                        <div class="pf-c-form__field-group-header-title">
+                                                            <div class="pf-c-form__field-group-header-title-text" style="margin-top: -20px;border-top-width: thin; border-top-style: groove; border-top-color: #d2d2d2; padding-top: 15px;">1번 호스트 정보</div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="pf-c-form__field-group-body" style="padding-top:0px;">
+                                                    <div class="pf-c-form__group" style="padding:0px;">
+                                                        <div class="pf-c-form__group-label">
+                                                            <label class="pf-c-form__label" for="form-input-individual-credentials-ipmi-ip1">
+                                                                <span class="pf-c-form__label-text">IPMI IP</span>
+                                                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                                                            </label>
+                                                        </div>
+                                                        <div class="pf-c-form__group-control">
+                                                            <input class="pf-c-form-control" style="width:70%" type="text" id="form-input-individual-credentials-ipmi-ip1" name="form-input-individual-credentials-ipmi-ip1" placeholder="xxx.xxx.xxx.xxx 형식으로 입력" required/>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="pf-c-form__field-group-body" style="padding-top:0px;">
+                                                    <div class="pf-c-form__group" style="padding:0px;">
+                                                        <div class="pf-c-form__group-label">
+                                                            <label class="pf-c-form__label" for="form-input-individual-credentials-ipmi-user1">
+                                                                <span class="pf-c-form__label-text">IPMI 아이디</span>
+                                                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                                                            </label>
+                                                        </div>
+                                                        <div class="pf-c-form__group-control">
+                                                            <input class="pf-c-form-control" style="width:70%" type="text" id="form-input-individual-credentials-ipmi-user1" name="form-input-individual-credentials-ipmi-user1" placeholder="아이디를 입력하세요." required />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="pf-c-form__field-group-body" style="padding-top:0px;">
+                                                    <div class="pf-c-form__group" style="padding:0px;">
+                                                        <div class="pf-c-form__group-label">
+                                                            <label class="pf-c-form__label" for="form-input-individual-credentials-ipmi-password1">
+                                                                <span class="pf-c-form__label-text">IPMI 비밀번호</span>
+                                                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                                                            </label>
+                                                        </div>
+                                                        <div class="pf-c-form__group-control">
+                                                            <input class="pf-c-form-control" style="width:70%" type="password" autocomplete="off" id="form-input-individual-credentials-ipmi-password1" name="form-input-individual-credentials-ipmi-password1-check1" placeholder="비밀번호를 입력하세요." required />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="pf-c-form__field-group-body" style="padding-top:0px;">
+                                                    <div class="pf-c-form__group" style="padding:0px;">
+                                                        <div class="pf-c-form__group-label">
+                                                            <label class="pf-c-form__label" for="form-input-individual-credentials-ipmi-password1-check">
+                                                                <span class="pf-c-form__label-text">IPMI 비밀번호 확인</span>
+                                                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                                                            </label>
+                                                        </div>
+                                                        <div class="pf-c-form__group-control">
+                                                            <input class="pf-c-form-control" style="width:70%" type="password" autocomplete="off" id="form-input-individual-credentials-ipmi-password1-check" name="form-input-individual-credentials-ipmi-password1-check1" placeholder="비밀번호를 입력하세요." required />
+                                                            <font id="pwConfirm1"></font>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="pf-c-form__field-group">
+                                                <div class="pf-c-form__field-group-header"  style="padding-bottom:8px;">
+                                                    <div class="pf-c-form__field-group-header-main">
+                                                        <div class="pf-c-form__field-group-header-title">
+                                                            <div class="pf-c-form__field-group-header-title-text" style="margin-top: 20px;">2번 호스트 정보</div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="pf-c-form__field-group-body" style="padding-top:0px;">
+                                                    <div class="pf-c-form__group" style="padding:0px;">
+                                                        <div class="pf-c-form__group-label">
+                                                            <label class="pf-c-form__label" for="form-input-individual-credentials-ipmi-ip2">
+                                                                <span class="pf-c-form__label-text">IPMI IP</span>
+                                                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                                                            </label>
+                                                        </div>
+                                                        <div class="pf-c-form__group-control">
+                                                            <input class="pf-c-form-control" style="width:70%" type="text" id="form-input-individual-credentials-ipmi-ip2" name="form-input-individual-credentials-ipmi-ip2" placeholder="xxx.xxx.xxx.xxx 형식으로 입력" required />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="pf-c-form__field-group-body" style="padding-top:0px;">
+                                                    <div class="pf-c-form__group" style="padding:0px;">
+                                                        <div class="pf-c-form__group-label">
+                                                            <label class="pf-c-form__label" for="form-input-individual-credentials-ipmi-user2">
+                                                                <span class="pf-c-form__label-text">IPMI 아이디</span>
+                                                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                                                            </label>
+                                                        </div>
+                                                        <div class="pf-c-form__group-control">
+                                                            <input class="pf-c-form-control" style="width:70%" type="text" id="form-input-individual-credentials-ipmi-user2" name="form-input-individual-credentials-ipmi-user2" placeholder="아이디를 입력하세요." required />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="pf-c-form__field-group-body" style="padding-top:0px;">
+                                                    <div class="pf-c-form__group" style="padding:0px;">
+                                                        <div class="pf-c-form__group-label">
+                                                            <label class="pf-c-form__label" for="form-input-individual-credentials-ipmi-password2">
+                                                                <span class="pf-c-form__label-text">IPMI 비밀번호</span>
+                                                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                                                            </label>
+                                                        </div>
+                                                        <div class="pf-c-form__group-control">
+                                                            <input class="pf-c-form-control" style="width:70%" type="password" autocomplete="off" id="form-input-individual-credentials-ipmi-password2" name="form-input-individual-credentials-ipmi-password2-check2" placeholder="비밀번호를 입력하세요." required />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="pf-c-form__field-group-body" style="padding-top:0px;">
+                                                    <div class="pf-c-form__group" style="padding:0px;">
+                                                        <div class="pf-c-form__group-label">
+                                                            <label class="pf-c-form__label" for="form-input-individual-credentials-ipmi-password2-check">
+                                                                <span class="pf-c-form__label-text">IPMI 비밀번호 확인</span>
+                                                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                                                            </label>
+                                                        </div>
+                                                        <div class="pf-c-form__group-control">
+                                                            <input class="pf-c-form-control" style="width:70%" type="password" autocomplete="off" id="form-input-individual-credentials-ipmi-password2-check" name="form-input-individual-credentials-ipmi-password2-check2" placeholder="비밀번호를 입력하세요." required />
+                                                            <font id="pwConfirm2"></font>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="pf-c-form__field-group">
+                                                <div class="pf-c-form__field-group-header"  style="padding-bottom:8px;">
+                                                    <div class="pf-c-form__field-group-header-main">
+                                                        <div class="pf-c-form__field-group-header-title">
+                                                            <div class="pf-c-form__field-group-header-title-text" style="margin-top: 20px;">3번 호스트 정보</div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="pf-c-form__field-group-body" style="padding-top:0px;">
+                                                    <div class="pf-c-form__group" style="padding:0px;">
+                                                        <div class="pf-c-form__group-label">
+                                                            <label class="pf-c-form__label" for="form-input-individual-credentials-ipmi-ip3">
+                                                                <span class="pf-c-form__label-text">IPMI IP</span>
+                                                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                                                            </label>
+                                                        </div>
+                                                        <div class="pf-c-form__group-control">
+                                                            <input class="pf-c-form-control" style="width:70%" type="text" id="form-input-individual-credentials-ipmi-ip3" name="form-input-individual-credentials-ipmi-ip3" placeholder="xxx.xxx.xxx.xxx 형식으로 입력" required />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="pf-c-form__field-group-body" style="padding-top:0px;">
+                                                    <div class="pf-c-form__group" style="padding:0px;">
+                                                        <div class="pf-c-form__group-label">
+                                                            <label class="pf-c-form__label" for="form-input-individual-credentials-ipmi-user3">
+                                                                <span class="pf-c-form__label-text">IPMI 아이디</span>
+                                                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                                                            </label>
+                                                        </div>
+                                                        <div class="pf-c-form__group-control">
+                                                            <input class="pf-c-form-control" style="width:70%" type="text" id="form-input-individual-credentials-ipmi-user3" name="form-input-individual-credentials-ipmi-user3" placeholder="아이디를 입력하세요." required />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="pf-c-form__field-group-body" style="padding-top:0px;">
+                                                    <div class="pf-c-form__group" style="padding:0px;">
+                                                        <div class="pf-c-form__group-label">
+                                                            <label class="pf-c-form__label" for="form-input-individual-credentials-ipmi-password3">
+                                                                <span class="pf-c-form__label-text">IPMI 비밀번호</span>
+                                                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                                                            </label>
+                                                        </div>
+                                                        <div class="pf-c-form__group-control">
+                                                            <input class="pf-c-form-control" style="width:70%" type="password" autocomplete="off" id="form-input-individual-credentials-ipmi-password3" name="form-input-individual-credentials-ipmi-password3-check3" placeholder="비밀번호를 입력하세요." required />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="pf-c-form__field-group-body" style="padding-top:0px;">
+                                                    <div class="pf-c-form__group" style="padding:0px;">
+                                                        <div class="pf-c-form__group-label">
+                                                            <label class="pf-c-form__label" for="form-input-individual-credentials-ipmi-password3-check">
+                                                                <span class="pf-c-form__label-text">IPMI 비밀번호 확인</span>
+                                                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                                                            </label>
+                                                        </div>
+                                                        <div class="pf-c-form__group-control">
+                                                            <input class="pf-c-form-control" style="width:70%" type="password" autocomplete="off" id="form-input-individual-credentials-ipmi-password3-check" name="form-input-individual-credentials-ipmi-password3-check3" placeholder="비밀번호를 입력하세요." required />
+                                                            <font id="pwConfirm3"></font>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div id="div-common-credentials" style="display: none;">
+                                            <div class="pf-c-form__field-group">
+                                                <div class="pf-c-form__field-group-header"  style="padding-bottom:8px;">
+                                                    <div class="pf-c-form__field-group-header-main">
+                                                        <div class="pf-c-form__field-group-header-title">
+                                                            <div class="pf-c-form__field-group-header-title-text" style="margin-top: -20px;border-top-width: thin; border-top-style: groove; border-top-color: #d2d2d2; padding-top: 15px;">1번 호스트 정보</div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="pf-c-form__field-group-body" style="padding-top:0px;">
+                                                    <div class="pf-c-form__group" style="padding:0px;">
+                                                        <div class="pf-c-form__group-label">
+                                                            <label class="pf-c-form__label" for="form-input-common-credentials-ipmi-ip1">
+                                                                <span class="pf-c-form__label-text">IPMI IP</span>
+                                                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                                                            </label>
+                                                        </div>
+                                                        <div class="pf-c-form__group-control">
+                                                            <input class="pf-c-form-control" style="width:70%" type="text" id="form-input-common-credentials-ipmi-ip1" name="form-input-common-credentials-ipmi-ip1"  placeholder="xxx.xxx.xxx.xxx 형식으로 입력" required />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="pf-c-form__field-group">
+                                                <div class="pf-c-form__field-group-header"  style="padding-bottom:8px;">
+                                                    <div class="pf-c-form__field-group-header-main">
+                                                        <div class="pf-c-form__field-group-header-title">
+                                                            <div class="pf-c-form__field-group-header-title-text" style="margin-top: 20px;">2번 호스트 정보</div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="pf-c-form__field-group-body" style="padding-top:0px;">
+                                                    <div class="pf-c-form__group" style="padding:0px;">
+                                                        <div class="pf-c-form__group-label">
+                                                            <label class="pf-c-form__label" for="form-input-common-credentials-ipmi-ip2">
+                                                                <span class="pf-c-form__label-text">IPMI IP</span>
+                                                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                                                            </label>
+                                                        </div>
+                                                        <div class="pf-c-form__group-control">
+                                                            <input class="pf-c-form-control" style="width:70%" type="text" id="form-input-common-credentials-ipmi-ip2" name="form-input-common-credentials-ipmi-ip2" placeholder="xxx.xxx.xxx.xxx 형식으로 입력" required />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="pf-c-form__field-group">
+                                                <div class="pf-c-form__field-group-header"  style="padding-bottom:8px;">
+                                                    <div class="pf-c-form__field-group-header-main">
+                                                        <div class="pf-c-form__field-group-header-title">
+                                                            <div class="pf-c-form__field-group-header-title-text" style="margin-top: 20px;">3번 호스트 정보</div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="pf-c-form__field-group-body" style="padding-top:0px;">
+                                                    <div class="pf-c-form__group" style="padding:0px;">
+                                                        <div class="pf-c-form__group-label">
+                                                            <label class="pf-c-form__label" for="form-input-common-credentials-ipmi-ip3">
+                                                                <span class="pf-c-form__label-text">IPMI IP</span>
+                                                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                                                            </label>
+                                                        </div>
+                                                        <div class="pf-c-form__group-control">
+                                                            <input class="pf-c-form-control" style="width:70%" type="text" id="form-input-common-credentials-ipmi-ip3" name="form-input-common-credentials-ipmi-ip3" placeholder="xxx.xxx.xxx.xxx 형식으로 입력" required />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="pf-c-form__field-group">
+                                                <div class="pf-c-form__field-group-header"  style="padding-bottom:8px;">
+                                                    <div class="pf-c-form__field-group-header-main">
+                                                        <div class="pf-c-form__field-group-header-title">
+                                                            <div class="pf-c-form__field-group-header-title-text" style="margin-top: 20px;">모든 호스트 자격 증명</div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="pf-c-form__field-group-body" style="padding-top:0px;">
+                                                    <div class="pf-c-form__group" style="padding:0px;">
+                                                        <div class="pf-c-form__group-label">
+                                                            <label class="pf-c-form__label" for="form-input-common-credentials-ipmi-user">
+                                                                <span class="pf-c-form__label-text">IPMI 아이디</span>
+                                                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                                                            </label>
+                                                        </div>
+                                                        <div class="pf-c-form__group-control">
+                                                            <input class="pf-c-form-control" style="width:70%" type="text" id="form-input-common-credentials-ipmi-user" name="form-input-common-credentials-ipmi-user" placeholder="아이디를 입력하세요." required />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="pf-c-form__field-group-body" style="padding-top:0px;">
+                                                    <div class="pf-c-form__group" style="padding:0px;">
+                                                        <div class="pf-c-form__group-label">
+                                                            <label class="pf-c-form__label" for="form-input-common-credentials-ipmi-password">
+                                                                <span class="pf-c-form__label-text">IPMI 비밀번호</span>
+                                                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                                                            </label>
+                                                        </div>
+                                                        <div class="pf-c-form__group-control">
+                                                            <input class="pf-c-form-control" style="width:70%" type="password" autocomplete="off" id="form-input-common-credentials-ipmi-password" name="form-input-common-credentials-ipmi-password-check4" placeholder="비밀번호를 입력하세요." required />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="pf-c-form__field-group-body" style="padding-top:0px;">
+                                                    <div class="pf-c-form__group" style="padding:0px;">
+                                                        <div class="pf-c-form__group-label">
+                                                            <label class="pf-c-form__label" for="form-input-common-credentials-ipmi-password-check">
+                                                                <span class="pf-c-form__label-text">IPMI 비밀번호 확인</span>
+                                                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                                                            </label>
+                                                        </div>
+                                                        <div class="pf-c-form__group-control">
+                                                            <input class="pf-c-form-control" style="width:70%" type="password" autocomplete="off" id="form-input-common-credentials-ipmi-password-check" name="form-input-common-credentials-ipmi-password-check4" placeholder="비밀번호를 입력하세요." required />
+                                                            <font id="pwConfirm4"></font>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </section>
+                                </form>
                             </div>
                         </div>
                         <div class="pf-c-wizard__main-body" id="div-modal-wizard-cloud-vm-additional">
@@ -374,16 +697,17 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <!-- <div class="pf-c-form__group" id="div-form-hosts-file-ccvm">
+                                        <div class="pf-c-form__group">
                                             <div class="pf-c-form__group-label">
-                                                <label class="pf-c-form__label" for="form-input-cloud-vm-hosts-file">
-                                                    <span class="pf-c-form__label-text">클러스터 구성 파일</span>
+                                                <label class="pf-c-form__label" for="form-input-cloud-os-type">
+                                                    <span class="pf-c-form__label-text">OS 종류</span>
+                                                    <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
                                                 </label>
                                             </div>
                                             <div class="pf-c-form__group-control">
-                                                <input class="pf-c-form-control" style="width:60%" type="file" id="form-input-cloud-vm-hosts-file" name="form-input-cloud-vm-hosts-file"/>
+                                                <input class="pf-c-form-control" style="width:50%" type="text" id="form-input-cloud-os-type" name="form-input-cloud-os-type" required="required" disabled/>
                                             </div>
-                                        </div> -->
+                                        </div>
                                         <div class="pf-c-form__group">
                                             <div class="pf-c-form__group-label">
                                                 <label class="pf-c-form__label" for="form-input-current-host-name-ccvm">
@@ -392,7 +716,7 @@
                                                 </label>
                                             </div>
                                             <div class="pf-c-form__group-control">
-                                                <input class="pf-c-form-control" style="width:60%" type="text" id="form-input-current-host-name-ccvm" name="form-input-current-host-name-ccvm" required="required" disabled/> 
+                                                <input class="pf-c-form-control" style="width:50%" type="text" id="form-input-current-host-name-ccvm" name="form-input-current-host-name-ccvm" required="required" disabled/>
                                             </div>
                                         </div>
                                         <div class="pf-c-form__group" id="div-form-hosts-input-number-ccvm">
@@ -421,32 +745,6 @@
                                                 <span style="margin-top:10px">대</span>
                                             </div>
                                         </div>
-                                        <!-- <div class="pf-c-form__group" id="div-form-hosts-input-current-number-ccvm">
-                                            <div class="pf-c-form__group-label">
-                                                <label class="pf-c-form__label" for="form-input-cluster-config-current-host-number-ccvm">
-                                                    <span class="pf-c-form__label-text">현재 호스트 번호</span>
-                                                    <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
-                                                </label>
-                                            </div>
-                                            <div class="pf-c-form__group-control pf-m-inline">
-                                                <div class="pf-c-number-input">
-                                                  <div class="pf-c-input-group">
-                                                    <button class="pf-c-button pf-m-control" id="form-input-cluster-config-current-host-number-minus-ccvm" type="button" aria-label="Minus">
-                                                      <span class="pf-c-number-input__icon">
-                                                        <i class="fas fa-minus" aria-hidden="true"></i>
-                                                      </span>
-                                                    </button>
-                                                    <input class="pf-c-form-control" type="number" value="1" id="form-input-cluster-config-current-host-number-ccvm" name="form-input-cluster-config-host-number-ccvm" style="padding-right:10px;" aria-label="Number input" />
-                                                    <button class="pf-c-button pf-m-control" id="form-input-cluster-config-current-host-number-plus-ccvm" type="button" aria-label="Plus">
-                                                      <span class="pf-c-number-input__icon">
-                                                        <i class="fas fa-plus" aria-hidden="true"></i>
-                                                      </span>
-                                                    </button>
-                                                  </div>
-                                                </div>
-                                                <span style="margin-top:10px">번</span>
-                                            </div>
-                                        </div> -->
                                         <div class="pf-c-form__group" id="div-form-hosts-profile-ccvm">
                                             <div class="pf-c-form__group-label">
                                                 <label class="pf-c-form__label" for="form-table-cluster-config-new-host-profile-ccvm">
@@ -466,7 +764,7 @@
                                                     </colgroup>
                                                     <thead class="--pf-global--BorderColor--300" style="border-bottom: solid 1px #8a8d90;position: sticky;top: 0;background-color: white;">
                                                         <tr>
-                                                            <th>idx</th>  
+                                                            <th>idx</th>
                                                             <th>호스트 명</th>
                                                             <th>호스트 IP</th>
                                                             <th>SCVM<br/>MNGT IP</th>
@@ -506,7 +804,7 @@
                                                     </tbody>
                                                 </table>
                                             </div>
-                                        </div>                                        
+                                        </div>
                                         <div class="pf-c-form__group" id="div-form-hosts-table-ccvm">
                                             <div class="pf-c-form__group-label">
                                                 <label class="pf-c-form__label" for="form-table-cluster-config-existing-host-profile-ccvm">
@@ -526,7 +824,7 @@
                                                     </colgroup>
                                                     <thead class="--pf-global--BorderColor--300" style="border-bottom: solid 1px #8a8d90;position: sticky;top: 0;background-color: white;">
                                                         <tr>
-                                                            <th>idx</th>  
+                                                            <th>idx</th>
                                                             <th>호스트 명</th>
                                                             <th>호스트 IP</th>
                                                             <th>SCVM<br/>MNGT IP</th>
@@ -582,6 +880,26 @@
                                             </div>
                                             <div class="pf-c-form__group-control pf-m-inline">
                                                 <input class="pf-c-form-control" style="width:50%" type="text" id="form-input-cloud-vm-dns" name="form-input-cloud-vm-dns" placeholder="xxx.xxx.xxx.xxx 형식으로 입력" />
+                                            </div>
+                                        </div>
+                                        <div class="pf-c-form__group">
+                                            <div class="pf-c-form__group-label">
+                                                <label class="pf-c-form__label" for="form-input-cloud-vm-pn-ip">
+                                                    <span class="pf-c-form__label-text">CCVM PN IP</span>
+                                                </label>
+                                            </div>
+                                            <div class="pf-c-form__group-control">
+                                                <input class="pf-c-form-control" style="width:50%" type="text" id="form-input-cloud-vm-pn-ip" name="form-input-cloud-vm-pn-ip" placeholder="xxx.xxx.xxx.xxx 형식으로 입력"/>
+                                            </div>
+                                        </div>
+                                        <div class="pf-c-form__group">
+                                            <div class="pf-c-form__group-label">
+                                                <label class="pf-c-form__label" for="form-input-cloud-vm-cn-ip">
+                                                    <span class="pf-c-form__label-text">CCVM CN IP</span>
+                                                </label>
+                                            </div>
+                                            <div class="pf-c-form__group-control">
+                                                <input class="pf-c-form-control" style="width:50%" type="text" id="form-input-cloud-vm-cn-ip" name="form-input-cloud-vm-cn-ip" placeholder="xxx.xxx.xxx.xxx 형식으로 입력"/>
                                             </div>
                                         </div>
                                         <div class="pf-c-form__group">
@@ -663,7 +981,7 @@
                                     </p>
                                     <div class="pf-c-alert__description">
                                         <p>
-                                            SSH Key는 호스트 및 클라우드센터, 스토리지센터 가상머신 등의 ABLESTACK 구성요소 간의 암호화된 인증을 위해 사용됩니다. 
+                                            SSH Key는 호스트 및 클라우드센터, 스토리지센터 가상머신 등의 ABLESTACK 구성요소 간의 암호화된 인증을 위해 사용됩니다.
                                         </p>
                                         <p>
                                             호스트 간, 가상머신 간의 모든 명령은 SSH를 이용해 전달되며 이 때 SSH Key를 이용해 인증을 처리합니다. 따라서 모든 호스트, 가상머신은 동일한 SSH Key를 사용해야 합니다.
@@ -675,11 +993,11 @@
                         <div class="pf-c-wizard__main-body" id="div-modal-wizard-cloud-vm-review">
                             <div class="pf-c-content">
                                 <p>
-                                    클라우드센터 VM의 배포를 위해 입력한 설정 정보는 다음과 같습니다. 
-                                    입력한 정보를 수정하고자 하는 경우, 해당 탭으로 이동하여 정보를 수정하십시오. 
+                                    클라우드센터 VM의 배포를 위해 입력한 설정 정보는 다음과 같습니다.
+                                    입력한 정보를 수정하고자 하는 경우, 해당 탭으로 이동하여 정보를 수정하십시오.
                                     <br/>
                                     <br/>
-                                    모든 정보를 확인한 후 "배포"를 시작합니다. 
+                                    모든 정보를 확인한 후 "배포"를 시작합니다.
                                 </p>
                             </div>
                             <div class="pf-c-accordion" style="margin-top:32px;margin-left:10px">
@@ -740,7 +1058,9 @@
                                                 </dt>
                                                 <dd class="pf-c-description-list__description">
                                                     <div class="pf-c-description-list__text">
-                                                        <span id="span-cloud-vm-mgmt-nic-bridge"></span>
+                                                       관리 네트워크 :  <span id="span-cloud-vm-mgmt-nic-bridge"></span>
+                                                       <span id="span-cloud-vm-mgmt-pn-bridge" name="powerflex-network" style="display:none;"></span>
+                                                       <span id="span-cloud-vm-mgmt-cn-bridge" name="powerflex-network" style="display:none;"></span>
                                                     </div>
                                                 </dd>
                                             </div>
@@ -750,7 +1070,7 @@
                                                 </dt>
                                                 <dd class="pf-c-description-list__description">
                                                     <div class="pf-c-description-list__text">
-                                                        <span id="span-cloud-vm-svc-nic-bridge"></span>                                                
+                                                        <span id="span-cloud-vm-svc-nic-bridge"></span>
                                                     </div>
                                                 </dd>
                                             </div>
@@ -776,7 +1096,7 @@
                                                 </dt>
                                                 <dd class="pf-c-description-list__description">
                                                     <div class="pf-c-description-list__text">
-                                                        <span id="span-hosts-file-ccvm"></span>                                              
+                                                        <span id="span-hosts-file-ccvm"></span>
                                                     </div>
                                                 </dd>
                                                 <dd class="pf-c-description-list__description">
@@ -791,7 +1111,7 @@
                                                 </dt>
                                                 <dd class="pf-c-description-list__description">
                                                     <div class="pf-c-description-list__text">
-                                                        <span id="span-cloud-vm-additional-hostname"></span>                                              
+                                                        <span id="span-cloud-vm-additional-hostname"></span>
                                                     </div>
                                                 </dd>
                                             </div>
@@ -801,10 +1121,10 @@
                                                 </dt>
                                                 <dd class="pf-c-description-list__description">
                                                     <div class="pf-c-description-list__text">
-                                                        IP Addr : <span id="span-cloud-vm-additional-mgmt-ipaddr"></span><br/>      
-                                                        VLAN ID : <span id="span-cloud-vm-additional-mgmt-vlan-id"></span><br/>       
+                                                        IP Addr : <span id="span-cloud-vm-additional-mgmt-ipaddr"></span><br/>
+                                                        VLAN ID : <span id="span-cloud-vm-additional-mgmt-vlan-id"></span><br/>
                                                         Gateway : <span id="span-cloud-vm-additional-mgmt-gateway"></span><br/>
-                                                        DNS : <span id="span-cloud-vm-additional-dns"></span>                                         
+                                                        DNS : <span id="span-cloud-vm-additional-dns"></span>
                                                     </div>
                                                 </dd>
                                             </div>
@@ -814,10 +1134,81 @@
                                                 </dt>
                                                 <dd class="pf-c-description-list__description">
                                                     <div class="pf-c-description-list__text">
-                                                        IP Addr : <span id="span-cloud-vm-additional-svc-ipaddr"></span><br/>      
-                                                        VLAN ID : <span id="span-cloud-vm-additional-svc-vlan-id"></span><br/>       
+                                                        IP Addr : <span id="span-cloud-vm-additional-svc-ipaddr"></span><br/>
+                                                        VLAN ID : <span id="span-cloud-vm-additional-svc-vlan-id"></span><br/>
                                                         Gateway : <span id="span-cloud-vm-additional-svc-gateway"></span><br/>
-                                                        DNS : <span id="span-cloud-vm-additional-svc-dns"></span>                                           
+                                                        DNS : <span id="span-cloud-vm-additional-svc-dns"></span>
+                                                    </div>
+                                                </dd>
+                                            </div>
+                                        </dl>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="pf-c-accordion" style="margin-top:32px;margin-left:10px;display: none;" id="div-accordion-cloud-ipmi">
+                                <h3>
+                                    <button class="pf-c-accordion__toggle" aria-expanded="false" id="button-accordion-cloud-vm-ipmi">
+                                        <span class="pf-c-accordion__toggle-text">IPMI 정보</span>
+                                        <span class="pf-c-accordion__toggle-icon">
+                                            <i class="fas fa-angle-right" aria-hidden="true"></i>
+                                        </span>
+                                    </button>
+                                </h3>
+                                <div class="pf-c-accordion__expanded-content" id="div-accordion-cloud-vm-ipmi">
+                                    <div class="pf-c-accordion__expanded-content-body">
+                                        <dl class="pf-c-description-list pf-m-horizontal" style="--pf-c-description-list--RowGap: 10px;margin-left: 10px">
+                                            <div class="pf-c-description-list__group">
+                                                <dt class="pf-c-description-list__term">
+                                                    <span class="pf-c-description-list__text">IPMI 구성 준비 </span>
+                                                </dt>
+                                                <dd class="pf-c-description-list__description">
+                                                    <div class="pf-c-description-list__text"></div>
+                                                </dd>
+                                            </div>
+                                            <div class="pf-c-description-list__group">
+                                                <dt class="pf-c-description-list__term">
+                                                    <span class="pf-c-description-list__text">1번 호스트</span>
+                                                </dt>
+                                                <dd class="pf-c-description-list__description">
+                                                    <div class="pf-c-description-list__text">
+                                                        IPMI IP :  <span id="span-cloud-vm-ipmi-ip1"></span><br/>
+                                                        <span id="span-cloud-vm-ipmi-user1"></span></br>
+                                                        <span id="span-cloud-vm-ipmi-password1"></span>
+                                                    </div>
+                                                </dd>
+                                            </div>
+                                            <div class="pf-c-description-list__group">
+                                                <dt class="pf-c-description-list__term">
+                                                    <span class="pf-c-description-list__text">2번 호스트</span>
+                                                </dt>
+                                                <dd class="pf-c-description-list__description">
+                                                    <div class="pf-c-description-list__text">
+                                                        IPMI IP : <span id="span-cloud-vm-ipmi-ip2"></span><br/>
+                                                        <span id="span-cloud-vm-ipmi-user2"></span></br>
+                                                        <span id="span-cloud-vm-ipmi-password2"></span>
+                                                    </div>
+                                                </dd>
+                                            </div>
+                                            <div class="pf-c-description-list__group">
+                                                <dt class="pf-c-description-list__term">
+                                                    <span class="pf-c-description-list__text">3번 호스트</span>
+                                                </dt>
+                                                <dd class="pf-c-description-list__description">
+                                                    <div class="pf-c-description-list__text">
+                                                        IPMI IP : <span id="span-cloud-vm-ipmi-ip3"></span><br/>
+                                                        <span id="span-cloud-vm-ipmi-user3"></span></br>
+                                                        <span id="span-cloud-vm-ipmi-password3"></span>
+                                                    </div>
+                                                </dd>
+                                            </div>
+                                            <div class="pf-c-description-list__group" id="accordion-common-ipmi" style="display: none;">
+                                                <dt class="pf-c-description-list__term">
+                                                    <span class="pf-c-description-list__text">모든 호스트 자격 증명</span>
+                                                </dt>
+                                                <dd class="pf-c-description-list__description">
+                                                    <div class="pf-c-description-list__text">
+                                                        IPMI 아이디 : <span id="span-cloud-vm-ipmi-user"></span></br>
+                                                        IPMI 비밀번호 : <span id="span-cloud-vm-ipmi-password"></span>
                                                     </div>
                                                 </dd>
                                             </div>
@@ -918,7 +1309,7 @@
                         </div>
                         <div class="pf-c-wizard__main-body" id="div-modal-wizard-cloud-vm-deploy">
                             <p id='ccvm-progress-step-text'>
-                                클라우드센터 가상머신을 배포 중입니다. 전체 5단계 중 1단계 진행 중입니다.  
+                                클라우드센터 가상머신을 배포 중입니다. 전체 5단계 중 1단계 진행 중입니다.
                             </p>
 
                             <div class="pf-c-content" style="margin-top:30px;margin-left:15px">
@@ -929,7 +1320,7 @@
                                         </span><p>준비중</p>
                                     </span>
                                 </span>
-                                <span class="pf-c-label__content" style="margin-left:4px">클러스터 구성 HOST 네트워크 연결 테스트</span>
+                                <span class="pf-c-label__content" style="margin-left:4px">클러스터 구성 HOST 네트워크 연결 및 초기화 작업</span>
                             </div>
                             <div class="pf-c-content" style="margin-top:30px;margin-left:15px">
                                 <span class="pf-c-label pf-m-blue" id="span-ccvm-progress-step2">
@@ -939,7 +1330,7 @@
                                         </span><p>준비중</p>
                                     </span>
                                 </span>
-                                <span class="pf-c-label__content" style="margin-left:4px">클러스터 구성 설정 초기화 작업</span>
+                                <span class="pf-c-label__content" style="margin-left:4px">GFS 구성 설정 및 Pcs 설정 </span>
                             </div>
                             <div class="pf-c-content" style="margin-top:30px;margin-left:15px">
                                 <span class="pf-c-label pf-m-blue" id="span-ccvm-progress-step3">
@@ -975,7 +1366,7 @@
                         <div class="pf-c-wizard__main-body" id="div-modal-wizard-cloud-vm-finish">
                             <div class="pf-c-content">
                                 <p>
-                                    클라우드센터 VM의 배포를 완료했습니다. 가상머신이 배포되면 다음의 작업을 수행해야 합니다. 
+                                    클라우드센터 VM의 배포를 완료했습니다. 가상머신이 배포되면 다음의 작업을 수행해야 합니다.
                                 </p>
                                 <ul>
                                     <li>클라우드센터 VM의 웹관리콘솔에 접속</li>
@@ -983,7 +1374,7 @@
                                     <li>가상머신 생성을 위한 각종 정책 준비</li>
                                 </ul>
                                 <p>
-                                    위의 모든 작업은 클라우드센터 VM의 웹 관리콘솔을 이용해 진행합니다. 
+                                    위의 모든 작업은 클라우드센터 VM의 웹 관리콘솔을 이용해 진행합니다.
                                 </p>
                             </div>
                         </div>
@@ -1017,7 +1408,7 @@
                 </div>
             </div>
             <!-- 클라우드센터 가상머신 배포 마법사 진행: Modal 영역 끝 -->
-            
+
             <!-- 클라우드센터 가상머신 배포 마법사 취소: Modal 영역 시작 -->
             <div id="div-modal-cancel-cloud-wizard-cancel" class="pf-c-backdrop" style="display:none" >
                 <div class="pf-l-bullseye">
@@ -1046,4 +1437,4 @@
 <script src="./src/common/wizard-common.js"></script>
 <script src="./src/common/validation.js"></script>
 <script src="./src/features/cloud-vm-wizard.js"></script>
-<!-- 해당 페이지에 필요한 javascript 파일 추가 영역 끝 --> 
+<!-- 해당 페이지에 필요한 javascript 파일 추가 영역 끝 -->

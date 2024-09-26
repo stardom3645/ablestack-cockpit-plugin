@@ -43,6 +43,10 @@ def createArgumentParser():
     parser.add_argument('--mgmt-prefix', metavar='Management prefix', help="관리 네트워크 prefix")
     parser.add_argument('--mgmt-gw', metavar='Management gw', help="관리 네트워크 gw")
     parser.add_argument('--dns',metavar='DNS', help="서버 DNS 주소")
+    parser.add_argument('--pn-ip', metavar='Storage IP', help="스토리지 네트워크 IP")
+    parser.add_argument('--pn-prefix', metavar='Service prefix', help="스토리지 네트워크 prefix", default=24)
+    parser.add_argument('--cn-ip', metavar='Cluster IP', help="클러스터 네트워크 IP")
+    parser.add_argument('--cn-prefix', metavar='Service prefix', help="클러스터 네트워크 prefix", default=24)
     parser.add_argument('--sn-ip', metavar='Service IP', help="서비스 네트워크 IP")
     parser.add_argument('--sn-nic', metavar='Service nic', help="서비스 네트워크 nic")
     parser.add_argument('--sn-prefix', metavar='Service prefix', help="서비스 네트워크 prefix")
@@ -60,6 +64,21 @@ def createArgumentParser():
     parser.add_argument('-V', '--Version', action='version', version='%(prog)s 1.0')
 
     return parser
+
+json_file_path = pluginpath+"/tools/properties/cluster.json"
+
+def openClusterJson():
+    try:
+        with open(json_file_path, 'r') as json_file:
+            ret = json.load(json_file)
+    except Exception as e:
+        ret = createReturn(code=500, val='cluster.json read error')
+        print ('EXCEPTION : ',e)
+
+    return ret
+
+json_data = openClusterJson()
+os_type = json_data["clusterConfig"]["type"]
 
 def createCcvmCloudinit(args):
 
@@ -88,25 +107,121 @@ def createCcvmCloudinit(args):
     if args.sn_nic == None: #서비스 네트워크가 없을 경우
         if args.mgmt_gw == None:
             if args.dns == None:
-                result = json.loads(python3(pluginpath + '/tools/cloudinit/gencloudinit.py','--hostname',args.hostname,'--hosts',args.file1,'--privkey',args.file2,'--pubkey',args.file3,'--mgmt-nic',args.mgmt_nic,'--mgmt-ip',args.mgmt_ip,'--mgmt-prefix',args.mgmt_prefix,'--iso-path','/var/lib/libvirt/images/ccvm-cloudinit.iso','ccvm'))
+                if os_type == "PowerFlex":
+                    result = json.loads(python3(pluginpath + '/tools/cloudinit/gencloudinit.py',
+                                                '--hostname',args.hostname,'--hosts',args.file1,'--privkey',args.file2,'--pubkey',args.file3,
+                                                '--mgmt-nic',args.mgmt_nic,'--mgmt-ip',args.mgmt_ip,'--mgmt-prefix',args.mgmt_prefix,
+                                                '--pn-nic','enp0s21','--pn-ip',args.pn_ip,'--pn-prefix',args.pn_prefix,
+                                                '--cn-nic','enp0s22','--cn-ip',args.cn_ip,'--cn-prefix',args.cn_prefix,
+                                                '--iso-path','/var/lib/libvirt/images/ccvm-cloudinit.iso','ccvm'))
+                else :  #os_type == "ABLESTACK-HCI" or os_type == "ABLESTACK-GlueGFS"
+                    result = json.loads(python3(pluginpath + '/tools/cloudinit/gencloudinit.py',
+                                                '--hostname',args.hostname,'--hosts',args.file1,'--privkey',args.file2,'--pubkey',args.file3,
+                                                '--mgmt-nic','enp0s20','--mgmt-ip',args.mgmt_ip,'--mgmt-prefix',args.mgmt_prefix,
+                                                '--iso-path','/var/lib/libvirt/images/ccvm-cloudinit.iso','ccvm'))
             else:
-                result = json.loads(python3(pluginpath + '/tools/cloudinit/gencloudinit.py','--hostname',args.hostname,'--hosts',args.file1,'--privkey',args.file2,'--pubkey',args.file3,'--mgmt-nic',args.mgmt_nic,'--mgmt-ip',args.mgmt_ip,'--mgmt-prefix',args.mgmt_prefix,'--dns',args.dns,'--iso-path','/var/lib/libvirt/images/ccvm-cloudinit.iso','ccvm'))
+                if os_type == "PowerFlex":
+                    result = json.loads(python3(pluginpath + '/tools/cloudinit/gencloudinit.py',
+                                                '--hostname',args.hostname,'--hosts',args.file1,'--privkey',args.file2,'--pubkey',args.file3,
+                                                '--mgmt-nic','enp0s20','--mgmt-ip',args.mgmt_ip,'--mgmt-prefix',args.mgmt_prefix,'--dns',args.dns,
+                                                '--pn-nic','enp0s21','--pn-ip',args.pn_ip,'--pn-prefix',args.pn_prefix,
+                                                '--cn-nic','enp0s22','--cn-ip',args.cn_ip,'--cn-prefix',args.cn_prefix,
+                                                '--iso-path','/var/lib/libvirt/images/ccvm-cloudinit.iso','ccvm'))
+                else :  #os_type == "ABLESTACK-HCI" or os_type == "ABLESTACK-GlueGFS"
+                    result = json.loads(python3(pluginpath + '/tools/cloudinit/gencloudinit.py',
+                                                '--hostname',args.hostname,'--hosts',args.file1,'--privkey',args.file2,'--pubkey',args.file3,
+                                                '--mgmt-nic','enp0s20','--mgmt-ip',args.mgmt_ip,'--mgmt-prefix',args.mgmt_prefix,'--dns',args.dns,
+                                                '--iso-path','/var/lib/libvirt/images/ccvm-cloudinit.iso','ccvm'))
         else:
             if args.dns == None:
-                result = json.loads(python3(pluginpath + '/tools/cloudinit/gencloudinit.py','--hostname',args.hostname,'--hosts',args.file1,'--privkey',args.file2,'--pubkey',args.file3,'--mgmt-nic',args.mgmt_nic,'--mgmt-ip',args.mgmt_ip,'--mgmt-prefix',args.mgmt_prefix,'--mgmt-gw', args.mgmt_gw,'--iso-path','/var/lib/libvirt/images/ccvm-cloudinit.iso','ccvm'))
+                if os_type == "PowerFlex":
+                    result = json.loads(python3(pluginpath + '/tools/cloudinit/gencloudinit.py',
+                                                '--hostname',args.hostname,'--hosts',args.file1,'--privkey',args.file2,'--pubkey',args.file3,
+                                                '--mgmt-nic','enp0s20','--mgmt-ip',args.mgmt_ip,'--mgmt-prefix',args.mgmt_prefix,'--mgmt-gw', args.mgmt_gw,
+                                                '--pn-nic','enp0s21','--pn-ip',args.pn_ip,'--pn-prefix',args.pn_prefix,
+                                                '--cn-nic','enp0s22','--cn-ip',args.cn_ip,'--cn-prefix',args.cn_prefix,
+                                                '--iso-path','/var/lib/libvirt/images/ccvm-cloudinit.iso','ccvm'))
+                else :  #os_type == "ABLESTACK-HCI" or os_type == "ABLESTACK-GlueGFS"
+                    result = json.loads(python3(pluginpath + '/tools/cloudinit/gencloudinit.py',
+                                                '--hostname',args.hostname,'--hosts',args.file1,'--privkey',args.file2,'--pubkey',args.file3,
+                                                '--mgmt-nic','enp0s20','--mgmt-ip',args.mgmt_ip,'--mgmt-prefix',args.mgmt_prefix,'--mgmt-gw', args.mgmt_gw,
+                                                '--iso-path','/var/lib/libvirt/images/ccvm-cloudinit.iso','ccvm'))
             else:
-                result = json.loads(python3(pluginpath + '/tools/cloudinit/gencloudinit.py','--hostname',args.hostname,'--hosts',args.file1,'--privkey',args.file2,'--pubkey',args.file3,'--mgmt-nic',args.mgmt_nic,'--mgmt-ip',args.mgmt_ip,'--mgmt-prefix',args.mgmt_prefix,'--mgmt-gw', args.mgmt_gw,'--dns', args.dns,'--iso-path','/var/lib/libvirt/images/ccvm-cloudinit.iso','ccvm'))  
+                if os_type == "PowerFlex":
+                    result = json.loads(python3(pluginpath + '/tools/cloudinit/gencloudinit.py',
+                                                '--hostname',args.hostname,'--hosts',args.file1,'--privkey',args.file2,'--pubkey',args.file3,
+                                                '--mgmt-nic','enp0s20','--mgmt-ip',args.mgmt_ip,'--mgmt-prefix',args.mgmt_prefix,'--mgmt-gw', args.mgmt_gw,'--dns', args.dns,
+                                                '--pn-nic','enp0s21','--pn-ip',args.pn_ip,'--pn-prefix',args.pn_prefix,
+                                                '--cn-nic','enp0s22','--cn-ip',args.cn_ip,'--cn-prefix',args.cn_prefix,
+                                                '--iso-path','/var/lib/libvirt/images/ccvm-cloudinit.iso','ccvm'))
+                else :  #os_type == "ABLESTACK-HCI" or os_type == "ABLESTACK-GlueGFS"
+                    result = json.loads(python3(pluginpath + '/tools/cloudinit/gencloudinit.py',
+                                                '--hostname',args.hostname,'--hosts',args.file1,'--privkey',args.file2,'--pubkey',args.file3,
+                                                '--mgmt-nic','enp0s20','--mgmt-ip',args.mgmt_ip,'--mgmt-prefix',args.mgmt_prefix,'--mgmt-gw', args.mgmt_gw,'--dns', args.dns,
+                                                '--iso-path','/var/lib/libvirt/images/ccvm-cloudinit.iso','ccvm'))
     else: # 서비스 네트워크가 있을 경우
         if args.mgmt_gw == None:
             if args.dns == None:
-                result = json.loads(python3(pluginpath + '/tools/cloudinit/gencloudinit.py','--hostname',args.hostname,'--hosts',args.file1,'--privkey',args.file2,'--pubkey',args.file3,'--mgmt-nic',args.mgmt_nic,'--mgmt-ip',args.mgmt_ip,'--mgmt-prefix',args.mgmt_prefix,'--sn-nic',args.sn_nic,'--sn-ip',args.sn_ip,'--sn-prefix',args.sn_prefix,'--sn-gw',args.sn_gw,'--sn-dns',args.sn_dns,'--iso-path','/var/lib/libvirt/images/ccvm-cloudinit.iso','ccvm'))
+                if os_type == "PowerFlex":
+                    result = json.loads(python3(pluginpath + '/tools/cloudinit/gencloudinit.py',
+                                                '--hostname',args.hostname,'--hosts',args.file1,'--privkey',args.file2,'--pubkey',args.file3,
+                                                '--mgmt-nic','enp0s20','--mgmt-ip',args.mgmt_ip,'--mgmt-prefix',args.mgmt_prefix,
+                                                '--sn-nic',args.sn_nic,'--sn-ip',args.sn_ip,'--sn-prefix',args.sn_prefix,'--sn-gw',args.sn_gw,'--sn-dns',args.sn_dns,
+                                                '--pn-nic','enp0s21','--pn-ip',args.pn_ip,'--pn-prefix',args.pn_prefix,
+                                                '--cn-nic','enp0s22','--cn-ip',args.cn_ip,'--cn-prefix',args.cn_prefix,
+                                                '--iso-path','/var/lib/libvirt/images/ccvm-cloudinit.iso','ccvm'))
+                else:   #os_type == "ABLESTACK-HCI" or os_type == "ABLESTACK-GlueGFS"
+                    result = json.loads(python3(pluginpath + '/tools/cloudinit/gencloudinit.py',
+                                                '--hostname',args.hostname,'--hosts',args.file1,'--privkey',args.file2,'--pubkey',args.file3,
+                                                '--mgmt-nic','enp0s20','--mgmt-ip',args.mgmt_ip,'--mgmt-prefix',args.mgmt_prefix,
+                                                '--sn-nic',args.sn_nic,'--sn-ip',args.sn_ip,'--sn-prefix',args.sn_prefix,'--sn-gw',args.sn_gw,'--sn-dns',args.sn_dns,
+                                                '--iso-path','/var/lib/libvirt/images/ccvm-cloudinit.iso','ccvm'))
             else:
-                result = json.loads(python3(pluginpath + '/tools/cloudinit/gencloudinit.py','--hostname',args.hostname,'--hosts',args.file1,'--privkey',args.file2,'--pubkey',args.file3,'--mgmt-nic',args.mgmt_nic,'--mgmt-ip',args.mgmt_ip,'--mgmt-prefix',args.mgmt_prefix,'--dns',args.dns,'--sn-nic',args.sn_nic,'--sn-ip',args.sn_ip,'--sn-prefix',args.sn_prefix,'--sn-gw',args.sn_gw,'--sn-dns',args.sn_dns,'--iso-path','/var/lib/libvirt/images/ccvm-cloudinit.iso','ccvm'))        
+                if os_type == "PowerFlex":
+                    result = json.loads(python3(pluginpath + '/tools/cloudinit/gencloudinit.py',
+                                                '--hostname',args.hostname,'--hosts',args.file1,'--privkey',args.file2,'--pubkey',args.file3,
+                                                '--mgmt-nic','enp0s20','--mgmt-ip',args.mgmt_ip,'--mgmt-prefix',args.mgmt_prefix,'--dns',args.dns,
+                                                '--sn-nic',args.sn_nic,'--sn-ip',args.sn_ip,'--sn-prefix',args.sn_prefix,'--sn-gw',args.sn_gw,'--sn-dns',args.sn_dns,
+                                                '--pn-nic','enp0s21','--pn-ip',args.pn_ip,'--pn-prefix',args.pn_prefix,
+                                                '--cn-nic','enp0s22','--cn-ip',args.cn_ip,'--cn-prefix',args.cn_prefix,
+                                                '--iso-path','/var/lib/libvirt/images/ccvm-cloudinit.iso','ccvm'))
+                else:   #os_type == "ABLESTACK-HCI" or os_type == "ABLESTACK-GlueGFS"
+                    result = json.loads(python3(pluginpath + '/tools/cloudinit/gencloudinit.py',
+                                                '--hostname',args.hostname,'--hosts',args.file1,'--privkey',args.file2,'--pubkey',args.file3,
+                                                '--mgmt-nic',args.mgmt_nic,'--mgmt-ip',args.mgmt_ip,'--mgmt-prefix',args.mgmt_prefix,'--dns',args.dns,
+                                                '--sn-nic',args.sn_nic,'--sn-ip',args.sn_ip,'--sn-prefix',args.sn_prefix,'--sn-gw',args.sn_gw,'--sn-dns',args.sn_dns,
+                                                '--iso-path','/var/lib/libvirt/images/ccvm-cloudinit.iso','ccvm'))
         else:
             if args.dns == None:
-                result = json.loads(python3(pluginpath + '/tools/cloudinit/gencloudinit.py','--hostname',args.hostname,'--hosts',args.file1,'--privkey',args.file2,'--pubkey',args.file3,'--mgmt-nic',args.mgmt_nic,'--mgmt-ip',args.mgmt_ip,'--mgmt-prefix',args.mgmt_prefix,'--mgmt-gw',args.mgmt_gw,'--sn-nic',args.sn_nic,'--sn-ip',args.sn_ip,'--sn-prefix',args.sn_prefix,'--sn-gw',args.sn_gw,'--sn-dns',args.sn_dns,'--iso-path','/var/lib/libvirt/images/ccvm-cloudinit.iso','ccvm'))
+                if os_type == "PowerFlex":
+                    result = json.loads(python3(pluginpath + '/tools/cloudinit/gencloudinit.py',
+                                                '--hostname',args.hostname,'--hosts',args.file1,'--privkey',args.file2,'--pubkey',args.file3,
+                                                '--mgmt-nic','enp0s20','--mgmt-ip',args.mgmt_ip,'--mgmt-prefix',args.mgmt_prefix,'--mgmt-gw',args.mgmt_gw,
+                                                '--sn-nic',args.sn_nic,'--sn-ip',args.sn_ip,'--sn-prefix',args.sn_prefix,'--sn-gw',args.sn_gw,'--sn-dns',args.sn_dns,
+                                                '--pn-nic','enp0s21','--pn-ip',args.pn_ip,'--pn-prefix',args.pn_prefix,
+                                                '--cn-nic','enp0s22','--cn-ip',args.cn_ip,'--cn-prefix',args.cn_prefix,
+                                                '--iso-path','/var/lib/libvirt/images/ccvm-cloudinit.iso','ccvm'))
+                else:   #os_type == "ABLESTACK-HCI" or os_type == "ABLESTACK-GlueGFS"
+                    result = json.loads(python3(pluginpath + '/tools/cloudinit/gencloudinit.py',
+                                                '--hostname',args.hostname,'--hosts',args.file1,'--privkey',args.file2,'--pubkey',args.file3,
+                                                '--mgmt-nic',args.mgmt_nic,'--mgmt-ip',args.mgmt_ip,'--mgmt-prefix',args.mgmt_prefix,'--mgmt-gw',args.mgmt_gw,
+                                                '--sn-nic',args.sn_nic,'--sn-ip',args.sn_ip,'--sn-prefix',args.sn_prefix,'--sn-gw',args.sn_gw,'--sn-dns',args.sn_dns,
+                                                '--iso-path','/var/lib/libvirt/images/ccvm-cloudinit.iso','ccvm'))
             else:
-                result = json.loads(python3(pluginpath + '/tools/cloudinit/gencloudinit.py','--hostname',args.hostname,'--hosts',args.file1,'--privkey',args.file2,'--pubkey',args.file3,'--mgmt-nic',args.mgmt_nic,'--mgmt-ip',args.mgmt_ip,'--mgmt-prefix',args.mgmt_prefix,'--mgmt-gw',args.mgmt_gw,'--dns',args.dns,'--sn-nic',args.sn_nic,'--sn-ip',args.sn_ip,'--sn-prefix',args.sn_prefix,'--sn-gw',args.sn_gw,'--sn-dns',args.sn_dns,'--iso-path','/var/lib/libvirt/images/ccvm-cloudinit.iso','ccvm'))
+                if os_type == "PowerFlex":
+                    result = json.loads(python3(pluginpath + '/tools/cloudinit/gencloudinit.py',
+                                                '--hostname',args.hostname,'--hosts',args.file1,'--privkey',args.file2,'--pubkey',args.file3,
+                                                '--mgmt-nic','enp0s20','--mgmt-ip',args.mgmt_ip,'--mgmt-prefix',args.mgmt_prefix,'--mgmt-gw',args.mgmt_gw,'--dns',args.dns,
+                                                '--sn-nic',args.sn_nic,'--sn-ip',args.sn_ip,'--sn-prefix',args.sn_prefix,'--sn-gw',args.sn_gw,'--sn-dns',args.sn_dns,
+                                                '--pn-nic','enp0s21','--pn-ip',args.pn_ip,'--pn-prefix',args.pn_prefix,
+                                                '--cn-nic','enp0s22','--cn-ip',args.cn_ip,'--cn-prefix',args.cn_prefix,
+                                                '--iso-path','/var/lib/libvirt/images/ccvm-cloudinit.iso','ccvm'))
+                else:   #os_type == "ABLESTACK-HCI" or os_type == "ABLESTACK-GlueGFS"
+                    result = json.loads(python3(pluginpath + '/tools/cloudinit/gencloudinit.py',
+                                                '--hostname',args.hostname,'--hosts',args.file1,'--privkey',args.file2,'--pubkey',args.file3,
+                                                '--mgmt-nic',args.mgmt_nic,'--mgmt-ip',args.mgmt_ip,'--mgmt-prefix',args.mgmt_prefix,'--mgmt-gw',args.mgmt_gw,'--dns',args.dns,
+                                                '--sn-nic',args.sn_nic,'--sn-ip',args.sn_ip,'--sn-prefix',args.sn_prefix,'--sn-gw',args.sn_gw,'--sn-dns',args.sn_dns,
+                                                '--iso-path','/var/lib/libvirt/images/ccvm-cloudinit.iso','ccvm'))
     if result['code'] not in [200]:
         success_bool = False
     else:

@@ -31,35 +31,54 @@ def createArgumentParser():
 
     # output 민감도 추가(v갯수에 따라 output및 log가 많아짐):
     parser.add_argument('-v', '--verbose', action='count', default=0, help='increase output verbosity')
-    
+
     # flag 추가(샘플임, 테스트용으로 json이 아닌 plain text로 출력하는 플래그 역할)
     parser.add_argument('-H', '--Human', action='store_const', dest='flag_readerble', const=True, help='Human readable')
-    
+
     # Version 추가
     parser.add_argument('-V', '--Version', action='version', version='%(prog)s 1.0')
 
     return parser
 
+json_file_path = pluginpath+"/tools/properties/cluster.json"
+
+def openClusterJson():
+    try:
+        with open(json_file_path, 'r') as json_file:
+            ret = json.load(json_file)
+    except Exception as e:
+        ret = createReturn(code=500, val='cluster.json read error')
+        print ('EXCEPTION : ',e)
+
+    return ret
+
+json_data = openClusterJson()
+os_type = json_data["clusterConfig"]["type"]
+
 def setupStorageVm(args):
 
-    success_bool = True    
-    
-    # 스토리지 가상머신용 qcow2 이미지 생성
-    check_err = os.system("/usr/bin/cp -f /var/lib/libvirt/images/ablestack-template-back.qcow2 /var/lib/libvirt/images/scvm.qcow2")
-    if check_err != 0 :
-        success_bool = False
+    success_bool = True
 
+    # 스토리지 가상머신용 qcow2 이미지 생성
+    if os_type == "PowerFlex":
+        check_err = os.system("/usr/bin/cp -f /var/lib/libvirt/images/ablestack-powerflex-scvm-template.qcow2 /var/lib/libvirt/images/scvm.qcow2")
+        if check_err != 0 :
+            success_bool = False
+    else:
+        check_err = os.system("/usr/bin/cp -f /var/lib/libvirt/images/ablestack-template-back.qcow2 /var/lib/libvirt/images/scvm.qcow2")
+        if check_err != 0 :
+            success_bool = False
     # scvm.qcow2 파일 권한 설정
     check_err = os.system("chmod 666 /var/lib/libvirt/images/scvm.qcow2")
     if check_err != 0 :
         success_bool = False
-    
+
     # vmconfig/scvm 설정 파일 백업
     check_err = os.system("/usr/bin/cp -rf /usr/share/cockpit/ablestack/tools/vmconfig/ /usr/share/ablestack/")
     if check_err != 0 :
         success_bool = False
 
-    # virsh 초기화   
+    # virsh 초기화
     check_err = os.system("virsh define "+pluginpath+"/tools/vmconfig/scvm/scvm.xml > /dev/null")
     if check_err != 0 :
         success_bool = False

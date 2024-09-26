@@ -1,7 +1,8 @@
 {
     "bootstrap": {
         "scvm": "false",
-        "ccvm": "false"
+        "ccvm": "false",
+        "pfmp": "false"
     },
     "monitoring": {
         "wall": "false"

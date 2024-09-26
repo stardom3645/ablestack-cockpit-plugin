@@ -1,5 +1,5 @@
-<!-- 
-* File Name : gateway-vm-wizard.html  
+<!--
+* File Name : gateway-vm-wizard.html
 * Date Created : 2023.05.08
 * Writer  : 배태주
 * Description : ABLESTACK 게이트웨이 VM을 배포하기 위한 절차를 진행하는 마법사 Modal 대화상자
@@ -14,7 +14,7 @@
                 </button>
                 <h1 class="pf-c-title pf-m-3xl pf-c-wizard__title">ABLESTACK 게이트웨이 VM 배포 마법사</h1>
                 <p class="pf-c-wizard__description">ABLESTACK 클러스터에 Glue 공유스토리지 게이트웨이를 실행하는 가상머신 어플라이언스를 배포합니다. </p>
-            </div>    
+            </div>
             <div class="pf-c-wizard__outer-wrap">
                 <div class="pf-c-wizard__inner-wrap">
                     <nav class="pf-c-wizard__nav" aria-label="Steps">
@@ -54,7 +54,7 @@
                         <div class="pf-c-wizard__main-body" id="div-modal-wizard-gateway-vm-overview">
                             <div class="pf-c-content">
                                 <p>
-                                    ABLESTACK 게이트웨이 VM을 배포하기 위해 필요한 정보를 다음과 같이 마법사를 통해 입력받습니다.    
+                                    ABLESTACK 게이트웨이 VM을 배포하기 위해 필요한 정보를 다음과 같이 마법사를 통해 입력받습니다.
                                 </p>
                                 <ul>
                                     <li>게이트웨이 VM의 HA구성을 위한 클러스터 설정 정보</li>
@@ -63,7 +63,7 @@
                                     <li>호스트 및 가상머신 간의 상호 SSH 연결을 위한 SSH Key 정보</li>
                                 </ul>
                                 <p>
-                                    필요한 정보를 먼저 준비하십시오. 정보가 준비되었다면 "다음" 버튼을 눌러 게이트웨이 VM 배포를 시작합니다. 
+                                    필요한 정보를 먼저 준비하십시오. 정보가 준비되었다면 "다음" 버튼을 눌러 게이트웨이 VM 배포를 시작합니다.
                                 </p>
                             </div>
                         </div>
@@ -71,7 +71,7 @@
                             <div class="pf-c-content">
                                 <p>
                                     장애조치 클러스터는 게이트웨이 VM이 실행 중인 호스트에 장애가 발생하는 경우 게이트웨이 VM을 안전하게 다른 호스트에서 실행하도록 하기 위해 구성합니다.
-                                    장애조치 클러스터를 구성하기 위해 필요한 정보를 아래에 입력하십시오. 
+                                    장애조치 클러스터를 구성하기 위해 필요한 정보를 아래에 입력하십시오.
                                 </p>
                                 <form novalidate class="pf-c-form pf-m-horizontal" style="margin-left:15px;margin-top:32px">
                                     <section class="pf-c-form__section">
@@ -167,7 +167,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        
+
                                     </section>
                                 </form>
                                 <br/>
@@ -190,7 +190,7 @@
                         <div class="pf-c-wizard__main-body" id="div-modal-wizard-gateway-vm-compute">
                             <div class="pf-c-content">
                                 <p>
-                                    게이트웨이 VM의 CPU 및 Memory, ROOT Disk 등의 정보를 설정합니다. 
+                                    게이트웨이 VM의 CPU 및 Memory, ROOT Disk 등의 정보를 설정합니다.
                                     아래의 항목에 적합한 값을 선택하여 입력하십시오.
                                 </p>
                                 <form novalidate class="pf-c-form pf-m-horizontal" style="margin-left:15px;margin-top:32px">
@@ -262,7 +262,7 @@
                         <div class="pf-c-wizard__main-body" id="div-modal-wizard-gateway-vm-network">
                             <div class="pf-c-content">
                                 <p>
-                                    게이트웨이 VM이 사용할 관리 네트워크용 NIC 정보를 설정합니다. 
+                                    게이트웨이 VM이 사용할 관리 네트워크용 NIC 정보를 설정합니다.
                                     아래의 항목에 적합한 값을 선택하여 입력하십시오.
                                 </p>
                                 <form novalidate class="pf-c-form pf-m-horizontal" style="margin-left:15px;margin-top:32px">
@@ -282,7 +282,7 @@
                                                 <div class="pf-c-check">
                                                     <input class="pf-c-check__input" type="checkbox" id="form-checkbox-svc-network" name="form-checkbox-svc-network" checked disabled/>
                                                     <label class="pf-c-check__label" style="margin-top:5px" for="form-checkbox-svc-network">스토리지네트워크</label>
-                                                </div>    
+                                                </div>
                                             </div>
                                         </div>
                                         <div class="pf-c-form__field-group">
@@ -332,8 +332,8 @@
                                     <div class="pf-c-alert__description">
                                         <p>게이트웨이 기싱머신 스토리지 서비스에 접근하고자 하는 네트워크 위치에 따라 가상머신에 할당할 네트워크와 네트워크의 상위 브릿지를 선택합니다. </p>
                                         <p>
-                                            관리네트워크는 호스트를 관리하기 위해 필수적인 네트워크이며, 기본 선택되어 있고, 선택 여부를 변경할 수 없습니다. 
-                                            서비스네트워크는 사용자가 접근하고자 하는 네트워크 위치이며, 관리네트워크와 서비스네트워크가 다른 경우 선택합니다. 
+                                            관리네트워크는 호스트를 관리하기 위해 필수적인 네트워크이며, 기본 선택되어 있고, 선택 여부를 변경할 수 없습니다.
+                                            서비스네트워크는 사용자가 접근하고자 하는 네트워크 위치이며, 관리네트워크와 서비스네트워크가 다른 경우 선택합니다.
                                         </p>
                                         <p>가상머신에 네트워크를 할당하기 전에 반드시 상위 브릿지를 먼저 생성해야 합니다. </p>
                                     </div>
@@ -373,7 +373,7 @@
                                                 </label>
                                             </div>
                                             <div class="pf-c-form__group-control">
-                                                <input class="pf-c-form-control" style="width:60%" type="text" id="form-input-current-host-name-gwvm" name="form-input-current-host-name-gwvm" required="required" disabled/> 
+                                                <input class="pf-c-form-control" style="width:60%" type="text" id="form-input-current-host-name-gwvm" name="form-input-current-host-name-gwvm" required="required" disabled/>
                                             </div>
                                         </div>
                                         <div class="pf-c-form__group">
@@ -484,7 +484,7 @@
                                     </p>
                                     <div class="pf-c-alert__description">
                                         <p>
-                                            SSH Key는 호스트 및 게이트웨이, 클라우드센터, 스토리지센터 가상머신 등의 ABLESTACK 구성요소 간의 암호화된 인증을 위해 사용됩니다. 
+                                            SSH Key는 호스트 및 게이트웨이, 클라우드센터, 스토리지센터 가상머신 등의 ABLESTACK 구성요소 간의 암호화된 인증을 위해 사용됩니다.
                                         </p>
                                         <p>
                                             호스트 간, 가상머신 간의 모든 명령은 SSH를 이용해 전달되며 이 때 SSH Key를 이용해 인증을 처리합니다. 따라서 모든 호스트, 가상머신은 동일한 SSH Key를 사용해야 합니다.
@@ -496,11 +496,11 @@
                         <div class="pf-c-wizard__main-body" id="div-modal-wizard-gateway-vm-review">
                             <div class="pf-c-content">
                                 <p>
-                                    게이트웨이 VM의 배포를 위해 입력한 설정 정보는 다음과 같습니다. 
-                                    입력한 정보를 수정하고자 하는 경우, 해당 탭으로 이동하여 정보를 수정하십시오. 
+                                    게이트웨이 VM의 배포를 위해 입력한 설정 정보는 다음과 같습니다.
+                                    입력한 정보를 수정하고자 하는 경우, 해당 탭으로 이동하여 정보를 수정하십시오.
                                     <br/>
                                     <br/>
-                                    모든 정보를 확인한 후 "배포"를 시작합니다. 
+                                    모든 정보를 확인한 후 "배포"를 시작합니다.
                                 </p>
                             </div>
                             <div class="pf-c-accordion" style="margin-top:32px;margin-left:10px">
@@ -737,7 +737,7 @@
                         </div>
                         <div class="pf-c-wizard__main-body" id="div-modal-wizard-gateway-vm-deploy">
                             <p id='gwvm-progress-step-text'>
-                                게이트웨이 가상머신을 배포 중입니다. 전체 5단계 중 1단계 진행 중입니다.  
+                                게이트웨이 가상머신을 배포 중입니다. 전체 5단계 중 1단계 진행 중입니다.
                             </p>
 
                             <div class="pf-c-content" style="margin-top:30px;margin-left:15px">
@@ -794,7 +794,7 @@
                         <div class="pf-c-wizard__main-body" id="div-modal-wizard-gateway-vm-finish">
                             <div class="pf-c-content">
                                 <p>
-                                    게이트웨이 VM의 배포를 완료했습니다. 가상머신이 배포되면 다음의 작업을 수행해야 합니다. 
+                                    게이트웨이 VM의 배포를 완료했습니다. 가상머신이 배포되면 다음의 작업을 수행해야 합니다.
                                 </p>
                                 <ul>
                                     <li>게이트웨이 VM의 웹관리콘솔에 접속</li>
@@ -802,7 +802,7 @@
                                     <li>가상머신 생성을 위한 각종 정책 준비</li>
                                 </ul>
                                 <p>
-                                    위의 모든 작업은 게이트웨이 VM의 웹 관리콘솔을 이용해 진행합니다. 
+                                    위의 모든 작업은 게이트웨이 VM의 웹 관리콘솔을 이용해 진행합니다.
                                 </p>
                             </div>
                         </div>
@@ -836,7 +836,7 @@
                 </div>
             </div>
             <!-- 게이트웨이 가상머신 배포 마법사 진행: Modal 영역 끝 -->
-            
+
             <!-- 게이트웨이 가상머신 배포 마법사 취소: Modal 영역 시작 -->
             <div id="div-modal-cancel-gateway-wizard-cancel" class="pf-c-backdrop" style="display:none" >
                 <div class="pf-l-bullseye">
@@ -865,4 +865,4 @@
 <script src="./src/common/wizard-common.js"></script>
 <script src="./src/common/validation.js"></script>
 <script src="./src/features/glue/gateway-vm-wizard.js"></script>
-<!-- 해당 페이지에 필요한 javascript 파일 추가 영역 끝 --> 
+<!-- 해당 페이지에 필요한 javascript 파일 추가 영역 끝 -->

@@ -15,11 +15,11 @@ import argparse
 from subprocess import check_output
 from ablestack import *
 
-
+json_file_path = pluginpath+"/tools/properties/cluster.json"
 # 함수명 : createArgumentParser
 # 주요 기능 : 입력된 argument를 파싱하여 dictionary 처럼 사용하게 만들어 주는 parser 생성
 def createArgumentParser():
-   
+
     tmp_parser = argparse.ArgumentParser(description='스토리지 및 클라우드 관련 연결 주소를 생성하는 프로그램',
                                          epilog='copyrightⓒ 2021 All rights reserved by ABLECLOUD™')
 
@@ -30,16 +30,28 @@ def createArgumentParser():
 
     return tmp_parser
 
+def openClusterJson():
+    try:
+        with open(json_file_path, 'r') as json_file:
+            ret = json.load(json_file)
+    except Exception as e:
+        ret = createReturn(code=500, val='cluster.json read error')
+        print ('EXCEPTION : ',e)
+
+    return ret
+
+json_data = openClusterJson()
+os_type = json_data["clusterConfig"]["type"]
 
 # 함수명 : cloudCenter
-# 주요 기능 : 클라우드센터 및 가상머신 연결 주소 생성 
+# 주요 기능 : 클라우드센터 및 가상머신 연결 주소 생성
 def cloudCenter(action, H=False):
 
     ip = socket.gethostbyname('ccvm-mngt')
 
     if action == 'cloudCenter':
         try:
-            # 클라우드센터 
+            # 클라우드센터
             value = "http://"+ip+":8080"
             request = requests.get(value)
 
@@ -47,21 +59,21 @@ def cloudCenter(action, H=False):
              # http 접속되지않는 경우
             return createReturn(code=500, val="클라우드센터에 정상적으로 연결되지 않습니다. <br>클라우드센터 서비스 상태를 확인하거나, 잠시 후에 다시 시도해주십시오.")
 
-    if H: 
-        return json.dumps(json.loads(createReturn(code=200, val=value, retname=action)), indent=4) 
+    if H:
+        return json.dumps(json.loads(createReturn(code=200, val=value, retname=action)), indent=4)
 
     return createReturn(code=200, val=value, retname=action)
 
 
 # 함수명 : wallCenter
-# 주요 기능 : Wall 모니터링 센터 연결 주소 생성 
+# 주요 기능 : Wall 모니터링 센터 연결 주소 생성
 def wallCenter(action, H=False):
 
     ip = socket.gethostbyname('ccvm-mngt')
 
     if action == 'wallCenter':
         try:
-            # 클라우드센터 
+            # 클라우드센터
             value = "http://"+ip+":3000/login"
             request = requests.get(value)
 
@@ -73,47 +85,54 @@ def wallCenter(action, H=False):
         # 클라우드센터 가상머신
         value = 'https://'+ip+':3000/login'
 
-    if H: 
-        return json.dumps(json.loads(createReturn(code=200, val=value, retname=action)), indent=4) 
+    if H:
+        return json.dumps(json.loads(createReturn(code=200, val=value, retname=action)), indent=4)
 
     return createReturn(code=200, val=value, retname=action)
 
 
 # 함수명 : storageCenter
-# 주요 기능 : 스토리지센터 및 가상머신 연결 주소 생성 
+# 주요 기능 : 스토리지센터 및 가상머신 연결 주소 생성
 def storageCenter(action, H=False):
 
     if action == 'storageCenter':
         try:
-            # 스토리지센터
-            mgr = check_output(['ceph', 'mgr', 'stat'], universal_newlines=True)
-            mgr_json = json.loads(mgr)
-        
-            if "active_name" in mgr_json and mgr_json['active_name'] is not None:
-                mgr_name = mgr_json['active_name'].split('.')
-                ip = socket.gethostbyname(mgr_name[0]+'-mngt')
-                value = 'https://'+ip+':8443'
-            else: 
+            if (os_type == "ABLESTACK-HCI" or os_type == "ABLESTACK-GlueGFS") :
+                # 스토리지센터
+                mgr = check_output(['ceph', 'mgr', 'stat'], universal_newlines=True)
+                mgr_json = json.loads(mgr)
+
+                if "active_name" in mgr_json and mgr_json['active_name'] is not None:
+                    mgr_name = mgr_json['active_name'].split('.')
+                    ip = socket.gethostbyname(mgr_name[0]+'-mngt')
+                    value = 'https://'+ip+':8443'
+                else:
                 # ceph 명령어는 정상적으로 전송되지만 ceph mgr module이 활성화되지 않은 경우
-                return createReturn(code=500, val="ceph mgr module이 활성화되지 않았습니다. <br>mgr 상태를 확인하십시오.")
-                
+                    return createReturn(code=500, val="ceph mgr module이 활성화되지 않았습니다. <br>mgr 상태를 확인하십시오.")
+            elif os_type == "PowerFlex":
+                    ip = socket.gethostbyname('scvm-mngt')
+                    value = 'https://'+ip
         except:
              # ceph 설치가 되어있지 않은 경우
             return createReturn(code=500, val="ceph 명령어 실행에 실패하였습니다. <br>호스트의 ceph 설정 파일을 확인하십시오.")
 
     else:
-        # 스토리지센터 가상머신        
-        ip = socket.gethostbyname('scvm-mngt')
-        value = 'https://'+ip+':9090'
+        # 스토리지센터 가상머신
+        if os_type == "PowerFlex":
+            ip = socket.gethostbyname('scvm-mngt')
+            value = 'https://'+ip
+        else:
+            ip = socket.gethostbyname('scvm-mngt')
+            value = 'https://'+ip+':9090'
 
-    if H: 
-        return json.dumps(json.loads(createReturn(code=200, val=value, retname=action)), indent=4) 
+    if H:
+        return json.dumps(json.loads(createReturn(code=200, val=value, retname=action)), indent=4)
 
     return createReturn(code=200, val=value, retname=action)
 
 
 # 함수명 : createAddressAction
-# 주요 기능 : 파라미터에 따른 함수 호출 
+# 주요 기능 : 파라미터에 따른 함수 호출
 def createAddressAction(action, H):
 
     if action == 'cloudCenterVm':
@@ -137,10 +156,10 @@ if __name__ == '__main__':
     parser = createArgumentParser()
     args = parser.parse_args()
     verbose = (5 - args.verbose) * 10
-    
+
     # 로깅을 위한 logger 생성, 모든 인자에 default 인자가 있음.
     logger = createLogger(verbosity=logging.CRITICAL, file_log_level=logging.ERROR, log_file='test.log')
-   
+
     # 실제 로직 부분 호출 및 결과 출력
     ret = createAddressAction(args.action, H=args.H)
     print(ret)

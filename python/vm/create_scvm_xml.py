@@ -8,6 +8,7 @@ Copyright (c) 2021 ABLECLOUD Co. Ltd
 # -*- coding: utf-8 -*-
 
 import argparse
+import json
 import logging
 import sys
 import fileinput
@@ -77,6 +78,17 @@ def createArgumentParser():
 
     return parser
 
+json_file_path = pluginpath+"/tools/properties/cluster.json"
+
+def openClusterJson():
+    try:
+        with open(json_file_path, 'r') as json_file:
+            ret = json.load(json_file)
+    except Exception as e:
+        ret = createReturn(code=500, val='cluster.json read error')
+        print ('EXCEPTION : ',e)
+
+    return ret
 
 def generateMacAddress():
 
@@ -99,6 +111,9 @@ def generateDecToHex():
         hex_list.append(hex(num))
     return hex_list
 
+json_data = openClusterJson()
+os_type = json_data["clusterConfig"]["type"]
+
 def createScvmXml(args):
     try:
         alphabet = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z',]
@@ -107,7 +122,10 @@ def createScvmXml(args):
         br_num = 0
 
         # 생성할 가상머신 xml 템플릿
-        os.system("/usr/bin/cp -f "+pluginpath+"/tools/xml-template/scvm-xml-template.xml "+pluginpath+"/tools/vmconfig/scvm/scvm-temp.xml")
+        if os_type == "PowerFlex":
+            os.system("/usr/bin/cp -f "+pluginpath+"/tools/xml-template/powerflex-scvm-xml-template.xml "+pluginpath+"/tools/vmconfig/scvm/scvm-temp.xml")
+        else:
+            os.system("/usr/bin/cp -f "+pluginpath+"/tools/xml-template/scvm-xml-template.xml "+pluginpath+"/tools/vmconfig/scvm/scvm-temp.xml")
 
         template_file = pluginpath+'/tools/vmconfig/scvm/scvm-temp.xml'
 

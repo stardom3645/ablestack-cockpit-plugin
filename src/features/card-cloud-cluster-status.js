@@ -703,6 +703,7 @@ function CardCloudClusterStatus(){
                     console.log('ClusterStatusInfo spawn error(ablestackJson.py');
             });
             var retVal = JSON.parse(data);
+            console.log(retVal);
             if(retVal.code == '200'){
                 var nodeText = '( ';
                 var selectHtml = '<option selected="" value="null">노드를 선택해주세요.</option>';
@@ -940,3 +941,4 @@ function wall_link_go(){
             //console.log(":::Error:::");
         });
 }
+
