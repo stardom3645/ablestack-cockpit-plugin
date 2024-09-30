@@ -93,7 +93,7 @@ $('#button-close-modal-wizard-cloud-vm').on('click', function(){
 $('#nav-button-cloud-vm-overview').on('click',function(){
     resetCloudVMWizard();
 
-    if (os_type != "ABLESTACK-HCI" || os_type != "ABLESTACK-GlueGFS"){
+    if (os_type != "ABLESTACK-HCI" && os_type != "ABLESTACK-GlueGFS"){
         $('#gfs-li').show();
         $('#gfs-li').text("일반 가상화를 위한 각 호스트의 IPMI 정보");
     }
@@ -186,7 +186,7 @@ $('#nav-button-cloud-vm-ssh-key').on('click',function(){
     $('#button-before-step-modal-wizard-cloud-vm').attr('disabled', false);
     $('#button-cancel-config-modal-wizard-cloud-vm').attr('disabled', false);
 
-    if (os_type != "ABLESTACK-HCI" || os_type != "ABLESTACK-GlueGFS"){
+    if (os_type != "ABLESTACK-HCI" && os_type != "ABLESTACK-GlueGFS"){
         cur_step_wizard_cloud_vm = "6";
     }
     cur_step_wizard_cloud_vm = "5";
@@ -202,7 +202,7 @@ $('#nav-button-cloud-vm-cluster').on('click',function(){
     $('#button-before-step-modal-wizard-cloud-vm').attr('disabled', false);
     $('#button-cancel-config-modal-wizard-cloud-vm').attr('disabled', false);
 
-    if (os_type != "ABLESTACK-HCI" || os_type != "ABLESTACK-GlueGFS"){
+    if (os_type != "ABLESTACK-HCI" && os_type != "ABLESTACK-GlueGFS"){
         cur_step_wizard_cloud_vm = "7";
     }
     cur_step_wizard_cloud_vm = "6";
@@ -223,7 +223,7 @@ $('#nav-button-cloud-vm-review').on('click',function(){
     $('#button-before-step-modal-wizard-cloud-vm').attr('disabled', false);
     $('#button-cancel-config-modal-wizard-cloud-vm').attr('disabled', false);
 
-    if (os_type != "ABLESTACK-HCI" || os_type != "ABLESTACK-GlueGFS"){
+    if (os_type != "ABLESTACK-HCI" && os_type != "ABLESTACK-GlueGFS"){
         cur_step_wizard_cloud_vm = "8";
     }
     cur_step_wizard_cloud_vm = "7";
@@ -240,7 +240,7 @@ $('#nav-button-cloud-vm-finish').on('click',function(){
     $('#button-before-step-modal-wizard-cloud-vm').attr('disabled', true);
     $('#button-cancel-config-modal-wizard-cloud-vm').attr('disabled', false);
 
-    if (os_type != "ABLESTACK-HCI" || os_type != "ABLESTACK-GlueGFS"){
+    if (os_type != "ABLESTACK-HCI" && os_type != "ABLESTACK-GlueGFS"){
         cur_step_wizard_cloud_vm = "9";
     }
     cur_step_wizard_cloud_vm = "8";
@@ -252,7 +252,7 @@ $('#nav-button-cloud-vm-finish').on('click',function(){
 
 $('#button-next-step-modal-wizard-cloud-vm').on('click', function(){
     // OS Type이 ABLESTACK이 아닐 때의 다음버튼의 행동 처리
-    if (os_type != "ABLESTACK-HCI" || os_type != "ABLESTACK-GlueGFS"){
+    if (os_type !== "ABLESTACK-HCI" && os_type !== "ABLESTACK-GlueGFS"){
         if (cur_step_wizard_cloud_vm == "1") {
             resetCloudVMWizard();
 
@@ -441,7 +441,7 @@ $('#button-next-step-modal-wizard-cloud-vm').on('click', function(){
 
 $('#button-before-step-modal-wizard-cloud-vm').on('click', function(){
         // OS Type이 ABLESTACK이 아닐 때의 이전버튼의 행동 처리
-    if (os_type != "ABLESTACK-HCI" || os_type != "ABLESTACK-GlueGFS"){
+    if (os_type != "ABLESTACK-HCI" && os_type != "ABLESTACK-GlueGFS"){
         if (cur_step_wizard_cloud_vm == "1") {
             // 이벤트 처리 없음
         }
@@ -845,7 +845,7 @@ $('#button-execution-modal-cloud-wizard-confirm').on('click', function () {
     $('#div-modal-cloud-wizard-confirm').hide();
     if(validateCloudCenterVm()){
         deployCloudCenterVM();
-        if(os_type != "ABLESTACK-HCI" || os_type != "ABLESTACK-GlueGFS"){
+        if(os_type != "ABLESTACK-HCI" && os_type != "ABLESTACK-GlueGFS"){
             cur_step_wizard_cloud_vm = "9";
         }
         cur_step_wizard_cloud_vm = "8";
@@ -999,7 +999,7 @@ function deployCloudCenterVM() {
     setProgressStep("span-ccvm-progress-step1",1);
     var console_log = true;
     createLoggerInfo("deployCloudCenterVM start");
-    var host_ping_test_and_cluster_config_cmd = ['python3', pluginpath + '/python/cluster/cluster_config.py', 'insertScvmHost', '-js', ret_json_string, '-cmi', mgmt_ip, '-pcl', host1_name, host2_name, host3_name];
+    var host_ping_test_and_cluster_config_cmd = ['python3', pluginpath + '/python/cluster/cluster_config.py', 'insertScvmHost', '-t', os_type, '-js', ret_json_string, '-cmi', mgmt_ip, '-pcl', host1_name, host2_name, host3_name];
     if(console_log){console.log(host_ping_test_and_cluster_config_cmd);}
     cockpit.spawn(host_ping_test_and_cluster_config_cmd)
         .then(function(data){
@@ -1144,6 +1144,8 @@ function deployCloudCenterVM() {
     }else{
     //=========== 1. 클러스터 구성 host 네트워크 연결 및 초기화 작업 ===========
     var all_host_name = host1_name + ' ' + host2_name + ' ' + host3_name;
+    $('#span-ccvm-progress-step1').text("클러스터 구성 Host 네트워크 연결 및 초기화 작업");
+    $('#span-ccvm-progress-step2').text("GFS 구성 설정 및 PCS 설정");
     setProgressStep("span-ccvm-progress-step1",1);
     var console_log = true;
     createLoggerInfo("deployCloudCenterVM start");
@@ -1922,78 +1924,80 @@ function validateCloudCenterVm(){
         validate_check = false;
     } else if (pcsHostPnIpCheck(host_file_type, pcs_host3, option_ccvm)) { //host3 name
         validate_check = false;
-    } else if (ipmi_check_value == "one" && $('#form-input-individual-credentials-ipmi-ip1').val() == ''){
-        alert("1번 호스트 IPMI IP를 입력해주세요.");
-        validate_check = false;
-    }else if (ipmi_check_value == "one" && !checkIp($('#form-input-individual-credentials-ipmi-ip1').val())){
-        alert("1번 호스트 IPMI IP 형식을 확인해주세요.");
-        validate_check = false;
-    } else if (ipmi_check_value == "one" && $('#form-input-individual-credentials-ipmi-user1').val() == ''){
-        alert("1번 호스트 IPMI 아이디를 입력해주세요.");
-        validate_check = false;
-    } else if (ipmi_check_value == "one" && ($('#form-input-individual-credentials-ipmi-password1-check').val() == '' || $('#form-input-individual-credentials-ipmi-password1').val() == '')){
-        alert("1번 호스트 IPMI 비밀번호를 입력해주세요.");
-        validate_check = false;
-    } else if (ipmi_check_value == "one" && ($('#form-input-individual-credentials-ipmi-password1').val() != $('#form-input-individual-credentials-ipmi-password1-check').val())){
-        alert("1번 호스트 IPMI 비밀번호를 확인해주세요.");
-        validate_check = false;
-    } else if (ipmi_check_value == "one" && $('#form-input-individual-credentials-ipmi-ip2').val() == ''){
-        alert("2번 호스트 IPMI IP를 입력해주세요.");
-        validate_check = false;
-    }else if (ipmi_check_value == "one" && !checkIp($('#form-input-individual-credentials-ipmi-ip2').val())){
-        alert("2번 호스트 IPMI IP 형식을 확인해주세요.");
-        validate_check = false;
-    } else if (ipmi_check_value == "one" && $('#form-input-individual-credentials-ipmi-user2').val() == ''){
-        alert("2번 호스트 IPMI 아이디를 입력해주세요.");
-        validate_check = false;
-    } else if (ipmi_check_value == "one" && ($('#form-input-individual-credentials-ipmi-password2-check').val() == '' || $('#form-input-individual-credentials-ipmi-password2').val() == '')){
-        alert("2번 호스트 IPMI 비밀번호를 입력해주세요.");
-        validate_check = false;
-    } else if (ipmi_check_value == "one" && ($('#form-input-individual-credentials-ipmi-password2').val() != $('#form-input-individual-credentials-ipmi-password2-check').val())){
-        alert("2번 호스트 IPMI 비밀번호를 확인해주세요.");
-        validate_check = false;
-    } else if (ipmi_check_value == "one" && $('#form-input-individual-credentials-ipmi-ip2').val() == ''){
-        alert("3번 호스트 IPMI IP를 입력해주세요.");
-        validate_check = false;
-    }else if (ipmi_check_value == "one" && !checkIp($('#form-input-individual-credentials-ipmi-ip3').val())){
-        alert("3번 호스트 IPMI IP 형식을 확인해주세요.");
-        validate_check = false;
-    } else if (ipmi_check_value == "one" && $('#form-input-individual-credentials-ipmi-user3').val() == ''){
-        alert("3번 호스트 IPMI 아이디를 입력해주세요.");
-        validate_check = false;
-    } else if (ipmi_check_value == "one" && ($('#form-input-individual-credentials-ipmi-password3-check').val() == '' || $('#form-input-individual-credentials-ipmi-password3').val() == '')){
-        alert("3번 호스트 IPMI 비밀번호를 입력해주세요.");
-        validate_check = false;
-    } else if (ipmi_check_value == "one" && (('#form-input-individual-credentials-ipmi-password3').val() != $('#form-input-individual-credentials-ipmi-password3-check').val())){
-        alert("3번 호스트 IPMI 비밀번호를 확인해주세요.");
-        validate_check = false;
-    } else if (ipmi_check_value == "many" && ($('#form-input-common-credentials-ipmi-ip1').val() == '')){
-        alert("1번 호스트 IPMI IP를 입력해주세요.");
-        validate_check = false;
-    } else if (ipmi_check_value == "many" && !checkIp($('#form-input-common-credentials-ipmi-ip1').val())){
-        alert("1번 호스트 IPMI IP 형식을 확인해주세요.");
-        validate_check = false;
-    } else if (ipmi_check_value == "many" && ($('#form-input-common-credentials-ipmi-ip2').val() == '')){
-        alert("2번 호스트 IPMI IP를 입력해주세요.");
-        validate_check = false;
-    } else if (ipmi_check_value == "many" && !checkIp($('#form-input-common-credentials-ipmi-ip2').val())){
-        alert("2번 호스트 IPMI IP 형식을 확인해주세요.");
-        validate_check = false;
-    } else if (ipmi_check_value == "many" && ($('#form-input-common-credentials-ipmi-ip3').val() == '')){
-        alert("3번 호스트 IPMI IP를 입력해주세요.");
-        validate_check = false;
-    } else if (ipmi_check_value == "many" && !checkIp($('#form-input-common-credentials-ipmi-ip3').val())){
-        alert("3번 호스트 IPMI IP 형식을 확인해주세요.");
-        validate_check = false;
-    } else if (ipmi_check_value == "many" && $('#form-input-common-credentials-ipmi-user').val() == ''){
-        alert("모든 호스트 IPMI 아이디를 입력해주세요.");
-        validate_check = false;
-    } else if (ipmi_check_value == "many" && ($('#form-input-common-credentials-ipmi-password').val() == '' || $('#form-input-common-credentials-ipmi-password-check').val() == '')){
-        alert("모든 호스트 IPMI 비밀번호를 입력해주세요.");
-        validate_check = false;
-    }else if (ipmi_check_value == "many" && ($('#form-input-common-credentials-ipmi-password').val() != $('#form-input-common-credentials-ipmi-password-check').val())){
-        alert("모든 호스트 IPMI 비밀번호를 확인해주세요.");
-        validate_check = false;
+    } else if(os_type == "PowerFlex"){
+        if (ipmi_check_value == "one" && $('#form-input-individual-credentials-ipmi-ip1').val() == ''){
+            alert("1번 호스트 IPMI IP를 입력해주세요.");
+            validate_check = false;
+        }else if (ipmi_check_value == "one" && !checkIp($('#form-input-individual-credentials-ipmi-ip1').val())){
+            alert("1번 호스트 IPMI IP 형식을 확인해주세요.");
+            validate_check = false;
+        } else if (ipmi_check_value == "one" && $('#form-input-individual-credentials-ipmi-user1').val() == ''){
+            alert("1번 호스트 IPMI 아이디를 입력해주세요.");
+            validate_check = false;
+        } else if (ipmi_check_value == "one" && ($('#form-input-individual-credentials-ipmi-password1-check').val() == '' || $('#form-input-individual-credentials-ipmi-password1').val() == '')){
+            alert("1번 호스트 IPMI 비밀번호를 입력해주세요.");
+            validate_check = false;
+        } else if (ipmi_check_value == "one" && ($('#form-input-individual-credentials-ipmi-password1').val() != $('#form-input-individual-credentials-ipmi-password1-check').val())){
+            alert("1번 호스트 IPMI 비밀번호를 확인해주세요.");
+            validate_check = false;
+        } else if (ipmi_check_value == "one" && $('#form-input-individual-credentials-ipmi-ip2').val() == ''){
+            alert("2번 호스트 IPMI IP를 입력해주세요.");
+            validate_check = false;
+        }else if (ipmi_check_value == "one" && !checkIp($('#form-input-individual-credentials-ipmi-ip2').val())){
+            alert("2번 호스트 IPMI IP 형식을 확인해주세요.");
+            validate_check = false;
+        } else if (ipmi_check_value == "one" && $('#form-input-individual-credentials-ipmi-user2').val() == ''){
+            alert("2번 호스트 IPMI 아이디를 입력해주세요.");
+            validate_check = false;
+        } else if (ipmi_check_value == "one" && ($('#form-input-individual-credentials-ipmi-password2-check').val() == '' || $('#form-input-individual-credentials-ipmi-password2').val() == '')){
+            alert("2번 호스트 IPMI 비밀번호를 입력해주세요.");
+            validate_check = false;
+        } else if (ipmi_check_value == "one" && ($('#form-input-individual-credentials-ipmi-password2').val() != $('#form-input-individual-credentials-ipmi-password2-check').val())){
+            alert("2번 호스트 IPMI 비밀번호를 확인해주세요.");
+            validate_check = false;
+        } else if (ipmi_check_value == "one" && $('#form-input-individual-credentials-ipmi-ip2').val() == ''){
+            alert("3번 호스트 IPMI IP를 입력해주세요.");
+            validate_check = false;
+        }else if (ipmi_check_value == "one" && !checkIp($('#form-input-individual-credentials-ipmi-ip3').val())){
+            alert("3번 호스트 IPMI IP 형식을 확인해주세요.");
+            validate_check = false;
+        } else if (ipmi_check_value == "one" && $('#form-input-individual-credentials-ipmi-user3').val() == ''){
+            alert("3번 호스트 IPMI 아이디를 입력해주세요.");
+            validate_check = false;
+        } else if (ipmi_check_value == "one" && ($('#form-input-individual-credentials-ipmi-password3-check').val() == '' || $('#form-input-individual-credentials-ipmi-password3').val() == '')){
+            alert("3번 호스트 IPMI 비밀번호를 입력해주세요.");
+            validate_check = false;
+        } else if (ipmi_check_value == "one" && (('#form-input-individual-credentials-ipmi-password3').val() != $('#form-input-individual-credentials-ipmi-password3-check').val())){
+            alert("3번 호스트 IPMI 비밀번호를 확인해주세요.");
+            validate_check = false;
+        } else if (ipmi_check_value == "many" && ($('#form-input-common-credentials-ipmi-ip1').val() == '')){
+            alert("1번 호스트 IPMI IP를 입력해주세요.");
+            validate_check = false;
+        } else if (ipmi_check_value == "many" && !checkIp($('#form-input-common-credentials-ipmi-ip1').val())){
+            alert("1번 호스트 IPMI IP 형식을 확인해주세요.");
+            validate_check = false;
+        } else if (ipmi_check_value == "many" && ($('#form-input-common-credentials-ipmi-ip2').val() == '')){
+            alert("2번 호스트 IPMI IP를 입력해주세요.");
+            validate_check = false;
+        } else if (ipmi_check_value == "many" && !checkIp($('#form-input-common-credentials-ipmi-ip2').val())){
+            alert("2번 호스트 IPMI IP 형식을 확인해주세요.");
+            validate_check = false;
+        } else if (ipmi_check_value == "many" && ($('#form-input-common-credentials-ipmi-ip3').val() == '')){
+            alert("3번 호스트 IPMI IP를 입력해주세요.");
+            validate_check = false;
+        } else if (ipmi_check_value == "many" && !checkIp($('#form-input-common-credentials-ipmi-ip3').val())){
+            alert("3번 호스트 IPMI IP 형식을 확인해주세요.");
+            validate_check = false;
+        } else if (ipmi_check_value == "many" && $('#form-input-common-credentials-ipmi-user').val() == ''){
+            alert("모든 호스트 IPMI 아이디를 입력해주세요.");
+            validate_check = false;
+        } else if (ipmi_check_value == "many" && ($('#form-input-common-credentials-ipmi-password').val() == '' || $('#form-input-common-credentials-ipmi-password-check').val() == '')){
+            alert("모든 호스트 IPMI 비밀번호를 입력해주세요.");
+            validate_check = false;
+        }else if (ipmi_check_value == "many" && ($('#form-input-common-credentials-ipmi-password').val() != $('#form-input-common-credentials-ipmi-password-check').val())){
+            alert("모든 호스트 IPMI 비밀번호를 확인해주세요.");
+            validate_check = false;
+        }
     }
 
     return validate_check;
@@ -2079,8 +2083,11 @@ function resetIpmiValues(){
  * History  : 2024.09.11 최초 작성
  */
 function SetGfsDisplay(){
-    if (os_type != "ABLESTACK-HCI" || os_type != "ABLESTACK-GlueGFS"){
+    console.log(os_type)
+    if (os_type != "ABLESTACK-HCI" && os_type != "ABLESTACK-GlueGFS"){
         $('#nav-button-cloud-vm-ipmi').show();
         $('#div-accordion-cloud-ipmi').show();
+        $('#span-ccvm-progress-step2-text').text("GFS 구성 설정 및 Pcs 설정");
+        $('#span-ccvm-progress-step1-text').text("클러스터 구성 HOST 네트워크 연결 및 초기화 작업");
     }
 }

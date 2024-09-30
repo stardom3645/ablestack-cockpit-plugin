@@ -110,7 +110,7 @@ def storageCenter(action, H=False):
                 # ceph 명령어는 정상적으로 전송되지만 ceph mgr module이 활성화되지 않은 경우
                     return createReturn(code=500, val="ceph mgr module이 활성화되지 않았습니다. <br>mgr 상태를 확인하십시오.")
             elif os_type == "PowerFlex":
-                    ip = socket.gethostbyname('scvm-mngt')
+                    ip = socket.gethostbyname('scvm')
                     value = 'https://'+ip
         except:
              # ceph 설치가 되어있지 않은 경우
@@ -119,7 +119,7 @@ def storageCenter(action, H=False):
     else:
         # 스토리지센터 가상머신
         if os_type == "PowerFlex":
-            ip = socket.gethostbyname('scvm-mngt')
+            ip = socket.gethostbyname('scvm')
             value = 'https://'+ip
         else:
             ip = socket.gethostbyname('scvm-mngt')

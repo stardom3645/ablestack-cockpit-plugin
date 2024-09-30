@@ -641,8 +641,6 @@ function resetCurrentMode() {
 function deployStorageCenterVM() {
 
     var console_log = true;
-
-    var network_type = $('input[type=radio][name=form-radio-storage-vm-nic-type]:checked').val();
     // 하단 버튼 숨김
     $('#button-next-step-modal-wizard-vm-config').hide();
     $('#button-before-step-modal-wizard-vm-config').hide();
@@ -705,7 +703,6 @@ function deployStorageCenterVM() {
                 if(dns != ""){
                     create_scvm_cloudinit_cmd.push('--dns',dns);
                 }
-                create_scvm_cloudinit_cmd.push('--network-type', network_type);
                 if(console_log){console.log(create_scvm_cloudinit_cmd);}
                 cockpit.spawn(create_scvm_cloudinit_cmd)
                     .then(function(data){

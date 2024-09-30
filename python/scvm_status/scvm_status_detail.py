@@ -16,6 +16,7 @@ env=os.environ.copy()
 env['LANG']="en_US.utf-8"
 env['LANGUAGE']="en"
 
+json_file_path = pluginpath+"/tools/properties/cluster.json"
 '''
 함수명 : parseArgs
 이 함수는 python library argparse를 시용하여 함수를 실행될 때 필요한 파라미터를 입력받고 파싱하는 역할을 수행합니다.
@@ -31,6 +32,19 @@ def parseArgs():
     '''Version 추가'''
     parser.add_argument("-V", "--Version", action='version', version="%(prog)s 1.0")
     return parser.parse_args()
+
+def openClusterJson():
+    try:
+        with open(json_file_path, 'r') as json_file:
+            ret = json.load(json_file)
+    except Exception as e:
+        ret = createReturn(code=500, val='cluster.json read error')
+        print ('EXCEPTION : ',e)
+
+    return ret
+
+json_data = openClusterJson()
+os_type = json_data["clusterConfig"]["type"]
 
 '''
 함수명 : statusDeteil
@@ -116,7 +130,10 @@ def statusDeteil():
                 rootDiskUsePer = "N/A"
 
             '''management Nic Gw정보 확인'''
-            output = check_output(["/usr/bin/ssh -o StrictHostKeyChecking=no scvm /usr/sbin/route -n | grep -P '^0.0.0.0|UG' | awk '{print $2}'"], universal_newlines=True, shell=True, env=env)
+            if os_type == "PowerFlex":
+                output = check_output(["/usr/bin/ssh -o StrictHostKeyChecking=no scvm /usr/sbin/route -n | grep -P '^0.0.0.0' | awk '{print $2}'"], universal_newlines=True, shell=True, env=env)
+            else:
+                output = check_output(["/usr/bin/ssh -o StrictHostKeyChecking=no scvm /usr/sbin/route -n | grep -P '^0.0.0.0|UG' | awk '{print $2}'"], universal_newlines=True, shell=True, env=env)
             manageNicGw = output.strip()
             if manageNicGw == "" :
                 manageNicGw = "N/A"
@@ -132,37 +149,69 @@ def statusDeteil():
             manageNicGw = 'N/A'
             manageNicDns = 'N/A'
         '''scvm 관리 nic 확인 시 리턴값 0이면 정상, 아니면 비정상'''
-        rc = call(["cat /etc/hosts | grep scvm-mngt"], universal_newlines=True, shell=True, env=env, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
-        if rc == 0:
-            output = check_output(["cat /etc/hosts | grep scvm-mngt | awk '{print $1}'"], universal_newlines=True, shell=True, env=env)
-            manageNicIp = output.strip()
-            rc = call(["virsh domifaddr --domain scvm --source agent --full | grep -w " + manageNicIp], universal_newlines=True, shell=True, env=env, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
+        if os_type == "PowerFlex":
+            rc = call(["grep 'scvm' /etc/hosts | grep -v 'pn' | grep -v 'cn' | grep -w scvm | awk '{print $1}'"], universal_newlines=True, shell=True, env=env, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
             if rc == 0:
-                manageNicMacAddr = check_output(["virsh domifaddr --domain scvm --source agent --full | grep -w " + manageNicIp + "| awk '{print $2}'"], universal_newlines=True, shell=True, env=env)
-                manageNicIp = check_output(["virsh domifaddr --domain scvm --source agent --full | grep -w " + manageNicIp + "| awk '{print $4}'"], universal_newlines=True, shell=True, env=env)
-                rc = call(["virsh domiflist --domain scvm | grep " + manageNicMacAddr], universal_newlines=True, shell=True, env=env, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
+                output = check_output(["grep 'scvm' /etc/hosts | grep -v 'pn' | grep -v 'cn' | grep -w scvm | awk '{print $1}'"], universal_newlines=True, shell=True, env=env)
+                manageNicIp = output.strip()
+                rc = call(["virsh domifaddr --domain scvm --source agent --full | grep -w " + manageNicIp], universal_newlines=True, shell=True, env=env, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
                 if rc == 0:
-                    '''관리 nic mac address로 추가 정보 확인'''
-                    output = check_output(["virsh domiflist --domain scvm | grep " + manageNicMacAddr], universal_newlines=True, shell=True, env=env)
-                    manageNicParent = ' '.join(output.split()).split()[2]
-                    manageNicType = ' '.join(output.split()).split()[1]
+                    manageNicMacAddr = check_output(["virsh domifaddr --domain scvm --source agent --full | grep -w " + manageNicIp + "| awk '{print $2}'"], universal_newlines=True, shell=True, env=env)
+                    manageNicIp = check_output(["virsh domifaddr --domain scvm --source agent --full | grep -w " + manageNicIp + "| awk '{print $4}'"], universal_newlines=True, shell=True, env=env)
+                    rc = call(["virsh domiflist --domain scvm | grep " + manageNicMacAddr], universal_newlines=True, shell=True, env=env, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
+                    if rc == 0:
+                        '''관리 nic mac address로 추가 정보 확인'''
+                        output = check_output(["virsh domiflist --domain scvm | grep " + manageNicMacAddr], universal_newlines=True, shell=True, env=env)
+                        manageNicParent = ' '.join(output.split()).split()[2]
+                        manageNicType = ' '.join(output.split()).split()[1]
+                    else :
+                        manageNicParent = 'N/A'
+                        manageNicType = 'N/A'
                 else :
+                    manageNicMacAddr = 'N/A'
                     manageNicParent = 'N/A'
                     manageNicType = 'N/A'
             else :
                 manageNicMacAddr = 'N/A'
+                manageNicIp = 'N/A'
                 manageNicParent = 'N/A'
                 manageNicType = 'N/A'
-        else :
-            manageNicMacAddr = 'N/A'
-            manageNicIp = 'N/A'
-            manageNicParent = 'N/A'
-            manageNicType = 'N/A'
+        else:
+            rc = call(["cat /etc/hosts | grep scvm-mngt"], universal_newlines=True, shell=True, env=env, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
+            if rc == 0:
+                output = check_output(["cat /etc/hosts | grep scvm-mngt | awk '{print $1}'"], universal_newlines=True, shell=True, env=env)
+                manageNicIp = output.strip()
+                rc = call(["virsh domifaddr --domain scvm --source agent --full | grep -w " + manageNicIp], universal_newlines=True, shell=True, env=env, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
+                if rc == 0:
+                    manageNicMacAddr = check_output(["virsh domifaddr --domain scvm --source agent --full | grep -w " + manageNicIp + "| awk '{print $2}'"], universal_newlines=True, shell=True, env=env)
+                    manageNicIp = check_output(["virsh domifaddr --domain scvm --source agent --full | grep -w " + manageNicIp + "| awk '{print $4}'"], universal_newlines=True, shell=True, env=env)
+                    rc = call(["virsh domiflist --domain scvm | grep " + manageNicMacAddr], universal_newlines=True, shell=True, env=env, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
+                    if rc == 0:
+                        '''관리 nic mac address로 추가 정보 확인'''
+                        output = check_output(["virsh domiflist --domain scvm | grep " + manageNicMacAddr], universal_newlines=True, shell=True, env=env)
+                        manageNicParent = ' '.join(output.split()).split()[2]
+                        manageNicType = ' '.join(output.split()).split()[1]
+                    else :
+                        manageNicParent = 'N/A'
+                        manageNicType = 'N/A'
+                else :
+                    manageNicMacAddr = 'N/A'
+                    manageNicParent = 'N/A'
+                    manageNicType = 'N/A'
+            else :
+                manageNicMacAddr = 'N/A'
+                manageNicIp = 'N/A'
+                manageNicParent = 'N/A'
+                manageNicType = 'N/A'
 
         '''scvm 서버용 nic 확인 시 리턴값 0이면 정상, 아니면 비정상'''
         rc = call(["cat /etc/hosts | grep scvm$"], universal_newlines=True, shell=True, env=env, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
         if rc == 0:
-            output = check_output(["cat /etc/hosts | grep scvm$ | awk '{print $1}'"], universal_newlines=True, shell=True, env=env)
+            if os_type == "PowerFlex":
+                output = check_output(["cat /etc/hosts | grep scvm-pn | awk '{print $1}'"], universal_newlines=True, shell=True, env=env)
+            else:
+                output = check_output(["cat /etc/hosts | grep scvm$ | awk '{print $1}'"], universal_newlines=True, shell=True, env=env)
+
             storageServerNicIp = output.strip()
             rc = call(["virsh domifaddr --domain scvm --source agent --full | grep -w " + storageServerNicIp], universal_newlines=True, shell=True, env=env, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
             if rc == 0:

@@ -194,8 +194,10 @@ def insertScvmHost(args):
                         cmd_str = "python3 /usr/share/cockpit/ablestack/python/cluster/cluster_config.py insert"
                         cmd_str += " -js '" + args.json_string + "'"
                         cmd_str += " -co withScvm"
+                        cmd_str += " -t " + args.type
 
                         ret = ssh('-o', 'StrictHostKeyChecking=no', p_val3["ablecube"], cmd_str, " -cmi "+args.ccvm_mngt_ip, " -pcl "+args.pcs_cluster_list[0] +" "+ args.pcs_cluster_list[1] +" "+ args.pcs_cluster_list[2])
+
                         if json.loads(ret)["code"] != 200:
                             return createReturn(code=500, val=return_val + " : " + p_val3["ablecube"])
 

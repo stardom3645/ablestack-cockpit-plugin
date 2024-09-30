@@ -1,6 +1,7 @@
 import argparse
 import math
 import os
+import socket
 import requests
 import json
 import getpass
@@ -9,6 +10,8 @@ import urllib3
 from ablestack import *
 
 hosts_file_path = "/etc/hosts"
+ip_address = socket.gethostbyname('scvm')
+
 def createArgumentParser():
     '''
     입력된 argument를 파싱하여 dictionary 처럼 사용하게 만들어 주는 parser를 생성하는 함수
@@ -50,8 +53,6 @@ def toBytes(size):
 def Token():
 
     try:
-        ip_address = os.popen("grep 'scvm-mngt' /etc/hosts | awk '{print $1}'").read().strip()
-
         url = 'https://'+ip_address+'/rest/auth/login'
 
         payload = json.dumps({
@@ -74,8 +75,6 @@ def Token():
 
 def SystemId():
     try:
-        ip_address = os.popen("grep 'scvm-mngt' /etc/hosts | awk '{print $1}'").read().strip()
-
         token = Token()
 
         url = 'https://'+ip_address+'/api/types/System/instances'
@@ -98,7 +97,6 @@ def SystemId():
 def Status():
 
     try:
-        ip_address = os.popen("grep 'scvm-mngt' /etc/hosts | awk '{print $1}'").read().strip()
 
         url = 'https://'+ip_address+'/rest/auth/login'
 
@@ -125,8 +123,6 @@ def Detail():
         token = Token()
         system_id = SystemId()
 
-        ip_address = os.popen("grep 'scvm-mngt' /etc/hosts | awk '{print $1}'").read().strip()
-
         url = 'https://'+ip_address+'/api/instances/System::'+system_id
 
         headers = {
@@ -139,12 +135,16 @@ def Detail():
         response = requests.get(url, headers=headers, verify=False)
         json_object = json.loads(response.text)
         result = json_object['mdmCluster']
-        # scvm1 = json_object["mdmCluster"]["master"][0]["ips"][0]
-        # scvm2 = json_object["mdmCluster"]["slaves"][0]["ips"][0]
-        # scvm3 = json_object["mdmCluster"]["tieBreaker"][0]["ips"][0]
 
         protection_domains = ProtectionDomain()
         devices = DeviceLs()
+
+        # 호스트 네임 추가 해주기
+        result['master']['hostname'] = socket.gethostbyaddr(json_object["mdmCluster"]["master"]["ips"][0])[0].split('-')[0]
+        for i in range(len(result['slaves'])):
+            result['slaves'][i]['hostname'] = socket.gethostbyaddr(json_object["mdmCluster"]["slaves"][i]["ips"][0])[0].split('-')[0]
+        for j in range(len(result['tieBreakers'])):
+            result['tieBreakers'][j]['hostname'] = socket.gethostbyaddr(json_object["mdmCluster"]["tieBreakers"][j]["ips"][0])[0].split('-')[0]
 
         result['protection_domains'] = protection_domains
         result['devices'] = devices
@@ -160,8 +160,6 @@ def ProtectionDomain():
     try:
         token = Token()
         system_id = SystemId()
-
-        ip_address = os.popen("grep 'scvm-mngt' /etc/hosts | awk '{print $1}'").read().strip()
 
         url = 'https://'+ip_address+'/api/instances/System::'+system_id+'/relationships/ProtectionDomain'
 
@@ -197,8 +195,6 @@ def StoragePool(protection_domain_id):
     try:
         token = Token()
 
-        ip_address = os.popen("grep 'scvm-mngt' /etc/hosts | awk '{print $1}'").read().strip()
-
         url = 'https://'+ip_address+'/api/instances/ProtectionDomain::'+protection_domain_id+'/relationships/StoragePool'
 
         headers = {
@@ -224,8 +220,6 @@ def StoragePool(protection_domain_id):
 def DeviceLs():
     try:
         token = Token()
-
-        ip_address = os.popen("grep 'scvm-mngt' /etc/hosts | awk '{print $1}'").read().strip()
 
         url = 'https://'+ip_address+'/api/types/Device/instances'
 
@@ -256,8 +250,6 @@ def DeviceLs():
 def Capacity(protection_domain_id):
     try:
         token = Token()
-
-        ip_address = os.popen("grep 'scvm-mngt' /etc/hosts | awk '{print $1}'").read().strip()
 
         url = 'https://'+ip_address+'/api/instances/ProtectionDomain::'+protection_domain_id+'/relationships/Statistics'
 

@@ -746,7 +746,7 @@ function checkStorageClusterStatus(){
                                     $('#scc-osd').text("전체 " + retVal.val.devices[0].total_disks + "개의 디스크 중 " + retVal.val.devices[0].disk_state + "개 작동 중");
                                 }
                                 if(retVal.val.tieBreakers !="N/A" && retVal.val.slave !="N/A"  && retVal.val.master !="N/A" ){
-                                    $('#scc-gw').text("PowerFlex GW " + retVal.val.goodNodesNum + "개 실행 중 / " + retVal.val.goodNodesNum + "개 제공 중(quorum : " + retVal.val.master.name +","+retVal.val.slaves[0].name+","+retVal.val.tieBreakers[0].name + ")");
+                                    $('#scc-gw').text("PowerFlex GW " + retVal.val.goodNodesNum + "개 실행 중 / " + retVal.val.goodNodesNum + "개 제공 중(quorum : " + retVal.val.master.hostname +","+retVal.val.slaves[0].hostname+","+retVal.val.tieBreakers[0].hostname + ")");
                                 }
                                 if(retVal.val.protection_domains !="N/A"){
                                     $('#scc-protect-domain').text(retVal.val.protection_domains.length + " 개의 보호도메인")

@@ -1707,6 +1707,12 @@ function validateClusterConfigPrepare(timeserver_type) {
     } else if(!checkIp(ccvm_mngt_ip)){
         alert("CCVM 관리 IP 형식을 확인해주세요.");
         validate_check = false;
+    } else if(os_type == "PowerFlex" && ccvm_pn_ip == ""){
+        alert("CCVM PN IP 정보를 입력해주세요.");
+        validate_check = false;
+    } else if(os_type == "PowerFlex" && ccvm_cn_ip == ""){
+        alert("CCVM CN IP 정보를 입력해주세요.");
+        validate_check = false;
     } else if(ccvm_pn_ip != "" && !checkIp(ccvm_pn_ip)){
         alert("CCVM PN IP 형식을 확인해주세요.");
         validate_check = false;

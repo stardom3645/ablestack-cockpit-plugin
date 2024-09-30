@@ -196,6 +196,7 @@ if __name__ == '__main__':
         print(ret)
     elif args.action == 'install':
         ret = install()
+        print(ret)
     elif args.action == 'remove':
         ret = remove()
         print(ret)

@@ -514,7 +514,11 @@ def scvmGen(pn_nic=None, pn_ip=None, pn_prefix=24, cn_nic=None, cn_ip=None, cn_p
     if os_type == "ABLESTACK-HCI" or os_type == "ABLESTACK-GlueGFS":
         yam2['bootcmd'] = [
         ['/usr/bin/systemctl', 'enable', '--now', 'cockpit.socket'],
-        ['/usr/bin/systemctl', 'enable', '--now', 'cockpit.service']
+        ['/usr/bin/systemctl', 'enable', '--now', 'cockpit.service'],
+        ]
+        # 인터페이스 이름이 동일 하지 않을 경우, scvm에 np0, np1이 붙을 수 있기에 고정으로 사용
+        yam2['runcmd'] = [
+        ['/usr/bin/sh', '/usr/local/sbin/sortEth.sh']
         ]
 
         with open(f'{pluginpath}/shell/host/scvm_bootstrap.sh', 'rt') as bootstrapfile:

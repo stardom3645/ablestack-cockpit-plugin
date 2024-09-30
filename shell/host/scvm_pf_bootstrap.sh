@@ -9,12 +9,12 @@
 #########################################
 set -x
 
-scvms=$(grep scvm /etc/hosts| grep -v mngt | grep -v cn | grep scvm | awk {'print $1'})
-scvms_name=$(grep scvm /etc/hosts| grep -v mngt | grep -v cn | grep scvm | awk '{print $2}')
+scvms=$(grep scvm /etc/hosts |  grep pn | awk {'print $1'})
+scvms_name=$(grep scvm /etc/hosts | grep pn | awk '{print $2}')
 hosts=$(grep ablecube /etc/hosts | grep -v pn | awk {'print $2'})
 hosts_pn=$(grep ablecube /etc/hosts | grep pn | awk {'print $1'})
-virtual_ip_pn_band=$(grep scvm /etc/hosts| grep -v mngt | grep -v cn | awk {'print $1'} | cut -d '.' -f 1,2,3 | head -n 1)
-virtual_ip_cn_band=$(grep scvm /etc/hosts| grep -v mngt | grep cn | awk {'print $1'} | cut -d '.' -f 1,2,3 | head -n 1)
+virtual_ip_pn_band=$(grep scvm /etc/hosts| grep pn | awk {'print $1'} | cut -d '.' -f 1,2,3 | head -n 1)
+virtual_ip_cn_band=$(grep scvm /etc/hosts| grep cn | awk {'print $1'} | cut -d '.' -f 1,2,3 | head -n 1)
 interface_pn=$(ip route list | grep $virtual_ip_pn_band | awk {'print $3'})
 interface_cn=$(ip route list | grep $virtual_ip_cn_band | awk {'print $3'})
 virtual_ip_pn=$(grep scvm /etc/hosts| grep -v mngt | grep -v cn | awk {'print $1'} | cut -d '.' -f 1,2,3 | head -n 1).250
