@@ -281,6 +281,11 @@ def create_gfs(disks, vg_name, lv_name, gfs_name, mount_point, cluster_name, num
                 run_command(f"partprobe {disk}", ssh_client, ignore_errors=True)
                 run_command(f"lvmdevices --adddev {partition}", ssh_client, ignore_errors=True)
             run_command("pcs resource cleanup > /dev/null 2>&1", ssh_client, ignore_errors=True)
+            # partprobe, lvmdevices 명령어를 재부팅할 시, 자동실행 스크립트
+            run_command(f"echo -e 'partprobe {disk}\nlvmdevices --adddev {partition}' >> /etc/rc.local", ssh_client, ignore_errors=True)
+            run_command("chmod +x /etc/rc.d/rc.local", ssh_client, ignore_errors=True)
+            run_command("echo -e '\n[Install]\nWantedBy=multi-user.target' >> /usr/lib/systemd/system/rc-local.service", ssh_client, ignore_errors=True)
+            run_command("systemctl enable --now rc-local.service", ssh_client, ignore_errors=True)
             ssh_client.close()
 
         ret = createReturn(code=200, val="Create GFS Success")
@@ -288,6 +293,7 @@ def create_gfs(disks, vg_name, lv_name, gfs_name, mount_point, cluster_name, num
     except Exception:
         ret = createReturn(code=500, val="Create GFS Failure")
         return print(json.dumps(json.loads(ret), indent=4))
+
 def create_ccvm_cluster(gfs_name,mount_point,cluster_name):
     try:
 

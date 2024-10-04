@@ -665,6 +665,7 @@ function checkStorageClusterStatus(){
         .then(function(data){
             var retVal = JSON.parse(data);
             if (retVal.clusterConfig.type == "PowerFlex"){
+                setPfmpStatus();
                 //bootstrap.sh을 실행했는지 여부 확인
                 cockpit.spawn(["python3", pluginpath+"/python/ablestack_json/ablestackJson.py", "status"])
                 .then(function(data){
@@ -706,11 +707,12 @@ function checkStorageClusterStatus(){
                         .then(function(data){
                             var retVal = JSON.parse(data);
                             var sc_status = "Health Err";
+                            var scc_status = "HEALTH_ERR"
                             //Cluster 상태에 대한 값
                             if (retVal.code == 200){
                                 if (retVal.val.clusterState == "ClusteredNormal"){
                                     sc_status = "Health Ok";
-                                    sessionStorage.setItem("sc_status", sc_status);
+                                    sessionStorage.setItem("sc_status", "HEALTH_OK");
                                     $('#scc-status-check').text("스토리지센터 클러스터가 구성되었습니다.");
                                     $('#scc-status-check').attr("style","color: var(--pf-global--success-color--100)");
                                     $("#menu-item-linkto-storage-center").removeClass('pf-m-disabled');
@@ -719,7 +721,7 @@ function checkStorageClusterStatus(){
                                     $("#scc-icon").attr('class','fas fa-fw fa-check-circle');
                                 }else if(retVal.val.clusterState == "ClusteredDegraded"){
                                     sc_status = "Health Warn";
-                                    sessionStorage.setItem("sc_status", sc_status);
+                                    sessionStorage.setItem("sc_status", "HEALTH_WARN");
                                     $('#scc-status-check').text("스토리지센터 클러스터가 구성되었습니다.");
                                     $('#scc-status-check').attr("style","color: var(--pf-global--success-color--100)");
                                     $("#menu-item-linkto-storage-center").removeClass('pf-m-disabled');
@@ -728,7 +730,7 @@ function checkStorageClusterStatus(){
                                     $("#scc-icon").attr('class','fas fa-fw fa-exclamation-triangle');
                                 }else{
                                     sc_status = "Health Err";
-                                    sessionStorage.setItem("sc_status", sc_status);
+                                    sessionStorage.setItem("sc_status", "HEALTH_ERR");
                                     $("#scc-css").attr('class','pf-c-label pf-m-red');
                                     $("#scc-icon").attr('class','fas fa-fw fa-exclamation-triangle');
                                     $("#menu-item-set-maintenance-mode").addClass('pf-m-disabled');
@@ -761,7 +763,6 @@ function checkStorageClusterStatus(){
                                 if(retVal.val.protection_domains[0].capactiy !="N/A" ){
                                     $('#scc-usage').text("전체 " + retVal.val.protection_domains[0].capacity[0].limit_capacity + " 중 " +retVal.val.protection_domains[0].capacity[0].used_capacity+ " 사용 중 (사용가능 " + retVal.val.protection_domains[0].capacity[0].unused_capacity+ ")" );
                                 }
-                                setPfmpStatus();
                                 resolve();
                             }else{
                                 sc_status = "Health Err";
@@ -777,7 +778,6 @@ function checkStorageClusterStatus(){
                                 $('#protect-domain').show();
                                 $('#manage-daemon').hide();
                                 $('#scc-status').html(sc_status);
-                                setPfmpStatus();
                                 resolve();
                             }
 
@@ -792,7 +792,6 @@ function checkStorageClusterStatus(){
                             $("#menu-item-linkto-storage-center").addClass('pf-m-disabled');
                             $("#menu-item-update-glue-config").addClass('pf-m-disabled');
                             $("#menu-item-bootstrap-run").addClass('pf-m-disabled');
-                            setPfmpStatus();
                             resolve();
                         });
                     }else{
@@ -809,7 +808,6 @@ function checkStorageClusterStatus(){
                         $('#protect-domain').show();
                         $('#manage-daemon').hide();
                         $('#scc-status').html(sc_status);
-                        setPfmpStatus();
                         resolve();
                     }
                 })
@@ -823,7 +821,6 @@ function checkStorageClusterStatus(){
                     $("#menu-item-linkto-storage-center").addClass('pf-m-disabled');
                     $("#menu-item-update-glue-config").addClass('pf-m-disabled');
                     $("#menu-item-bootstrap-run").addClass('pf-m-disabled');
-                    setPfmpStatus();
                     resolve();
                 });
             }else{

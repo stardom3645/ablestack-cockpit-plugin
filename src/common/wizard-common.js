@@ -692,6 +692,8 @@ function settingProfile(clusterJsonConf, option){
         $("#form-input-cloud-vm-failover-cluster-host1-name").val("");
         $("#form-input-cloud-vm-failover-cluster-host2-name").val("");
         $("#form-input-cloud-vm-failover-cluster-host3-name").val("");
+        $("#form-input-cloud-vm-pn-ip").val("");
+        $("#form-input-cloud-vm-cn-ip").val("");
 
         $("#form-input-cloud-os-type").val(clusterJsonConf.clusterConfig.type);
 
@@ -884,10 +886,10 @@ function tableToHostsText(table_tr_obj, option, os_type){
             var mgmt_ip = $('#form-input-cloud-vm-mngt-nic-ip').val().split("/")[0];
             hsots_text += mgmt_ip + "\t" + "ccvm-mngt" + "\t" + "ccvm" + "\n";
         }
-        if($("#form-input-cloud-pn-ip").val() != "" ){
+        if($("#form-input-cloud-vm-pn-ip").val() != "" ){
             hsots_text += $("#form-input-cloud-pn-ip").val() + "\t" + "ccvm-pn" + "\n";
         }
-        if($("#form-input-cloud-cn-ip").val() != "" ){
+        if($("#form-input-cloud-vm-cn-ip").val() != "" ){
             hsots_text += $("#form-input-cloud-cn-ip").val() + "\t" + "ccvm-cn" + "\n";
         }
     }

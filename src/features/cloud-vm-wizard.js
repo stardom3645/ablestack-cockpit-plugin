@@ -1144,8 +1144,8 @@ function deployCloudCenterVM() {
     }else{
     //=========== 1. 클러스터 구성 host 네트워크 연결 및 초기화 작업 ===========
     var all_host_name = host1_name + ' ' + host2_name + ' ' + host3_name;
-    $('#span-ccvm-progress-step1').text("클러스터 구성 Host 네트워크 연결 및 초기화 작업");
-    $('#span-ccvm-progress-step2').text("GFS 구성 설정 및 PCS 설정");
+    $('[name=span-ccvm-progress-step1-name]').text("클러스터 구성 Host 네트워크 연결 및 초기화 작업");
+    $('[name=span-ccvm-progress-step2-name]').text("GFS 구성 설정 및 PCS 설정");
     setProgressStep("span-ccvm-progress-step1",1);
     var console_log = true;
     createLoggerInfo("deployCloudCenterVM start");

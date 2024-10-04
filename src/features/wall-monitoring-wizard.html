@@ -1,5 +1,5 @@
-<!-- 
-* File Name : wall-monitoring-wizard.html  
+<!--
+* File Name : wall-monitoring-wizard.html
 * Date Created : 2021.09.01
 * Writer  : 배태주
 * Description : Wall 모니터링센터 VM을 구성하기 위한 절차를 진행하는 마법사 Modal 대화상자
@@ -13,8 +13,8 @@
                     <i class="fas fa-times" aria-hidden="true"></i>
                 </button>
                 <h1 class="pf-c-title pf-m-3xl pf-c-wizard__title">Wall 모니터링 구성 마법사</h1>
-                <p class="pf-c-wizard__description">ABLESTACK 클라우드센터 VM에 Wall 모니터링 구성합니다.</p>
-            </div>    
+                <p class="pf-c-wizard__description">클라우드센터 VM에 Wall 모니터링 구성합니다.</p>
+            </div>
             <div class="pf-c-wizard__outer-wrap">
                 <div class="pf-c-wizard__inner-wrap">
                     <nav class="pf-c-wizard__nav" aria-label="Steps">
@@ -40,7 +40,7 @@
                         <div class="pf-c-wizard__main-body" id="div-modal-wizard-wall-monitoring-overview">
                             <div class="pf-c-content">
                                 <p>
-                                    ABLESTACK 클라우드센터 VM에 Wall 모니터링을 구성하기 위해 필요한 정보를 다음과 같이 마법사를 통해 입력받습니다.
+                                    클라우드센터 VM에 Wall 모니터링을 구성하기 위해 필요한 정보를 다음과 같이 마법사를 통해 입력받습니다.
                                 </p>
                                 <ul>
                                     <li>Wall 모니터링 수집 대상의 IP 정보</li>
@@ -55,7 +55,7 @@
                         <div class="pf-c-wizard__main-body" id="div-modal-wizard-wall-monitoring-ip-info">
                             <div class="pf-c-content">
                                 <p>
-                                    ABLESTACK 클러스터의 구성 요소인 Cube 호스트, 클라우드센터 VM, 스토리지센터 VM을 모니터링하기 위해 아래 정보를 입력하십시오. (호스트 수가 변경될 경우 입력한 값이 초기화됩니다.)
+                                    클러스터의 구성 요소인 Cube 호스트, 클라우드센터 VM, 스토리지센터 VM을 모니터링하기 위해 아래 정보를 입력하십시오. (호스트 수가 변경될 경우 입력한 값이 초기화됩니다.)
                                 </p>
                                 <form novalidate class="pf-c-form pf-m-horizontal" style="margin-left:15px;margin-top:32px">
                                     <section class="pf-c-form__section">
@@ -295,8 +295,8 @@
                         <div class="pf-c-wizard__main-body" id="div-modal-wizard-wall-monitoring-review">
                             <div class="pf-c-content">
                                 <p>
-                                    Wall 모니터링센터 구성를 위해 입력한 설정 정보는 다음과 같습니다. 
-                                    입력한 정보를 수정하고자 하는 경우, 해당 탭으로 이동하여 정보를 수정하십시오. 
+                                    Wall 모니터링센터 구성를 위해 입력한 설정 정보는 다음과 같습니다.
+                                    입력한 정보를 수정하고자 하는 경우, 해당 탭으로 이동하여 정보를 수정하십시오.
                                     <br/>
                                     <br/>
                                     모든 정보를 확인한 후 "구성"를 시작합니다.
@@ -469,7 +469,7 @@
                         </div>
                         <div class="pf-c-wizard__main-body" id="div-modal-wizard-wall-monitoring-deploy">
                             <p id='wall-progress-step-text'>
-                                Wall 모니터링센터를 구성 중입니다. 전체 3단계 중 1단계 진행 중입니다.  
+                                Wall 모니터링센터를 구성 중입니다. 전체 3단계 중 1단계 진행 중입니다.
                             </p>
 
                             <div class="pf-c-content" style="margin-top:30px;margin-left:15px">
@@ -506,7 +506,7 @@
                             <div class="pf-c-wizard__main-body" id="div-modal-wizard-wall-monitoring-finish">
                                 <div class="pf-c-content">
                                     <p>
-                                        Wall 모니터링센터 구성를 완료했습니다. 
+                                        Wall 모니터링센터 구성를 완료했습니다.
                                     </p>
                                     <ul>
                                         <li>Wall 모니터링센터를 통해 대시보드 서비스, 알람 서비스, 플레이리스트 등 작업을 수행할 수 있습니다.</li>
@@ -548,7 +548,7 @@
                 </div>
             </div>
             <!-- Wall 모니터링센터 VM 구성 마법사 진행: Modal 영역 끝 -->
-            
+
             <!-- Wall 모니터링센터 VM 구성 마법사 취소: Modal 영역 시작 -->
             <div id="div-modal-cancel-wall-wizard-cancel" class="pf-c-backdrop" style="display:none" >
                 <div class="pf-l-bullseye">
@@ -578,4 +578,4 @@
 <script src="./src/common/validation.js"></script>
 <script src="./src/features/wall-monitoring-wizard.js"></script>
 
-<!-- 해당 페이지에 필요한 javascript 파일 추가 영역 끝 --> 
+<!-- 해당 페이지에 필요한 javascript 파일 추가 영역 끝 -->

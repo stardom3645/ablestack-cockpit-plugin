@@ -44,7 +44,7 @@
       <source file='/var/lib/libvirt/images/scvm.qcow2' index='1'/>
       <backingStore type='file' index='2'>
         <format type='qcow2'/>
-        <source file='/var/lib/libvirt/images/ablestack-powerflex-scvm-template.qcow2'/>
+        <source file='/var/lib/libvirt/images/powerflex-scvm-template.qcow2'/>
         <backingStore/>
       </backingStore>
       <target dev='vda' bus='virtio'/>

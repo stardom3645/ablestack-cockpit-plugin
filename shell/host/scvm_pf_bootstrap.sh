@@ -23,9 +23,11 @@ virtual_ip_cn=$(grep scvm /etc/hosts| grep -v mngt | grep cn | awk {'print $1'} 
 ################ 모든 SCVM에 activemq,lia,sds 설치 ##################
 for scvm in $scvms
 do
-  ssh -o StrictHostKeyChecking=no $scvm rpm -ivh /usr/share/ablestack/powerflex/EMC-ScaleIO-activemq-*  /usr/share/ablestack/powerflex/EMC-ScaleIO-sds-*
-  ssh -o StrictHostKeyChecking=no $scvm rpm -ivh /usr/share/ablestack/powerflex/EMC-ScaleIO-sds-*
-  ssh -o StrictHostKeyChecking=no $scvm TOKEN=Ablecloud1! rpm -ivh /usr/share/ablestack/powerflex/EMC-ScaleIO-lia-*
+  ssh -o StrictHostKeyChecking=no $scvm <<EOF
+    rpm -ivh /usr/share/ablestack/powerflex/EMC-ScaleIO-activemq-*
+    rpm -ivh /usr/share/ablestack/powerflex/EMC-ScaleIO-sds-*
+    TOKEN=Ablecloud1! rpm -ivh /usr/share/ablestack/powerflex/EMC-ScaleIO-lia-*
+EOF
 done
 
 ################ 모든 SCVM에 mdm 설치 (Primary, Secondary는 MDM_ROLE_IS_MANAGER=1, TB는 MDM_ROLE_IS_MANAGER=0) ##################
@@ -90,8 +92,10 @@ done
   sleep 1
 ################ 3노드로 클러스터링 (1번 scvm에서 실행) ##################
   scli --switch_cluster_mode --cluster_mode 3_node --add_secondary_mdm_name MDM2 --add_tb_name MDM3
+
 ################ 보호 도메인 생성 (1번 scvm에서 실행) ##################
   scli --add_protection_domain --protection_domain_name PD1
+
 ################ 스토리지 풀 생성 (1번 scvm에서 실행) ##################
   scli --add_storage_pool --protection_domain_name PD1 --dont_use_rmcache --media_type SSD --data_layout medium_granularity --storage_pool_name SP1
 
@@ -115,7 +119,6 @@ done
 
 ################ 보호도메인, 스토리지 풀 설정 (1번 scvm에서 실행) ##################
 scli --modify_spare_policy --protection_domain_name PD1 --storage_pool_name SP1 --spare_percentage 34 --i_am_sure
-
 
 ################ 물리 디스크 sds에  설정 (1번 scvm에서 실행) ##################
 for scvm in $scvms_name
@@ -146,15 +149,20 @@ done
 ################ 호스트 sdc rpm 설치 및 scini 커널 버전으로 재구성 (1번 scvm에서 실행) ##################
 for host in $hosts
 do
-  ssh -o StrictHostKeyChecking=no $host MDM_IP=$virtual_ip_pn,$virtual_ip_cn rpm -ivh /usr/share/ablestack/powerflex/EMC-ScaleIO-sdc-*
-  ssh -o StrictHostKeyChecking=no $host tar -xvf /bin/emc/scaleio/scini_sync/driver_cache/RHEL9/4.5.2100.105/Dell-PowerFlex-scini_builder-*.tgz -C /bin/emc/scaleio/scini_sync/driver_cache/RHEL9/4.5.2100.105/
-  ssh -o StrictHostKeyChecking=no $host sh /bin/emc/scaleio/scini_sync/driver_cache/RHEL9/4.5.2100.105/build_driver.sh
-  ssh -o StrictHostKeyChecking=no $host systemctl restart scini
-  ssh -o StrictHostKeyChecking=no $host systemctl enable --now sdcd.service
+  ssh -o StrictHostKeyChecking=no $host <<EOF
+      MDM_IP=$virtual_ip_pn,$virtual_ip_cn rpm -ivh /usr/share/ablestack/powerflex/EMC-ScaleIO-sdc-*
+      tar -xvf /bin/emc/scaleio/scini_sync/driver_cache/RHEL9/4.5.2100.105/Dell-PowerFlex-scini_builder-*.tgz -C /bin/emc/scaleio/scini_sync/driver_cache/RHEL9/4.5.2100.105/
+      sh /bin/emc/scaleio/scini_sync/driver_cache/RHEL9/4.5.2100.105/build_driver.sh
+      systemctl restart scini
+      systemctl enable --now sdcd.service
+EOF
 done
 
 ################ CCVM 볼륨 생성 및 매핑 (1번 scvm에서 실행) ##################
+sleep 1
+
 scli --add_volume --protection_domain_name PD1 --storage_pool_name SP1 --size_gb 512 --volume_name ccvm
+
 sleep 1
 
 for host in $hosts_pn

@@ -108,8 +108,9 @@ def install():
             if "Trying to connect to node" in last_line:
                 for i in range(len(json_data["clusterConfig"]["hosts"])):
                     host = json_data["clusterConfig"]["hosts"][i]["ablecube"]
+                    scvm = json_data["clusterConfig"]["hosts"][i]["scvm"]
                     ssh('-o', 'StrictHostKeyChecking=no', host, 'python3', pluginpath + '/python/ablestack_json/ablestackJson.py', 'update', '--depth1', 'bootstrap', '--depth2', 'pfmp','--value', 'true')
-
+                    ssh('-o', 'StrictHostKeyChecking=no', scvm, 'systemctl restart activemq.service')
                 return createReturn(code=200, val="Success PFMP Install")
 
     except Exception as e:

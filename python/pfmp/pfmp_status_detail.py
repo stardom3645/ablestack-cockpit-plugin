@@ -91,7 +91,7 @@ def statusDeteil():
             memory = 'N/A'
 
         '''pfmp root disk 크기 조회 시 ssh 사용전 ping test'''
-        rc = call(["ping -c 1 pfmp"], universal_newlines=True, shell=True, env=env, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
+        rc = call(["ping -c 1 -w 1 pfmp"], universal_newlines=True, shell=True, env=env, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
         if rc == 0:
             '''pfmp 에 접속해 df -h 값 세팅'''
             rootDiskSize = check_output(["/usr/bin/ssh -o StrictHostKeyChecking=no pfmp df -h | grep '\-root ' | awk '{print $2}'"], universal_newlines=True, shell=True, env=env).strip()

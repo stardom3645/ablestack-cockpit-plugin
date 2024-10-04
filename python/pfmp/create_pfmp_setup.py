@@ -77,7 +77,7 @@ def setup():
     success_bool = True
 
     # pfmp 가상머신용 qcow2 이미지 생성
-    check_err = os.system("/usr/bin/cp -f /var/lib/libvirt/images/ablestack-powerflex-pfmp-template.qcow2 /var/lib/libvirt/images/pfmp.qcow2")
+    check_err = os.system("/usr/bin/cp -f /var/lib/libvirt/images/powerflex-pfmp-template.qcow2 /var/lib/libvirt/images/pfmp.qcow2")
     if check_err != 0 :
         success_bool = False
 

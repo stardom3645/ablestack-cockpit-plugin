@@ -512,7 +512,6 @@ function deployPfmpVM() {
                                         var mgmt_monitor_ip = $('#form-input-pfmp-mngt-5-pieces').val();
                                         var pn_ip = $('#form-input-pfmp-pn-5-pieces').val();
                                         var cn_ip = $('#form-input-pfmp-cn-5-pieces').val();
-                                        console.log(mgmt_monitor_ip,pn_ip,cn_ip);
                                         //=========== 4. PFMP 가상머신 배포 ===========
                                         //클러스터 생성
                                         setPfmpProgressStep("span-pfmp-progress-step3",2);

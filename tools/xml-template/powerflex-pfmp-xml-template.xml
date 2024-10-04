@@ -41,7 +41,7 @@
       <source file='/var/lib/libvirt/images/pfmp.qcow2' index='1'/>
       <backingStore type='file' index='2'>
         <format type='qcow2'/>
-        <source file='/var/lib/libvirt/images/ablestack-powerflex-pfmp-template.qcow2'/>
+        <source file='/var/lib/libvirt/images/powerflex-pfmp-template.qcow2'/>
         <backingStore/>
       </backingStore>
       <target dev='vda' bus='virtio'/>
