@@ -14,7 +14,6 @@ pluginpath = '/usr/share/cockpit/ablestack';
 let pcs_exe_host = "";
 
 $(document).ready(function(){
-    // checkOSType();
 
     $('#dropdown-menu-storage-cluster-status').hide();
     $('#dropdown-menu-cloud-cluster-status').hide();
@@ -272,6 +271,7 @@ $('#card-action-cloud-vm-db-dump').on('click', function(){
 //div-modal-status-alert modal 닫기
 $('#modal-status-alert-button-close1, #modal-status-alert-button-close2').on('click', function(){
     $('#div-modal-status-alert').hide();
+    location.reload();
 });
 
 // 상태 보기 드롭다운 메뉴를 활성화한 상태에서 다른 영역을 클릭 했을 경우 메뉴 닫기 (현재 활성화된 iframe 클릭할 때 작동)
@@ -707,7 +707,7 @@ function checkStorageClusterStatus(){
                         .then(function(data){
                             var retVal = JSON.parse(data);
                             var sc_status = "Health Err";
-                            var scc_status = "HEALTH_ERR"
+                            var pfmp_bootstrap_status = sessionStorage.getItem("pfmp_bootstrap_status");
                             //Cluster 상태에 대한 값
                             if (retVal.code == 200){
                                 if (retVal.val.clusterState == "ClusteredNormal"){
@@ -719,6 +719,7 @@ function checkStorageClusterStatus(){
                                     $("#menu-item-update-glue-config").removeClass('pf-m-disabled');
                                     $("#scc-css").attr('class','pf-c-label pf-m-green');
                                     $("#scc-icon").attr('class','fas fa-fw fa-check-circle');
+                                    $('#powerflex-scvm-api-login').hide();
                                 }else if(retVal.val.clusterState == "ClusteredDegraded"){
                                     sc_status = "Health Warn";
                                     sessionStorage.setItem("sc_status", "HEALTH_WARN");
@@ -728,6 +729,7 @@ function checkStorageClusterStatus(){
                                     $("#menu-item-update-glue-config").removeClass('pf-m-disabled');
                                     $("#scc-css").attr('class','pf-c-label pf-m-orange');
                                     $("#scc-icon").attr('class','fas fa-fw fa-exclamation-triangle');
+                                    $('#powerflex-scvm-api-login').hide();
                                 }else{
                                     sc_status = "Health Err";
                                     sessionStorage.setItem("sc_status", "HEALTH_ERR");
@@ -739,6 +741,9 @@ function checkStorageClusterStatus(){
                                     $('#scc-status-check').attr("style","color: var(--pf-global--danger-color--100)");
                                     $("#menu-item-linkto-storage-center").addClass('pf-m-disabled');
                                     $("#menu-item-update-glue-config").addClass('pf-m-disabled');
+                                    if (pfmp_bootstrap_status == "true"){
+                                        $('#powerflex-scvm-api-login').show();
+                                    }
                                 }
                                 $('#protect-domain').show();
                                 $('#manage-daemon').hide();
@@ -778,6 +783,9 @@ function checkStorageClusterStatus(){
                                 $('#protect-domain').show();
                                 $('#manage-daemon').hide();
                                 $('#scc-status').html(sc_status);
+                                if (pfmp_bootstrap_status == "true"){
+                                    $('#powerflex-scvm-api-login').show();
+                                }
                                 resolve();
                             }
 
@@ -792,6 +800,9 @@ function checkStorageClusterStatus(){
                             $("#menu-item-linkto-storage-center").addClass('pf-m-disabled');
                             $("#menu-item-update-glue-config").addClass('pf-m-disabled');
                             $("#menu-item-bootstrap-run").addClass('pf-m-disabled');
+                            if (pfmp_bootstrap_status == "true"){
+                                $('#powerflex-scvm-api-login').show();
+                            }
                             resolve();
                         });
                     }else{
@@ -808,6 +819,9 @@ function checkStorageClusterStatus(){
                         $('#protect-domain').show();
                         $('#manage-daemon').hide();
                         $('#scc-status').html(sc_status);
+                        if (pfmp_bootstrap_status == "true"){
+                            $('#powerflex-scvm-api-login').show();
+                        }
                         resolve();
                     }
                 })
@@ -1512,27 +1526,10 @@ function saveHostInfo(){
 }
 
 function ribbonWorker() {
-    Promise.all([checkOSType(),pcsExeHost(), checkConfigStatus(), checkStorageClusterStatus(),
-        checkStorageVmStatus(), CardCloudClusterStatus(), new CloudCenterVirtualMachine().checkCCVM()]).then(function(value){
+    Promise.all([pcsExeHost(), checkConfigStatus(), checkStorageClusterStatus(),
+        checkStorageVmStatus(), CardCloudClusterStatus(), new CloudCenterVirtualMachine().checkCCVM()]).then(function(){
             scanHostKey();
             checkDeployStatus();
-    });
-}
-/**
- * Meathod Name : checkOSType
- * Date Created : 2024.09.11
- * Writer  : 정민철
- * Description : 운영 체재를 sessionstroage에 저장하는 함수
- * History  : 2024.09.11 수정
- */
-function checkOSType() {
-    return new Promise(function (resolve) {
-        cockpit.file(pluginpath + '/tools/properties/cluster.json').read().then(function(data) {
-            let retVal = JSON.parse(data);
-            sessionStorage.setItem('os_type', retVal.clusterConfig.type);
-            console.log(sessionStorage.getItem('os_type'));
-            resolve();
-        });
     });
 }
 
@@ -1641,3 +1638,31 @@ function setPfmpStatus() {
         sessionStorage.setItem('pfmp_status', pfmp_status_result);
     });
 }
+
+$('#powerflex-scvm-api-login').on('click', function(){
+    $('#div-modal-powerflex-api-info').show();
+});
+$('#button-cancel-modal-powerflex-api, #button-close-modal-powerflex-api').on('click', function(){
+    $('#div-modal-powerflex-api-info').hide();
+    $('#form-input-powerflex-id').val('');
+    $('#form-input-powerflex-password').val('');
+});
+$('#button-execution-modal-powerflex-api').on('click', function(){
+    var username = $('#form-input-powerflex-id').val();
+    var password = $('#form-input-powerflex-password').val();
+
+    if (username == ''){
+        alert('API ID를 입력하세요.');
+    }else if (password == ''){
+        alert('API Password를 입력하세요.')
+    }else{
+        cockpit.spawn(['python3', pluginpath + '/python/powerflex_status/powerflex_user_add.py', 'add', '--username', username, '--password', password])
+        .then(function(data) {
+            var retVal = JSON.parse(data);
+            if (retVal.code == 200){
+                location.reload();
+            }
+        });
+    }
+
+});

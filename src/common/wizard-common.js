@@ -622,8 +622,6 @@ function settingProfile(clusterJsonConf, option){
         }
 
         $("#form-input-cluster-ccvm-mngt-ip").val(clusterJsonConf.clusterConfig.ccvm.ip);
-        $("#form-input-cluster-ccvm-pn-ip").val(clusterJsonConf.clusterConfig.ccvm.pn);
-        $("#form-input-cluster-ccvm-cn-ip").val(clusterJsonConf.clusterConfig.ccvm.cn);
         $("#form-input-cluster-mngt-nic-cidr").val(clusterJsonConf.clusterConfig.mngtNic.cidr);
         $("#form-input-cluster-mngt-nic-gateway").val(clusterJsonConf.clusterConfig.mngtNic.gw);
         $("#form-input-cluster-mngt-nic-dns").val(clusterJsonConf.clusterConfig.mngtNic.dns);
@@ -651,8 +649,6 @@ function settingProfile(clusterJsonConf, option){
 
         //ccvm 관리 ip 세팅
         $("#form-input-ccvm-mngt-ip").val(clusterJsonConf.clusterConfig.ccvm.ip);
-        $("#form-input-ccvm-pn-ip").val(clusterJsonConf.clusterConfig.ccvm.pn);
-        $("#form-input-ccvm-cn-ip").val(clusterJsonConf.clusterConfig.ccvm.cn);
 
         $('#form-table-tbody-cluster-config-existing-host-profile-scvm tr').each(function(){
             let host_name = $(this).find('td').eq(1).text().trim();
@@ -692,8 +688,6 @@ function settingProfile(clusterJsonConf, option){
         $("#form-input-cloud-vm-failover-cluster-host1-name").val("");
         $("#form-input-cloud-vm-failover-cluster-host2-name").val("");
         $("#form-input-cloud-vm-failover-cluster-host3-name").val("");
-        $("#form-input-cloud-vm-pn-ip").val("");
-        $("#form-input-cloud-vm-cn-ip").val("");
 
         $("#form-input-cloud-os-type").val(clusterJsonConf.clusterConfig.type);
 
@@ -710,12 +704,6 @@ function settingProfile(clusterJsonConf, option){
         }
         if(c_mngt_dns != ""){
             $("#form-input-cloud-vm-dns").val(c_mngt_dns);
-        }
-        if(c_pn_ip != ""){
-            $("#form-input-cloud-vm-pn-ip").val(c_pn_ip);
-        }
-        if(c_cn_ip != ""){
-            $("#form-input-cloud-vm-cn-ip").val(c_cn_ip);
         }
         if(clusterJsonConf.clusterConfig.pcsCluster.hostname1 != "" && clusterJsonConf.clusterConfig.pcsCluster.hostname1 != null){
             $("#form-input-cloud-vm-failover-cluster-host1-name").val(clusterJsonConf.clusterConfig.pcsCluster.hostname1);
@@ -865,32 +853,14 @@ function tableToHostsText(table_tr_obj, option, os_type){
         if($("#form-input-cluster-ccvm-mngt-ip").val() != ""){
             hsots_text += $("#form-input-cluster-ccvm-mngt-ip").val() + "\t" + "ccvm-mngt" + "\t" + "ccvm" + "\n";
         }
-        if($("#form-input-cluster-ccvm-pn-ip").val() != "" ){
-            hsots_text += $("#form-input-cluster-ccvm-pn-ip").val() + "\t" + "ccvm-pn" + "\n";
-        }
-        if($("#form-input-cluster-ccvm-cn-ip").val() != "" ){
-            hsots_text += $("#form-input-cluster-ccvm-cn-ip").val() + "\t" + "ccvm-cn" + "\n";
-        }
     }else if(option == "-scvm"){
         if($("#form-input-ccvm-mngt-ip").val() != ""){
             hsots_text += $("#form-input-ccvm-mngt-ip").val() + "\t" + "ccvm-mngt" + "\t" + "ccvm" + "\n";
-        }
-        if($("#form-input-ccvm-pn-ip").val() != "" ){
-            hsots_text += $("#form-input-ccvm-pn-ip").val() + "\t" + "ccvm-pn" + "\n";
-        }
-        if($("#form-input-ccvm-cn-ip").val() != "" ){
-            hsots_text += $("#form-input-ccvm-cn-ip").val() + "\t" + "ccvm-cn" + "\n";
         }
     }else if(option == "-ccvm"){
         if($('#form-input-cloud-vm-mngt-nic-ip').val() != ""){
             var mgmt_ip = $('#form-input-cloud-vm-mngt-nic-ip').val().split("/")[0];
             hsots_text += mgmt_ip + "\t" + "ccvm-mngt" + "\t" + "ccvm" + "\n";
-        }
-        if($("#form-input-cloud-vm-pn-ip").val() != "" ){
-            hsots_text += $("#form-input-cloud-pn-ip").val() + "\t" + "ccvm-pn" + "\n";
-        }
-        if($("#form-input-cloud-vm-cn-ip").val() != "" ){
-            hsots_text += $("#form-input-cloud-cn-ip").val() + "\t" + "ccvm-cn" + "\n";
         }
     }
 

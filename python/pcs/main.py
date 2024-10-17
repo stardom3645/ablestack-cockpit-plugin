@@ -39,8 +39,8 @@ def main():
         pcs.destroyCluster()
     elif (args.action) == 'status':
         pcs.statusResource(args.resource)
-
-
+    elif (args.action) == 'stop' :
+        pcs.stopCluster()
 
 if __name__ == "__main__":
     main()

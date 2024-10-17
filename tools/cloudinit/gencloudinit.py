@@ -416,43 +416,11 @@ ccvm용 네트워크설정(스토리지 네트워크 추가 없음)하는 부분
 :param 없음
 :return yaml 파일
 """
-def ccvmGen(pn_nic:str, pn_ip:str, pn_prefix:int, cn_nic:str, cn_ip:str, cn_prefix:int, sn_nic:str, sn_ip:str, sn_prefix: int, sn_gw:str):
+def ccvmGen(sn_nic:str, sn_ip:str, sn_prefix: int, sn_gw:str):
     with open(f'{tmpdir}/network-config.mgmt', 'rt') as f:
         yam = yaml.safe_load(f)
-    if os_type == "PowerFlex":
-        if (pn_nic is not None or pn_ip is not None or cn_nic is not None or cn_ip is not None) and (sn_nic is not None or sn_ip is not None or sn_prefix is not None or sn_gw is not None) :
-            yam['network']['config'].append({'name': pn_nic,
-                                        'subnets': [{'address': f'{pn_ip}/{pn_prefix}',
-                                                    'type': 'static'}],
-                                        'type': 'physical'})
-            yam['network']['config'].append({'name': cn_nic,
-                                        'subnets': [{'address': f'{cn_ip}/{cn_prefix}',
-                                                    'type': 'static'}],
-                                        'type': 'physical'})
-            yam['network']['config'].append({'name': sn_nic,
-                                            'subnets': [{'address': f'{sn_ip}/{sn_prefix}',
-                                                        'gateway': sn_gw,
-                                                        'type': 'static'}],
-                                            'type': 'physical'})
 
-        elif (pn_nic is not None or pn_ip is not None or cn_nic is not None or cn_ip is not None) and (sn_nic is None or sn_ip is None or sn_prefix is None or sn_gw is None):
-            yam['network']['config'].append({'name': pn_nic,
-                                        'subnets': [{'address': f'{pn_ip}/{pn_prefix}',
-                                                    'type': 'static'}],
-                                        'type': 'physical'})
-            yam['network']['config'].append({'name': cn_nic,
-                                        'subnets': [{'address': f'{cn_ip}/{cn_prefix}',
-                                                    'type': 'static'}],
-                                        'type': 'physical'})
-
-        elif (pn_nic is None or pn_ip is None or cn_nic is None or cn_ip is None) and (sn_nic is not None or sn_ip is not None or sn_prefix is not None or sn_gw is not None):
-            yam['network']['config'].append({'name': sn_nic,
-                                            'subnets': [{'address': f'{sn_ip}/{sn_prefix}',
-                                                        'gateway': sn_gw,
-                                                        'type': 'static'}],
-                                            'type': 'physical'})
-    else:
-        if sn_nic is not None or sn_ip is not None or sn_prefix is not None or sn_gw is not None :
+    if sn_nic is not None or sn_ip is not None or sn_prefix is not None or sn_gw is not None :
             yam['network']['config'].append({'name': sn_nic,
                                             'subnets': [{'address': f'{sn_ip}/{sn_prefix}',
                                                         'gateway': sn_gw,
@@ -516,11 +484,6 @@ def scvmGen(pn_nic=None, pn_ip=None, pn_prefix=24, cn_nic=None, cn_ip=None, cn_p
         ['/usr/bin/systemctl', 'enable', '--now', 'cockpit.socket'],
         ['/usr/bin/systemctl', 'enable', '--now', 'cockpit.service'],
         ]
-        # 인터페이스 이름이 동일 하지 않을 경우, scvm에 np0, np1이 붙을 수 있기에 고정으로 사용
-        yam2['runcmd'] = [
-        ['/usr/bin/sh', '/usr/local/sbin/sortEth.sh']
-        ]
-
         with open(f'{pluginpath}/shell/host/scvm_bootstrap.sh', 'rt') as bootstrapfile:
             bootstrap = bootstrapfile.read()
             yam2['write_files'].append(
@@ -555,6 +518,11 @@ def scvmGen(pn_nic=None, pn_ip=None, pn_prefix=24, cn_nic=None, cn_ip=None, cn_p
                     'permissions': '0777'
                 }
             )
+    # 인터페이스 이름이 동일 하지 않을 경우, scvm에 np0, np1이 붙을 수 있기에 고정으로 사용
+    yam2['runcmd'] = [
+    ['/usr/bin/sh', '/usr/local/sbin/sortEth.sh']
+    ]
+
     with open(f'{tmpdir}/user-data', 'wt') as f:
         f.write('#cloud-config\n')
         f.write(yaml.dump(yam2).replace("\n\n", "\n"))
@@ -661,9 +629,7 @@ def main(args):
     pn_nic=None, pn_ip=None, cn_nic=None, cn_ip=None,
     """
     if args.type == 'ccvm':
-        ret = ccvmGen(pn_nic=args.pn_nic, pn_ip=args.pn_ip, pn_prefix=args.pn_prefix,
-                      cn_nic=args.cn_nic, cn_ip=args.cn_ip, cn_prefix=args.cn_prefix,
-                      sn_nic=args.sn_nic, sn_ip=args.sn_ip, sn_prefix=args.sn_prefix, sn_gw=args.sn_gw)
+        ret = ccvmGen(sn_nic=args.sn_nic, sn_ip=args.sn_ip, sn_prefix=args.sn_prefix, sn_gw=args.sn_gw)
     elif args.type == 'scvm':
         ret = scvmGen(pn_nic=args.pn_nic, pn_ip=args.pn_ip, pn_prefix=args.pn_prefix, cn_nic=args.cn_nic, cn_ip=args.cn_ip, cn_prefix=args.cn_prefix, master=args.master)
     elif args.type == 'gwvm':

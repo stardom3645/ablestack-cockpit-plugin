@@ -492,6 +492,7 @@ function deployPfmpVM() {
                    ,"--mgmt-prefix",mgmt_prefix
                    ,"--mgmt-gw",mgmt_gw
                    ,"--dns",dns
+                   ,"--ingress-ip", $('#form-input-pfmp-mngt-5-pieces').val()
                    ,"--hostname","pfmp"
                 ];
                 if(console_log){console.log(create_pfmp_cloudinit_cmd);}

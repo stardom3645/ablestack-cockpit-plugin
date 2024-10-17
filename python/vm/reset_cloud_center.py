@@ -100,18 +100,26 @@ def resetCloudCenter(args):
             return createReturn(code=500, val="cloud center reset fail")
 
     else :
+        pcs_list = []
+
+        if json_data["clusterConfig"]["pcsCluster"]["hostname1"] is not None:
+            pcs_list.append(json_data["clusterConfig"]["pcsCluster"]["hostname1"])
+
+        if json_data["clusterConfig"]["pcsCluster"]["hostname2"] is not None:
+            pcs_list.append(json_data["clusterConfig"]["pcsCluster"]["hostname2"])
+
+        if json_data["clusterConfig"]["pcsCluster"]["hostname3"] is not None:
+            pcs_list.append(json_data["clusterConfig"]["pcsCluster"]["hostname3"])
+
         result = json.loads(python3(pluginpath + '/python/pcs/main.py', 'remove', '--resource', 'cloudcenter_res'))
         if result['code'] not in [200,400]:
             success_bool = False
-
-        # 클러스터 삭제
-        result = json.loads(python3(pluginpath + '/python/pcs/main.py', 'destroy'))
-        if result['code'] not in [200,400]:
-            success_bool = False
+        # GFS용 초기화
+        result = json.loads(python3(pluginpath + '/python/pcs/gfs-manage.py', '--init-pcs-cluster', '--disks', '/dev/scinia1', '--vg-name', 'vg_glue', '--lv-name', 'lv_glue', '--list-ip','\"'+pcs_list[0]+' '+pcs_list[1]+' '+pcs_list[2]+'\"'))
 
         # virsh 초기화
-        os.system("virsh destroy ccvm > /dev/null 2&>1")
-        os.system("virsh undefine ccvm --keep-nvram> /dev/null 2&>1")
+        os.system("virsh destroy ccvm > /dev/null 2>&1")
+        os.system("virsh undefine ccvm --keep-nvram> /dev/null 2>&1")
 
         # 작업폴더 생성
         os.system("mkdir -p "+pluginpath+"/tools/vmconfig/ccvm")

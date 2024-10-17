@@ -8,7 +8,6 @@
 // 변수 선언
 var cur_step_wizard_cluster_config_prepare = "1";
 var option = "";
-
 // Document.ready 시작
 $(document).ready(function () {
     // 마법사 페이지 준비
@@ -38,30 +37,34 @@ $(document).ready(function () {
     checkHostName(option);
 });
 
+
 $('[name="cluster-config-operating-system-card"]').click(function() {
     var $clickedButton = $(this);
 
-    // 클릭된 버튼의 상태 변경
+    // 클릭한 버튼이 이미 선택되어 있는 경우, 선택을 해제하고 숨겨진 입력 값을 재설정합니다.
     if ($clickedButton.hasClass('is-selected')) {
         $clickedButton.removeClass('is-selected');
         $clickedButton.find('i').removeClass('fa-check').addClass('fa-ban').css('color', 'red');
+
+        // 선택이 취소되었으므로 숨겨진 입력을 재설정합니다.
+        $('#selected-operating-system').val('');
+
     } else {
-        // 모든 버튼 초기화
+        // 다른 모든 버튼의 선택을 해제합니다.
         $('[name="cluster-config-operating-system-card"]').removeClass('is-selected').each(function() {
             $(this).find('i').removeClass('fa-check').addClass('fa-ban').css('color', 'red');
         });
 
-        // 클릭된 버튼 선택
+        // 클릭한 버튼을 선택하세요
         $clickedButton.addClass('is-selected');
         $clickedButton.find('i').removeClass('fa-ban').addClass('fa-check').css('color', 'green');
+
+        // 선택된 값을 숨겨진 입력으로 설정
+        var selectedValue = $clickedButton.val();
+        $('#selected-operating-system').val(selectedValue);
+
     }
-
-    // 선택된 버튼의 value 값을 폼에 설정
-    var selectedValue = $clickedButton.val(); // 클릭된 버튼의 value 속성 값 가져오기
-
-    $('[name="cluster-config-operating-system-card"]').val(selectedValue);
 });
-
 // 타이틀 닫기 버튼 이벤트 처리
 $('#button-close-modal-wizard-cluster-config-prepare').on('click', function () {
     $('#div-modal-wizard-cluster-config-prepare').hide();
@@ -351,12 +354,9 @@ $('#button-next-step-modal-wizard-cluster-config-prepare').on('click', function 
 
             let ret_json_string = tableToClusterConfigJsonString(host_file_type, option);
 
-            var os_type = $('[name="cluster-config-operating-system-card"]').val();
-
+            var os_type = $('#selected-operating-system').val();
             // ccvm_mngt_ip
             var ccvm_mgmt_ip = $('#form-input-cluster-ccvm-mngt-ip').val();
-            var ccvm_pn_ip = $('#form-input-cluster-ccvm-pn-ip').val();
-            var ccvm_cn_ip = $('#form-input-cluster-ccvm-cn-ip').val();
 
             // 관리 NIC 정보
             var mngt_nic_cidr =  $("#form-input-cluster-mngt-nic-cidr").val();
@@ -387,12 +387,6 @@ $('#button-next-step-modal-wizard-cluster-config-prepare').on('click', function 
                     }
                     if(mngt_nic_dns != ""){
                         cluster_config_cmd.push("-mnd",mngt_nic_dns)
-                    }
-                    if(ccvm_pn_ip != ""){
-                        cluster_config_cmd.push("-cpi",ccvm_pn_ip)
-                    }
-                    if(ccvm_cn_ip != ""){
-                        cluster_config_cmd.push("-cci",ccvm_cn_ip)
                     }
 
                     if(console_log){console.log(cluster_config_cmd);}
@@ -591,8 +585,6 @@ $('#form-radio-hosts-new').on('click', function () {
 
 
     $("#form-input-cluster-ccvm-mngt-ip").val("");
-    $("#form-input-cluster-ccvm-pn-ip").val("");
-    $("#form-input-cluster-ccvm-cn-ip").val("");
     $("#form-input-cluster-mngt-nic-cidr").val("");
     $("#form-input-cluster-mngt-nic-gateway").val("");
     $("#form-input-cluster-mngt-nic-dns").val("");
@@ -601,8 +593,6 @@ $('#form-radio-hosts-new').on('click', function () {
     $("#form-input-cluster-pcs-hostname3").val("");
 
     $("#form-input-cluster-ccvm-mngt-ip").attr('disabled', false);
-    $("#form-input-cluster-ccvm-pn-ip").attr('disabled', false);
-    $("#form-input-cluster-ccvm-cn-ip").attr('disabled', false);
     $("#form-input-cluster-mngt-nic-cidr").attr('disabled', false);
     $("#form-input-cluster-mngt-nic-gateway").attr('disabled', false);
     $("#form-input-cluster-mngt-nic-dns").attr('disabled', false);
@@ -628,8 +618,6 @@ $('#form-radio-hosts-file').on('click', function () {
     $('#form-input-cluster-config-hosts-file').val("");
 
     $("#form-input-cluster-ccvm-mngt-ip").val("");
-    $("#form-input-cluster-ccvm-pn-ip").val("");
-    $("#form-input-cluster-ccvm-cn-ip").val("");
     $("#form-input-cluster-mngt-nic-cidr").val("");
     $("#form-input-cluster-mngt-nic-gateway").val("");
     $("#form-input-cluster-mngt-nic-dns").val("");
@@ -637,8 +625,6 @@ $('#form-radio-hosts-file').on('click', function () {
     $("#form-input-cluster-pcs-hostname2").val("");
     $("#form-input-cluster-pcs-hostname3").val("");
     $("#form-input-cluster-ccvm-mngt-ip").attr('disabled', true);
-    $("#form-input-cluster-ccvm-pn-ip").attr('disabled', true);
-    $("#form-input-cluster-ccvm-cn-ip").attr('disabled', true);
     $("#form-input-cluster-mngt-nic-cidr").attr('disabled', true);
     $("#form-input-cluster-mngt-nic-gateway").attr('disabled', true);
     $("#form-input-cluster-mngt-nic-dns").attr('disabled', true);
@@ -1675,10 +1661,8 @@ function validateClusterConfigPrepare(timeserver_type) {
 
     let host_file_type = $('input[name=radio-hosts-file]:checked').val();
 
-    let os_type = $('[name="cluster-config-operating-system-card"]').val().trim();
+    let os_type = $('#selected-operating-system').val();
     let ccvm_mngt_ip = $('#form-input-cluster-ccvm-mngt-ip').val().trim();
-    let ccvm_pn_ip = $('#form-input-cluster-ccvm-pn-ip').val().trim();
-    let ccvm_cn_ip = $('#form-input-cluster-ccvm-cn-ip').val().trim();
     let mngt_nic_cidr =  $("#form-input-cluster-mngt-nic-cidr").val();
     let mngt_nic_gateway = $("#form-input-cluster-mngt-nic-gateway").val();
     let mngt_nic_dns = $("#form-input-cluster-mngt-nic-dns").val();
@@ -1706,18 +1690,6 @@ function validateClusterConfigPrepare(timeserver_type) {
         validate_check = false;
     } else if(!checkIp(ccvm_mngt_ip)){
         alert("CCVM 관리 IP 형식을 확인해주세요.");
-        validate_check = false;
-    } else if(os_type == "PowerFlex" && ccvm_pn_ip == ""){
-        alert("CCVM PN IP 정보를 입력해주세요.");
-        validate_check = false;
-    } else if(os_type == "PowerFlex" && ccvm_cn_ip == ""){
-        alert("CCVM CN IP 정보를 입력해주세요.");
-        validate_check = false;
-    } else if(ccvm_pn_ip != "" && !checkIp(ccvm_pn_ip)){
-        alert("CCVM PN IP 형식을 확인해주세요.");
-        validate_check = false;
-    } else if(ccvm_cn_ip != "" && !checkIp(ccvm_cn_ip)){
-        alert("CCVM CN IP 형식을 확인해주세요.")
         validate_check = false;
     } else if(mngt_nic_cidr != "" && !$.isNumeric(mngt_nic_cidr)){
         alert("관리 NIC CIDR는 숫자만 입력 가능합니다.");

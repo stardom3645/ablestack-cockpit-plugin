@@ -57,16 +57,16 @@ def openClusterJson():
     return ret
 
 def PfmpConfigJson():
-    cluster_data = openClusterJson()
+    json_data = openClusterJson()
     try:
         with open(pfmp_json_file_path, 'r') as json_file:
             pfmp_data = json.load(json_file)
             for i in range(len(pfmp_data["Nodes"])):
-                pfmp_data["Nodes"][i]["ipaddress"] = cluster_data["clusterConfig"]["hosts"][i]["scvmMngt"]
-                pfmp_data["RoutableIPPoolCIDR"][0]["mgmt"] = args.mgmt
-                pfmp_data["RoutableIPPoolCIDR"][1]["data1"] = args.data1
-                pfmp_data["RoutableIPPoolCIDR"][2]["data2"] = args.data2
-                pfmp_data["PFMPHostIP"] = args.mgmt.split('-')[0].strip()
+                pfmp_data["Nodes"][i]["ipaddress"] = json_data["clusterConfig"]["hosts"][i]["scvmMngt"]
+            pfmp_data["RoutableIPPoolCIDR"][0]["mgmt"] = args.mgmt
+            pfmp_data["RoutableIPPoolCIDR"][1]["data1"] = args.data1
+            pfmp_data["RoutableIPPoolCIDR"][2]["data2"] = args.data2
+            pfmp_data["PFMPHostIP"] = args.mgmt.split('-')[0].strip()
         with open(pfmp_json_file_path, 'w') as json_file:
             pfmp_data = json.dump(pfmp_data, json_file,indent=4)
             return json.loads(createReturn(code=200, val="pfmp_config json write success"))

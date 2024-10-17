@@ -154,42 +154,6 @@ def createCcvmXml(args):
                     line = line.replace('<!--ccvm_disk-->',crd_txt)
 
                 elif '<!--management_network_bridge-->' in line:
-                    if os_type == "PowerFlex":
-                        mnb_txt = "<interface type='bridge'>\n"
-                        mnb_txt += "      <mac address='" + generateMacAddress() + "'/>\n"
-                        mnb_txt += "      <source bridge='" + args.management_network_bridge + "'/>\n"
-                        mnb_txt += "      <target dev='vnet" + str(br_num) + "'/>\n"
-                        mnb_txt += "      <model type='virtio'/>\n"
-                        mnb_txt += "      <alias name='net" + str(br_num) + "'/>\n"
-                        mnb_txt += "      <address type='pci' domain='0x0000' bus='0x00' slot='" + slot_hex_num.pop(0) + "' function='0x0'/>\n"
-                        mnb_txt += "    </interface>\n"
-
-                        br_num += 1
-
-                        mnb_txt += "    <interface type='bridge'>\n"
-                        mnb_txt += "      <mac address='" + generateMacAddress() + "'/>\n"
-                        mnb_txt += "      <source bridge='" + args.public_network_bridge + "'/>\n"
-                        mnb_txt += "      <target dev='vnet" + str(br_num) + "'/>\n"
-                        mnb_txt += "      <model type='virtio'/>\n"
-                        mnb_txt += "      <alias name='net" + str(br_num) + "'/>\n"
-                        mnb_txt += "      <address type='pci' domain='0x0000' bus='0x00' slot='" + slot_hex_num.pop(0) + "' function='0x0'/>\n"
-                        mnb_txt += "    </interface>\n"
-
-                        br_num += 1
-
-                        mnb_txt += "    <interface type='bridge'>\n"
-                        mnb_txt += "      <mac address='" + generateMacAddress() + "'/>\n"
-                        mnb_txt += "      <source bridge='" + args.cluster_network_bridge + "'/>\n"
-                        mnb_txt += "      <target dev='vnet" + str(br_num) + "'/>\n"
-                        mnb_txt += "      <model type='virtio'/>\n"
-                        mnb_txt += "      <alias name='net" + str(br_num) + "'/>\n"
-                        mnb_txt += "      <address type='pci' domain='0x0000' bus='0x00' slot='" + slot_hex_num.pop(0) + "' function='0x0'/>\n"
-                        mnb_txt += "    </interface>"
-
-                        br_num += 1
-
-                        line = line.replace('<!--management_network_bridge-->', mnb_txt)
-                    else:   #os_type == "ABLESTACK-HCI" or os_type == "ABLESTACK-GlueGFS"
                         mnb_txt = "    <interface type='bridge'>\n"
                         mnb_txt += "      <mac address='" + generateMacAddress() + "'/>\n"
                         mnb_txt += "      <source bridge='" + args.management_network_bridge + "'/>\n"

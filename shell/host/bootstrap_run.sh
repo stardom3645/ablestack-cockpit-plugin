@@ -11,7 +11,7 @@
 
 if [ $1 = "scvm" ]
 then
-  hosts=$(grep able /etc/hosts | awk '{print $1}')
+  hosts=$(grep ablecube /etc/hosts |grep -v pn |  awk '{print $1}')
   for host in $hosts
   do
     /usr/bin/ssh -o StrictHostKeyChecking=no $host python3 /usr/share/cockpit/ablestack/python/ablestack_json/ablestackJson.py update --depth1 bootstrap --depth2 scvm --value true
@@ -21,14 +21,14 @@ then
 
 elif [ $1 = "wall" ]
 then
-  hosts=$(grep able /etc/hosts | awk '{print $1}')
+  hosts=$(grep ablecube /etc/hosts |grep -v pn |  awk '{print $1}')
   for host in $hosts
   do
     /usr/bin/ssh -o StrictHostKeyChecking=no $host python3 /usr/share/cockpit/ablestack/python/ablestack_json/ablestackJson.py update --depth1 monitoring --depth2 wall --value true
   done
 
 else
-  hosts=$(grep able /etc/hosts | awk '{print $1}')
+  hosts=$(grep ablecube /etc/hosts |grep -v pn |  awk '{print $1}')
   for host in $hosts
   do
     /usr/bin/ssh -o StrictHostKeyChecking=no $host python3 /usr/share/cockpit/ablestack/python/ablestack_json/ablestackJson.py update --depth1 bootstrap --depth2 ccvm --value true

@@ -92,7 +92,7 @@ class CloudCenterVirtualMachine {
             span_icon = $("<span />").addClass("pf-c-label__icon").prepend($('<i class="fas fa-fw fa-check-circle" aria-hidden="true"></i>'));
         }else{
             span_icon = $("<span />").addClass("pf-c-label__icon").prepend($('<i class="fas fa-fw fa-exclamation-triangle" aria-hidden="true"></i>'));
-        }         
+        }
         description_list__text.prepend(span_cloud_vm_status.prepend(span_content.prepend(span_icon).append(description)))
         return description_list__text[0]
     };
@@ -150,18 +150,18 @@ class CloudCenterVirtualMachine {
                     }else{
                         $("#div-mold-db-status").text("정지됨");
                     }
-                    if (vm.State == "running") {                        
+                    if (vm.State == "running") {
                         let a = ccvm_instance.createDescriptionListText("span-cloud-vm-status", 'green', 'Running');
-                        status_span[0].children[0].replaceWith(a)                        
+                        status_span[0].children[0].replaceWith(a)
                     } else {
                         let a = ccvm_instance.createDescriptionListText("span-cloud-vm-status", 'red', 'Stopped');
-                        status_span[0].children[0].replaceWith(a)                        
+                        status_span[0].children[0].replaceWith(a)
                     }
                     $('#ccvm-low-info').text('클라우드센터 가상머신이 배포되었습니다.')
                     $('#ccvm-low-info').attr('style','color: var(--pf-global--success-color--100)')
                     $('#span-cloud-vm-status').attr('class','pf-c-label pf-m-green');
                     $('#ccvm_status_icon').attr('class','fas fa-fw fa-check-circle');
-                    sessionStorage.setItem("ccvm_status", vm.State.toUpperCase()); 
+                    sessionStorage.setItem("ccvm_status", vm.State.toUpperCase());
                     ccvm_instance.cpus=vm['CPU(s)']
                     ccvm_instance.mem=vm['Max memory']
                     ccvm_instance.disk_cap=vm['DISK_CAP']
@@ -224,7 +224,7 @@ class CloudCenterVirtualMachine {
                 }
             */
             let status_span = $("#description-cloud-vm-status");
-            if (obj.code == 200) {                
+            if (obj.code == 200) {
                 // if (obj.val.started == undefined ){
                 //         let a = ccvm_instance.createDescriptionListText("span-cloud-vm-status", 'orange', '가상머신이 동작중이지 않습니다..');
                 //         status_span[0].children[0].replaceWith(a)
@@ -274,7 +274,7 @@ class CloudCenterVirtualMachine {
         ccvm_instance= new CloudCenterVirtualMachine()
         let status_span = $("#description-cloud-vm-status");
         let a = ccvm_instance.createDescriptionListText("span-cloud-vm-status", 'orange', "상태 체크 중 &bull;&bull;&bull;&nbsp;&nbsp;&nbsp;<svg class='pf-c-spinner pf-m-md' role='progressbar' aria-valuetext='Loading...' viewBox='0 0 100 100' ><circle class='pf-c-spinner__path' cx='50' cy='50' r='45' fill='none'></circle></svg>");
-        status_span[0].children[0].replaceWith(a); 
+        status_span[0].children[0].replaceWith(a);
         cockpit.spawn(['/usr/bin/python3', pluginpath + '/python/pcs/main.py', 'status', '--resource', 'cloudcenter_res'], { host: pcs_exe_host})
             .then(ccvm_instance.checkPCSOK)
             .catch(ccvm_instance.checkPCSERR)

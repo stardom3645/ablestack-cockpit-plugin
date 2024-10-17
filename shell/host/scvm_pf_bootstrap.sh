@@ -54,7 +54,9 @@ do
     scli --add_certificate --certificate_file /opt/emc/scaleio/mdm/cfg/mgmt_ca.pem
   elif [ $scvm == "scvm2-pn" ]
   then
+
     scp /opt/emc/scaleio/mdm/cfg/sec_mdm_certificate.pem $scvm:/opt/emc/scaleio/mdm/cfg/mdm_certificate.pem
+
     scp /opt/emc/scaleio/mdm/cfg/cli_certificate.p12 /opt/emc/scaleio/mdm/cfg/mgmt_ca.pem $scvm:/opt/emc/scaleio/mdm/cfg/
 
     ssh -o StrictHostKeyChecking=no $scvm scli --add_certificate --certificate_file /opt/emc/scaleio/mdm/cfg/mgmt_ca.pem
@@ -65,7 +67,7 @@ do
 done
 
 ################ MDM 생성 (1번 scvm에서 실행) ##################
-sleep 2
+sleep 5
 
 for scvm in $scvms_name
 do
@@ -120,6 +122,7 @@ done
 ################ 보호도메인, 스토리지 풀 설정 (1번 scvm에서 실행) ##################
 scli --modify_spare_policy --protection_domain_name PD1 --storage_pool_name SP1 --spare_percentage 34 --i_am_sure
 
+sleep 1
 ################ 물리 디스크 sds에  설정 (1번 scvm에서 실행) ##################
 for scvm in $scvms_name
 do
@@ -156,14 +159,12 @@ do
       systemctl restart scini
       systemctl enable --now sdcd.service
 EOF
+
 done
 
+sleep 10
 ################ CCVM 볼륨 생성 및 매핑 (1번 scvm에서 실행) ##################
-sleep 1
-
-scli --add_volume --protection_domain_name PD1 --storage_pool_name SP1 --size_gb 512 --volume_name ccvm
-
-sleep 1
+scli --add_volume --protection_domain_name PD1 --storage_pool_name SP1 --size_gb 512  --volume_name ccvm --thin_provisioned
 
 for host in $hosts_pn
 do

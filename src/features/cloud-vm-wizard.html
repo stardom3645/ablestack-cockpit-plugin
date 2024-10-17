@@ -280,30 +280,6 @@
                                                         </select>
                                                     </div>
                                                 </div>
-                                                <div class="pf-c-form__group" id="powerflex-network-ccvm-pn">
-                                                    <div class="pf-c-form__group-label">
-                                                        <label class="pf-c-form__label" for="form-select-cloud-vm-pn-parent">
-                                                            <span class="pf-c-form__label-text">PN 네트워크</span>
-                                                            <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
-                                                        </label>
-                                                    </div>
-                                                    <div class="pf-c-form__group-control">
-                                                        <select class="pf-c-form-control" id="form-select-cloud-vm-pn-parent" name="form-select-cloud-vm-pn-parent" style="width:40%;">
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                                <div class="pf-c-form__group" id="powerflex-network-ccvm-cn">
-                                                    <div class="pf-c-form__group-label">
-                                                        <label class="pf-c-form__label" for="form-select-cloud-vm-cn-parent">
-                                                            <span class="pf-c-form__label-text">CN 네트워크</span>
-                                                            <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
-                                                        </label>
-                                                    </div>
-                                                    <div class="pf-c-form__group-control">
-                                                        <select class="pf-c-form-control" id="form-select-cloud-vm-cn-parent" name="form-select-cloud-vm-cn-parent" style="width:40%;">
-                                                        </select>
-                                                    </div>
-                                                </div>
                                                 <div class="pf-c-form__group" style="padding:0px;">
                                                     <div class="pf-c-form__group-label">
                                                         <label class="pf-c-form__label" for="form-select-cloud-vm-svc-parent">
@@ -328,8 +304,7 @@
                                         <strong><span class="pf-screen-reader">Info alert:</span>네트워크 구성 시 참고사항</strong>
                                     </p>
                                     <div class="pf-c-alert__description">
-                                        <p>클라우드센터에 접근하고자 하는 네트워크 위치에 따라 가상머신에 할당할 네트워크와 네트워크의 상위 브릿지를 선택합니다. </p>
-                                        <p id="cloud-vm-network-p1">
+                                        <p>클라우드센터에 접근하고자 하는 네트워크 위치에 따라 가상머신에 할당할 네트워크와 네트워크의 상위 브릿지를 선택합니다.
                                             관리네트워크는 호스트를 관리하기 위해 필수적인 네트워크이며, 기본 선택되어 있고, 선택 여부를 변경할 수 없습니다.
                                             서비스네트워크는 사용자가 접근하고자 하는 네트워크 위치이며, 관리네트워크와 서비스네트워크가 다른 경우 선택합니다.
                                         </p>
@@ -884,26 +859,6 @@
                                         </div>
                                         <div class="pf-c-form__group">
                                             <div class="pf-c-form__group-label">
-                                                <label class="pf-c-form__label" for="form-input-cloud-vm-pn-ip">
-                                                    <span class="pf-c-form__label-text">CCVM PN IP</span>
-                                                </label>
-                                            </div>
-                                            <div class="pf-c-form__group-control">
-                                                <input class="pf-c-form-control" style="width:50%" type="text" id="form-input-cloud-vm-pn-ip" name="form-input-cloud-vm-pn-ip" placeholder="xxx.xxx.xxx.xxx 형식으로 입력"/>
-                                            </div>
-                                        </div>
-                                        <div class="pf-c-form__group">
-                                            <div class="pf-c-form__group-label">
-                                                <label class="pf-c-form__label" for="form-input-cloud-vm-cn-ip">
-                                                    <span class="pf-c-form__label-text">CCVM CN IP</span>
-                                                </label>
-                                            </div>
-                                            <div class="pf-c-form__group-control">
-                                                <input class="pf-c-form-control" style="width:50%" type="text" id="form-input-cloud-vm-cn-ip" name="form-input-cloud-vm-cn-ip" placeholder="xxx.xxx.xxx.xxx 형식으로 입력"/>
-                                            </div>
-                                        </div>
-                                        <div class="pf-c-form__group">
-                                            <div class="pf-c-form__group-label">
                                                 <label class="pf-c-form__label" for="form-input-cloud-vm-svc-nic-ip">
                                                     <span class="pf-c-form__label-text">서비스 NIC IP</span>
                                                 </label>
@@ -1059,8 +1014,6 @@
                                                 <dd class="pf-c-description-list__description">
                                                     <div class="pf-c-description-list__text">
                                                        관리 네트워크 :  <span id="span-cloud-vm-mgmt-nic-bridge"></span>
-                                                       <span id="span-cloud-vm-mgmt-pn-bridge" name="powerflex-network" style="display:none;"></span>
-                                                       <span id="span-cloud-vm-mgmt-cn-bridge" name="powerflex-network" style="display:none;"></span>
                                                     </div>
                                                 </dd>
                                             </div>

@@ -62,9 +62,6 @@ $(document).ready(function(){
     //ssh 공개 key 파일 선택 이벤트 세팅
     setSshKeyFileReader($('#form-input-cloud-vm-ssh-public-key-file'), 'id_rsa.pub', setCcvmSshPublicKeyInfo);
 
-    //일반 가상화 GFS용 화면 처리
-    SetGfsDisplay();
-
     //os type 별로 화면 처리
     setTypeByChange();
 
@@ -960,8 +957,6 @@ function deployCloudCenterVM() {
     var host3_name = $('#form-input-cloud-vm-failover-cluster-host3-name').val();
 
     // 일반 가상화 GFS용 일 때
-    var ccvm_pn_ip = $('#form-input-cloud-vm-pn-ip').val();
-    var ccvm_cn_ip = $('#form-input-cloud-vm-cn-ip').val();
     var ipmi_port = "623"
     var ipmi_check_value = $('input[name="radio-ipmi-ccvm"]:checked').val();
     if (ipmi_check_value == "one"){
@@ -1183,7 +1178,7 @@ function deployCloudCenterVM() {
                                                 var auth_hosts_result = JSON.parse(data);
                                                 console.log(auth_hosts_result)
                                                 if (auth_hosts_result.code == "200"){
-                                                    cockpit.spawn(['python3', pluginpath + '/python/pcs/gfs-manage.py', '--setup-cluster', 'cloudcenter_res', '--list-ip', all_host_name])
+                                                    cockpit.spawn(['python3', pluginpath + '/python/pcs/gfs-manage.py', '--setup-cluster', gfs_cluster_name, '--list-ip', all_host_name])
                                                     .then(function(data){
                                                         var setup_cluster_result = JSON.parse(data);
                                                         console.log(setup_cluster_result)
@@ -1242,7 +1237,7 @@ function deployCloudCenterVM() {
                                                                             var mgmt_prefix = $('#form-input-cloud-vm-mngt-nic-ip').val().split("/")[1];
                                                                             var mngt_gw = $('#form-input-cloud-vm-mngt-gw').val();
                                                                             var dns = $('#form-input-cloud-vm-dns').val();
-                                                                            console.log("pn_ip : " + ccvm_pn_ip, "cn_ip : "+ ccvm_cn_ip)
+
                                                                             create_ccvm_cloudinit_cmd = ['python3', pluginpath + '/python/vm/create_ccvm_cloudinit.py'
                                                                                                     ,"-f1",pluginpath+"/tools/vmconfig/ccvm/hosts","-t1", $("#div-textarea-cluster-config-confirm-hosts-file-ccvm").val() // hosts 파일
                                                                                                     ,"-f2",pluginpath+"/tools/vmconfig/ccvm/id_rsa","-t2", $("#form-textarea-cloud-vm-ssh-private-key-file").val() // ssh 개인 key 파일
@@ -1261,16 +1256,13 @@ function deployCloudCenterVM() {
                                                                             if(dns != ""){
                                                                                 create_ccvm_cloudinit_cmd.push('--dns',dns);
                                                                             }
-                                                                            if(os_type == "PowerFlex"){
-                                                                                create_ccvm_cloudinit_cmd.push('--pn-ip',ccvm_pn_ip,'--cn-ip',ccvm_cn_ip);
-                                                                            }
                                                                             var svc_bool = $('input[type=checkbox][id="form-checkbox-svc-network"]').is(":checked");
                                                                             if(svc_bool){
                                                                                 var sn_ip = $('#form-input-cloud-vm-svc-nic-ip').val().split("/")[0];
                                                                                 var sn_prefix = $('#form-input-cloud-vm-svc-nic-ip').val().split("/")[1];
                                                                                 var sn_gw = $('#form-input-cloud-vm-svc-gw').val();
                                                                                 var sn_dns = $('#form-input-cloud-vm-svc-dns').val();
-                                                                                create_ccvm_cloudinit_cmd.push('--sn-nic','enp0s23','--sn-ip',sn_ip,'--sn-prefix',sn_prefix,'--sn-gw',sn_gw,'--sn-dns',sn_dns);
+                                                                                create_ccvm_cloudinit_cmd.push('--sn-nic','enp0s21','--sn-ip',sn_ip,'--sn-prefix',sn_prefix,'--sn-gw',sn_gw,'--sn-dns',sn_dns);
                                                                             }
                                                                             if(console_log){console.log(create_ccvm_cloudinit_cmd);}
                                                                             cockpit.spawn(create_ccvm_cloudinit_cmd)
@@ -1789,7 +1781,7 @@ function setCcvmReviewInfo(){
         $('#span-cloud-vm-ssh-public-key-file').text(ssh_public_key_url);
     }
     var ipmi_check_val = $('input[name="radio-ipmi-ccvm"]:checked').val();
-    console.log(ipmi_check_val);
+
     if(ipmi_check_val == 'one') {
         $('#accordion-common-ipmi').hide();
         $('#span-cloud-vm-ipmi-ip1').text($('#form-input-individual-credentials-ipmi-ip1').val());
@@ -1828,8 +1820,6 @@ function validateCloudCenterVm(){
     var svc_bool = $('input[type=checkbox][id="form-checkbox-svc-network"]').is(":checked");
 
     var ipmi_check_value = $('input[name="radio-ipmi-ccvm"]:checked').val();
-
-    console.log(ipmi_check_value);
 
     let pcs_host1 = $('#form-input-cloud-vm-failover-cluster-host1-name').val().trim();
     let pcs_host2 = $('#form-input-cloud-vm-failover-cluster-host2-name').val().trim();
@@ -2021,28 +2011,7 @@ function checkValueNull(value, errorText){
     }
 }
 
-/**
- * Meathod Name : setTypeByChange
- * Date Created : 2024.09.05
- * Writer  : 정민철
- * Description : cluster.json의 type 값에 따라 화면 교체
- * History  : 2024.09.05 최초 작성
- */
-function setTypeByChange(){
-    if (os_type == "PowerFlex"){
-        // 루트 디스크
-        $('#form-select-cloud-vm-root-disk-size').text("500 GiB (THIN Provisioning)");
-        $('#span-cloud-vm-root-disk-size').text("500 GiB");
-        // 네트워크 설정 정보
-        $('#powerflex-network-ccvm-pn').show();
-        $('#powerflex-network-ccvm-cn').show();
-        $('#cloud-vm-network-p1').append("PN네트워크 및 CN네트워크는 스토리지를 관리하기 위한 필수적인 네트워크이다.")
-        $('[name="powerflex-network"]').show();
-    }else{
-        $('#powerflex-network-ccvm-pn').hide();
-        $('#powerflex-network-ccvm-cn').hide();
-    }
-}
+
 /**
  * Meathod Name : resetIpmiValues
  * Date Created : 2024.09.10
@@ -2076,18 +2045,22 @@ function resetIpmiValues(){
     }
 }
 /**
- * Meathod Name : SetGfsDisplay
- * Date Created : 2024.09.11
+ * Meathod Name : setTypeByChange
+ * Date Created : 2024.09.05
  * Writer  : 정민철
- * Description : 일반 가상화를 사용할 시 ccvm에서 바뀌는 화면 처리
- * History  : 2024.09.11 최초 작성
+ * Description : cluster.json의 type 값에 따라 화면 교체
+ * History  : 2024.09.05 최초 작성
  */
-function SetGfsDisplay(){
-    console.log(os_type)
-    if (os_type != "ABLESTACK-HCI" && os_type != "ABLESTACK-GlueGFS"){
+function setTypeByChange(){
+    if (os_type == "PowerFlex"){
+        // 루트 디스크
+        $('#form-select-cloud-vm-root-disk-size').text("500 GiB (THIN Provisioning)");
+        $('#span-cloud-vm-root-disk-size').text("500 GiB");
+        // gfs용 화면 처리
         $('#nav-button-cloud-vm-ipmi').show();
         $('#div-accordion-cloud-ipmi').show();
         $('#span-ccvm-progress-step2-text').text("GFS 구성 설정 및 Pcs 설정");
         $('#span-ccvm-progress-step1-text').text("클러스터 구성 HOST 네트워크 연결 및 초기화 작업");
+    }else{
     }
 }

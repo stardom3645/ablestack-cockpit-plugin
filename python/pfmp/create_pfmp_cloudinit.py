@@ -10,6 +10,7 @@ Copyright (c) 2021 ABLECLOUD Co. Ltd
 import argparse
 import logging
 import json
+import subprocess
 import sys
 import os
 
@@ -37,6 +38,7 @@ def createArgumentParser():
     parser.add_argument('-f2', '--file2', metavar='[public key file2 location]', type=str, help='input Value to public key file location and name', required=True)
     parser.add_argument('-t2', '--text2', metavar='[public key file2 text]', type=str, help='input Value to public key text', required=True)
     parser.add_argument('--hostname', metavar='[hostname]', help="VM의 이름")
+    parser.add_argument('--ingress-ip', metavar='[ingress ip]', help="PFMP Ingress IP")
     parser.add_argument('--mgmt-ip', metavar='[management ip]', help="관리 네트워크 IP")
     parser.add_argument('--mgmt-nic', metavar='[management nic]', help="관리 네트워크 NIC")
     parser.add_argument('--mgmt-prefix', metavar='[management prefix]', help="관리 네트워크 prefix")
@@ -72,10 +74,14 @@ def setupHostsAndClusterJson():
 
         my_hosts = Hosts(path=hosts_file_path)
 
-        json_data["clusterConfig"]["pfmp"]["ip"] = args.mgmt_ip
+        json_data["clusterConfig"]["pfmp"]["ingress_ip"] = args.ingress_ip
 
         with open(json_file_path, 'w') as outfile:
             json.dump(json_data, outfile, indent=4)
+
+        for i in range(len(json_data["clusterConfig"]["hosts"])):
+            host = json_data["clusterConfig"]["hosts"][i]["ablecube"]
+            os.system("scp -o StrictHostKeyChecking=no " + json_file_path + " " + host + ":" + json_file_path + " > /dev/null")
 
         my_hosts.remove_all_matching(name="pfmp")
 

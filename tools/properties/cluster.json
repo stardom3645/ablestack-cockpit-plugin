@@ -2,16 +2,14 @@
     "clusterConfig": {
         "type": "",
         "ccvm": {
-            "ip": "",
-            "pn": "",
-            "cn": ""
+            "ip": ""
         },
         "gwvm": {
             "ip": "",
             "pn": ""
         },
         "pfmp": {
-            "ip": ""
+            "ingress_ip": ""
         },
         "mngtNic": {
             "cidr": "",

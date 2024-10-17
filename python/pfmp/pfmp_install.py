@@ -13,12 +13,15 @@ import os
 import json
 import subprocess
 from time import sleep
+import time
 
 from ablestack import *
 from python_hosts import Hosts, HostsEntry
 from sh import ssh
 
 env=os.environ.copy()
+env['LANG']="en_US.utf-8"
+env['LANGUAGE']="en"
 
 cluster_json_file_path = pluginpath+"/tools/properties/cluster.json"
 pfmp_json_file_path = pluginpath+"/tools/properties/pfmp_config.json"
@@ -35,7 +38,7 @@ def createArgumentParser():
     parser = argparse.ArgumentParser(description='pfmp을 생성 하는 프로그램',
                                         epilog='copyrightⓒ 2021 All rights reserved by ABLECLOUD™',
                                         usage='%(prog)s arguments')
-    parser.add_argument('action', choices=['install','pre_install','remove','reset'], help='choose one of the actions')
+    parser.add_argument('action', choices=['install','pre_install','remove','reset','test'], help='choose one of the actions')
 
     # output 민감도 추가(v갯수에 따라 output및 log가 많아짐):
     parser.add_argument('-v', '--verbose', action='count', default=0, help='increase output verbosity')
@@ -58,9 +61,16 @@ def openClusterJson():
 
     return ret
 
+json_data = openClusterJson()
+
 def ContainerInstall():
 
-    result = os.system("scp -o StrictHostKeyChecking=no " + pfmp_json_file_path + " pfmp:"+ pfmp_config_path + "> /dev/null")
+
+    for i in range(len(json_data["clusterConfig"]["hosts"])):
+        host = json_data["clusterConfig"]["hosts"][i]["ablecube"]
+        os.system("scp -o StrictHostKeyChecking=no " + pfmp_json_file_path + " " + host + ":" + pfmp_json_file_path + " > /dev/null")
+
+    result = os.system("scp -o StrictHostKeyChecking=no " + pfmp_json_file_path + " pfmp:"+ pfmp_config_path + " > /dev/null")
 
     if result == 0:
 
@@ -94,7 +104,6 @@ def ContainerInstall():
         return createReturn(code=500, val="scp Connection Failed")
 
 def install():
-    json_data = openClusterJson()
 
     ssh_command = ['ssh', '-o', 'StrictHostKeyChecking=no', 'pfmp', '-t', 'sh', '/opt/dell/pfmp/PFMP_Installer/scripts/install_PFMP.sh']
 
@@ -109,8 +118,11 @@ def install():
                 for i in range(len(json_data["clusterConfig"]["hosts"])):
                     host = json_data["clusterConfig"]["hosts"][i]["ablecube"]
                     scvm = json_data["clusterConfig"]["hosts"][i]["scvm"]
-                    ssh('-o', 'StrictHostKeyChecking=no', host, 'python3', pluginpath + '/python/ablestack_json/ablestackJson.py', 'update', '--depth1', 'bootstrap', '--depth2', 'pfmp','--value', 'true')
-                    ssh('-o', 'StrictHostKeyChecking=no', scvm, 'systemctl restart activemq.service')
+                    subprocess.run(['ssh', '-o', 'StrictHostKeyChecking=no', host, 'python3', pluginpath + '/python/ablestack_json/ablestackJson.py', 'update', '--depth1', 'bootstrap', '--depth2', 'pfmp', '--value', 'true'], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                    if len(json_data["clusterConfig"]["hosts"]) != i+1:
+                        subprocess.run(['ssh', '-o', 'StrictHostKeyChecking=no', scvm, 'systemctl restart activemq.service'], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                        subprocess.run(['ssh', '-o', 'StrictHostKeyChecking=no', scvm, 'scli --add_certificate --certificate_file /opt/emc/scaleio/mdm/cfg/mgmt_ca.pem'], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+
                 return createReturn(code=200, val="Success PFMP Install")
 
     except Exception as e:
@@ -128,14 +140,8 @@ def install():
     process.stdout.close()
     process.wait()
 
-    if process.returncode == 0:
-        return createReturn(code=200, val="Success PFMP Install")
-    else:
-        return createReturn(code=500, val="Failed PFMP Install")
-
 def remove():
     try:
-        json_data = openClusterJson()
         my_hosts = Hosts(path=hosts_file_path)
 
         with open(cluster_json_file_path, 'w') as outfile:

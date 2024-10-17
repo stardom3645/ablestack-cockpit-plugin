@@ -82,15 +82,6 @@ def insert(args):
         if args.ccvm_mngt_ip is not None:
             json_data["clusterConfig"]["ccvm"]["ip"] = args.ccvm_mngt_ip
 
-        if args.type == "PowerFlex":
-            if args.ccvm_pn_ip is not None:
-                json_data["clusterConfig"]["ccvm"]["pn"] = args.ccvm_pn_ip
-            if args.ccvm_cn_ip is not None:
-                json_data["clusterConfig"]["ccvm"]["cn"] = args.ccvm_cn_ip
-        else:
-            json_data["clusterConfig"]["ccvm"]["pn"] = ""
-            json_data["clusterConfig"]["ccvm"]["cn"] = ""
-
         if args.pcs_cluster_list is not None:
             if args.pcs_cluster_list[0] is not None:
                 json_data["clusterConfig"]["pcsCluster"]["hostname1"] = args.pcs_cluster_list[0]

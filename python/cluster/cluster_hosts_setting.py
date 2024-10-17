@@ -71,24 +71,15 @@ def changeHosts(args):
             if args.type == "PowerFlex":
                 # PowerFlex용 SCVM 호스트 파일
                 my_hosts.remove_all_matching(address=json_data["clusterConfig"]["ccvm"]["ip"])
-                my_hosts.remove_all_matching(address=json_data["clusterConfig"]["ccvm"]["pn"])
-                my_hosts.remove_all_matching(address=json_data["clusterConfig"]["ccvm"]["cn"])
                 my_hosts.remove_all_matching(name="ccvm-mngt")
                 my_hosts.remove_all_matching(name="ccvm")
-                my_hosts.remove_all_matching(name="ccvm-pn")
-                my_hosts.remove_all_matching(name="ccvm-cn")
+
                 entry = HostsEntry(entry_type='ipv4', address=json_data["clusterConfig"]["ccvm"]["ip"], names=["ccvm-mngt", "ccvm"])
-                my_hosts.add([entry])
-                entry = HostsEntry(entry_type='ipv4', address=json_data["clusterConfig"]["ccvm"]["pn"], names=["ccvm-pn"])
-                my_hosts.add([entry])
-                entry = HostsEntry(entry_type='ipv4', address=json_data["clusterConfig"]["ccvm"]["cn"], names=["ccvm-cn"])
                 my_hosts.add([entry])
             else:
                 my_hosts.remove_all_matching(address=json_data["clusterConfig"]["ccvm"]["ip"])
                 my_hosts.remove_all_matching(name="ccvm-mngt")
                 my_hosts.remove_all_matching(name="ccvm")
-                my_hosts.remove_all_matching(name="ccvm-pn")
-                my_hosts.remove_all_matching(name="ccvm-cn")
 
                 entry = HostsEntry(entry_type='ipv4', address=json_data["clusterConfig"]["ccvm"]["ip"], names=["ccvm-mngt", "ccvm"])
                 my_hosts.add([entry])

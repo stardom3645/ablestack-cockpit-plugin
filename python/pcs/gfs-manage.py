@@ -85,13 +85,13 @@ def modify_lvm_conf(ips):
         if os_type == "PowerFlex":
             powerflex_disk_name = os.popen("lsblk -d -o name,size | grep scini | grep 512 | awk '{print $1}'").read().strip()
             modify_command = (
-                'sed -i "s/# types = \\[ \\"fd\\"\, 16 \\]/types = [ \\"scini\\", 16 ]/" /etc/lvm/lvm.conf;'
+                'sed -i \'s/# types = \\[ "fd", 16 \\]/types = \\[ "scini", 16 \\]/\' /etc/lvm/lvm.conf;'
                 'sed -i "s/# use_lvmlockd = 0/use_lvmlockd = 1/" /etc/lvm/lvm.conf;'
-                'sed -i "s/use_devicesfile = 0/use_devicesfile = 1/" /etc/lvm/lvm.conf'
+                'sed -i "s/use_devicesfile = 0/use_devicesfile = 1/" /etc/lvm/lvm.conf;'
             )
         else:
             modify_command = (
-                'sed -i "s/# use_lvmlockd = 0/use_lvmlockd = 1/" /etc/lvm/lvm.conf && '
+                'sed -i "s/# use_lvmlockd = 0/use_lvmlockd = 1/" /etc/lvm/lvm.conf;'
                 'sed -i "s/use_devicesfile = 0/use_devicesfile = 1/" /etc/lvm/lvm.conf'
             )
         if ips:
@@ -147,25 +147,46 @@ def setup_cluster(cluster_name, list_ips):
         ret = createReturn(code=500, val="Set Up Cluster Failure")
         return print(json.dumps(json.loads(ret), indent=4))
 
-def init_pcs_cluster(disk_name,vg_name,lv_name,list_ips):
+def init_pcs_cluster(disks,vg_name,lv_name,list_ips):
     try:
         result = get_lv_path(vg_name,lv_name)
-        partition = f"{disk}1"
+
+        lvm_init_command = (
+                'sed -i "s/use_lvmlockd = 1/# use_lvmlockd = 0/" /etc/lvm/lvm.conf;'
+                'sed -i "s/use_devicesfile = 1/use_devicesfile = 0/" /etc/lvm/lvm.conf;'
+                )
+
+        run_command("pcs cluster stop --all --force > /dev/null 2>&1", ignore_errors=True)
+        run_command("pcs cluster destroy --all --force > /dev/null 2>&1", ignore_errors=True)
+
         if result != "":
-            run_command(f"vgchange --lock-type none --lock-opt force {vg_name} -y")
-            run_command(f"vgchange -aey {vg_name}")
-            run_command(f"lvremove --lockopt skiplv /dev/{vg_name}/{lv_name} -y")
-            run_command(f"vgremove {vg_name}")
-            run_command(f"pvremove /dev/{partition}")
+            run_command(f"vgchange --lock-type none --lock-opt force {vg_name} -y > /dev/null 2>&1", ignore_errors=True)
+            run_command(f"vgchange -aey {vg_name} > /dev/null 2>&1", ignore_errors=True)
+            run_command(f"lvremove --lockopt skiplv /dev/{vg_name}/{lv_name} -y > /dev/null 2>&1", ignore_errors=True)
 
             for ip in list_ips:
                 ssh_client = connect_to_host(ip)
-                for disk in disk_name:
-                    run_command(f"partprobe {disk}", ssh_client, ignore_errors=True)
-                    run_command(f"lvmdevices --adddev {partition}", ssh_client, ignore_errors=True)
-                    run_command("pcs cluster destroy --force")
+                # lvm.conf 초기화
+                run_command(lvm_init_command,ssh_client,ignore_errors=True)
                 ssh_client.close()
 
+            run_command(f"vgremove {vg_name} > /dev/null 2>&1")
+            for disk in disks:
+                partition = f"{disk}1"
+                run_command(f"pvremove {partition} > /dev/null 2>&1",ignore_errors=True)
+
+            rc_local_init_command =(
+                'systemctl disable --now rc-local.service > /dev/null 2>&1;'
+                'sed -i "/^\\[Install\\]/,/^WantedBy=multi-user.target$/d" /usr/lib/systemd/system/rc-local.service > /dev/null 2>&1;'
+                'sed -i "/^partprobe/,/^lvmdevices --adddev$/d" /etc/rc.local > /dev/null 2>&1;'
+            )
+            for ip in list_ips:
+                ssh_client = connect_to_host(ip)
+                # rc.local 파일 및 서비스 초기화
+                run_command(rc_local_init_command, ssh_client, ignore_errors=True)
+                # lvm.conf 초기화
+                run_command('sed -i \'s/types = \\[ "scini", 16 \\]/# types = \\[ "fd", 16 \\]/\' /etc/lvm/lvm.conf > /dev/null 2>&1',ssh_client,ignore_errors=True)
+                ssh_client.close()
             ret = createReturn(code=200, val="Init PCS Cluster Success")
             return print(json.dumps(json.loads(ret), indent=4))
 
@@ -261,7 +282,7 @@ def create_gfs(disks, vg_name, lv_name, gfs_name, mount_point, cluster_name, num
             ssh_client = connect_to_host(ip)
             for disk in disks:
                 run_command(f"partprobe {disk}", ssh_client, ignore_errors=True)
-                run_command(f"lvmdevices --adddev {partition}", ssh_client, ignore_errors=True)
+                run_command(f"lvmdevices --adddev {partition} > /dev/null 2>&1", ssh_client, ignore_errors=True)
             run_command("pcs resource cleanup > /dev/null 2>&1", ssh_client, ignore_errors=True)
             ssh_client.close()
 
@@ -278,14 +299,14 @@ def create_gfs(disks, vg_name, lv_name, gfs_name, mount_point, cluster_name, num
         for ip in list_ips:
             ssh_client = connect_to_host(ip)
             for disk in disks:
-                run_command(f"partprobe {disk}", ssh_client, ignore_errors=True)
-                run_command(f"lvmdevices --adddev {partition}", ssh_client, ignore_errors=True)
+                run_command(f"partprobe {disk} > /dev/null 2>&1", ssh_client, ignore_errors=True)
+                run_command(f"lvmdevices --adddev {partition} > /dev/null 2>&1", ssh_client, ignore_errors=True)
             run_command("pcs resource cleanup > /dev/null 2>&1", ssh_client, ignore_errors=True)
             # partprobe, lvmdevices 명령어를 재부팅할 시, 자동실행 스크립트
             run_command(f"echo -e 'partprobe {disk}\nlvmdevices --adddev {partition}' >> /etc/rc.local", ssh_client, ignore_errors=True)
-            run_command("chmod +x /etc/rc.d/rc.local", ssh_client, ignore_errors=True)
+            run_command("chmod +x /etc/rc.local", ssh_client, ignore_errors=True)
             run_command("echo -e '\n[Install]\nWantedBy=multi-user.target' >> /usr/lib/systemd/system/rc-local.service", ssh_client, ignore_errors=True)
-            run_command("systemctl enable --now rc-local.service", ssh_client, ignore_errors=True)
+            run_command("systemctl enable --now rc-local.service > /dev/null 2>&1", ssh_client, ignore_errors=True)
             ssh_client.close()
 
         ret = createReturn(code=200, val="Create GFS Success")

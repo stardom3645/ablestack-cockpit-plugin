@@ -10,7 +10,7 @@ import urllib3
 from ablestack import *
 
 hosts_file_path = "/etc/hosts"
-ip_address = socket.gethostbyname('scvm')
+json_file_path = pluginpath+"/tools/properties/cluster.json"
 
 def createArgumentParser():
     '''
@@ -32,6 +32,19 @@ def createArgumentParser():
     parser.add_argument('-V', '--Version', action='version', version='%(prog)s 1.0')
 
     return parser
+
+def openClusterJson():
+    try:
+        with open(json_file_path, 'r') as json_file:
+            ret = json.load(json_file)
+    except Exception as e:
+        ret = createReturn(code=500, val='cluster.json read error')
+        print ('EXCEPTION : ',e)
+
+    return ret
+
+json_data = openClusterJson()
+ip_address = json_data["clusterConfig"]["pfmp"]["ingress_ip"]
 
 def toBytes(size):
     if size < 0:
@@ -56,7 +69,7 @@ def Token():
         url = 'https://'+ip_address+'/rest/auth/login'
 
         payload = json.dumps({
-        'username': 'admin',
+        'username': 'ablecloud',
         'password': 'Ablecloud1!'
         })
 
@@ -101,7 +114,7 @@ def Status():
         url = 'https://'+ip_address+'/rest/auth/login'
 
         payload = json.dumps({
-        'username': 'admin',
+        'username': 'ablecloud',
         'password': 'Ablecloud1!'
         })
 
@@ -112,8 +125,7 @@ def Status():
 
         requests.packages.urllib3.disable_warnings()
         response = requests.post(url, headers=headers, data=payload, verify=False)
-        json_object = json.loads(response.text)
-        accessToken = str(json_object['access_token'])
+
         return createReturn(code=200, val="PowerFlex API Normal Operation")
     except Exception as e:
         return createReturn(code=500, val="PowerFlex API Abnormal Behavior")

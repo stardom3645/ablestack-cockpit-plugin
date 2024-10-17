@@ -454,11 +454,8 @@ $('#form-radio-hosts-new-scvm').on('click', function () {
     // $('#form-input-storage-vm-hosts-file').val("");
 
     $("#form-input-ccvm-mngt-ip").val("");
-    $("#form-input-ccvm-pn-ip").val("");
-    $("#form-input-ccvm-cn-ip").val("");
     $("#form-input-ccvm-mngt-ip").attr('disabled', false);
-    $("#form-input-ccvm-pn-ip").attr('disabled', false);
-    $("#form-input-ccvm-cn-ip").attr('disabled', false);
+
 });
 
 // Host 파일 준비 방법 중 기존 파일 사용을 클릭하는 경우 Host 프로파일 디비전을 숨기고 Hosts 파일 디비전은 보여준다.
@@ -478,11 +475,7 @@ $('#form-radio-hosts-file-scvm').on('click', function () {
     $('#form-input-cluster-config-host-number-scvm').attr('disabled', 'true');
 
     $("#form-input-ccvm-mngt-ip").val("");
-    $("#form-input-ccvm-pn-ip").val("");
-    $("#form-input-ccvm-cn-ip").val("");
     $("#form-input-ccvm-mngt-ip").attr('disabled', true);
-    $("#form-input-ccvm-pn-ip").attr('disabled', true);
-    $("#form-input-ccvm-cn-ip").attr('disabled', true);
 
     cockpit.spawn(["cat", pluginpath + "/tools/properties/cluster.json"])
     .then(function(data){
@@ -1146,15 +1139,9 @@ function setReviewInfo(){
     // 변경된 hosts file 내용을 설정 확인에 반영
     let host_file_type = $('input[name=radio-hosts-file-scvm]:checked').val();
 
-    cockpit.spawn(["cat", pluginpath + "/tools/properties/cluster.json"])
-    .then(function(data){
-        var json_data = JSON.parse(data);
-        if (json_data.clusterConfig.type == "PowerFlex"){
-            putHostsValueIntoTextarea(host_file_type, option_scvm,"PowerFlex");
-        }else{
-            putHostsValueIntoTextarea(host_file_type, option_scvm);
-        }
-    });
+
+
+    putHostsValueIntoTextarea(host_file_type, option_scvm, os_type);
 
 
     var host_name = $('#form-input-storage-vm-hostname').val();
@@ -1331,12 +1318,6 @@ function validateStorageVm(){
     }else if(!checkIp($('#form-input-ccvm-mngt-ip').val())){
         alert("CCVM 관리 IP 형식을 확인해주세요.");
         validate_check = false;
-    }else if(os_type == "PowerFlex" && ($('#form-input-ccvm-pn-ip') != "" && !checkIp($('#form-input-ccvm-pn-ip').val()))){
-        alert("CCVM PN IP 형식을 확인해주세요.");
-        validate_check = false;
-    }else if(os_type == "PowerFlex" && ($('#form-input-ccvm-cn-ip') != "" && !checkIp($('#form-input-ccvm-cn-ip').val()))){
-        alert("CCVM CN IP 형식을 확인해주세요.");
-        validate_check = false;
     }else if(!checkHostFormat($("#form-input-storage-vm-hostname").val())){
         alert("호스트명 입력 형식을 확인해주세요.");
         validate_check = false;
@@ -1424,8 +1405,6 @@ function validateStorageVm(){
     $("#form-input-storage-vm-cluster-ip").val("");
     $("#form-input-storage-vm-cluster-vlan").val("");
     $("#form-input-ccvm-mngt-ip").val("");
-    $("#form-input-ccvm-pn-ip").val("");
-    $("#form-input-ccvm-cn-ip").val("");
     $("#form-input-stroage-vm-dns").val("");
 }
 
@@ -1498,29 +1477,18 @@ function validateStorageVm(){
  * History  : 2021.03.30 최초 작성
  */
 function setScvmOSTypeProcess() {
-    cockpit.spawn(["cat", pluginpath + "/tools/properties/cluster.json"])
-    .then(function(data){
-        var json_data = JSON.parse(data);
-        if (json_data.clusterConfig.type == "PowerFlex"){
-            $('input[name="form-radio-storage-vm-nic-type"]').val("bn").trigger("change");
-            //CPU, Memory,root disk 처리
-            $('#form-select-storage-vm-cpu-8').hide();
-            $('#form-select-storage-vm-memory-16').hide();
-            $('#form-select-storage-vm-memory-64').hide();
-            $('#form-select-storage-vm-root-disk-size').text("200 GiB (THIN Provisioning)");
-            //네트워크 구성 할시
-            $('#nic-passthrough-bonding-div').hide();
-            $('#nic-passthrough-div').hide();
-            $('#nic-passthrough').prop('checked', false);
-            $('#bridge-network').prop('checked', true);
-            // 컴퓨터 자원에 대한 내용 수정
-            $('#compute-info-p1').text("PowerFlex Dell에서는 최소 14개의 vCPU를 권장하고 있습니다. 메모리는 최소 32GB를 권장하고 있으며, 향후 32,000개의 볼륨이 있는 클러스터를 관리 할려면, 각 노드당 48GB 메모리가 필요합니다.");
-            $('#compute-info-p2').text("ROOT Disk의 크기는 200GiB를 디스크가 Thin Provisioning 방식으로 제공됩니다.");
-            //네트워크 자원에 대한 내용 수정
-            $('#network-info-p1').text("현재 PowerFlex에선 브릿지 네트워크를 통한 NIC 구성 방식을 선택 해야 합니다. 사전에 브릿지를 호스트에 생성해야 합니다. 서버용 NIC를 목록에서 선택합니다. 복제용 NIC는 스토리지 데이터를 호스트 간에 복제할 때 사용하는 NIC로 서버용 NIC를 같이 사용하도록 설정하거나 단독으로 사용하도록 설정할 수 있습니다.")
-        }else{
-            //CPU, Memory,root disk 처리
-            $('#form-select-storage-vm-memory-48').hide();
-        }
-    });
+    if (os_type == "PowerFlex"){
+        //CPU, Memory,root disk 처리
+        $('#form-select-storage-vm-cpu-8').hide();
+        $('#form-select-storage-vm-memory-16').hide();
+        $('#form-select-storage-vm-memory-64').hide();
+        $('#form-select-storage-vm-root-disk-size').text("200 GiB (THIN Provisioning)");
+        // 컴퓨터 자원에 대한 내용 수정
+        $('#compute-info-p1').text("PowerFlex Dell에서는 최소 14개의 vCPU를 권장하고 있습니다. 메모리는 최소 32GB를 권장하고 있으며, 향후 32,000개의 볼륨이 있는 클러스터를 관리 할려면, 각 노드당 48GB 메모리가 필요합니다.");
+        $('#compute-info-p2').text("ROOT Disk의 크기는 200GiB를 디스크가 Thin Provisioning 방식으로 제공됩니다.");
+
+    }else{
+        //CPU, Memory,root disk 처리
+        $('#form-select-storage-vm-memory-48').hide();
+    }
 }
