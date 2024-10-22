@@ -119,7 +119,7 @@ def storageCenter(action, H=False):
     else:
         # 스토리지센터 가상머신
         if os_type == "PowerFlex":
-            ip = socket.gethostbyname('scvm')
+            ip = json_data["clusterConfig"]["pfmp"]["ingress_ip"]
             value = 'https://'+ip
         else:
             ip = socket.gethostbyname('scvm-mngt')

@@ -39,8 +39,6 @@ def createArgumentParser():
     parser.add_argument('-gmp', '--gfs-mount-point', metavar='[gfs mount point]', type=str, help='input Value to bridge name of the gfs mount point')
     #--management-network-bridge br0                                        | 1택, 필수
     parser.add_argument('-mnb', '--management-network-bridge', metavar='[bridge name]', type=str, help='input Value to bridge name of the management network', required=True)
-    parser.add_argument('-pnb', '--public-network-bridge', metavar='[bridge name]', type=str, help='input Value to bridge name of the public network')
-    parser.add_argument('-cnb', '--cluster-network-bridge', metavar='[bridge name]', type=str, help='input Value to bridge name of the cluster network')
     #--service-network-bridge br1                                           | 1택, 조건부 필수
     parser.add_argument('-snb', '--service-network-bridge', metavar='[bridge name]', type=str, help='input Value to bridge name of the service network')
 

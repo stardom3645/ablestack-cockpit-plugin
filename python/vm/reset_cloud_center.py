@@ -99,7 +99,7 @@ def resetCloudCenter(args):
         else:
             return createReturn(code=500, val="cloud center reset fail")
 
-    else :
+    elif os_type == "PowerFlex":
         pcs_list = []
 
         if json_data["clusterConfig"]["pcsCluster"]["hostname1"] is not None:
@@ -115,7 +115,7 @@ def resetCloudCenter(args):
         if result['code'] not in [200,400]:
             success_bool = False
         # GFS용 초기화
-        result = json.loads(python3(pluginpath + '/python/pcs/gfs-manage.py', '--init-pcs-cluster', '--disks', '/dev/scinia1', '--vg-name', 'vg_glue', '--lv-name', 'lv_glue', '--list-ip','\"'+pcs_list[0]+' '+pcs_list[1]+' '+pcs_list[2]+'\"'))
+        json.loads(python3(pluginpath + '/python/pcs/gfs-manage.py', '--init-pcs-cluster', '--disks', '/dev/scinia', '--vg-name', 'vg_glue', '--lv-name', 'lv_glue', '--list-ip','\"'+pcs_list[0]+' '+pcs_list[1]+' '+pcs_list[2]+'\"'))
 
         # virsh 초기화
         os.system("virsh destroy ccvm > /dev/null 2>&1")

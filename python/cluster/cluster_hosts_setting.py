@@ -20,7 +20,6 @@ from python_hosts import Hosts, HostsEntry
 
 json_file_path = pluginpath+"/tools/properties/cluster.json"
 hosts_file_path = "/etc/hosts"
-powerflex_host_file_path = "/etc/hosts_powerflex"
 # hosts_file_path = "/etc/hosts"
 def createArgumentParser():
     '''

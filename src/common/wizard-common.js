@@ -577,8 +577,6 @@ function settingProfile(clusterJsonConf, option){
     let c_mngt_cidr = clusterJsonConf.clusterConfig.mngtNic.cidr;
     let c_mngt_gw = clusterJsonConf.clusterConfig.mngtNic.gw;
     let c_mngt_dns = clusterJsonConf.clusterConfig.mngtNic.dns;
-    let c_pn_ip = clusterJsonConf.clusterConfig.ccvm.pn;
-    let c_cn_ip = clusterJsonConf.clusterConfig.ccvm.cn;
 
     let insert_tr = "";
     let max_index = 0;

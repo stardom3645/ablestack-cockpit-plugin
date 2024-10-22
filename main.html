@@ -1330,19 +1330,26 @@
                 <form novalidate class="pf-c-form pf-m-horizontal" style="margin-top: 10px;">
                     <!-- Form Group for ID -->
                     <div class="pf-c-form__group">
-                        <label for="form-input-powerflex-id" class="pf-c-form__label" style="width: 80px;">
+                        <label for="form-input-powerflex-id" class="pf-c-form__label" style="width: 100px;align-content: center;">
                             <span class="pf-c-form__label-text">아이디</span>
                             <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
                         </label>
-                        <input class="pf-c-form-control" style="width: 80%; margin-left: -80px;" type="text" id="form-input-powerflex-id" name="form-input-powerflex-id" placeholder="아이디 입력" required>
+                        <input class="pf-c-form-control" style="width: 80%; margin-left: -60px;" type="text" id="form-input-powerflex-id" name="form-input-powerflex-id" placeholder="아이디 입력" required>
                     </div>
                     <!-- Form Group for Password -->
                     <div class="pf-c-form__group">
-                        <label for="form-input-powerflex-password" class="pf-c-form__label" style="width: 80px;">
+                        <label for="form-input-powerflex-password" class="pf-c-form__label" style="width: 100px;align-content: center;">
                             <span class="pf-c-form__label-text">비밀번호</span>
                             <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
                         </label>
-                        <input class="pf-c-form-control" style="width: 80%; margin-left: -80px;" type="password" id="form-input-powerflex-password" name="form-input-powerflex-password" placeholder="비밀번호 입력" required>
+                        <input class="pf-c-form-control" style="width: 80%; margin-left: -60px;" type="password" id="form-input-powerflex-password" name="form-input-powerflex-password" placeholder="비밀번호 입력" autocomplete="new-password" required>
+                    </div>
+                    <div class="pf-c-form__group">
+                        <label for="form-input-powerflex-password-check" class="pf-c-form__label" style="width: 100px;align-content: center;">
+                            <span class="pf-c-form__label-text">비밀번호 확인</span>
+                            <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                        </label>
+                        <input class="pf-c-form-control" style="width: 80%; margin-left: -60px;" type="password" id="form-input-powerflex-password-check" name="form-input-powerflex-password-check" placeholder="비밀번호 확인 입력" autocomplete="new-password" required>
                     </div>
                 </form>
                 <!-- Information Label -->
@@ -1355,7 +1362,7 @@
 
             <!-- Modal Footer with Buttons -->
             <footer class="pf-c-modal-box__footer">
-                <button id="button-execution-modal-powerflex-api" class="pf-c-button pf-m-primary" type="button">실행</button>
+                <button id="button-execution-modal-powerflex-api" class="pf-c-button pf-m-primary" type="button">확인</button>
                 <button id="button-cancel-modal-powerflex-api" class="pf-c-button pf-m-link" type="button">취소</button>
             </footer>
         </div>

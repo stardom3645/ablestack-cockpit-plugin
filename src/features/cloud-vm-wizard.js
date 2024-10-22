@@ -47,8 +47,6 @@ $(document).ready(function(){
 
     //관리네트워크 리스트 초기 세팅
     setNicBridge('form-select-cloud-vm-mngt-parent');
-    setNicBridge('form-select-cloud-vm-pn-parent');
-    setNicBridge('form-select-cloud-vm-cn-parent');
 
     //서비스네트워크 리스트 초기 세팅
     setNicBridge('form-select-cloud-vm-svc-parent');
@@ -956,34 +954,6 @@ function deployCloudCenterVM() {
     var host2_name = $('#form-input-cloud-vm-failover-cluster-host2-name').val();
     var host3_name = $('#form-input-cloud-vm-failover-cluster-host3-name').val();
 
-    // 일반 가상화 GFS용 일 때
-    var ipmi_port = "623"
-    var ipmi_check_value = $('input[name="radio-ipmi-ccvm"]:checked').val();
-    if (ipmi_check_value == "one"){
-        var ipmi_ip1 = $('#form-input-individual-credentials-ipmi-ip1').val();
-        var ipmi_ip2 = $('#form-input-individual-credentials-ipmi-ip2').val();
-        var ipmi_ip3 = $('#form-input-individual-credentials-ipmi-ip3').val();
-
-        var ipmi_user1 = $('#form-input-individual-credentials-ipmi-user1').val();
-        var ipmi_user2 = $('#form-input-individual-credentials-ipmi-user2').val();
-        var ipmi_user3 = $('#form-input-individual-credentials-ipmi-user3').val();
-
-        var ipmi_password1 = $('#form-input-individual-credentials-ipmi-password1').val();
-        var ipmi_password2 = $('#form-input-individual-credentials-ipmi-password2').val();
-        var ipmi_password3 = $('#form-input-individual-credentials-ipmi-password3').val();
-    }else {
-        var ipmi_ip1 = $('#form-input-common-credentials-ipmi-ip1').val();
-        var ipmi_ip2 = $('#form-input-common-credentials-ipmi-ip2').val();
-        var ipmi_ip3 = $('#form-input-common-credentials-ipmi-ip3').val();
-
-        var ipmi_user = $('#form-input-common-credentials-ipmi-user').val();
-        var ipmi_password = $('#form-input-common-credentials-ipmi-password').val();
-    }
-    var gfs_cluster_name = "cloudcenter_res";
-    var gfs_mount_point = "/mnt/glue-gfs";
-    var gfs_name = "glue-gfs";
-    var gfs_vg_name = "vg_glue";
-    var gfs_lv_name = "lv_glue";
     // hosts 파일 > config 파일 쓰는 부분
     let host_file_type = $('input[name=radio-hosts-file-ccvm]:checked').val();
 
@@ -1136,7 +1106,35 @@ function deployCloudCenterVM() {
             createLoggerInfo("Failed to check connection status of host to configure cluster");
             alert("클러스터 구성할 host 연결 상태 확인 및 cluster.json config 실패 : "+data);
         });
-    }else{
+    }else if(os_type == "PowerFlex"){
+            // PowerFlex 일반 가상화 GFS용 일 때
+    var ipmi_port = "623"
+    var ipmi_check_value = $('input[name="radio-ipmi-ccvm"]:checked').val();
+    if (ipmi_check_value == "one"){
+        var ipmi_ip1 = $('#form-input-individual-credentials-ipmi-ip1').val();
+        var ipmi_ip2 = $('#form-input-individual-credentials-ipmi-ip2').val();
+        var ipmi_ip3 = $('#form-input-individual-credentials-ipmi-ip3').val();
+
+        var ipmi_user1 = $('#form-input-individual-credentials-ipmi-user1').val();
+        var ipmi_user2 = $('#form-input-individual-credentials-ipmi-user2').val();
+        var ipmi_user3 = $('#form-input-individual-credentials-ipmi-user3').val();
+
+        var ipmi_password1 = $('#form-input-individual-credentials-ipmi-password1').val();
+        var ipmi_password2 = $('#form-input-individual-credentials-ipmi-password2').val();
+        var ipmi_password3 = $('#form-input-individual-credentials-ipmi-password3').val();
+    }else {
+        var ipmi_ip1 = $('#form-input-common-credentials-ipmi-ip1').val();
+        var ipmi_ip2 = $('#form-input-common-credentials-ipmi-ip2').val();
+        var ipmi_ip3 = $('#form-input-common-credentials-ipmi-ip3').val();
+
+        var ipmi_user = $('#form-input-common-credentials-ipmi-user').val();
+        var ipmi_password = $('#form-input-common-credentials-ipmi-password').val();
+    }
+    var gfs_cluster_name = "cloudcenter_res";
+    var gfs_mount_point = "/mnt/glue-gfs";
+    var gfs_name = "glue-gfs";
+    var gfs_vg_name = "vg_glue";
+    var gfs_lv_name = "lv_glue";
     //=========== 1. 클러스터 구성 host 네트워크 연결 및 초기화 작업 ===========
     var all_host_name = host1_name + ' ' + host2_name + ' ' + host3_name;
     $('[name=span-ccvm-progress-step1-name]').text("클러스터 구성 Host 네트워크 연결 및 초기화 작업");
@@ -1411,6 +1409,8 @@ function deployCloudCenterVM() {
             createLoggerInfo("Failed to check connection status of host to configure cluster");
             alert("클러스터 구성할 host 연결 상태 확인 및 cluster.json config 실패 : "+data);
         });
+    }else{
+
     }
 
 }
@@ -1639,26 +1639,12 @@ function setCcvmReviewInfo(){
     //관리용 bridge
     var mngt_nic = $('select#form-select-cloud-vm-mngt-parent option:checked').val();
     var mngt_nic_txt = $('select#form-select-cloud-vm-mngt-parent option:checked').text();
-    var pn_nic = $('#form-select-cloud-vm-pn-parent').val();
-    var cn_nic = $('#form-select-cloud-vm-cn-parent').val();
 
     if(mngt_nic == '') {
         $('#span-cloud-vm-mgmt-nic-bridge').text("미입력");
     } else {
         xml_create_cmd.push("-mnb",mngt_nic);
         $('#span-cloud-vm-mgmt-nic-bridge').html(mngt_nic_txt + "</br>");
-    }
-    if(pn_nic == ''){
-        $('#span-cloud-vm-mgmt-pn-bridge').text("");
-    }else{
-        xml_create_cmd.push("-pnb",pn_nic);
-        $('#span-cloud-vm-mgmt-pn-bridge').html("PN 네트워크 : " + pn_nic + "</br>");
-    }
-    if(cn_nic == ''){
-        $('#span-cloud-vm-mgmt-cn-bridge').text("");
-    }else{
-        xml_create_cmd.push("-cnb",cn_nic);
-        $('#span-cloud-vm-mgmt-cn-bridge').html("CN 네트워크 : " + cn_nic);
     }
     //서비스용 bridge
     if(svc_bool){
@@ -1833,12 +1819,6 @@ function validateCloudCenterVm(){
         validate_check = false;
     } else if ($('select#form-select-cloud-vm-mngt-parent option:checked').val() == "") { //관리용 bridge
         alert("관리용네트워크를 입력해주세요.");
-        validate_check = false;
-    } else if (os_type == "PowerFlex" && ($('select#form-select-cloud-vm-pn-parent option:checked').val() == "")) { //관리용 bridge
-        alert("PN 네트워크를 입력해주세요.");
-        validate_check = false;
-    } else if (os_type == "PowerFlex" && ($('select#form-select-cloud-vm-cn-parent option:checked').val() == "")) { //관리용 bridge
-        alert("CN 네트워크를 입력해주세요.");
         validate_check = false;
     } else if (svc_bool && $('select#form-select-cloud-vm-svc-parent option:checked').val() == "") {//서비스용 bridge
         alert("서비스네트워크를 입력해주세요.");

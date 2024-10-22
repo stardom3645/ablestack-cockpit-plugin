@@ -37,8 +37,6 @@ def createArgumentParser():
     parser.add_argument('action', choices=['insert','insertScvmHost','insertAllHost','remove'], help='choose one of the actions')
     parser.add_argument('-t', '--type', metavar='[OS Type]', type=str, help='input Value to OS Type')
     parser.add_argument('-cmi', '--ccvm-mngt-ip', metavar='[cloudcenter vm IP information]', type=str, help='input Value to coludcenter vm IP information')
-    parser.add_argument('-cpi', '--ccvm-pn-ip', metavar='[cloudcenter vm Public IP information]', type=str, help='input Value to coludcenter vm Public IP information')
-    parser.add_argument('-cci', '--ccvm-cn-ip', metavar='[cloudcenter vm Cluster IP information]', type=str, help='input Value to coludcenter vm Cluster IP information')
     parser.add_argument('-mnc', '--mngt-nic-cidr', metavar='[management Nic cidr]', type=str, help='input Value to management Nic cidr')
     parser.add_argument('-mng', '--mngt-nic-gw', metavar='[management Nic gateway]', type=str, help='input Value to management Nic gateway')
     parser.add_argument('-mnd', '--mngt-nic-dns', metavar='[management Nic DNS]', type=str, help='management Nic DNS')
