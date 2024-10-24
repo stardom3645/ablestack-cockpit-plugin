@@ -65,7 +65,6 @@ json_data = openClusterJson()
 
 def ContainerInstall():
 
-
     for i in range(len(json_data["clusterConfig"]["hosts"])):
         host = json_data["clusterConfig"]["hosts"][i]["ablecube"]
         os.system("scp -o StrictHostKeyChecking=no " + pfmp_json_file_path + " " + host + ":" + pfmp_json_file_path + " > /dev/null")
@@ -77,19 +76,23 @@ def ContainerInstall():
         ssh_command = ['ssh', '-o', 'StrictHostKeyChecking=no', '-o', 'ConnectTimeout=5', 'pfmp', 'sh', '/opt/dell/pfmp/PFMP_Installer/scripts/setup_installer.sh']
 
         process = subprocess.Popen(ssh_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+
         try:
             process.stdout.read()
             process.stdout.close()
             process.wait()
 
             if process.returncode == 0:
-                container_id = ssh('-o', 'StrictHostKeyChecking=no', 'pfmp', 'podman', 'ps', '-f', '"name=atlantic_installer"', '-a', '--format','"{{.ID}}"').strip()
+                container_id = subprocess.check_output(['ssh -o StrictHostKeyChecking=no pfmp podman ps -f "name=atlantic_installer" -a --format "{{.ID}}"'],universal_newlines=True, shell=True, env=env).strip()
 
-                # ssh('-o', 'StrictHostKeyChecking=no', 'pfmp','podman exec -it ' + container_id + ' useradd -m ablecloud > /dev/null; 2>&1')
-                # ssh('-o', 'StrictHostKeyChecking=no', 'pfmp','podman exec -it --user ablecloud ' + container_id + ' mkdir -p /home/ablecloud/.ssh > /dev/null')
-                # ssh('-o', 'StrictHostKeyChecking=no', 'pfmp','podman cp /home/ablecloud/.ssh/id_rsa ' + container_id + ':/home/ablecloud/.ssh/')
-                ssh('-o', 'StrictHostKeyChecking=no', 'pfmp','podman exec -it ' + container_id + ' mkdir -p /root/.ssh > /dev/null')
-                ssh('-o', 'StrictHostKeyChecking=no', 'pfmp','podman cp /root/.ssh/id_rsa ' + container_id + ':/root/.ssh/')
+                # subprocess.run(['ssh', '-o', 'StrictHostKeyChecking=no', 'pfmp','podman exec -it ' + container_id + ' useradd -m ablecloud > /dev/null; 2>&1'], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                # subprocess.run(['ssh', '-o', 'StrictHostKeyChecking=no', 'pfmp','podman exec -it --user ablecloud ' + container_id + ' mkdir -p /home/ablecloud/.ssh > /dev/null'], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                # subprocess.run(['ssh', '-o', 'StrictHostKeyChecking=no', 'pfmp','podman cp /home/ablecloud/.ssh/id_rsa ' + container_id + ':/home/ablecloud/.ssh/'], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                subprocess.run(['ssh', '-o', 'StrictHostKeyChecking=no', 'pfmp','podman exec -it ' + container_id + ' mkdir -p /root/.ssh > /dev/null'], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                subprocess.run(['ssh', '-o', 'StrictHostKeyChecking=no', 'pfmp','podman cp /root/.ssh/id_rsa ' + container_id + ':/root/.ssh/'], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                # ablecloud 모니터 계정 json 파일 복사
+                subprocess.run(['ssh','-o', 'StrictHostKeyChecking=no', 'pfmp','podman cp /opt/dell/pfmp/PFMP_Installer/config/keycloakrealm.json ' + container_id + ':/app/playbooks/files/PFMP_Installer/templates/keycloakrealm_t.json'], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+
 
                 return createReturn(code=200, val="Success PFMP Container Install")
             else:
@@ -102,6 +105,7 @@ def ContainerInstall():
             process.terminate()
     else:
         return createReturn(code=500, val="scp Connection Failed")
+
 
 def install():
 
@@ -124,6 +128,12 @@ def install():
                         subprocess.run(['ssh', '-o', 'StrictHostKeyChecking=no', scvm, 'scli --add_certificate --certificate_file /opt/emc/scaleio/mdm/cfg/mgmt_ca.pem'], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
                 return createReturn(code=200, val="Success PFMP Install")
+
+        process.stdout.close()
+        process.wait()
+
+        if process.returncode != 0:
+            return createReturn(code=500, val="Failed PFMP Install")
 
     except Exception as e:
         return createReturn(code=500, val="Failed PFMP Install: " + str(e))

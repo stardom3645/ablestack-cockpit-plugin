@@ -718,7 +718,6 @@ function checkStorageClusterStatus(){
                                     $("#menu-item-update-glue-config").removeClass('pf-m-disabled');
                                     $("#scc-css").attr('class','pf-c-label pf-m-green');
                                     $("#scc-icon").attr('class','fas fa-fw fa-check-circle');
-                                    $('#powerflex-scvm-api-login').hide();
                                 }else if(retVal.val.clusterState == "ClusteredDegraded"){
                                     sc_status = "Health Warn";
                                     sessionStorage.setItem("sc_status", "HEALTH_WARN");
@@ -728,7 +727,6 @@ function checkStorageClusterStatus(){
                                     $("#menu-item-update-glue-config").removeClass('pf-m-disabled');
                                     $("#scc-css").attr('class','pf-c-label pf-m-orange');
                                     $("#scc-icon").attr('class','fas fa-fw fa-exclamation-triangle');
-                                    $('#powerflex-scvm-api-login').hide();
                                 }else{
                                     sc_status = "Health Err";
                                     sessionStorage.setItem("sc_status", "HEALTH_ERR");
@@ -740,9 +738,6 @@ function checkStorageClusterStatus(){
                                     $('#scc-status-check').attr("style","color: var(--pf-global--danger-color--100)");
                                     $("#menu-item-linkto-storage-center").addClass('pf-m-disabled');
                                     $("#menu-item-update-glue-config").addClass('pf-m-disabled');
-                                    if (pfmp_bootstrap_status == "true"){
-                                        $('#powerflex-scvm-api-login').show();
-                                    }
                                 }
                                 $('#protect-domain').show();
                                 $('#manage-daemon').hide();
@@ -782,9 +777,6 @@ function checkStorageClusterStatus(){
                                 $('#protect-domain').show();
                                 $('#manage-daemon').hide();
                                 $('#scc-status').html(sc_status);
-                                if (pfmp_bootstrap_status == "true"){
-                                    $('#powerflex-scvm-api-login').show();
-                                }
                                 resolve();
                             }
 
@@ -799,9 +791,6 @@ function checkStorageClusterStatus(){
                             $("#menu-item-linkto-storage-center").addClass('pf-m-disabled');
                             $("#menu-item-update-glue-config").addClass('pf-m-disabled');
                             $("#menu-item-bootstrap-run").addClass('pf-m-disabled');
-                            if (pfmp_bootstrap_status == "true"){
-                                $('#powerflex-scvm-api-login').show();
-                            }
                             resolve();
                         });
                     }else{
@@ -818,9 +807,6 @@ function checkStorageClusterStatus(){
                         $('#protect-domain').show();
                         $('#manage-daemon').hide();
                         $('#scc-status').html(sc_status);
-                        if (pfmp_bootstrap_status == "true"){
-                            $('#powerflex-scvm-api-login').show();
-                        }
                         resolve();
                     }
                 })
@@ -1645,39 +1631,3 @@ function setPfmpStatus() {
         sessionStorage.setItem('pfmp_status', pfmp_status_result);
     });
 }
-
-$('#powerflex-scvm-api-login').on('click', function(){
-    $('#div-modal-powerflex-api-info').show();
-});
-$('#button-cancel-modal-powerflex-api, #button-close-modal-powerflex-api').on('click', function(){
-    $('#div-modal-powerflex-api-info').hide();
-    $('#form-input-powerflex-id').val('');
-    $('#form-input-powerflex-password').val('');
-    $('#form-input-powerflex-password-check').val('');
-});
-$('#button-execution-modal-powerflex-api').on('click', function(){
-    var username = $('#form-input-powerflex-id').val();
-    var password = $('#form-input-powerflex-password').val();
-    var password_check = $('#form-input-powerflex-password-check').val();
-
-    if (username == ''){
-        alert('API 아이디를 입력하세요.');
-    }else if (password == ''){
-        alert('API 비밀번호를 입력하세요.');
-    }else if (password_check == ''){
-        alert('API 비밀번호 확인을 입력해주세요.');
-    }else if (password != password_check){
-        alert('API 비밀번호를 확인해주세요.');
-    }else{
-        cockpit.spawn(['python3', pluginpath + '/python/powerflex_status/powerflex_user_add.py', 'add', '--username', username, '--password', password_check])
-        .then(function(data) {
-            var retVal = JSON.parse(data);
-            if (retVal.code == 200){
-                location.reload();
-            }else{
-                alert('입력하신 정보가 정확하지 않습니다. 다시 확인 후 시도해 주세요.');
-            }
-        });
-    }
-
-});

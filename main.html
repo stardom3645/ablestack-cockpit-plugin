@@ -76,7 +76,6 @@
                                                 <li class="pf-c-divider" role="separator"></li>
                                                 <!--scvm의 /root/bootstrap.sh 파일 실행 기록이 있을때 표시-->
                                                 <li id="scvm-after-bootstrap-run"></li>
-                                                <li id="powerflex-scvm-api-login" style="display: none;"><a class='pf-c-dropdown__menu-item'>API 정보</a></li>
                                                 <!--scvm의 /root/bootstrap.sh 파일 실행 기록이 없을때 표시-->
                                                 <li id="scvm-before-bootstrap-run"></li>
                                                 <li id="scvm-after-update-glue-config"></li>
@@ -1312,62 +1311,6 @@
             </footer>
         </div>
     </div>
-</div>
-
-<div id="div-modal-powerflex-api-info" class="pf-c-backdrop" style="display: none;">
-    <div class="pf-l-bullseye">
-        <div class="pf-c-modal-box pf-m-sm" role="dialog" aria-modal="true" aria-labelledby="modal-title">
-            <!-- Close Button -->
-            <button id="button-close-modal-powerflex-api" class="pf-c-button pf-m-plain" type="button" aria-label="Close">
-                <i class="fas fa-times" aria-hidden="true"></i>
-            </button>
-            <!-- Modal Header -->
-            <header class="pf-c-modal-box__header">
-                <h1 class="pf-c-modal-box__title" id="modal-title">PowerFlex API 정보</h1>
-            </header>
-            <!-- Modal Body with Form -->
-            <div class="pf-c-modal-box__body">
-                <form novalidate class="pf-c-form pf-m-horizontal" style="margin-top: 10px;">
-                    <!-- Form Group for ID -->
-                    <div class="pf-c-form__group">
-                        <label for="form-input-powerflex-id" class="pf-c-form__label" style="width: 100px;align-content: center;">
-                            <span class="pf-c-form__label-text">아이디</span>
-                            <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
-                        </label>
-                        <input class="pf-c-form-control" style="width: 80%; margin-left: -60px;" type="text" id="form-input-powerflex-id" name="form-input-powerflex-id" placeholder="아이디 입력" required>
-                    </div>
-                    <!-- Form Group for Password -->
-                    <div class="pf-c-form__group">
-                        <label for="form-input-powerflex-password" class="pf-c-form__label" style="width: 100px;align-content: center;">
-                            <span class="pf-c-form__label-text">비밀번호</span>
-                            <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
-                        </label>
-                        <input class="pf-c-form-control" style="width: 80%; margin-left: -60px;" type="password" id="form-input-powerflex-password" name="form-input-powerflex-password" placeholder="비밀번호 입력" autocomplete="new-password" required>
-                    </div>
-                    <div class="pf-c-form__group">
-                        <label for="form-input-powerflex-password-check" class="pf-c-form__label" style="width: 100px;align-content: center;">
-                            <span class="pf-c-form__label-text">비밀번호 확인</span>
-                            <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
-                        </label>
-                        <input class="pf-c-form-control" style="width: 80%; margin-left: -60px;" type="password" id="form-input-powerflex-password-check" name="form-input-powerflex-password-check" placeholder="비밀번호 확인 입력" autocomplete="new-password" required>
-                    </div>
-                </form>
-                <!-- Information Label -->
-                <label class="pf-c-check" style="margin-top: 30px;">
-                    <span class="pf-c-check__label" style="color: blue;">
-                        <i class="fas fa-fw fa-info-circle" aria-hidden="true"></i> PowerFlex 관리 화면에서 변경된 패스워드를 입력하시면 됩니다.
-                    </span>
-                </label>
-            </div>
-
-            <!-- Modal Footer with Buttons -->
-            <footer class="pf-c-modal-box__footer">
-                <button id="button-execution-modal-powerflex-api" class="pf-c-button pf-m-primary" type="button">확인</button>
-                <button id="button-cancel-modal-powerflex-api" class="pf-c-button pf-m-link" type="button">취소</button>
-            </footer>
-        </div>
-    </div>
-
 </div>
 <!-- PFMP 설치 : Modal 영역 끝 -->
 
