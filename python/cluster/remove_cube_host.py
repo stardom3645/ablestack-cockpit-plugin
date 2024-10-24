@@ -125,7 +125,7 @@ def remove(args):
                 outfile.write('    }\n')
                 outfile.write('}\n')
 
-        else:   #os_type == "ABLESTACK-HCI" or os_type == "ABLESTACK-GlueGFS"
+        else:   #os_type == "ABLESTACK-HCI"
             with open(cluster_file_path, 'w') as outfile:
                 outfile.write('{\n')
                 outfile.write('    "clusterConfig": {\n')

@@ -88,7 +88,7 @@ $('#button-close-modal-wizard-cloud-vm').on('click', function(){
 $('#nav-button-cloud-vm-overview').on('click',function(){
     resetCloudVMWizard();
 
-    if (os_type != "ABLESTACK-HCI" && os_type != "ABLESTACK-GlueGFS"){
+    if (os_type == "PowerFlex"){
         $('#gfs-li').show();
         $('#gfs-li').text("일반 가상화를 위한 각 호스트의 IPMI 정보");
     }
@@ -181,10 +181,11 @@ $('#nav-button-cloud-vm-ssh-key').on('click',function(){
     $('#button-before-step-modal-wizard-cloud-vm').attr('disabled', false);
     $('#button-cancel-config-modal-wizard-cloud-vm').attr('disabled', false);
 
-    if (os_type != "ABLESTACK-HCI" && os_type != "ABLESTACK-GlueGFS"){
+    if (os_type == "PowerFlex"){
         cur_step_wizard_cloud_vm = "6";
+    }else{
+        cur_step_wizard_cloud_vm = "5";
     }
-    cur_step_wizard_cloud_vm = "5";
 });
 
 $('#nav-button-cloud-vm-cluster').on('click',function(){
@@ -197,10 +198,11 @@ $('#nav-button-cloud-vm-cluster').on('click',function(){
     $('#button-before-step-modal-wizard-cloud-vm').attr('disabled', false);
     $('#button-cancel-config-modal-wizard-cloud-vm').attr('disabled', false);
 
-    if (os_type != "ABLESTACK-HCI" && os_type != "ABLESTACK-GlueGFS"){
+    if (os_type == "PowerFlex"){
         cur_step_wizard_cloud_vm = "7";
+    }else{
+        cur_step_wizard_cloud_vm = "6";
     }
-    cur_step_wizard_cloud_vm = "6";
 });
 
 $('#nav-button-cloud-vm-review').on('click',function(){
@@ -218,10 +220,11 @@ $('#nav-button-cloud-vm-review').on('click',function(){
     $('#button-before-step-modal-wizard-cloud-vm').attr('disabled', false);
     $('#button-cancel-config-modal-wizard-cloud-vm').attr('disabled', false);
 
-    if (os_type != "ABLESTACK-HCI" && os_type != "ABLESTACK-GlueGFS"){
+    if (os_type == "PowerFlex"){
         cur_step_wizard_cloud_vm = "8";
+    }else{
+        cur_step_wizard_cloud_vm = "7";
     }
-    cur_step_wizard_cloud_vm = "7";
 });
 
 $('#nav-button-cloud-vm-finish').on('click',function(){
@@ -235,10 +238,11 @@ $('#nav-button-cloud-vm-finish').on('click',function(){
     $('#button-before-step-modal-wizard-cloud-vm').attr('disabled', true);
     $('#button-cancel-config-modal-wizard-cloud-vm').attr('disabled', false);
 
-    if (os_type != "ABLESTACK-HCI" && os_type != "ABLESTACK-GlueGFS"){
+    if (os_type == "PowerFlex"){
         cur_step_wizard_cloud_vm = "9";
+    }else{
+        cur_step_wizard_cloud_vm = "8";
     }
-    cur_step_wizard_cloud_vm = "8";
 });
 
 /* 사이드 메뉴 영역에서 발생하는 이벤트 처리 시작 */
@@ -246,8 +250,8 @@ $('#nav-button-cloud-vm-finish').on('click',function(){
 /* Footer 영역에서 발생하는 이벤트 처리 시작 */
 
 $('#button-next-step-modal-wizard-cloud-vm').on('click', function(){
-    // OS Type이 ABLESTACK이 아닐 때의 다음버튼의 행동 처리
-    if (os_type !== "ABLESTACK-HCI" && os_type !== "ABLESTACK-GlueGFS"){
+    // OS Type이  PowerFlex일 때의 다음버튼의 행동 처리
+    if (os_type == "PowerFlex"){
         if (cur_step_wizard_cloud_vm == "1") {
             resetCloudVMWizard();
 
@@ -344,7 +348,7 @@ $('#button-next-step-modal-wizard-cloud-vm').on('click', function(){
         else if (cur_step_wizard_cloud_vm == "9") {
             $('#div-modal-wizard-cloud-vm').hide();
         }
-    // OS Type이 ABLESTACK일 경우의 다음버튼의 행동 처리
+    // OS Type이 ABLESTACK-HCI, ABLESTACK-GlueGFS일 경우의 다음버튼의 행동 처리
     }else{
         if (cur_step_wizard_cloud_vm == "1") {
             resetCloudVMWizard();
@@ -436,7 +440,7 @@ $('#button-next-step-modal-wizard-cloud-vm').on('click', function(){
 
 $('#button-before-step-modal-wizard-cloud-vm').on('click', function(){
         // OS Type이 ABLESTACK이 아닐 때의 이전버튼의 행동 처리
-    if (os_type != "ABLESTACK-HCI" && os_type != "ABLESTACK-GlueGFS"){
+    if (os_type == "PowerFlex"){
         if (cur_step_wizard_cloud_vm == "1") {
             // 이벤트 처리 없음
         }
@@ -840,10 +844,11 @@ $('#button-execution-modal-cloud-wizard-confirm').on('click', function () {
     $('#div-modal-cloud-wizard-confirm').hide();
     if(validateCloudCenterVm()){
         deployCloudCenterVM();
-        if(os_type != "ABLESTACK-HCI" && os_type != "ABLESTACK-GlueGFS"){
+        if(os_type == "PowerFlex"){
             cur_step_wizard_cloud_vm = "9";
+        }else{
+            cur_step_wizard_cloud_vm = "8";
         }
-        cur_step_wizard_cloud_vm = "8";
     }
 });
 
@@ -959,7 +964,7 @@ function deployCloudCenterVM() {
 
     let ret_json_string = tableToClusterConfigJsonString(host_file_type, option_ccvm);
 
-    if (os_type == "ABLESTACK-HCI" || os_type == "ABLESTACK-GlueGFS"){
+    if (os_type == "ABLESTACK-HCI"){
     //=========== 1. 클러스터 구성 host 네트워크 연결 테스트 ===========
     setProgressStep("span-ccvm-progress-step1",1);
     var console_log = true;

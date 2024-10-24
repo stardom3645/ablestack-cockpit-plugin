@@ -62,11 +62,12 @@
                         <div class="pf-c-wizard__main-body" id="div-modal-wizard-cluster-config-operating-system">
                             <div class="pf-c-content">
                                 <p>
-                                    ABLESTACK HCI 또는 ABLESTACK GlueGFS 또는 ABLESTACK ExtGFS는 고성능 컴퓨팅과 안정적인 가상화 환경을 제공합니다. 사용자는 하이퍼 컨버지드 인프라(HCI)와 전통적인 가상화 옵션 중에서 필요에 맞는 솔루션을 선택할 수 있습니다. <br/>
+                                    ABLESTACK은 고성능 컴퓨팅과 안정적인 가상화 환경을 제공합니다. 사용자는 하이퍼 컨버지드 인프라(HCI)와 전통적인 가상화 옵션 중에서 필요에 맞는 솔루션을 선택할 수 있습니다. <br/>
                                 </p>
                                 <ul>
                                     <li>ABLESTACK은 데이터의 안정적이고 효율적인 관리를 위해 설계되었습니다. Glue 스토리지는 데이터를 여러 위치에 분산시켜 저장하여 높은 가용성과 확장성을 제공합니다.</li>
                                     <li>PowerFlex는 Dell의 블록 스토리지의 고속 데이터 처리와 신뢰성을 제공합니다. 이 스토리지 시스템은 대규모 데이터 작업에 최적화되어 있어, 클라우드 환경에서 뛰어난 성능을 발휘합니다.</li>
+                                    <li>일반 가상화는 물리적 하드웨어를 추상화하여 여러 가상 머신(VM)에서 동시 실행이 가능하게 하며, 자원의 효율적인 사용과 유연한 시스템 관리를 지원합니다. 이를 통해 서버 통합과 비용 절감이 가능하며, 다양한 운영 체제와 애플리케이션을 격리된 환경에서 구동할 수 있습니다.</li>
                                 </ul>
                                 <!-- <p>
                                     HBA는 전통적인 가상화 솔루션으로, 사용자가 익숙한 환경에서 가상화를 구현할 수 있도록 도와줍니다. 이를 통해 유연한 가상화 인프라를 구축할 수 있습니다. <br/>
@@ -76,17 +77,10 @@
                                 </ul> -->
                                      <div class="pf-l-grid pf-m-all-4-col pf-m-gutter">
                                         <button class="pf-c-button pf-m-secondary pf-m-display-lg" name="cluster-config-operating-system-card" type="button" style="display:flex;flex-direction: column; align-items: center;justify-content: space-between;" value="ABLESTACK-HCI">
-                                            <p style="color:black;">ABLESTACK HCI</p>
+                                            <p style="color:black;">ABLESTACK</p>
                                             <p style="white-space: normal; word-wrap: break-word; text-align: center; margin-bottom: 10px;">x86 기반의 서버와 가상화 기술, 그리고 소프트웨어 정의 기술을 접목하여 HCI를 구성하는 소프트웨어 스택입니다.</p>
                                             <span class="pf-c-button__icon">
                                               <i class="fa fa-ban fa-1x" id="icon-ablestack" aria-hidden="true" style="margin-top: 10px;color: red;"></i>
-                                            </span>
-                                          </button>
-                                          <button class="pf-c-button pf-m-secondary pf-m-display-lg" name="cluster-config-operating-system-card" type="button" style="display:flex;flex-direction: column; align-items: center;justify-content: space-between;" value="ABLESTACK-GlueGFS">
-                                            <p style="color:black;">ABLESTACK GlueGFS</p>
-                                            <p style="white-space: normal; word-wrap: break-word; text-align: center; margin-bottom: 10px;">Cube 및 Glue를 사용하여 Mold를 일반 가상화로 올린 소프트웨어 솔루션입니다.</p>
-                                            <span class="pf-c-button__icon">
-                                              <i class="fa fa-ban fa-1x" id="icon-hba" aria-hidden="true" style="margin-top: 10px;color: red;"></i>
                                             </span>
                                           </button>
                                           <button class="pf-c-button pf-m-secondary pf-m-display-lg" name="cluster-config-operating-system-card" type="button" style="display:flex;flex-direction: column; align-items: center;justify-content: space-between;" value="PowerFlex">
@@ -96,13 +90,20 @@
                                               <i class="fa fa-ban fa-1x" id="icon-powerflex" aria-hidden="true" style="margin-top: 10px;color: red;"></i>
                                             </span>
                                           </button>
-                                          <button class="pf-c-button pf-m-secondary pf-m-display-lg" name="cluster-config-operating-system-card" type="button" style="display:flex;flex-direction: column; align-items: center;justify-content: space-between;" value="ABLESTACK-ExtGFS">
-                                            <p style="color:black;">ABLESTACK ExtGFS</p>
+                                          <button class="pf-c-button pf-m-secondary pf-m-display-lg" name="cluster-config-operating-system-card" type="button" style="display:flex;flex-direction: column; align-items: center;justify-content: space-between;" value="general-virtualization">
+                                            <p style="color:black;">일반 가상화</p>
                                             <p style="white-space: normal; word-wrap: break-word; text-align: center; margin-bottom: 10px;">Cube 및 외부 스토리지를 사용하여 Mold를 일반 가상화로 올린 소프트웨어 솔루션입니다.</p>
                                             <span class="pf-c-button__icon">
                                               <i class="fa fa-ban fa-1x" id="icon-hba" aria-hidden="true" style="margin-top: 10px;color: red;"></i>
                                             </span>
                                           </button>
+                                          <!-- <button class="pf-c-button pf-m-secondary pf-m-display-lg" name="cluster-config-operating-system-card" type="button" style="display:flex;flex-direction: column; align-items: center;justify-content: space-between;" value="ABLESTACK-GlueGFS">
+                                            <p style="color:black;">ABLESTACK GlueGFS</p>
+                                            <p style="white-space: normal; word-wrap: break-word; text-align: center; margin-bottom: 10px;">Cube 및 Glue를 사용하여 Mold를 일반 가상화로 올린 소프트웨어 솔루션입니다.</p>
+                                            <span class="pf-c-button__icon">
+                                              <i class="fa fa-ban fa-1x" id="icon-hba" aria-hidden="true" style="margin-top: 10px;color: red;"></i>
+                                            </span>
+                                          </button> -->
                                           <input type="hidden" id="selected-operating-system" name="selected-operating-system" value="">
                                         </div>
                                 </div>

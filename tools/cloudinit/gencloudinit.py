@@ -260,7 +260,7 @@ def genUserFromFile(pubkeyfile: str, privkeyfile: str, hostsfile: str):
     # privkey = privkey.replace("\n", "")
     with open(hostsfile, 'rt') as f:
         hosts = f.read()
-    if os_type == "ABLESTACK-HCI" or os_type == "ABLESTACK-GlueGFS":
+    if os_type == "ABLESTACK-HCI":
         yam = {
             'disable_root': False,
             'ssh_pwauth': True,
@@ -479,7 +479,7 @@ def scvmGen(pn_nic=None, pn_ip=None, pn_prefix=24, cn_nic=None, cn_ip=None, cn_p
     #     yam2['bootcmd'].append(
     #         [f'/usr/bin/script', '-c', '/root/bootstrap.sh', 'bootstrap.log']
     #     )
-    if os_type == "ABLESTACK-HCI" or os_type == "ABLESTACK-GlueGFS":
+    if os_type == "ABLESTACK-HCI":
         yam2['bootcmd'] = [
         ['/usr/bin/systemctl', 'enable', '--now', 'cockpit.socket'],
         ['/usr/bin/systemctl', 'enable', '--now', 'cockpit.service'],

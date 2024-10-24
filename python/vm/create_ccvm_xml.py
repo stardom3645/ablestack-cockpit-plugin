@@ -130,7 +130,7 @@ def createCcvmXml(args):
 
                     line = line.replace('<!--ccvm_cloudinit-->', cci_txt)
                 elif '<!--ccvm_disk-->' in line:
-                    if os_type == "ABLESTACK-HCI" or os_type == "ABLESTACK-GlueGFS":
+                    if os_type == "ABLESTACK-HCI":
                         crd_txt = "    <disk type='network' device='disk'>\n"
                         crd_txt += "      <source protocol='rbd' name='rbd/ccvm'>\n"
                         crd_txt += "        <host name='scvm' port='6789'/>\n"
@@ -248,7 +248,7 @@ if __name__ == '__main__':
     logger = createLogger(verbosity=logging.CRITICAL, file_log_level=logging.ERROR, log_file='test.log')
 
     # secret.xml 생성 및 virsh 등록
-    if os_type == "ABLESTACK-HCI" or os_type == "ABLESTACK-GlueGFS":
+    if os_type == "ABLESTACK-HCI":
         secret_ret = json.loads(createSecretKey(args.host_names))
 
         if secret_ret["code"] == 200 :

@@ -31,9 +31,6 @@ $(document).ready(function () {
 
     $('#nav-button-cluster-config-overview').addClass('pf-m-current');
 
-    // Hosts 파일 단계에서 Host OS 종류와 Host명을 불러오는 함수
-    //checkHostsOs();
-
     checkHostName(option);
 });
 
@@ -1436,25 +1433,6 @@ async function writeSshKeyFile(text1, text2) {
 // }
 
 
-/**
- * Meathod Name : checkHostsOs
- * Date Created : 2021.04.05
- * Writer  : 류홍욱
- * Description : 호스트 OS를 체크하는 함수
- * Parameter : 없음
- * Return  : string
- * History  : 2021.04.05
- */
-
-function checkHostsOs() {
-    cockpit.script(["awk -F= '$1==\"ID\" { print $2 ;}' /etc/os-release"])
-        .then(function (data) {
-            let os_type = data.replaceAll("\"", "");
-            $('#os-type').val(os_type);
-        })
-        .catch(function (error) {
-        });
-}
 
 /**
  * Meathod Name : inputPnIntoTimeServer

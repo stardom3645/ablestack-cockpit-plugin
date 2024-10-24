@@ -97,7 +97,7 @@ def storageCenter(action, H=False):
 
     if action == 'storageCenter':
         try:
-            if (os_type == "ABLESTACK-HCI" or os_type == "ABLESTACK-GlueGFS") :
+            if os_type == "ABLESTACK-HCI" :
                 # 스토리지센터
                 mgr = check_output(['ceph', 'mgr', 'stat'], universal_newlines=True)
                 mgr_json = json.loads(mgr)

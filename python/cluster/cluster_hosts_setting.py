@@ -179,7 +179,7 @@ def hostOnly(args):
 
 def withScvm(args):
     ret = changeHosts(args)
-    if os_type == "ABLESTACK-HCI" or os_type == "ABLESTACK-GlueGFS":
+    if os_type == "ABLESTACK-HCI"
         os.system("scp -q -o StrictHostKeyChecking=no " + hosts_file_path + " root@scvm-mngt:/etc/hosts")
     # os.system("scp -q "+ hosts_file_path +" root@scvm-mngt:/etc/hosts")
     return ret

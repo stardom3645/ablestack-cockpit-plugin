@@ -12,6 +12,7 @@ ccvm_instance = this.ccvm_instance;
 $(document).ccvm_instance = ccvm_instance;
 pluginpath = '/usr/share/cockpit/ablestack';
 let pcs_exe_host = "";
+var os_type = sessionStorage.getItem("os_type");
 
 $(document).ready(function(){
 
@@ -1047,7 +1048,7 @@ function checkStorageVmStatus(){
                     }else{ //가상머신 상태 running && sc상태 ok, warn 일때
                         $("#menu-item-set-storage-center-vm-delete").addClass('pf-m-disabled');
                     }
-                    if (sessionStorage.getItem("os_type") == "ABLESTACK-HCI" || sessionStorage.getItem("os_type") == "ABLESTACK-GlueGFS"){
+                    if (os_type == "ABLESTACK-HCI"){
                         if(sessionStorage.getItem("storage_cluster_maintenance_status") == "true"){ //가상머신 상태 running && sc 유지보수모드일때
                             $("#menu-item-set-storage-center-vm-stop").removeClass('pf-m-disabled');
                         }else{//가상머신 상태 running && sc 유지보수모드 아닐때
@@ -1154,7 +1155,7 @@ function checkDeployStatus(){
         const step10 = sessionStorage.getItem("pfmp_bootstrap_status");
 
         // 배포 상태조회
-        if (os_type == "ABLESTACK-HCI" || os_type == "ABLESTACK-GlueGFS"){
+        if (os_type == "ABLESTACK-HCI"){
             console.log("step1 :: " + step1 + ", step2 :: " + step2 + " , step3 :: " + step3 + ", step4 :: " + step4 + ", step5 :: " + step5 + ", step6 :: " + step6 + ", step7 :: " + step7 + ", step8 :: " + step8);
 
             if(step1!="true"){
