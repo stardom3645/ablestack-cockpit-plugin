@@ -880,7 +880,7 @@
 <!-- 클라우드센터VM DB 백업 : Modal 영역 끝 -->
 
 <!-- 실행중 : Modal 영역 시작 -->
-<div id="div-modal-spinner" class="pf-c-backdrop" style="display:none">
+<div id="div-modal-spinner" class="pf-c-backdrop" style="display: none;">
     <div class="pf-l-bullseye">
         <div class="pf-c-modal-box pf-m-sm" role="dialog" aria-modal="true" aria-label="Cloud VM migration">
             <div class="pf-c-modal-box__header">
@@ -907,7 +907,39 @@
         </div>
     </div>
 </div>
-<!-- 실행중 : Modal 영역 끝 -->
+
+<!-- 실행중 : PFMP Modal 영역 시작 -->
+<div id="div-modal-spinner-pfmp" class="pf-c-backdrop" style="display: none;">
+    <div class="pf-l-bullseye">
+        <div class="pf-c-modal-box pf-m-sm" role="dialog" aria-modal="true" aria-label="Cloud VM migration">
+            <div class="pf-c-modal-box__header">
+                <h1 class="pf-c-modal-box__title">
+                    <span class="pf-c-modal-box__title-text">
+                        <div id="div-modal-spinner-pfmp-header-txt"></div>
+                    </span>
+                </h1>
+            </div>
+            <div class="pf-c-modal-box__body">
+                <div id="div-modal-spinner-pfmp-body-txt"></div>
+            </div>
+            <div>
+                <div class="ws-core-c-spinner ws-preview">
+                    <div align="center" style="position: relative;">
+                        <span class="pf-c-spinner" role="progressbar" aria-valuetext="Loading..." style="--pf-c-spinner--diameter: 90px; --pf-c-spinner--stroke-width-multiplier: .08;">
+                            <span class="pf-c-spinner__clipper"></span>
+                            <span class="pf-c-spinner__lead-ball"></span>
+                            <span class="pf-c-spinner__tail-ball"></span>
+                        </span>
+                        <!-- 퍼센트 표시 -->
+                        <span id="spinner-percentage" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 20px; font-weight: bold;">0%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 실행중 : PFMP Modal 영역 끝 -->
+
 <!-- 실행완료 : Modal 영역 시작 -->
 <div id="div-modal-start-cloud-vm" class="pf-c-backdrop" style="display:none">
     <div class="pf-l-bullseye">

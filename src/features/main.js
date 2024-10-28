@@ -13,6 +13,8 @@ $(document).ccvm_instance = ccvm_instance;
 pluginpath = '/usr/share/cockpit/ablestack';
 let pcs_exe_host = "";
 var os_type = sessionStorage.getItem("os_type");
+//PFMP 설치 시 퍼센트 값 설정 초가화
+let interval;
 
 $(document).ready(function(){
 
@@ -471,47 +473,50 @@ $('#button-close-modal-pfmp-install').on('click', function(){
 });
 $('#button-execution-modal-pfmp-install').on('click', function(){
     $('#div-modal-pfmp-install').hide();
-    $('#div-modal-spinner-header-txt').text('PFMP 컨테이너 설치 중입니다.');
-    $('#div-modal-spinner').show();
+    $('#div-modal-spinner-pfmp-header-txt').text('PFMP 컨테이너 설치 중입니다.');
+    $('#div-modal-spinner-pfmp').show();
 
     $("#modal-status-alert-title").html("PFMP 설치");
     $("#modal-status-alert-body").html("PFMP 설치를 실패하였습니다.<br/>PFMP 상태를 확인해주세요.");
     createLoggerInfo("pfmp_install() start");
 
+    updatePfmpInstall(35,"second");
     cockpit.spawn(["python3", pluginpath+"/python/pfmp/pfmp_install.py", "pre_install"])
     .then(function(data){
         var retVal = JSON.parse(data);
         if(retVal.code == 200){
-            $("#div-modal-spinner-header-txt").text("PFMP 클러스터 및 앱을 설치 중입니다. ");
+            $("#div-modal-spinner-pfmp-header-txt").text("PFMP 클러스터 및 앱을 설치 중입니다. ");
             createLoggerInfo("pfmp containers install success");
+            updatePfmpInstall(105,"minute");
             cockpit.spawn(["python3", pluginpath+"/python/pfmp/pfmp_install.py", "install"])
             .then(function(data){
                 var retVal = JSON.parse(data);
                 console.log(retVal);
                 if(retVal.code == 200){
                     console.log(retVal);
-                    $("#div-modal-spinner-header-txt").text("PFMP 가상머신을 삭제 중입니다.");
+                    $("#div-modal-spinner-pfmp-header-txt").text("PFMP 가상머신을 삭제 중입니다.");
+                    updatePfmpInstall(2,"second");
                     cockpit.spawn(["python3", pluginpath+"/python/pfmp/pfmp_install.py", "remove"])
                     .then(function(data){
                         var retVal = JSON.parse(data);
                         console.log(retVal);
                         if(retVal.code == 200){
                             console.log(retVal);
-                            $('#div-modal-spinner').hide();
+                            $('#div-modal-spinner-pfmp').hide();
                             $("#modal-status-alert-body").html("PFMP 설치를 성공했습니다.<br/> 성공 후 자동으로 PFMP 가상머신은 삭제됩니다.");
                             $('#div-modal-status-alert').show();
                         }else{
                             console.log(retVal);
                             $("#modal-status-alert-title").html("PFMP 설치");
                             $("#modal-status-alert-body").html("PFMP 삭제를 실패하셨습니다.<br/>PFMP 상태를 확인해주세요.");
-                            $('#div-modal-spinner').hide();
+                            $('#div-modal-spinner-pfmp').hide();
                             $('#div-modal-status-alert').show();
                             createLoggerInfo(":::pfmp_install() Error ::: error");
                             console.log(":::pfmp_install() Error :::" + data);
                         }
                     })
                     .catch(function(data){
-                        $('#div-modal-spinner').hide();
+                        $('#div-modal-spinner-pfmp').hide();
                         $('#div-modal-status-alert').show();
                         createLoggerInfo(":::pfmp_install() Error ::: error");
                         console.log(":::pfmp_install() Error :::" + data);
@@ -520,14 +525,14 @@ $('#button-execution-modal-pfmp-install').on('click', function(){
                 }else{
                     $("#modal-status-alert-title").html("PFMP 설치");
                     $("#modal-status-alert-body").html("PFMP 클러스터 및 앱 설치를 실패하셨습니다.<br/>PFMP 및 pfmp_config.json 파일 상태를 확인해주세요.");
-                    $('#div-modal-spinner').hide();
+                    $('#div-modal-spinner-pfmp').hide();
                     $('#div-modal-status-alert').show();
                     createLoggerInfo(":::pfmp_install() Error ::: error");
                     console.log(":::pfmp_install() Error :::" + data);
                 }
             })
             .catch(function(data){
-                $('#div-modal-spinner').hide();
+                $('#div-modal-spinner-pfmp').hide();
                 $('#div-modal-status-alert').show();
                 createLoggerInfo(":::pfmp_install() Error ::: error");
                 console.log(":::pfmp_install() Error :::" + data);
@@ -535,19 +540,20 @@ $('#button-execution-modal-pfmp-install').on('click', function(){
         }else{
             $("#modal-status-alert-title").html("PFMP 설치");
             $("#modal-status-alert-body").html("PFMP 컨테이너 설치를 실패하셨습니다.<br/>PFMP 상태를 확인해주세요.");
-            $('#div-modal-spinner').hide();
+            $('#div-modal-spinner-pfmp').hide();
             $('#div-modal-status-alert').show();
             createLoggerInfo(":::pfmp_install() Error ::: error");
             console.log(":::pfmp_install() Error :::" + data);
         }
     })
     .catch(function(data){
-        $('#div-modal-spinner').hide();
+        $('#div-modal-spinner-pfmp').hide();
         $('#div-modal-status-alert').show();
         createLoggerInfo(":::pfmp_install() Error ::: error");
         console.log(":::pfmp_install() Error :::" + data);
     });
 });
+
 $('#button-execution-modal-update-glue-config').on('click', function(){
     var console_log = true;
     $('#div-modal-update-glue-config').hide();
@@ -1631,4 +1637,52 @@ function setPfmpStatus() {
         pfmp_status_result = retVal.val.pfmp_status;
         sessionStorage.setItem('pfmp_status', pfmp_status_result);
     });
+}
+/**
+ * Meathod Name : updateSpinnerPercentage
+ * Date Created : 2024.10.25
+ * Writer  : 정민철
+ * Description : 파워플렉스 관리 플랫폼 설치 퍼센트 조회
+ * Parameter : 없음
+ * Return  : 없음
+ * History  : 2024.09.19 최초 작성
+ */
+function updateSpinnerPercentage(percentage) {
+    document.getElementById('spinner-percentage').innerText = percentage + '%';
+}
+/**
+ * Meathod Name : updatePfmpInstall
+ * Date Created : 2024.10.25
+ * Writer  : 정민철
+ * Description : 파워플렉스 관리 플랫폼 설치 퍼센트 조회
+ * Parameter : time_value, unit
+ * Return  : 없음
+ * History  : 2024.09.19 최초 작성
+ */
+function updatePfmpInstall(time_value, unit) {
+    let currentPercentage = 0;
+    let intervalTime;
+
+    if (interval) {
+        clearInterval(interval);
+    }
+
+    document.getElementById('spinner-percentage').innerText = '0%';
+
+    // 단위를 초 단위로 변환
+    if (unit === "minute") {
+        intervalTime = (time_value * 60 * 1000) / 100; // 분 -> 밀리초로 변환 후 1%당 시간 계산
+    } else if (unit === "second") {
+        intervalTime = (time_value * 1000) / 100; // 초 -> 밀리초로 변환 후 1%당 시간 계산
+    }
+
+    // 퍼센트 업데이트 실행
+    interval = setInterval(() => {
+        if (currentPercentage <= 100) {
+            updateSpinnerPercentage(currentPercentage);
+            currentPercentage += 1; // 1%씩 증가
+        } else {
+            clearInterval(interval); // 100%가 되면 타이머 종료
+        }
+    }, intervalTime);
 }

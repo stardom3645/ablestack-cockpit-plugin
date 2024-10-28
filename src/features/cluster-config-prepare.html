@@ -23,7 +23,7 @@
                                 <button class="pf-c-wizard__nav-link pf-m-current" id="nav-button-cluster-config-overview">개요</button>
                             </li>
                             <li class="pf-c-wizard__nav-item">
-                                <button class="pf-c-wizard__nav-link" id="nav-button-cluster-config-operating-system">운영체제</button>
+                                <button class="pf-c-wizard__nav-link" id="nav-button-cluster-config-operating-system">클러스터 종류</button>
                             </li>
                             <li class="pf-c-wizard__nav-item">
                                 <button class="pf-c-wizard__nav-link" id="nav-button-cluster-config-ssh-key">SSH Key 파일</button>
@@ -49,7 +49,7 @@
                                     클러스터 구성 준비 마법사는 클러스터를 자동으로 구성하고, 스토리지센터 및 클라우드센터를 구성하기 위해 필요한 다음의 정보를 입력받아 준비합니다.
                                 </p>
                                 <ul>
-                                    <li>HCI를 이용한 가상화 또는 일반 가상화를 사용하기 위한 운영체제</li>
+                                    <li>HCI를 이용한 가상화 또는 일반 가상화를 사용하기 위한 클러스터</li>
                                     <li>모든 호스트 및 가상머신에서 사용자 인증을 위해 공통으로 사용할 SSH Key 정보</li>
                                     <li>클러스터를 구성하는 호스트 및 가상머신들의 호스트명 및 IP 정보</li>
                                     <li>호스트 및 가상머신의 시간 동기화를 위한 시간서버</li>
@@ -80,21 +80,21 @@
                                             <p style="color:black;">ABLESTACK</p>
                                             <p style="white-space: normal; word-wrap: break-word; text-align: center; margin-bottom: 10px;">x86 기반의 서버와 가상화 기술, 그리고 소프트웨어 정의 기술을 접목하여 HCI를 구성하는 소프트웨어 스택입니다.</p>
                                             <span class="pf-c-button__icon">
-                                              <i class="fa fa-ban fa-1x" id="icon-ablestack" aria-hidden="true" style="margin-top: 10px;color: red;"></i>
+                                              <i class="fa fa-1x" id="icon-ablestack" aria-hidden="true" style="margin-top: 10px;"></i>
                                             </span>
                                           </button>
                                           <button class="pf-c-button pf-m-secondary pf-m-display-lg" name="cluster-config-operating-system-card" type="button" style="display:flex;flex-direction: column; align-items: center;justify-content: space-between;" value="PowerFlex">
                                             <p style="color:black;">PowerFlex</p>
                                             <p style="white-space: normal; word-wrap: break-word; text-align: center; margin-bottom: 10px;">단일 시스템으로 배포, 관리 및 지원되는 엔터프라이즈급 소프트웨어 정의 블록 및 파일 스토리지 솔루션입니다.</p>
                                             <span class="pf-c-button__icon">
-                                              <i class="fa fa-ban fa-1x" id="icon-powerflex" aria-hidden="true" style="margin-top: 10px;color: red;"></i>
+                                              <i class="fa fa-1x" id="icon-powerflex" aria-hidden="true" style="margin-top: 10px;"></i>
                                             </span>
                                           </button>
                                           <button class="pf-c-button pf-m-secondary pf-m-display-lg" name="cluster-config-operating-system-card" type="button" style="display:flex;flex-direction: column; align-items: center;justify-content: space-between;" value="general-virtualization">
                                             <p style="color:black;">일반 가상화</p>
                                             <p style="white-space: normal; word-wrap: break-word; text-align: center; margin-bottom: 10px;">Cube 및 외부 스토리지를 사용하여 Mold를 일반 가상화로 올린 소프트웨어 솔루션입니다.</p>
                                             <span class="pf-c-button__icon">
-                                              <i class="fa fa-ban fa-1x" id="icon-hba" aria-hidden="true" style="margin-top: 10px;color: red;"></i>
+                                              <i class="fa fa-1x" id="icon-general-virtualization" aria-hidden="true" style="margin-top: 10px;"></i>
                                             </span>
                                           </button>
                                           <!-- <button class="pf-c-button pf-m-secondary pf-m-display-lg" name="cluster-config-operating-system-card" type="button" style="display:flex;flex-direction: column; align-items: center;justify-content: space-between;" value="ABLESTACK-GlueGFS">

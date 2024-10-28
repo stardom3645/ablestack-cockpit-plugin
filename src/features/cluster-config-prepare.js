@@ -34,14 +34,13 @@ $(document).ready(function () {
     checkHostName(option);
 });
 
-
 $('[name="cluster-config-operating-system-card"]').click(function() {
     var $clickedButton = $(this);
 
     // 클릭한 버튼이 이미 선택되어 있는 경우, 선택을 해제하고 숨겨진 입력 값을 재설정합니다.
     if ($clickedButton.hasClass('is-selected')) {
         $clickedButton.removeClass('is-selected');
-        $clickedButton.find('i').removeClass('fa-check').addClass('fa-ban').css('color', 'red');
+        $clickedButton.find('i').removeClass('fa-check');
 
         // 선택이 취소되었으므로 숨겨진 입력을 재설정합니다.
         $('#selected-operating-system').val('');
@@ -49,12 +48,12 @@ $('[name="cluster-config-operating-system-card"]').click(function() {
     } else {
         // 다른 모든 버튼의 선택을 해제합니다.
         $('[name="cluster-config-operating-system-card"]').removeClass('is-selected').each(function() {
-            $(this).find('i').removeClass('fa-check').addClass('fa-ban').css('color', 'red');
+            $(this).find('i').removeClass('fa-check');
         });
 
         // 클릭한 버튼을 선택하세요
         $clickedButton.addClass('is-selected');
-        $clickedButton.find('i').removeClass('fa-ban').addClass('fa-check').css('color', 'green');
+        $clickedButton.find('i').addClass('fa-check').css('color', 'green');
 
         // 선택된 값을 숨겨진 입력으로 설정
         var selectedValue = $clickedButton.val();
@@ -62,6 +61,7 @@ $('[name="cluster-config-operating-system-card"]').click(function() {
 
     }
 });
+
 // 타이틀 닫기 버튼 이벤트 처리
 $('#button-close-modal-wizard-cluster-config-prepare').on('click', function () {
     $('#div-modal-wizard-cluster-config-prepare').hide();
