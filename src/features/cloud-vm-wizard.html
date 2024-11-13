@@ -31,6 +31,9 @@
                                     <li class="pf-c-wizard__nav-item">
                                         <button class="pf-c-wizard__nav-link" id="nav-button-cloud-vm-network">네트워크</button>
                                     </li>
+                                    <li class="pf-c-wizard__nav-item">
+                                        <button class="pf-c-wizard__nav-link" id="nav-button-cloud-vm-disk" style="display:none;">디스크</button>
+                                    </li>
                                 </ol>
                             </li>
                             <li class="pf-c-wizard__nav-item">
@@ -78,7 +81,7 @@
                                     장애조치 클러스터를 구성하기 위해 필요한 정보를 아래에 입력하십시오.
                                 </p>
                                 <form novalidate class="pf-c-form pf-m-horizontal" style="margin-left:15px;margin-top:32px">
-                                    <section class="pf-c-form__section">
+                                    <section class="pf-c-form__section" id="failover-cluster-section">
                                         <div class="pf-c-form__group">
                                             <div class="pf-c-form__group-label">
                                                 <label class="pf-c-form__label" for="form-input-cloud-vm-failover-cluster-member-number">
@@ -87,73 +90,7 @@
                                                 </label>
                                             </div>
                                             <div class="pf-c-form__group-control pf-m-inline">
-                                                <input class="pf-c-form-control" style="width:15%" type="text" id="form-input-cloud-vm-failover-cluster-member-number" name="form-input-cloud-vm-failover-cluster-member-number" value="3" readonly>
-                                            </div>
-                                        </div>
-                                        <div class="pf-c-form__field-group">
-                                            <div class="pf-c-form__field-group-header"  style="padding-bottom:8px;">
-                                                <div class="pf-c-form__field-group-header-main">
-                                                    <div class="pf-c-form__field-group-header-title">
-                                                        <div class="pf-c-form__field-group-header-title-text">PCS 호스트 #1 정보</div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="pf-c-form__field-group-body" style="padding-top:0px;">
-                                                <div class="pf-c-form__group" style="padding:0px;">
-                                                    <div class="pf-c-form__group-label">
-                                                        <label class="pf-c-form__label" for="form-input-cloud-vm-failover-cluster-host1-name">
-                                                            <span class="pf-c-form__label-text">PN IP</span>
-                                                            <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
-                                                        </label>
-                                                    </div>
-                                                    <div class="pf-c-form__group-control">
-                                                        <input class="pf-c-form-control" style="width:70%" type="text" id="form-input-cloud-vm-failover-cluster-host1-name" name="form-input-cloud-vm-failover-cluster-host1-name" required />
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="pf-c-form__field-group">
-                                            <div class="pf-c-form__field-group-header"  style="padding-bottom:8px;">
-                                                <div class="pf-c-form__field-group-header-main">
-                                                    <div class="pf-c-form__field-group-header-title">
-                                                        <div class="pf-c-form__field-group-header-title-text">PCS 호스트 #2 정보</div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="pf-c-form__field-group-body" style="padding-top:0px;">
-                                                <div class="pf-c-form__group" style="padding:0px;">
-                                                    <div class="pf-c-form__group-label">
-                                                        <label class="pf-c-form__label" for="form-input-cloud-vm-failover-cluster-host2-name">
-                                                            <span class="pf-c-form__label-text">PN IP</span>
-                                                            <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
-                                                        </label>
-                                                    </div>
-                                                    <div class="pf-c-form__group-control">
-                                                        <input class="pf-c-form-control" style="width:70%" type="text" id="form-input-cloud-vm-failover-cluster-host2-name" name="form-input-cloud-vm-failover-cluster-host2-name" required />
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="pf-c-form__field-group">
-                                            <div class="pf-c-form__field-group-header"  style="padding-bottom:8px;">
-                                                <div class="pf-c-form__field-group-header-main">
-                                                    <div class="pf-c-form__field-group-header-title">
-                                                        <div class="pf-c-form__field-group-header-title-text">PCS 호스트 #3 정보</div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="pf-c-form__field-group-body" style="padding-top:0px;">
-                                                <div class="pf-c-form__group" style="padding:0px;">
-                                                    <div class="pf-c-form__group-label">
-                                                        <label class="pf-c-form__label" for="form-input-cloud-vm-failover-cluster-host3-name">
-                                                            <span class="pf-c-form__label-text">PN IP</span>
-                                                            <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
-                                                        </label>
-                                                    </div>
-                                                    <div class="pf-c-form__group-control">
-                                                        <input class="pf-c-form-control" style="width:70%" type="text" id="form-input-cloud-vm-failover-cluster-host3-name" name="form-input-cloud-vm-failover-cluster-host3-name" required />
-                                                    </div>
-                                                </div>
+                                                <input class="pf-c-form-control" style="width:15%" type="number" id="form-input-cloud-vm-failover-cluster-member-number" name="form-input-cloud-vm-failover-cluster-member-number" min="1" disabled>
                                             </div>
                                         </div>
                                     </section>
@@ -313,6 +250,59 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="pf-c-wizard__main-body" id="div-modal-wizard-cloud-vm-disk" style="display:none;">
+                            <p>
+                                클라우드 가상머신이 GFS용 디스크로 관리할 '호스트의 iSCSI 또는 SAN 디스크'를 선택해야 합니다.
+                            </p>
+                            <form novalidate class="pf-c-form pf-m-horizontal" style="margin-left:15px;margin-top:32px">
+                                <section class="pf-c-form__section">
+                                    <!-- <div class="pf-c-form__group">
+                                        <div class="pf-c-form__group-label">
+                                            <label class="pf-c-form__label">
+                                                <span class="pf-c-form__label-text">디스크 구성 방식</span>
+                                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                                            </label>
+                                        </div>
+                                        <div class="pf-c-form__group-control pf-m-inline" style="margin-top:10px">
+                                            <div class="pf-c-radio">
+                                                <input class="pf-c-radio__input" type="radio" id="raid-passthrough" value="rp" name="form-radio-cloud-vm-disk-type" checked/>
+                                                <label class="pf-c-radio__label" for="raid-passthrough">PCI Passthrough</label>
+                                            </div>
+                                            <div class="pf-c-radio">
+                                                <input class="pf-c-radio__input" type="radio" id="lun-passthrough" value="lp" name="form-radio-cloud-vm-disk-type" />
+                                                <label class="pf-c-radio__label" for="lun-passthrough">LUN Passthrough</label>
+                                            </div>
+                                        </div>
+                                    </div> -->
+                                    <div class="pf-c-form__group">
+                                        <div class="pf-c-form__group-label">
+                                            <label class="pf-c-form__label" for="form-list-cloud-vm-data-disk">
+                                                <span class="pf-c-form__label-text">GFS용 디스크 구성 대상 장치</span>
+                                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                                            </label>
+                                        </div>
+                                        <div class="pf-c-form__group-control pf-m-stack" id="disk-cloud-vm-pci-list" style="margin-top:8px">
+                                        </div>
+                                    </div>
+                                </section>
+                            </form>
+                            <br/>
+                            <div class="pf-c-alert pf-m-info pf-m-inline" aria-label="VM Compute Info" style="margin-left:15px;margin-top:32px">
+                                <div class="pf-c-alert__icon">
+                                    <i class="fas fa-fw fa-info-circle" aria-hidden="true"></i>
+                                </div>
+                                <p class="pf-c-alert__title pf-m-truncate">
+                                    <strong><span class="pf-screen-reader">Info alert:</span>GFS용 디스크 자원 구성 시 참고사항</strong>
+                                </p>
+                                <div class="pf-c-alert__description">
+                                    <p>
+                                       GFS 파일 시스템은 Linux 커널 파일 시스템 인터페이스(VFS 레이어)와 직접 연결 시키는 원시적 파일 시스템입니다.
+
+                                       사용할 GFS용 디스크가 알맞는지 종류 및 사이즈 및 경로를 잘 확인하시길 바랍니다.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
                         <div class="pf-c-wizard__main-body" id="div-modal-wizard-cloud-vm-ipmi" style="display: none;">
                             <div class="pf-c-content">
                                 <p>
@@ -329,16 +319,16 @@
                                             </div>
                                             <div class="pf-c-form__group-control pf-m-inline" style="margin-top:10px">
                                                 <div class="pf-c-radio">
-                                                    <input class="pf-c-radio__input" type="radio" id="form-radio-ipmi-individual-credentials" name="radio-ipmi-ccvm" value="one" checked/>
-                                                    <label class="pf-c-radio__label" for="form-radio-ipmi-individual-credentials">개별 자격 증명</label>
+                                                    <input class="pf-c-radio__input" type="radio" id="form-radio-ipmi-common-credentials" name="radio-ipmi-ccvm" value="many" checked/>
+                                                    <label class="pf-c-radio__label" for="form-radio-ipmi-common-credentials">공통 자격 증명</label>
                                                 </div>
                                                 <div class="pf-c-radio">
-                                                    <input class="pf-c-radio__input" type="radio" id="form-radio-ipmi-common-credentials" name="radio-ipmi-ccvm" value="many" />
-                                                    <label class="pf-c-radio__label" for="form-radio-ipmi-common-credentials">공통 자격 증명</label>
+                                                    <input class="pf-c-radio__input" type="radio" id="form-radio-ipmi-individual-credentials" name="radio-ipmi-ccvm" value="one"/>
+                                                    <label class="pf-c-radio__label" for="form-radio-ipmi-individual-credentials">개별 자격 증명</label>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div id="div-individual-credentials">
+                                        <div id="div-individual-credentials" style="display: none;">
                                             <div class="pf-c-form__field-group">
                                                 <div class="pf-c-form__field-group-header"  style="padding-bottom:8px;">
                                                     <div class="pf-c-form__field-group-header-main">
@@ -526,7 +516,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div id="div-common-credentials" style="display: none;">
+                                        <div id="div-common-credentials">
                                             <div class="pf-c-form__field-group">
                                                 <div class="pf-c-form__field-group-header"  style="padding-bottom:8px;">
                                                     <div class="pf-c-form__field-group-header-main">
@@ -674,17 +664,6 @@
                                         </div>
                                         <div class="pf-c-form__group">
                                             <div class="pf-c-form__group-label">
-                                                <label class="pf-c-form__label" for="form-input-cloud-os-type">
-                                                    <span class="pf-c-form__label-text">OS 종류</span>
-                                                    <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
-                                                </label>
-                                            </div>
-                                            <div class="pf-c-form__group-control">
-                                                <input class="pf-c-form-control" style="width:50%" type="text" id="form-input-cloud-os-type" name="form-input-cloud-os-type" required="required" disabled/>
-                                            </div>
-                                        </div>
-                                        <div class="pf-c-form__group">
-                                            <div class="pf-c-form__group-label">
                                                 <label class="pf-c-form__label" for="form-input-current-host-name-ccvm">
                                                     <span class="pf-c-form__label-text">현재 호스트명</span>
                                                     <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
@@ -728,54 +707,10 @@
                                             </div>
                                             <div class="pf-c-form__group-control" style="width: 558px;height: 110px;overflow: auto;">
                                                 <table id="form-table-cluster-config-new-host-profile-ccvm" style="width:100%;font-size: 0.7rem;">
-                                                    <colgroup>
-                                                        <col width="5%">
-                                                        <col width="15%">
-                                                        <col width="16%">
-                                                        <col width="16%">
-                                                        <col width="16%">
-                                                        <col width="16%">
-                                                        <col width="16%">
-                                                    </colgroup>
-                                                    <thead class="--pf-global--BorderColor--300" style="border-bottom: solid 1px #8a8d90;position: sticky;top: 0;background-color: white;">
-                                                        <tr>
-                                                            <th>idx</th>
-                                                            <th>호스트 명</th>
-                                                            <th>호스트 IP</th>
-                                                            <th>SCVM<br/>MNGT IP</th>
-                                                            <th>호스트 PN IP</th>
-                                                            <th>SCVM PN IP</th>
-                                                            <th>SCVM CN IP</th>
-                                                        </tr>
+                                                    <thead class="--pf-global--BorderColor--300" style="border-bottom: solid 1px #8a8d90;position: sticky;top: 0;background-color: white;" id="cloud-vm-wizard-table-head">
+                                                        <tr></tr>
                                                     </thead>
                                                     <tbody id="form-table-tbody-cluster-config-new-host-profile-ccvm">
-                                                        <tr style='border-bottom: solid 1px #dcdcdc'>
-                                                            <td contenteditable='false'>1</td>
-                                                            <td contenteditable='true'></td>
-                                                            <td contenteditable='true'></td>
-                                                            <td contenteditable='true'></td>
-                                                            <td contenteditable='true'></td>
-                                                            <td contenteditable='true'></td>
-                                                            <td contenteditable='true'></td>
-                                                        </tr>
-                                                        <tr style='border-bottom: solid 1px #dcdcdc'>
-                                                            <td contenteditable='false'>2</td>
-                                                            <td contenteditable='true'></td>
-                                                            <td contenteditable='true'></td>
-                                                            <td contenteditable='true'></td>
-                                                            <td contenteditable='true'></td>
-                                                            <td contenteditable='true'></td>
-                                                            <td contenteditable='true'></td>
-                                                        </tr>
-                                                        <tr style='border-bottom: solid 1px #dcdcdc'>
-                                                            <td contenteditable='false'>3</td>
-                                                            <td contenteditable='true'></td>
-                                                            <td contenteditable='true'></td>
-                                                            <td contenteditable='true'></td>
-                                                            <td contenteditable='true'></td>
-                                                            <td contenteditable='true'></td>
-                                                            <td contenteditable='true'></td>
-                                                        </tr>
                                                     </tbody>
                                                 </table>
                                             </div>
@@ -788,25 +723,8 @@
                                             </div>
                                             <div class="pf-c-form__group-control" style="width: 558px;height: 110px;overflow: auto;">
                                                 <table id="form-table-cluster-config-existing-host-profile-ccvm" style="width:100%;font-size: 0.75rem;">
-                                                    <colgroup>
-                                                        <col width="5%">
-                                                        <col width="15%">
-                                                        <col width="16%">
-                                                        <col width="16%">
-                                                        <col width="16%">
-                                                        <col width="16%">
-                                                        <col width="16%">
-                                                    </colgroup>
-                                                    <thead class="--pf-global--BorderColor--300" style="border-bottom: solid 1px #8a8d90;position: sticky;top: 0;background-color: white;">
-                                                        <tr>
-                                                            <th>idx</th>
-                                                            <th>호스트 명</th>
-                                                            <th>호스트 IP</th>
-                                                            <th>SCVM<br/>MNGT IP</th>
-                                                            <th>호스트 PN IP</th>
-                                                            <th>SCVM PN IP</th>
-                                                            <th>SCVM CN IP</th>
-                                                        </tr>
+                                                    <thead class="--pf-global--BorderColor--300" style="border-bottom: solid 1px #8a8d90;position: sticky;top: 0;background-color: white;" id="cloud-vm-wizard-table-head-existing">
+                                                        <tr></tr>
                                                     </thead>
                                                     <tbody id="form-table-tbody-cluster-config-existing-host-profile-ccvm">
                                                     </tbody>
@@ -1024,6 +942,16 @@
                                                 <dd class="pf-c-description-list__description">
                                                     <div class="pf-c-description-list__text">
                                                         <span id="span-cloud-vm-svc-nic-bridge"></span>
+                                                    </div>
+                                                </dd>
+                                            </div>
+                                            <div class="pf-c-description-list__group">
+                                                <dt class="pf-c-description-list__term">
+                                                    <span class="pf-c-description-list__text">디스크</span>
+                                                </dt>
+                                                <dd class="pf-c-description-list__description">
+                                                    <div class="pf-c-description-list__text">
+                                                        <span id="span-cloud-vm-data-disk"></span>
                                                     </div>
                                                 </dd>
                                             </div>

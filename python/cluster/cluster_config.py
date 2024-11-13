@@ -80,52 +80,92 @@ def insert(args):
         if args.ccvm_mngt_ip is not None:
             json_data["clusterConfig"]["ccvm"]["ip"] = args.ccvm_mngt_ip
 
-        if args.pcs_cluster_list is not None:
-            if args.pcs_cluster_list[0] is not None:
-                json_data["clusterConfig"]["pcsCluster"]["hostname1"] = args.pcs_cluster_list[0]
-            if args.pcs_cluster_list[1] is not None:
-                json_data["clusterConfig"]["pcsCluster"]["hostname2"] = args.pcs_cluster_list[1]
-            if args.pcs_cluster_list[2] is not None:
-                json_data["clusterConfig"]["pcsCluster"]["hostname3"] = args.pcs_cluster_list[2]
+        if args.type == "general-virtualization":
+            if args.pcs_cluster_list is not None:
+                    if args.pcs_cluster_list[0] is not None:
+                        json_data["clusterConfig"]["pcsCluster"]["hostname1"] = args.pcs_cluster_list[0]
+                    if args.pcs_cluster_list[1] is not None:
+                        json_data["clusterConfig"]["pcsCluster"]["hostname2"] = args.pcs_cluster_list[1]
+                    if args.pcs_cluster_list[2] is not None:
+                        json_data["clusterConfig"]["pcsCluster"]["hostname3"] = args.pcs_cluster_list[2]
 
-        if args.mngt_nic_cidr is not None:
-            json_data["clusterConfig"]["mngtNic"]["cidr"] = args.mngt_nic_cidr
+            if args.mngt_nic_cidr is not None:
+                json_data["clusterConfig"]["mngtNic"]["cidr"] = args.mngt_nic_cidr
 
-        if args.mngt_nic_gw is not None:
-            json_data["clusterConfig"]["mngtNic"]["gw"] = args.mngt_nic_gw
+            if args.mngt_nic_gw is not None:
+                json_data["clusterConfig"]["mngtNic"]["gw"] = args.mngt_nic_gw
 
-        if args.mngt_nic_dns is not None:
-            json_data["clusterConfig"]["mngtNic"]["dns"] = args.mngt_nic_dns
+            if args.mngt_nic_dns is not None:
+                json_data["clusterConfig"]["mngtNic"]["dns"] = args.mngt_nic_dns
 
-        if args.json_string is not None:
-            # 파라미터로 받아온 json으로 변환
-            param_json = json.loads(args.json_string)
+            if args.json_string is not None:
+                # 파라미터로 받아온 json으로 변환
+                param_json = json.loads(args.json_string)
 
-            # hosts 정보가 존재하면 기존 file json 데이터를 param json 데이터로 교체
-            for p_val in param_json:
-                not_matching = True
-                for f_val in json_data["clusterConfig"]["hosts"]:
-                    if f_val["hostname"] == p_val["hostname"]:
-                        f_val["index"] = p_val["index"]
-                        f_val["hostname"] = p_val["hostname"]
-                        f_val["ablecube"] = p_val["ablecube"]
-                        f_val["scvmMngt"] = p_val["scvmMngt"]
-                        f_val["ablecubePn"] = p_val["ablecubePn"]
-                        f_val["scvm"] = p_val["scvm"]
-                        f_val["scvmCn"] = p_val["scvmCn"]
-                        not_matching = False
+                # hosts 정보가 존재하면 기존 file json 데이터를 param json 데이터로 교체
+                for p_val in param_json:
+                    not_matching = True
+                    for f_val in json_data["clusterConfig"]["hosts"]:
+                        if f_val["hostname"] == p_val["hostname"]:
+                            f_val["index"] = p_val["index"]
+                            f_val["hostname"] = p_val["hostname"]
+                            f_val["ablecube"] = p_val["ablecube"]
+                            not_matching = False
 
-                # 한번도 매칭되지 않은 param_json을 file json데이터에 appen
-                if not_matching:
-                    json_data["clusterConfig"]["hosts"].append({
-                        "index": p_val["index"],
-                        "hostname": p_val["hostname"],
-                        "ablecube": p_val["ablecube"],
-                        "scvmMngt": p_val["scvmMngt"],
-                        "ablecubePn": p_val["ablecubePn"],
-                        "scvm": p_val["scvm"],
-                        "scvmCn": p_val["scvmCn"]
-                    })
+                    # 한번도 매칭되지 않은 param_json을 file json데이터에 appen
+                    if not_matching:
+                        json_data["clusterConfig"]["hosts"].append({
+                            "index": p_val["index"],
+                            "hostname": p_val["hostname"],
+                            "ablecube": p_val["ablecube"],
+                        })
+        else :
+            if args.pcs_cluster_list is not None:
+                if args.pcs_cluster_list[0] is not None:
+                    json_data["clusterConfig"]["pcsCluster"]["hostname1"] = args.pcs_cluster_list[0]
+                if args.pcs_cluster_list[1] is not None:
+                    json_data["clusterConfig"]["pcsCluster"]["hostname2"] = args.pcs_cluster_list[1]
+                if args.pcs_cluster_list[2] is not None:
+                    json_data["clusterConfig"]["pcsCluster"]["hostname3"] = args.pcs_cluster_list[2]
+
+            if args.mngt_nic_cidr is not None:
+                json_data["clusterConfig"]["mngtNic"]["cidr"] = args.mngt_nic_cidr
+
+            if args.mngt_nic_gw is not None:
+                json_data["clusterConfig"]["mngtNic"]["gw"] = args.mngt_nic_gw
+
+            if args.mngt_nic_dns is not None:
+                json_data["clusterConfig"]["mngtNic"]["dns"] = args.mngt_nic_dns
+
+            if args.json_string is not None:
+                # 파라미터로 받아온 json으로 변환
+                param_json = json.loads(args.json_string)
+
+                # hosts 정보가 존재하면 기존 file json 데이터를 param json 데이터로 교체
+                for p_val in param_json:
+                    not_matching = True
+                    for f_val in json_data["clusterConfig"]["hosts"]:
+                        if f_val["hostname"] == p_val["hostname"]:
+                            f_val["index"] = p_val["index"]
+                            f_val["hostname"] = p_val["hostname"]
+                            f_val["ablecube"] = p_val["ablecube"]
+                            f_val["scvmMngt"] = p_val["scvmMngt"]
+                            f_val["ablecubePn"] = p_val["ablecubePn"]
+                            f_val["scvm"] = p_val["scvm"]
+                            f_val["scvmCn"] = p_val["scvmCn"]
+                            not_matching = False
+
+                    # 한번도 매칭되지 않은 param_json을 file json데이터에 appen
+                    if not_matching:
+                        json_data["clusterConfig"]["hosts"].append({
+                            "index": p_val["index"],
+                            "hostname": p_val["hostname"],
+                            "ablecube": p_val["ablecube"],
+                            "scvmMngt": p_val["scvmMngt"],
+                            "ablecubePn": p_val["ablecubePn"],
+                            "scvm": p_val["scvm"],
+                            "scvmCn": p_val["scvmCn"]
+                        })
         # json 변환 정보 cluster.json 파일 수정
         with open(json_file_path, "w") as cluster_json:
             cluster_json.write(json.dumps(json_data, indent=4))

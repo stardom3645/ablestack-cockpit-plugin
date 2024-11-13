@@ -67,25 +67,17 @@ def changeHosts(args):
         hosts_arry = []
         if json_data["clusterConfig"]["ccvm"]["ip"] != '':
 
-            if args.type == "PowerFlex":
-                # PowerFlex용 SCVM 호스트 파일
-                my_hosts.remove_all_matching(address=json_data["clusterConfig"]["ccvm"]["ip"])
-                my_hosts.remove_all_matching(name="ccvm-mngt")
-                my_hosts.remove_all_matching(name="ccvm")
+            my_hosts.remove_all_matching(address=json_data["clusterConfig"]["ccvm"]["ip"])
+            my_hosts.remove_all_matching(name="ccvm-mngt")
+            my_hosts.remove_all_matching(name="ccvm")
 
-                entry = HostsEntry(entry_type='ipv4', address=json_data["clusterConfig"]["ccvm"]["ip"], names=["ccvm-mngt", "ccvm"])
-                my_hosts.add([entry])
-            else:
-                my_hosts.remove_all_matching(address=json_data["clusterConfig"]["ccvm"]["ip"])
-                my_hosts.remove_all_matching(name="ccvm-mngt")
-                my_hosts.remove_all_matching(name="ccvm")
-
-                entry = HostsEntry(entry_type='ipv4', address=json_data["clusterConfig"]["ccvm"]["ip"], names=["ccvm-mngt", "ccvm"])
-                my_hosts.add([entry])
+            entry = HostsEntry(entry_type='ipv4', address=json_data["clusterConfig"]["ccvm"]["ip"], names=["ccvm-mngt", "ccvm"])
+            my_hosts.add([entry])
 
         for f_val in json_data["clusterConfig"]["hosts"]:
             json_ips = {}
             hostname_arry = []
+
             if args.type == "PowerFlex":
                 # PowerFlex용 SCVM 호스트 파일
                 my_hosts.remove_all_matching(address=f_val["ablecube"])
@@ -99,6 +91,9 @@ def changeHosts(args):
                 my_hosts.remove_all_matching(name="ablecube"+f_val["index"]+"-pn")
                 my_hosts.remove_all_matching(name="scvm"+f_val["index"]+"-pn")
                 my_hosts.remove_all_matching(name="scvm"+f_val["index"]+"-cn")
+            elif args.type == "general-virtualization":
+                my_hosts.remove_all_matching(address=f_val["ablecube"])
+                my_hosts.remove_all_matching(name=f_val["hostname"])
             else:
                 # hosts 파일 내용 ip로 제거
                 my_hosts.remove_all_matching(address=f_val["ablecube"])
@@ -127,6 +122,9 @@ def changeHosts(args):
                     my_hosts.add([entry])
                     entry = HostsEntry(entry_type='ipv4', address=f_val["scvmCn"], names=["scvm"+f_val["index"]+"-cn", 'scvm-cn'])
                     my_hosts.add([entry])
+                elif args.type == "general-virtualization":
+                    entry = HostsEntry(entry_type='ipv4', address=f_val["ablecube"], names=[f_val["hostname"], 'ablecube'])
+                    my_hosts.add([entry])
                 else:
                     entry = HostsEntry(entry_type='ipv4', address=f_val["ablecube"], names=[f_val["hostname"], 'ablecube'])
                     my_hosts.add([entry])
@@ -151,6 +149,9 @@ def changeHosts(args):
                     entry = HostsEntry(entry_type='ipv4', address=f_val["scvm"], names=["scvm"+f_val["index"]+"-pn"])
                     my_hosts.add([entry])
                     entry = HostsEntry(entry_type='ipv4', address=f_val["scvmCn"], names=["scvm"+f_val["index"]+"-cn"])
+                    my_hosts.add([entry])
+                elif args.type == "general-virtualization":
+                    entry = HostsEntry(entry_type='ipv4', address=f_val["ablecube"], names=[f_val["hostname"]])
                     my_hosts.add([entry])
                 else:
                     entry = HostsEntry(entry_type='ipv4', address=f_val["ablecube"], names=[f_val["hostname"]])

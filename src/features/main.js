@@ -75,6 +75,10 @@ $(document).ready(function(){
     $('#div-modal-db-backup-cloud-vm-first').load("./src/features/cloud-vm-dbbackup.html");
     $('#div-modal-db-backup-cloud-vm-first').hide();
 
+    if (os_type == "general-virtualization"){
+        $('#div-card-storage-cluster-status').hide();
+        $('#div-card-storage-vm-status').hide();
+    }
     cockpit.spawn(['python3', pluginpath + '/python/pcs/pcsExehost.py'])
     .then(function (data) {
         let retVal = JSON.parse(data);
@@ -1378,6 +1382,54 @@ function checkDeployStatus(){
                                             }
                                         }
                                     }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }else if (os_type == "general-virtualization"){
+            if (step1 != "true"){
+                $('#button-open-modal-wizard-storage-cluster').show();
+                showRibbon('warning','클라우드센터 VM이 배포되지 않았습니다. 클러스터 구성준비를 진행하십시오.');
+            }else{
+                $('#button-open-modal-wizard-storage-cluster').show();
+                $('#button-config-file-download').show();
+                if(step8!="true" && step5=="HEALTH_ERR1"||step5=="HEALTH_ERR2"||step5==null){
+                    //클라우드센터 VM 배포 버튼
+                    $('#button-open-modal-wizard-cloud-vm').show();
+                    if(step8!="true" && step5=="HEALTH_ERR1"||step5==null){
+                        showRibbon('warning','클라우드센터 클러스터가 구성되지 않았습니다. 클라우드센터 클러스터 구성을 진행하십시오.');
+                    }else{
+                        showRibbon('warning','클라우드센터 클러스터는 구성되었으나 리소스 구성이 되지 않았습니다. 리소스 구성을 진행하십시오.');
+                    }
+                }else{
+                    if(step8!="true" && step6=="HEALTH_ERR"||step6==null){
+                        //클라우드센터 VM 배포 버튼, 스토리지센터 연결 버튼 show
+                        $('#button-open-modal-wizard-cloud-vm').show();
+                        showRibbon('warning','클라우드센터 VM이 배포되지 않았습니다. 클라우드센터 VM 배포를 진행하십시오.');
+                    }else{
+                        if(step8!="true" && step7!="true"){
+                            showRibbon('warning','클라우드센터에 연결할 수 있도록 클라우드센터 VM Bootstrap 실행 작업을 진행하십시오.');
+                        }else{
+                            // 스토리지센터 연결 버튼, 클라우드센터 연결 버튼 show, 모니터링센터 구성 버튼 show
+                            $('#button-link-cloud-center').show();
+
+                            if(step8!="true"){
+                                $('#button-open-modal-wizard-monitoring-center').show();
+                                showRibbon('warning','모니터링센터에 연결할 수 있도록 모니터링센터 구성 작업을 진행하십시오.');
+                            }else{
+                                // 모니터링센터 구성 연결 버튼 show
+                                $('#button-link-monitoring-center').show();
+
+                                showRibbon('success','ABLESTACK 클라우드센터 VM 배포되었으며 모니터링센터 구성이 완료되었습니다. 가상어플라이언스 상태가 정상입니다.');
+                                // 운영 상태조회
+                                let msg ="";
+                                if(step6!="RUNNING"){
+                                    msg += '클라우드센터 가상머신이 '+step6+' 상태 입니다.\n';
+                                    msg += '클라우드센터 가상머신 Mold 서비스 , DB 상태를 확인하여 정지상태일 경우 서비스 재시작\n';
+                                    msg += '또는 클라우드센터 클러스터 상태 카드에서 가상머신 시작하여 문제를 해결할 수 있습니다.';
+                                    showRibbon('warning', msg);
                                 }
                             }
                         }
