@@ -524,7 +524,7 @@ function checkHostName(option) {
  * History  : 2021.10.19 최초 작성
  **/
 
- async function fileReaderIntoTableFunc(input, file_type, option) {
+ async function fileReaderIntoTableFunc(input, file_type, option,os_type) {
     input.addEventListener('change', function (event) {
         let file_list = input.files || event.target.files;
         let file = file_list[0];
@@ -547,7 +547,7 @@ function checkHostName(option) {
                     reader.onload = function (progressEvent) {
                         let result = progressEvent.target.result;
                         var clusterJsonConf = JSON.parse(result);
-                        settingProfile(clusterJsonConf, option)
+                        settingProfile(clusterJsonConf, option, os_type)
                     };
                     reader.readAsText(file);
                 } catch (err) {
@@ -571,7 +571,7 @@ function checkHostName(option) {
  * Return  : 없음
  * History  : 2022.10.05 수정
  **/
-function settingProfile(clusterJsonConf, option){
+function settingProfile(clusterJsonConf, option, os_type){
     let hostsJson = clusterJsonConf.clusterConfig.hosts;
     let hostCnt = clusterJsonConf.clusterConfig.hosts.length; // 설정파일에서 읽어온 node 수
     let c_mngt_cidr = clusterJsonConf.clusterConfig.mngtNic.cidr;
@@ -606,7 +606,6 @@ function settingProfile(clusterJsonConf, option){
             if(add_tr_yn){
                 insert_tr += "<tr style='border-bottom: solid 1px #dcdcdc'>";
                 insert_tr += "  <td contenteditable='true'>"+max_index+"</td>";
-                insert_tr += "  <td contenteditable='true'></td>";
                 insert_tr += "  <td contenteditable='true'></td>";
                 insert_tr += "  <td contenteditable='true'></td>";
                 insert_tr += "</tr>";
@@ -1029,12 +1028,12 @@ function tableToHostsText(table_tr_obj, option, os_type){
  * Return  : 없음
  * History  : 2022.08.23 최초 작성
  **/
- function clusterConfigTableChange(number_input, table_tbody) {
+ function clusterConfigTableChange(number_input, table_tbody, os_type) {
 
     let input_num = $("#"+number_input).val();
     let tr_cnt = $("#"+table_tbody+ " > tr").length;
 
-    if ($('#selected-cluster-type').val() == "general-virtualization"){
+    if (os_type == "general-virtualization"){
         if(input_num > tr_cnt){ // <tr> 증가 경우 6 > 5
             for(let i = 0 ; i < input_num-tr_cnt ; i++){
                 let insert_tr = "";
@@ -1082,7 +1081,7 @@ function tableToHostsText(table_tr_obj, option, os_type){
  * Return  : json string
  * History  : 2022.08.25 최초 작성
  **/
-function tableToClusterConfigJsonString(radio_value, option){
+function tableToClusterConfigJsonString(radio_value, option, os_type){
 
     var resultArrList = new Array();
     let table_tr_obj;
@@ -1107,7 +1106,7 @@ function tableToClusterConfigJsonString(radio_value, option){
         // 객체 생성
 		var data = new Object() ;
 
-        if ($('#selected-cluster-type').val() == "general-virtualization"){
+        if (os_type == "general-virtualization"){
             let idx = $(this).find('td').eq(0).text().trim();
             let host_name = $(this).find('td').eq(1).text().trim();
             let host_ip = $(this).find('td').eq(2).text().trim();
@@ -1155,8 +1154,7 @@ function tableToClusterConfigJsonString(radio_value, option){
  * Return  :
  * History  : 2022.08.25 최초 작성
  **/
- function validateClusterConfigProfile(radio_value, option){
-
+ function validateClusterConfigProfile(radio_value, option, os_type){
     let table_tr_obj;
     let validate_check = false;
 
@@ -1177,7 +1175,7 @@ function tableToClusterConfigJsonString(radio_value, option){
         // eq(5) : SCVM PN IP
         // eq(6) : SCVM CN IP
 
-        if ($('#selected-cluster-type').val() == "general-virtualization"){
+        if (os_type == "general-virtualization"){
             let idx = $(this).find('td').eq(0).text().trim();
             let host_name = $(this).find('td').eq(1).text().trim();
             let host_ip = $(this).find('td').eq(2).text().trim();
@@ -1206,7 +1204,6 @@ function tableToClusterConfigJsonString(radio_value, option){
             });
 
             let host_ip_cnt = checkDupIpCnt(host_ip, index_num, table_tr_obj);
-            // let host_pn_ip_cnt = checkDupIpCnt(host_pn_ip, index_num, table_tr_obj);
 
             // 점검항목 1 : 빈 값이 있으면 안됨
             if (idx == "" || idx == undefined || idx == null){
@@ -1424,7 +1421,7 @@ function tableToClusterConfigJsonString(radio_value, option){
  * Return  :
  * History  : 2022.09.14 최초 작성
  **/
- function checkDuplicateCcvmIp(ip, radio_value, option){
+ function checkDuplicateCcvmIp(ip, radio_value, option, os_type){
 
     let table_tr_obj;
     let validate_check = false;
@@ -1447,7 +1444,7 @@ function tableToClusterConfigJsonString(radio_value, option){
         // eq(6) : SCVM CN IP
 
 
-        if ($('#selected-cluster-type').val() == "general-virtualization"){
+        if (os_type == "general-virtualization"){
             let host_ip = $(this).find('td').eq(2).text().trim();
             // let host_pn_ip = $(this).find('td').eq(3).text().trim();
 
@@ -1552,11 +1549,6 @@ function pcsHostPnIpCheck(host_file_type, pcs_host_pn_ip, option){
         // eq(5) : SCVM PN IP
         // eq(6) : SCVM CN IP
 
-        // if ($('#selected-cluster-type').val() == "general-virtualization"){
-        //     host_pn_ip = $(this).find('td').eq(3).text().trim();
-        // }else{
-        //     host_pn_ip = $(this).find('td').eq(4).text().trim();
-        // }
         host_pn_ip = $(this).find('td').eq(4).text().trim();
         // 점검항목 1 : 빈 값이 있으면 안됨
         if (pcs_host_pn_ip == host_pn_ip){
@@ -1605,7 +1597,6 @@ function clusterConfigProfile(operating_system,setting) {
         if(setting != "reset"){
             if (theads.length > 0 && theads[0].children.length > 0) return;
         }
-
         theads.forEach(thead => {
             thead.innerHTML = ""; // 기존 내용 초기화
             columns.forEach(col => {
@@ -1636,12 +1627,10 @@ function clusterConfigProfile(operating_system,setting) {
                     td.textContent = index === 0 ? i + 1 : ""; // 첫 번째 열에 인덱스 표시
                     tr.appendChild(td);
                 });
-
                 tbody.appendChild(tr);
             }
         });
     }
-    console.log("aaa")
     // 테이블 생성 호출
     createTableHeader();
     const rows = operating_system === "general-virtualization" ? 1 : 3;

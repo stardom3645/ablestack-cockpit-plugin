@@ -1330,7 +1330,7 @@ function checkDeployStatus(){
                                 showRibbon('warning','파워플렉스 관리 플랫폼의 쿠버네티스 설정을 위해 파워플렉스 관리 플랫폼 VM Bootstrap 실행 작업을 진행하십시오.');
                             }else{
                                 if(step8!="true" && (step5=="HEALTH_ERR1"||step5=="HEALTH_ERR2"||step5==null)){
-                                    //클라우드센터 VM 배포 버튼, 스토리지센터 연결 버튼 show
+                                    //클라우드센터 VM 배포 버튼
                                     $('#button-open-modal-wizard-cloud-vm').show();
                                     $('#button-link-storage-center-dashboard').show();
                                     if(step8!="true" && (step5=="HEALTH_ERR1"||step5==null)){
@@ -1389,14 +1389,16 @@ function checkDeployStatus(){
                 }
             }
         }else if (os_type == "general-virtualization"){
+            console.log("step1 :: " + step1 + ", step5 :: " + step5 + ", step6 :: " + step6 + ", step7 :: " + step7 + ", step8 :: " + step8);
+
             if (step1 != "true"){
                 $('#button-open-modal-wizard-storage-cluster').show();
                 showRibbon('warning','클라우드센터 VM이 배포되지 않았습니다. 클러스터 구성준비를 진행하십시오.');
             }else{
-                $('#button-open-modal-wizard-storage-cluster').show();
                 $('#button-config-file-download').show();
                 if(step8!="true" && step5=="HEALTH_ERR1"||step5=="HEALTH_ERR2"||step5==null){
                     //클라우드센터 VM 배포 버튼
+                    $('#button-open-modal-wizard-storage-cluster').show();
                     $('#button-open-modal-wizard-cloud-vm').show();
                     if(step8!="true" && step5=="HEALTH_ERR1"||step5==null){
                         showRibbon('warning','클라우드센터 클러스터가 구성되지 않았습니다. 클라우드센터 클러스터 구성을 진행하십시오.');
@@ -1404,8 +1406,9 @@ function checkDeployStatus(){
                         showRibbon('warning','클라우드센터 클러스터는 구성되었으나 리소스 구성이 되지 않았습니다. 리소스 구성을 진행하십시오.');
                     }
                 }else{
-                    if(step8!="true" && step6=="HEALTH_ERR"||step6==null){
-                        //클라우드센터 VM 배포 버튼, 스토리지센터 연결 버튼 show
+                    console.log(step7,step6)
+                    if(step8!="true" && (step7!="true" && (step6=="HEALTH_ERR"||step6==null))){
+                        //클라우드센터 VM 배포 버튼
                         $('#button-open-modal-wizard-cloud-vm').show();
                         showRibbon('warning','클라우드센터 VM이 배포되지 않았습니다. 클라우드센터 VM 배포를 진행하십시오.');
                     }else{
@@ -1578,11 +1581,26 @@ function saveHostInfo(){
 }
 
 function ribbonWorker() {
-    Promise.all([pcsExeHost(), checkConfigStatus(), checkStorageClusterStatus(),
-        checkStorageVmStatus(), CardCloudClusterStatus(), new CloudCenterVirtualMachine().checkCCVM()]).then(function(){
-            scanHostKey();
-            checkDeployStatus();
-    });
+    if (os_type == "general-virtualization"){
+        Promise.all([
+            pcsExeHost(),
+            checkConfigStatus(),
+            CardCloudClusterStatus(),
+            new CloudCenterVirtualMachine().checkCCVM()
+        ])
+            .then(function () {
+                scanHostKey();
+            })
+            .finally(function () {
+                checkDeployStatus();
+            });
+    }else{
+        Promise.all([pcsExeHost(), checkConfigStatus(), checkStorageClusterStatus(),
+            checkStorageVmStatus(), CardCloudClusterStatus(), new CloudCenterVirtualMachine().checkCCVM()]).then(function(){
+                scanHostKey();
+                checkDeployStatus();
+        });
+    }
 }
 
 /**

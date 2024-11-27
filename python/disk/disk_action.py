@@ -94,15 +94,16 @@ def listPCIInterface(classify=None):
 """
 def listDiskInterface(H=False, classify=None, action=None):
     disk_path = []
-    stream = os.popen("ls -l /dev/disk/by-path/ | awk '{ if($11 != \"\") print substr($11,\"7\",length($11))\" \"\"/dev/disk/by-path/\"$9}'")
-    output = stream.read()
-    lines = output.splitlines()
-    for line in lines:
-        line_sp = line.split()
-        if len(line_sp) == 2:
-            disk_path.append(line_sp)
+    if action != 'gfs-list':
+        stream = os.popen("ls -l /dev/disk/by-path/ | awk '{ if($11 != \"\") print substr($11,\"7\",length($11))\" \"\"/dev/disk/by-path/\"$9}'")
+        output = stream.read()
+        lines = output.splitlines()
+        for line in lines:
+            line_sp = line.split()
+            if len(line_sp) == 2:
+                disk_path.append(line_sp)
 
-    item = json.loads(lsblk_cmd(J=True, o="name,rota,model,size,state,group,type,tran,subsystems"))
+    item = json.loads(lsblk_cmd(J=True, o="name,path,rota,model,size,state,group,type,tran,subsystems,vendor"))
     bd = item['blockdevices']
     newbd = []
     for dev in bd:

@@ -34,13 +34,13 @@ def createArgumentParser():
                                         usage='%(prog)s arguments')
 
     # 인자 추가: https://docs.python.org/ko/3/library/argparse.html#the-add-argument-method
-    parser.add_argument('action', choices=['insert','insertScvmHost','insertAllHost','remove'], help='choose one of the actions')
+    parser.add_argument('action', choices=['insert','insertScvmHost','insertAllHost','remove','check'], help='choose one of the actions')
     parser.add_argument('-t', '--type', metavar='[OS Type]', type=str, help='input Value to OS Type')
     parser.add_argument('-cmi', '--ccvm-mngt-ip', metavar='[cloudcenter vm IP information]', type=str, help='input Value to coludcenter vm IP information')
     parser.add_argument('-mnc', '--mngt-nic-cidr', metavar='[management Nic cidr]', type=str, help='input Value to management Nic cidr')
     parser.add_argument('-mng', '--mngt-nic-gw', metavar='[management Nic gateway]', type=str, help='input Value to management Nic gateway')
     parser.add_argument('-mnd', '--mngt-nic-dns', metavar='[management Nic DNS]', type=str, help='management Nic DNS')
-    parser.add_argument('-pcl', '--pcs-cluster-list', metavar=('[hostname1]','[hostname2]','[hostname3]'), type=str, nargs=3, help='input Value to three host names')
+    parser.add_argument('-pcl', '--pcs-cluster-list', metavar='IP', type=str, nargs='+', help='Input IP addresses of cluster nodes')
     parser.add_argument('-js', '--json-string', metavar='[json string text]', type=str, help='input Value to json string text')
     parser.add_argument('-co', '--copy-option', choices=['hostOnly','withScvm','withCcvm'], metavar='[hosts file copy option]', default="hostOnly", type=str, help='choose one of the actions')
     parser.add_argument('-eh', '--exclude-hostname', metavar='[Hostnames to exclude from copying the hosts file to scvm and checking the network]', type=str, help='input Value to exclude hostname')
@@ -82,12 +82,9 @@ def insert(args):
 
         if args.type == "general-virtualization":
             if args.pcs_cluster_list is not None:
-                    if args.pcs_cluster_list[0] is not None:
-                        json_data["clusterConfig"]["pcsCluster"]["hostname1"] = args.pcs_cluster_list[0]
-                    if args.pcs_cluster_list[1] is not None:
-                        json_data["clusterConfig"]["pcsCluster"]["hostname2"] = args.pcs_cluster_list[1]
-                    if args.pcs_cluster_list[2] is not None:
-                        json_data["clusterConfig"]["pcsCluster"]["hostname3"] = args.pcs_cluster_list[2]
+                    for i in range(len(args.pcs_cluster_list)):
+                        if args.pcs_cluster_list[i] is not None:
+                            json_data["clusterConfig"]["pcsCluster"]["hostname"+str(i+1)] = args.pcs_cluster_list[i]
 
             if args.mngt_nic_cidr is not None:
                 json_data["clusterConfig"]["mngtNic"]["cidr"] = args.mngt_nic_cidr
@@ -246,16 +243,15 @@ def insertAllHost(args):
     try:
         if args.json_string is not None:
             #hostname = socket.gethostname()
-
             # 파라미터로 받아온 json으로 변환
             param_json = json.loads(args.json_string)
-
             # ping test로 네트워크가 연결되어 있는지 상태 체크하는 부분
             ping_check_list = []
             for p_val1 in param_json:
                 ping_check_list.append(p_val1["ablecube"])
-                if args.exclude_hostname != p_val1["hostname"]:
-                    ping_check_list.append(p_val1["scvmMngt"])
+                if args.type != "general-virtualization":
+                    if args.exclude_hostname != p_val1["hostname"]:
+                        ping_check_list.append(p_val1["scvmMngt"])
 
             ping_check_list.append(args.ccvm_mngt_ip)
             ping_result = json.loads(python3(pluginpath+'/python/vm/host_ping_test.py', '-hns', ping_check_list))
@@ -270,11 +266,11 @@ def insertAllHost(args):
                         return createReturn(code=500, val=return_val + " : " + p_val2["ablecube"])
 
                     # 호스트 추가시 클러스터 구성단계에서는 scvm이 배포되기 전이므로 해당 scvm에 echo 테스트 명령을 수행할 수 없음
-                    if args.exclude_hostname != p_val2["hostname"]:
-                        ret = ssh('-o', 'StrictHostKeyChecking=no', '-o', 'ConnectTimeout=5', p_val2["scvmMngt"], "echo ok").strip()
-                        if ret != "ok":
-                            return createReturn(code=500, val=return_val + " : " + p_val2["scvmMngt"])
-
+                    if args.type != "general-virtualization":
+                        if args.exclude_hostname != p_val2["hostname"]:
+                            ret = ssh('-o', 'StrictHostKeyChecking=no', '-o', 'ConnectTimeout=5', p_val2["scvmMngt"], "echo ok").strip()
+                            if ret != "ok":
+                                return createReturn(code=500, val=return_val + " : " + p_val2["scvmMngt"])
                 ret = ssh('-o', 'StrictHostKeyChecking=no', '-o', 'ConnectTimeout=5', args.ccvm_mngt_ip, "echo ok").strip()
                 if ret != "ok":
                     return createReturn(code=500, val=return_val + " : " + args.ccvm_mngt_ip)
@@ -283,6 +279,7 @@ def insertAllHost(args):
                 return_val = "insertAllHost Failed to modify cluster_config.py and hosts file."
                 for p_val3 in param_json:
                     cmd_str = "python3 /usr/share/cockpit/ablestack/python/cluster/cluster_config.py insert"
+                    cmd_str += " -t " +args.type
                     cmd_str += " -js '" + args.json_string + "'"
 
                     if args.mngt_nic_cidr is not None:
@@ -294,12 +291,16 @@ def insertAllHost(args):
                     if args.mngt_nic_dns is not None:
                         cmd_str += " -mnd "+args.mngt_nic_dns
 
-                    if args.exclude_hostname != p_val3["hostname"]:
-                        cmd_str += " -co withScvm"
+                    if args.type != "general-virtualization":
+                        if args.exclude_hostname != p_val3["hostname"]:
+                            cmd_str += " -co withScvm"
+                        else:
+                            cmd_str += " -co withCcvm"
                     else:
                         cmd_str += " -co withCcvm"
 
-                    ret = ssh('-o', 'StrictHostKeyChecking=no', p_val3["ablecube"], cmd_str, " -cmi "+args.ccvm_mngt_ip, " -pcl "+args.pcs_cluster_list[0] +" "+ args.pcs_cluster_list[1] +" "+ args.pcs_cluster_list[2])
+                    pcs_list = " ".join(args.pcs_cluster_list)
+                    ret = ssh('-o', 'StrictHostKeyChecking=no', p_val3["ablecube"], cmd_str, " -cmi "+args.ccvm_mngt_ip, " -pcl "+pcs_list)
                     if json.loads(ret)["code"] != 200:
                         return createReturn(code=500, val=return_val + " : " + p_val3["ablecube"])
 
@@ -361,6 +362,51 @@ def remove(args):
         # 결과값 리턴
         return createReturn(code=500, val="Please check the \"cluster.json\" file. : "+e)
 
+def reset_cluster_config():
+    clusterConfig = json_data["clusterConfig"]
+    clusterConfig["type"] = ""
+    clusterConfig["ccvm"]["ip"] = ""
+    clusterConfig["gwvm"]["ip"] = ""
+    clusterConfig["gwvm"]["pn"] = ""
+    clusterConfig["pfmp"]["ingress_ip"] = ""
+    clusterConfig["mngtNic"]["cidr"] = ""
+    clusterConfig["mngtNic"]["gw"] = ""
+    clusterConfig["mngtNic"]["dns"] = ""
+    for i in range(len(clusterConfig["pcsCluster"])):
+        clusterConfig["pcsCluster"]["hostname"+str(i+1)] = ""
+    clusterConfig["hosts"] = []
+
+def PingCheck(args):
+    return_val = "The ping test failed. Check ablecube hosts network IPs."
+    try:
+        if args.json_string is not None:
+            # 파라미터로 받아온 json으로 변환
+            param_json = json.loads(args.json_string)
+
+            # ping test로 네트워크가 연결되어 있는지 상태 체크하는 부분
+            ping_check_list = []
+            for p_val1 in param_json:
+                ping_check_list.append(p_val1["ablecube"])
+            ping_result = json.loads(python3(pluginpath+'/python/vm/host_ping_test.py', '-hns', ping_check_list))
+
+            if ping_result["code"] == 200:
+                # 명령 수행이 가능한 상태인지 체크하는 부분
+                return_val = "Command execution test failed. Check the ablecube hosts status."
+
+                for p_val2 in param_json:
+                    ret = ssh('-o', 'StrictHostKeyChecking=no', '-o', 'ConnectTimeout=5', p_val2["ablecube"], "echo ok").strip()
+                    if ret != "ok":
+                        return createReturn(code=500, val=return_val + " : " + p_val2["ablecube"])
+
+
+                #모든 작업이 수행 완료되면 성공결과 return
+                return createReturn(code=200, val="Cluster Config PingCheck Success")
+            else:
+                return createReturn(code=500, val=ping_result["val"])
+    except Exception as e:
+        # 결과값 리턴
+        return createReturn(code=500, val=return_val)
+
 def createHugePageFS():
     if not os.path.exists("/hugepages"):
         os.mkdir("/hugepages")
@@ -403,6 +449,7 @@ if __name__ == '__main__':
 
     # 실제 로직 부분 호출 및 결과 출력
     if args.action == 'insert':
+        reset_cluster_config()
         ret = insert(args)
         print(ret)
     elif args.action == 'insertScvmHost':
@@ -413,4 +460,7 @@ if __name__ == '__main__':
         print(ret)
     elif args.action == 'remove':
         ret = remove(args)
+        print(ret)
+    elif args.action == 'check':
+        ret = PingCheck(args)
         print(ret)

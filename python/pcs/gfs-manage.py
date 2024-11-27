@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 import argparse
+import socket
 import time
 import paramiko
 import subprocess
@@ -24,33 +25,45 @@ def openClusterJson():
 json_data = openClusterJson()
 os_type = json_data["clusterConfig"]["type"]
 
-def run_command(command, ssh_client=None, ignore_errors=False):
-    """Run a shell command and print its output. Execute on remote host if ssh_client is provided."""
+def run_command(command, ssh_client=None, ignore_errors=False, suppress_errors=True):
+    """Run a shell command and return its output. Suppress or handle errors as specified."""
     try:
         if ssh_client:
             stdin, stdout, stderr = ssh_client.exec_command(command)
             stdout_str = stdout.read().decode()
             stderr_str = stderr.read().decode()
-            if stderr_str:
+
+            # Suppress errors if specified
+            if stderr_str and not suppress_errors:
                 print(f"Error running command: {command}")
                 print(stderr_str)
                 if not ignore_errors:
                     raise Exception(f"Command failed: {command}")
             return stdout_str
+
         else:
-            process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            process = subprocess.Popen(
+                command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+            )
             stdout, stderr = process.communicate()
-            output = stdout.decode() + stderr.decode()
-            if process.returncode:
+            stdout_str = stdout.decode()
+            stderr_str = stderr.decode()
+
+            # Suppress errors if specified
+            if process.returncode and not suppress_errors:
                 print(f"Error running command: {command}")
-                print(stderr.decode())
+                print(stderr_str)
                 if not ignore_errors:
                     raise Exception(f"Command failed: {command}")
-            return output
+
+            # Return only stdout
+            return stdout_str
+
     except Exception as e:
         if not ignore_errors:
             print(f"Error running command: {command}: {e}")
             raise
+
 
 def connect_to_host(ip):
     """Establish an SSH connection to the host."""
@@ -88,12 +101,16 @@ def modify_lvm_conf(ips):
                 'sed -i \'s/# types = \\[ "fd", 16 \\]/types = \\[ "scini", 16 \\]/\' /etc/lvm/lvm.conf;'
                 'sed -i "s/# use_lvmlockd = 0/use_lvmlockd = 1/" /etc/lvm/lvm.conf;'
                 'sed -i "s/use_devicesfile = 0/use_devicesfile = 1/" /etc/lvm/lvm.conf;'
+                'systemctl enable lvmlockd.service;'
             )
+            ret = createReturn(code=200, val="Modify Lvm Conf Success,"+powerflex_disk_name)
         else:
             modify_command = (
                 'sed -i "s/# use_lvmlockd = 0/use_lvmlockd = 1/" /etc/lvm/lvm.conf;'
-                'sed -i "s/use_devicesfile = 0/use_devicesfile = 1/" /etc/lvm/lvm.conf'
+                'sed -i "s/use_devicesfile = 0/use_devicesfile = 1/" /etc/lvm/lvm.conf;'
+                'systemctl enable lvmlockd.service;'
             )
+
         if ips:
             for ip in ips:
                 ssh_client = connect_to_host(ip)
@@ -102,7 +119,7 @@ def modify_lvm_conf(ips):
         else:
             run_command(modify_command)
 
-        ret = createReturn(code=200, val="Modify Lvm Conf Success,"+powerflex_disk_name)
+        ret = createReturn(code=200, val="Modify Lvm Conf Success")
         return print(json.dumps(json.loads(ret), indent=4))
     except Exception:
         ret = createReturn(code=500, val="Modify Lvm Conf Failure")
@@ -138,7 +155,10 @@ def setup_cluster(cluster_name, list_ips):
     """Setup the cluster with the provided cluster name and IP addresses."""
     try:
         ips = " ".join(list_ips)
-        run_command(f"pcs cluster setup {cluster_name} --start {ips}")
+        if len(list_ips)%2 == 0:
+            run_command(f"pcs cluster setup {cluster_name} --start {ips} quorum auto_tie_breaker=1 wait_for_all=1 last_man_standing=1")
+        else:
+            run_command(f"pcs cluster setup {cluster_name} --start {ips} quorum wait_for_all=1 last_man_standing=1")
         run_command("pcs cluster enable --all")
 
         ret = createReturn(code=200, val="Set Up Cluster Success")
@@ -149,51 +169,64 @@ def setup_cluster(cluster_name, list_ips):
 
 def init_pcs_cluster(disks,vg_name,lv_name,list_ips):
     try:
-        result = get_lv_path(vg_name,lv_name)
+        if len(list_ips) == 1:
+            run_command("pcs cluster stop", ignore_errors=True)
+            run_command("pcs cluster destroy", ignore_errors=True)
+        else:
+            run_command("pcs cluster stop --all", ignore_errors=True)
+            run_command("pcs cluster destroy --all", ignore_errors=True)
 
-        lvm_init_command = (
-                'sed -i "s/use_lvmlockd = 1/# use_lvmlockd = 0/" /etc/lvm/lvm.conf;'
-                'sed -i "s/use_devicesfile = 1/use_devicesfile = 0/" /etc/lvm/lvm.conf;'
-                )
+        if disks != "None":
+            result = get_lv_path(vg_name,lv_name)
+            lvm_init_command = (
+                    'sed -i "s/use_lvmlockd = 1/# use_lvmlockd = 0/" /etc/lvm/lvm.conf;'
+                    'sed -i "s/use_devicesfile = 1/use_devicesfile = 0/" /etc/lvm/lvm.conf;'
+                    )
+            if result != "":
+                run_command(f"vgchange --lock-type none --lock-opt force {vg_name} -y ", ignore_errors=True)
+                run_command(f"vgchange -aey {vg_name}", ignore_errors=True)
+                run_command(f"lvremove --lockopt skiplv /dev/{vg_name}/{lv_name} -y", ignore_errors=True)
+                for ip in list_ips:
+                    ssh_client = connect_to_host(ip)
+                    # lvm.conf 초기화
+                    run_command(lvm_init_command,ssh_client,ignore_errors=True)
+                    ssh_client.close()
 
-        run_command("pcs cluster stop --all --force > /dev/null 2>&1", ignore_errors=True)
-        run_command("pcs cluster destroy --all --force > /dev/null 2>&1", ignore_errors=True)
+                run_command(f"vgremove {vg_name}")
+                for disk in disks:
+                    partition = f"{disk}1"
+                    run_command(f"pvremove {partition}",ignore_errors=True)
+                    run_command(f"echo -e 'd\nw\n' | fdisk {disk} >/dev/null 2>&1", ignore_errors=True)
 
-        if result != "":
-            run_command(f"vgchange --lock-type none --lock-opt force {vg_name} -y > /dev/null 2>&1", ignore_errors=True)
-            run_command(f"vgchange -aey {vg_name} > /dev/null 2>&1", ignore_errors=True)
-            run_command(f"lvremove --lockopt skiplv /dev/{vg_name}/{lv_name} -y > /dev/null 2>&1", ignore_errors=True)
+                    for ip in list_ips:
+                        ssh_client = connect_to_host(ip)
+                        # lvm.conf 초기화
+                        run_command(f"partprobe {disk}",ssh_client,ignore_errors=True)
+                        ssh_client.close()
 
-            for ip in list_ips:
-                ssh_client = connect_to_host(ip)
-                # lvm.conf 초기화
-                run_command(lvm_init_command,ssh_client,ignore_errors=True)
-                ssh_client.close()
+        rc_local_init_command =(
+            'systemctl disable --now rc-local.service;'
+            'sed -i "/^\\[Install\\]/,/^WantedBy=multi-user.target$/d" /usr/lib/systemd/system/rc-local.service;'
+            'sed -i "/^partprobe/,/^lvmdevices --adddev$/d" /etc/rc.local /etc/rc.d/rc.local;'
+        )
 
-            run_command(f"vgremove {vg_name} > /dev/null 2>&1")
-            for disk in disks:
-                partition = f"{disk}1"
-                run_command(f"pvremove {partition} > /dev/null 2>&1",ignore_errors=True)
-
-            rc_local_init_command =(
-                'systemctl disable --now rc-local.service > /dev/null 2>&1;'
-                'sed -i "/^\\[Install\\]/,/^WantedBy=multi-user.target$/d" /usr/lib/systemd/system/rc-local.service > /dev/null 2>&1;'
-                'sed -i "/^partprobe/,/^lvmdevices --adddev$/d" /etc/rc.local > /dev/null 2>&1;'
-            )
-            for ip in list_ips:
-                ssh_client = connect_to_host(ip)
-                # rc.local 파일 및 서비스 초기화
+        for ip in list_ips:
+            ssh_client = connect_to_host(ip)
+            # rc.local 파일 및 서비스 초기화
+            status = run_command("systemctl is-enabled rc-local.service", ssh_client, ignore_errors=True).strip()
+            if status == "enabled":
                 run_command(rc_local_init_command, ssh_client, ignore_errors=True)
-                # lvm.conf 초기화
-                run_command('sed -i \'s/types = \\[ "scini", 16 \\]/# types = \\[ "fd", 16 \\]/\' /etc/lvm/lvm.conf > /dev/null 2>&1',ssh_client,ignore_errors=True)
-                ssh_client.close()
-            ret = createReturn(code=200, val="Init PCS Cluster Success")
-            return print(json.dumps(json.loads(ret), indent=4))
+            # lvm.conf 초기화
+            if os_type == "PowerFlex":
+                run_command('sed -i \'s/types = \\[ "scini", 16 \\]/# types = \\[ "fd", 16 \\]/\' /etc/lvm/lvm.conf',ssh_client,ignore_errors=True)
+            ssh_client.close()
+
+        ret = createReturn(code=200, val="Init PCS Cluster Success")
+        return print(json.dumps(json.loads(ret), indent=4))
 
     except Exception:
         ret = createReturn(code=500, val="Init PCS Cluster Failure")
         return print(json.dumps(json.loads(ret), indent=4))
-
 def configure_stonith_devices(stonith_info, list_ips):
     """Configure STONITH devices and constraints."""
     try:
@@ -207,21 +240,21 @@ def configure_stonith_devices(stonith_info, list_ips):
             ssh_client.close()
             device_name = f"fence-{hostname}"
 
-            # STONITH 장치 생성
+            # delay = 15 if i == 0 else 10  # 첫 번째 IP에만 delay = 20
+            delay = 10
+
             command_create = (
-                f'pcs stonith create {device_name} fence_ipmilan delay=10 '
+                f'pcs stonith create {device_name} fence_ipmilan delay={delay} '
                 f'ip={ip} ipport={ipport} lanplus=1 method=onoff '
                 f'username={username} password={password} '
-                f'pcmk_host_list={storage_ip} pcmk_off_action=off pcmk_reboot_action=off'
+                f'pcmk_host_list={storage_ip} pcmk_off_action=off pcmk_reboot_action=off debug_file=/var/log/stonith.log'
             )
             run_command(command_create, ignore_errors=True)
-
             command_constraint = (f'pcs constraint location {device_name} avoids {storage_ip}')
             run_command(command_constraint, ignore_errors=True)
-
         run_command("pcs property set stonith-enabled=true", ignore_errors=True)
-        run_command("pcs resource create glue-dlm --group glue-locking ocf:pacemaker:controld op monitor interval=30s on-fail=fence", ignore_errors=True)
-        run_command("pcs resource create glue-lvmlockd --group glue-locking ocf:heartbeat:lvmlockd op monitor interval=30s on-fail=fence", ignore_errors=True)
+        run_command("pcs resource create glue-dlm --group glue-locking ocf:pacemaker:controld op monitor interval=60s on-fail=fence", ignore_errors=True)
+        run_command("pcs resource create glue-lvmlockd --group glue-locking ocf:heartbeat:lvmlockd op monitor interval=60s on-fail=fence", ignore_errors=True)
         run_command("pcs resource clone glue-locking interleave=true", ignore_errors=True)
 
         ret = createReturn(code=200, val="Configure Stonith Devices Success")
@@ -229,7 +262,6 @@ def configure_stonith_devices(stonith_info, list_ips):
     except Exception:
         ret = createReturn(code=500, val="Configure Stonith Devices Failure")
         return print(json.dumps(json.loads(ret), indent=4))
-
 def get_lv_path(vg_name, lv_name):
     # /dev/vg_name/lv_name 경로 확인
     lv_path_dev = f"/dev/{vg_name}/{lv_name}"
@@ -259,54 +291,62 @@ def create_gfs(disks, vg_name, lv_name, gfs_name, mount_point, cluster_name, num
         # Create a physical volume on each disk and add to the volume group
         for disk in disks:
             # 파티션 생성
-            run_command(f"parted -s {disk} mklabel gpt mkpart {gfs_name} 0% 100% set 1 lvm on > /dev/null")
+            run_command(f"parted -s {disk} mklabel gpt mkpart {gfs_name} 0% 100% set 1 lvm on ")
             # 파티션 테이블 다시 읽기
-            run_command(f"partprobe {disk}")
-
+            for ip in list_ips:
+                ssh_client = connect_to_host(ip)
+                run_command(f"partprobe {disk}", ssh_client, ignore_errors=True)
             # 파티션 이름 확인
             partition = f"{disk}1"
             # 물리 볼륨 생성
-            run_command(f"pvcreate -ff --yes {partition} > /dev/null")
+            run_command(f"pvcreate -ff --yes {partition}")
             # PV 디스크 목록에 추가
             pv_disks.append(partition)
-        run_command(f"lvmlockctl -k {vg_name} > /dev/null")
+
+        vg_check = subprocess.call(f"lvmlockctl -i | grep {vg_name}", shell=True ,stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        if vg_check == 1:
+            run_command(f"lvmlockctl -k {vg_name}")
+
         # 공유 볼륨 그룹 생성
-        run_command(f"vgcreate --yes --shared {vg_name} {' '.join(pv_disks)} > /dev/null")
+        run_command(f"vgcreate --yes --shared {vg_name} {' '.join(pv_disks)} ")
         # 논리 볼륨 생성
-        run_command(f"lvcreate --yes --activate sy -l+100%FREE -n {lv_name} {vg_name} > /dev/null")
+        run_command(f"lvcreate --yes --activate sy -l+100%FREE -n {lv_name} {vg_name} ")
         # GFS2 파일 시스템 생성
         lv_path = get_lv_path(vg_name, lv_name)
-        run_command(f"mkfs.gfs2 -j{num_journals} -p lock_dlm -t {cluster_name}:{gfs_name} {lv_path} -O > /dev/null")
+        run_command(f"mkfs.gfs2 -j{num_journals} -p lock_dlm -t {cluster_name}:{gfs_name} {lv_path} -O ")
+
 
         for ip in list_ips:
             ssh_client = connect_to_host(ip)
             for disk in disks:
+                partition = f"{disk}1"
+
                 run_command(f"partprobe {disk}", ssh_client, ignore_errors=True)
-                run_command(f"lvmdevices --adddev {partition} > /dev/null 2>&1", ssh_client, ignore_errors=True)
-            run_command("pcs resource cleanup > /dev/null 2>&1", ssh_client, ignore_errors=True)
+                run_command(f"lvmdevices --adddev {partition} ", ssh_client, ignore_errors=True)
+                run_command(f"echo -e 'partprobe {disk}\nlvmdevices --adddev {partition}' | tee -a /etc/rc.local /etc/rc.d/rc.local > /dev/null", ssh_client, ignore_errors=True)
+            run_command("pcs resource cleanup ", ssh_client, ignore_errors=True)
+            run_command("chmod +x /etc/rc.local /etc/rc.d/rc.local", ssh_client, ignore_errors=True)
+            run_command("echo -e '\n[Install]\nWantedBy=multi-user.target' >> /usr/lib/systemd/system/rc-local.service", ssh_client, ignore_errors=True)
+            run_command("systemctl enable --now rc-local.service", ssh_client, ignore_errors=True)
             ssh_client.close()
 
         # Configure GFS2 and LVM resources
         run_command(f"pcs resource create {gfs_name}_res --group {gfs_name}-group ocf:heartbeat:LVM-activate lvname={lv_name} vgname={vg_name} activation_mode=shared vg_access_mode=lvmlockd > /dev/null")
         run_command(f"pcs resource clone {gfs_name}_res interleave=true")
-        run_command(f"pcs constraint order start glue-locking-clone then {gfs_name}_res-clone > /dev/null")
-        run_command(f"pcs constraint colocation add {gfs_name}_res-clone with glue-locking-clone > /dev/null")
-        run_command(f"pcs resource create {gfs_name} --group {gfs_name}-group ocf:heartbeat:Filesystem device=\"{lv_path}\" directory=\"{mount_point}\" fstype=\"gfs2\" options=noatime op monitor interval=10s on-fail=fence > /dev/null")
-        run_command(f"pcs resource clone {gfs_name} interleave=true > /dev/null")
-        run_command(f"pcs constraint order start {gfs_name}_res-clone then {gfs_name}-clone > /dev/null")
-        run_command(f"pcs constraint colocation add {gfs_name}_res-clone with {gfs_name}-clone > /dev/null")
+        run_command(f"pcs constraint order start glue-locking-clone then {gfs_name}_res-clone")
+        run_command(f"pcs constraint colocation add {gfs_name}_res-clone with glue-locking-clone")
+        run_command(f"pcs resource create {gfs_name} --group {gfs_name}-group ocf:heartbeat:Filesystem device=\"{lv_path}\" directory=\"{mount_point}\" fstype=\"gfs2\" options=noatime op monitor timeout=120s interval=10s on-fail=fence > /dev/null")
+        run_command(f"pcs resource clone {gfs_name} interleave=true")
+        run_command(f"pcs constraint order start {gfs_name}_res-clone then {gfs_name}-clone")
+        run_command(f"pcs constraint colocation add {gfs_name}_res-clone with {gfs_name}-clone")
 
         for ip in list_ips:
             ssh_client = connect_to_host(ip)
             for disk in disks:
-                run_command(f"partprobe {disk} > /dev/null 2>&1", ssh_client, ignore_errors=True)
-                run_command(f"lvmdevices --adddev {partition} > /dev/null 2>&1", ssh_client, ignore_errors=True)
-            run_command("pcs resource cleanup > /dev/null 2>&1", ssh_client, ignore_errors=True)
-            # partprobe, lvmdevices 명령어를 재부팅할 시, 자동실행 스크립트
-            run_command(f"echo -e 'partprobe {disk}\nlvmdevices --adddev {partition}' >> /etc/rc.local", ssh_client, ignore_errors=True)
-            run_command("chmod +x /etc/rc.local", ssh_client, ignore_errors=True)
-            run_command("echo -e '\n[Install]\nWantedBy=multi-user.target' >> /usr/lib/systemd/system/rc-local.service", ssh_client, ignore_errors=True)
-            run_command("systemctl enable --now rc-local.service > /dev/null 2>&1", ssh_client, ignore_errors=True)
+                partition = f"{disk}1"
+                run_command(f"partprobe {disk}", ssh_client, ignore_errors=True)
+                run_command(f"lvmdevices --adddev {partition} ", ssh_client, ignore_errors=True)
+            run_command("pcs resource cleanup ", ssh_client, ignore_errors=True)
             ssh_client.close()
 
         ret = createReturn(code=200, val="Create GFS Success")
@@ -318,19 +358,87 @@ def create_gfs(disks, vg_name, lv_name, gfs_name, mount_point, cluster_name, num
 def create_ccvm_cluster(gfs_name,mount_point,cluster_name):
     try:
 
-        os.system("cp "+ pluginpath + f"/tools/vmconfig/ccvm/ccvm.xml {mount_point}/ccvm.xml")
-        os.system(f"cp /var/lib/libvirt/images/ablestack-template.qcow2 {mount_point}/ccvm.qcow2")
-        os.system(f"qemu-img resize {mount_point}/ccvm.qcow2 +350G > /dev/null")
+        time.sleep(10)
 
-        run_command(f"pcs resource create {cluster_name} VirtualDomain hypervisor=qemu:///system config={mount_point}/ccvm.xml migration_transport=ssh meta allow-migrate=true priority=100 op start timeout=120s op stop timeout=120s op monitor timeout=30s interval=10s")
+        run_command("cp "+ pluginpath + f"/tools/vmconfig/ccvm/ccvm.xml {mount_point}/ccvm.xml")
+        run_command(f"cp /var/lib/libvirt/images/ablestack-template.qcow2 {mount_point}/ccvm.qcow2")
+        run_command(f"qemu-img resize {mount_point}/ccvm.qcow2 +350G > /dev/null")
+
+        run_command(f"pcs resource create {cluster_name} VirtualDomain hypervisor=qemu:///system config={mount_point}/ccvm.xml migration_transport=ssh meta allow-migrate=true priority=100 op start timeout=120s op stop timeout=120s op monitor timeout=120s interval=20s")
         run_command(f"pcs constraint order start {gfs_name}-clone then {cluster_name}")
+
 
         ret = createReturn(code=200, val="Create CCVM Cluster Success")
         return print(json.dumps(json.loads(ret), indent=4))
     except Exception:
         ret = createReturn(code=500, val="Create CCVM Cluster Failure")
         return print(json.dumps(json.loads(ret), indent=4))
+def extend_pcs_cluster(username,password,stonith_info,list_ips):
+    try:
+        host_ip = socket.gethostbyname(socket.getfqdn())
+        # 해당 호스트에서 lvm conf 설정 하기
+        modify_command = (
+            'sed -i "s/# use_lvmlockd = 0/use_lvmlockd = 1/" /etc/lvm/lvm.conf;'
+            'sed -i "s/use_devicesfile = 0/use_devicesfile = 1/" /etc/lvm/lvm.conf;'
+            'systemctl enable lvmlockd.service;'
+        )
+        run_command(modify_command)
+        # 해당 호스트에서 hacluster에 대한 패스워드 설정
+        run_command(f"echo 'hacluster:{password}' | chpasswd")
+        # 마스터 노드에서 pcs host auth 설정
+        for ip in list_ips[:1]:
+            ssh_client = connect_to_host(ip)
+            for i, (info, master_ip) in enumerate(zip(stonith_info, list_ips)):
+                ip = info["ipaddr"]
+                ipport = info["ipport"]
+                username = info["login"]
+                stonith_password = info["passwd"]
+                hostname = run_command(f"hostname").strip()
+                device_name = f"fence-{hostname}"
 
+                # delay = 15 if i == 0 else 10  # 첫 번째 IP에만 delay = 20
+                delay = 10
+
+                command_create = (
+                    f'pcs stonith create {device_name} fence_ipmilan delay={delay} '
+                    f'ip={ip} ipport={ipport} lanplus=1 method=onoff '
+                    f'username={username} password={stonith_password} '
+                    f'pcmk_host_list={host_ip} pcmk_off_action=off pcmk_reboot_action=off debug_file=/var/log/stonith.log'
+                )
+                command_constraint = (f'pcs constraint location {device_name} avoids {host_ip}')
+
+                run_command(f"pcs host auth {host_ip} -u {username} -p {password}", ssh_client, ignore_errors=True)
+                run_command(f"pcs cluster node add {host_ip}", ssh_client, ignore_errors=True)
+                run_command("pcs cluster enable --all", ssh_client, ignore_errors=True)
+                run_command("pcs cluster start --all", ssh_client, ignore_errors=True)
+
+                run_command(command_create, ssh_client, ignore_errors=True)
+                run_command(command_constraint, ssh_client, ignore_errors=True)
+                ssh_client.close()
+
+        for ip in list_ips:
+            ssh_client = connect_to_host(ip)
+            multipath_disks = run_command("multipath -l -v 1", ssh_client, ignore_errors=True).split()
+
+            for disk in multipath_disks:
+                partition = f"{disk}1"
+                run_command(f"partprobe {disk}", ssh_client, ignore_errors=True)
+                run_command(f"lvmdevices --adddev {partition} ", ssh_client, ignore_errors=True)
+                if ip == list_ips[-1]:
+                    run_command(f"echo -e 'partprobe {disk}\nlvmdevices --adddev {partition}' | tee -a /etc/rc.local /etc/rc.d/rc.local > /dev/null", ssh_client, ignore_errors=True)
+                ssh_client.close()
+
+        run_command("pcs resource cleanup", ignore_errors=True)
+        run_command("chmod +x /etc/rc.local /etc/rc.d/rc.local", ignore_errors=True)
+        run_command("echo -e '\n[Install]\nWantedBy=multi-user.target' >> /usr/lib/systemd/system/rc-local.service", ignore_errors=True)
+        run_command("systemctl enable --now rc-local.service", ignore_errors=True)
+
+
+        ret = createReturn(code=200, val="Extend Pcs Cluster Success")
+        return print(json.dumps(json.loads(ret), indent=4))
+    except Exception:
+        ret = createReturn(code=500, val="Extend Pcs Cluster Failure")
+        return print(json.dumps(json.loads(ret), indent=4))
 def main():
     parser = argparse.ArgumentParser(description="Cluster configuration script")
 
@@ -351,6 +459,10 @@ def main():
     parser.add_argument('--init-gfs',action='store_true', help='Flag to init GFS2 file system.')
     parser.add_argument('--create-ccvm-cluster', action='store_true', help='Flag to create CCVM Cluster.')
     parser.add_argument('--init-pcs-cluster', action='store_true', help='Flag to init Pcs Cluster.')
+    # 확장할 시에 사용되는 parser들
+    parser.add_argument('--password',  help="Extend Host Set the hacluster user password.")
+    parser.add_argument('--stonith',  help="Extend Host Set Configure STONITH devices with a list of comma-separated values (ipaddr,port,username,password).")
+    parser.add_argument('--extend-pcs-cluster', action='store_true', help='Flag to extend Pcs Cluster.')
 
     parser.add_argument('--list-ip', type=str, help="The IP addresses of the local hosts for cluster operations, separated by spaces.")
 
@@ -402,13 +514,19 @@ def main():
         setup_cluster(args.setup_cluster, list_ips)
 
     if args.init_pcs_cluster:
-        if not all([args.disks, args.vg_name, args.lv_name]):
+        if not all([args.list_ip]):
             print("All arguments are required when using --init-pcs-cluster")
             parser.print_help()
         else:
-            disks = args.disks.split(',')
-            vg_name = args.vg_name
-            lv_name = args.lv_name
+            if args.disks != None:
+                disks = args.disks.split(',')
+                vg_name = args.vg_name
+                lv_name = args.lv_name
+            else:
+                disks = "None"
+                vg_name = "None"
+                lv_name = "None"
+
             list_ips = args.list_ip.split()
 
             init_pcs_cluster(disks, vg_name, lv_name, list_ips)
@@ -439,6 +557,24 @@ def main():
             cluster_name = args.cluster_name
 
             create_ccvm_cluster(gfs_name, mount_point, cluster_name)
+
+    if args.extend_pcs_cluster:
+        if not all([args.password, args.stonith, args.list_ip]):
+            print("All arguments are required when using --extend-pcs-cluster")
+            parser.print_help()
+        else:
+            password = args.set_password
+            stonith_info = []
+            ipaddr, ipport, login, passwd = args.stonith.split(',')
+            stonith_info.append({
+                "ipaddr": ipaddr,
+                "ipport": ipport,
+                "login": login,
+                "passwd": passwd
+            })
+            list_ips = args.list_ip.split()
+
+            extend_pcs_cluster('hacluster', password, stonith_info, list_ips)
 
 if __name__ == "__main__":
     main()

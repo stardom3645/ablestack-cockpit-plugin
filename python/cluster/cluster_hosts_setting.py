@@ -20,7 +20,6 @@ from python_hosts import Hosts, HostsEntry
 
 json_file_path = pluginpath+"/tools/properties/cluster.json"
 hosts_file_path = "/etc/hosts"
-# hosts_file_path = "/etc/hosts"
 def createArgumentParser():
     '''
     입력된 argument를 파싱하여 dictionary 처럼 사용하게 만들어 주는 parser를 생성하는 함수
@@ -61,6 +60,14 @@ os_type = json_data["clusterConfig"]["type"]
 # 파라미터로 받은 json 값으로 cluster_config.py 무조건 바꾸는 함수 (동일한 값이 있으면 변경, 없으면 추가)
 def changeHosts(args):
     try:
+        # 호스트 파일 초기화
+        if args.type == "general-virtualization":
+
+            with open(hosts_file_path, "r") as file:
+                lines = file.readlines()
+
+            with open(hosts_file_path, "w") as file:
+                file.writelines(lines[:2])
 
         hostname = socket.gethostname()
         my_hosts = Hosts(path=hosts_file_path)
@@ -77,7 +84,6 @@ def changeHosts(args):
         for f_val in json_data["clusterConfig"]["hosts"]:
             json_ips = {}
             hostname_arry = []
-
             if args.type == "PowerFlex":
                 # PowerFlex용 SCVM 호스트 파일
                 my_hosts.remove_all_matching(address=f_val["ablecube"])
@@ -91,9 +97,11 @@ def changeHosts(args):
                 my_hosts.remove_all_matching(name="ablecube"+f_val["index"]+"-pn")
                 my_hosts.remove_all_matching(name="scvm"+f_val["index"]+"-pn")
                 my_hosts.remove_all_matching(name="scvm"+f_val["index"]+"-cn")
+
             elif args.type == "general-virtualization":
-                my_hosts.remove_all_matching(address=f_val["ablecube"])
                 my_hosts.remove_all_matching(name=f_val["hostname"])
+                my_hosts.remove_all_matching(name=f_val["ablecube"])
+
             else:
                 # hosts 파일 내용 ip로 제거
                 my_hosts.remove_all_matching(address=f_val["ablecube"])

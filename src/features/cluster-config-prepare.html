@@ -287,7 +287,7 @@
                                             </table>
                                         </div>
                                     </div>
-                                    <div class="pf-c-form__group">
+                                    <div class="pf-c-form__group" name="cluster-config-ccvm-info">
                                         <div class="pf-c-form__group-label">
                                             <label class="pf-c-form__label" for="form-input-cluster-ccvm-mngt-ip">
                                                 <span class="pf-c-form__label-text">CCVM 관리 IP</span>
@@ -298,7 +298,7 @@
                                             <input class="pf-c-form-control" style="width:50%" type="text" id="form-input-cluster-ccvm-mngt-ip" name="form-input-cluster-ccvm-mngt-ip" placeholder="xxx.xxx.xxx.xxx 형식으로 입력"/>
                                         </div>
                                     </div>
-                                    <div class="pf-c-form__group">
+                                    <div class="pf-c-form__group" name="cluster-config-ccvm-info">
                                         <div class="pf-c-form__group-label">
                                             <label class="pf-c-form__label" for="form-input-cluster-mngt-nic-cidr">
                                                 <span class="pf-c-form__label-text">관리 NIC CIDR</span>
@@ -308,7 +308,7 @@
                                             <input class="pf-c-form-control" style="width:50%" type="text" id="form-input-cluster-mngt-nic-cidr" name="form-input-cluster-mngt-nic-cidr" placeholder="0~32 숫자 형식으로 입력"/>
                                         </div>
                                     </div>
-                                    <div class="pf-c-form__group">
+                                    <div class="pf-c-form__group" name="cluster-config-ccvm-info">
                                         <div class="pf-c-form__group-label">
                                             <label class="pf-c-form__label" for="form-input-cluster-mngt-nic-gateway">
                                                 <span class="pf-c-form__label-text">관리 NIC Gateway</span>
@@ -318,7 +318,7 @@
                                             <input class="pf-c-form-control" style="width:50%" type="text" id="form-input-cluster-mngt-nic-gateway" name="form-input-cluster-mngt-nic-gateway" placeholder="xxx.xxx.xxx.xxx 형식으로 입력"/>
                                         </div>
                                     </div>
-                                    <div class="pf-c-form__group">
+                                    <div class="pf-c-form__group" name="cluster-config-ccvm-info">
                                         <div class="pf-c-form__group-label">
                                             <label class="pf-c-form__label" for="form-input-cluster-mngt-nic-dns">
                                                 <span class="pf-c-form__label-text">관리 NIC DNS</span>
@@ -359,6 +359,67 @@
                                         </div>
                                         <div class="pf-c-form__group-control">
                                             <input class="pf-c-form-control" style="width:50%" type="text" id="form-input-cluster-pcs-hostname3" name="form-input-cluster-pcs-hostname3" placeholder="xxx.xxx.xxx.xxx 형식으로 입력"/>
+                                        </div>
+                                    </div>
+                                    <div class="pf-c-form__field-group" name="cluster-config-ipmi-info" style="display: none;">
+                                        <div class="pf-c-form__field-group-header"  style="padding-bottom:8px;">
+                                            <div class="pf-c-form__field-group-header-main">
+                                                <div class="pf-c-form__field-group-header-title">
+                                                    <div class="pf-c-form__field-group-header-title-text" style="padding-top: 15px;">추가할 호스트 정보</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="pf-c-form__field-group-body" style="padding-top:0px;">
+                                            <div class="pf-c-form__group" style="padding:0px;">
+                                                <div class="pf-c-form__group-label">
+                                                    <label class="pf-c-form__label" for="form-input-cluster-config-credentials-ipmi-ip">
+                                                        <span class="pf-c-form__label-text">IPMI IP</span>
+                                                        <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                                                    </label>
+                                                </div>
+                                                <div class="pf-c-form__group-control">
+                                                    <input class="pf-c-form-control" style="width:70%" type="text" id="form-input-cluster-config-credentials-ipmi-ip" name="form-input-cluster-config-credentials-ipmi-ip" placeholder="xxx.xxx.xxx.xxx 형식으로 입력" required/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="pf-c-form__field-group-body" style="padding-top:0px;">
+                                            <div class="pf-c-form__group" style="padding:0px;">
+                                                <div class="pf-c-form__group-label">
+                                                    <label class="pf-c-form__label" for="form-input-cluster-config-credentials-ipmi-user">
+                                                        <span class="pf-c-form__label-text">IPMI 아이디</span>
+                                                        <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                                                    </label>
+                                                </div>
+                                                <div class="pf-c-form__group-control">
+                                                    <input class="pf-c-form-control" style="width:70%" type="text" id="form-input-cluster-config-credentials-ipmi-user" name="form-input-cluster-config-credentials-ipmi-user" placeholder="아이디를 입력하세요." required />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="pf-c-form__field-group-body" style="padding-top:0px;">
+                                            <div class="pf-c-form__group" style="padding:0px;">
+                                                <div class="pf-c-form__group-label">
+                                                    <label class="pf-c-form__label" for="form-input-cluster-config-credentials-ipmi-password">
+                                                        <span class="pf-c-form__label-text">IPMI 비밀번호</span>
+                                                        <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                                                    </label>
+                                                </div>
+                                                <div class="pf-c-form__group-control">
+                                                    <input class="pf-c-form-control" style="width:70%" type="password" autocomplete="off" id="form-input-cluster-config-credentials-ipmi-password" name="form-input-cluster-config-credentials-ipmi-password" placeholder="비밀번호를 입력하세요." required />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="pf-c-form__field-group-body" style="padding-top:0px;">
+                                            <div class="pf-c-form__group" style="padding:0px;">
+                                                <div class="pf-c-form__group-label">
+                                                    <label class="pf-c-form__label" for="form-input-cluster-config-credentials-ipmi-password-check">
+                                                        <span class="pf-c-form__label-text">IPMI 비밀번호 확인</span>
+                                                        <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                                                    </label>
+                                                </div>
+                                                <div class="pf-c-form__group-control">
+                                                    <input class="pf-c-form-control" style="width:70%" type="password" autocomplete="off" id="form-input-cluster-config-credentials-ipmi-password-check" name="form-input-cluster-config-credentials-ipmi-password-check" placeholder="비밀번호를 입력하세요." required />
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </section>
@@ -663,7 +724,7 @@
                                         </span><p>준비중</p>
                                     </span>
                                 </span>
-                                <span class="pf-c-label__content" style="margin-left:4px">SSH Key File 생성</span>
+                                <span class="pf-c-label__content" id="span-cluster-progress-step1-text" style="margin-left:4px">SSH Key File 생성</span>
                             </div>
                             <div class="pf-c-content" style="margin-top:30px;margin-left:15px">
                                 <span class="pf-c-label pf-m-blue" id="span-cluster-progress-step2">
@@ -673,7 +734,7 @@
                                         </span><p>준비중</p>
                                     </span>
                                 </span>
-                                <span class="pf-c-label__content" style="margin-left:4px">Cluster Config 및 Hosts 파일 생성</span>
+                                <span class="pf-c-label__content" id="span-cluster-progress-step2-text" style="margin-left:4px">Cluster Config 및 Hosts 파일 생성</span>
                             </div>
                             <div class="pf-c-content" style="margin-top:30px;margin-left:15px">
                                 <span class="pf-c-label pf-m-blue" id="span-cluster-progress-step3">
