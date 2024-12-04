@@ -207,7 +207,7 @@ def init_pcs_cluster(disks,vg_name,lv_name,list_ips):
         rc_local_init_command =(
             'systemctl disable --now rc-local.service;'
             'sed -i "/^\\[Install\\]/,/^WantedBy=multi-user.target$/d" /usr/lib/systemd/system/rc-local.service;'
-            'sed -i "/^partprobe/,/^lvmdevices --adddev$/d" /etc/rc.local /etc/rc.d/rc.local;'
+            'sed -i "/^partprobe/,/^lvmdevices --adddev$/d" /etc/rc.local;'
         )
 
         for ip in list_ips:
@@ -323,7 +323,7 @@ def create_gfs(disks, vg_name, lv_name, gfs_name, mount_point, cluster_name, num
 
                 run_command(f"partprobe {disk}", ssh_client, ignore_errors=True)
                 run_command(f"lvmdevices --adddev {partition} ", ssh_client, ignore_errors=True)
-                run_command(f"echo -e 'partprobe {disk}\nlvmdevices --adddev {partition}' | tee -a /etc/rc.local /etc/rc.d/rc.local > /dev/null", ssh_client, ignore_errors=True)
+                run_command(f"echo -e 'partprobe {disk}\nlvmdevices --adddev {partition}' >> /etc/rc.local ", ssh_client, ignore_errors=True)
             run_command("pcs resource cleanup ", ssh_client, ignore_errors=True)
             run_command("chmod +x /etc/rc.local /etc/rc.d/rc.local", ssh_client, ignore_errors=True)
             run_command("echo -e '\n[Install]\nWantedBy=multi-user.target' >> /usr/lib/systemd/system/rc-local.service", ssh_client, ignore_errors=True)
@@ -373,14 +373,15 @@ def create_ccvm_cluster(gfs_name,mount_point,cluster_name):
     except Exception:
         ret = createReturn(code=500, val="Create CCVM Cluster Failure")
         return print(json.dumps(json.loads(ret), indent=4))
-def extend_pcs_cluster(username,password,stonith_info,list_ips):
+def extend_pcs_cluster(username,password,stonith_info,mount_point,list_ips):
     try:
         host_ip = socket.gethostbyname(socket.getfqdn())
         # 해당 호스트에서 lvm conf 설정 하기
         modify_command = (
             'sed -i "s/# use_lvmlockd = 0/use_lvmlockd = 1/" /etc/lvm/lvm.conf;'
             'sed -i "s/use_devicesfile = 0/use_devicesfile = 1/" /etc/lvm/lvm.conf;'
-            'systemctl enable lvmlockd.service;'
+            'mpathconf --enable;'
+            'systemctl start multipathd;'
         )
         run_command(modify_command)
         # 해당 호스트에서 hacluster에 대한 패스워드 설정
@@ -388,10 +389,10 @@ def extend_pcs_cluster(username,password,stonith_info,list_ips):
         # 마스터 노드에서 pcs host auth 설정
         for ip in list_ips[:1]:
             ssh_client = connect_to_host(ip)
-            for i, (info, master_ip) in enumerate(zip(stonith_info, list_ips)):
-                ip = info["ipaddr"]
-                ipport = info["ipport"]
-                username = info["login"]
+            for i, (info, _) in enumerate(zip(stonith_info, list_ips)):
+                stonith_ip = info["ipaddr"]
+                stonith_ipport = info["ipport"]
+                stonith_username = info["login"]
                 stonith_password = info["passwd"]
                 hostname = run_command(f"hostname").strip()
                 device_name = f"fence-{hostname}"
@@ -401,19 +402,22 @@ def extend_pcs_cluster(username,password,stonith_info,list_ips):
 
                 command_create = (
                     f'pcs stonith create {device_name} fence_ipmilan delay={delay} '
-                    f'ip={ip} ipport={ipport} lanplus=1 method=onoff '
-                    f'username={username} password={stonith_password} '
+                    f'ip={stonith_ip} ipport={stonith_ipport} lanplus=1 method=onoff '
+                    f'username={stonith_username} password={stonith_password} '
                     f'pcmk_host_list={host_ip} pcmk_off_action=off pcmk_reboot_action=off debug_file=/var/log/stonith.log'
                 )
                 command_constraint = (f'pcs constraint location {device_name} avoids {host_ip}')
-
+                # 호스트 추가 될 때마다 journal-nums 1개씩 추가
+                run_command(f"gfs2_jadd -j 1 {mount_point}", ssh_client, ignore_errors=True)
+                # 추가할 호스트 pcs 클러스터 노드 추가 및 시작
                 run_command(f"pcs host auth {host_ip} -u {username} -p {password}", ssh_client, ignore_errors=True)
-                run_command(f"pcs cluster node add {host_ip}", ssh_client, ignore_errors=True)
+                run_command(f"pcs cluster node add {host_ip}", ssh_client, ignore_errors=True,)
                 run_command("pcs cluster enable --all", ssh_client, ignore_errors=True)
                 run_command("pcs cluster start --all", ssh_client, ignore_errors=True)
-
+                # 추가할 호스트 stonith 추가
                 run_command(command_create, ssh_client, ignore_errors=True)
                 run_command(command_constraint, ssh_client, ignore_errors=True)
+
                 ssh_client.close()
 
         for ip in list_ips:
@@ -422,17 +426,17 @@ def extend_pcs_cluster(username,password,stonith_info,list_ips):
 
             for disk in multipath_disks:
                 partition = f"{disk}1"
-                run_command(f"partprobe {disk}", ssh_client, ignore_errors=True)
-                run_command(f"lvmdevices --adddev {partition} ", ssh_client, ignore_errors=True)
+                run_command(f"partprobe /dev/mapper/{disk}", ssh_client, ignore_errors=True)
+                run_command(f"lvmdevices --adddev /dev/mapper/{partition}", ssh_client, ignore_errors=True)
                 if ip == list_ips[-1]:
-                    run_command(f"echo -e 'partprobe {disk}\nlvmdevices --adddev {partition}' | tee -a /etc/rc.local /etc/rc.d/rc.local > /dev/null", ssh_client, ignore_errors=True)
-                ssh_client.close()
+                    run_command(f"echo -e 'partprobe /dev/mapper/{disk}\nlvmdevices --adddev /dev/mapper/{partition}' >> /etc/rc.local", ssh_client, ignore_errors=True)
+
+            ssh_client.close()
 
         run_command("pcs resource cleanup", ignore_errors=True)
         run_command("chmod +x /etc/rc.local /etc/rc.d/rc.local", ignore_errors=True)
         run_command("echo -e '\n[Install]\nWantedBy=multi-user.target' >> /usr/lib/systemd/system/rc-local.service", ignore_errors=True)
         run_command("systemctl enable --now rc-local.service", ignore_errors=True)
-
 
         ret = createReturn(code=200, val="Extend Pcs Cluster Success")
         return print(json.dumps(json.loads(ret), indent=4))
@@ -559,11 +563,11 @@ def main():
             create_ccvm_cluster(gfs_name, mount_point, cluster_name)
 
     if args.extend_pcs_cluster:
-        if not all([args.password, args.stonith, args.list_ip]):
+        if not all([args.password, args.stonith, args.mount_point, args.list_ip]):
             print("All arguments are required when using --extend-pcs-cluster")
             parser.print_help()
         else:
-            password = args.set_password
+            password = args.password
             stonith_info = []
             ipaddr, ipport, login, passwd = args.stonith.split(',')
             stonith_info.append({
@@ -572,9 +576,10 @@ def main():
                 "login": login,
                 "passwd": passwd
             })
+            mount_point = args.mount_point
             list_ips = args.list_ip.split()
 
-            extend_pcs_cluster('hacluster', password, stonith_info, list_ips)
+            extend_pcs_cluster('hacluster', password, stonith_info, mount_point, list_ips)
 
 if __name__ == "__main__":
     main()

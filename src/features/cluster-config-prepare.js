@@ -452,7 +452,6 @@ $('#button-next-step-modal-wizard-cluster-config-prepare').on('click', function 
                 // 추가 호스트일때
                 else if(cluster_host_yn == "add"){
                     let all_host_name = host_names.join(" ");
-                    console.log(host_names, all_host_name)
                     var exclude_hostname = $('#form-input-current-host-name').val();
 
                     if (os_type == "general-virtualization"){
@@ -460,6 +459,7 @@ $('#button-next-step-modal-wizard-cluster-config-prepare').on('click', function 
                         var ipmi_user = $('#form-input-cluster-config-credentials-ipmi-user').val();
                         var ipmi_password = $('#form-input-cluster-config-credentials-ipmi-password').val();
                         var ipmi_port = "623";
+                        var gfs_mount_point = "/mnt/glue-gfs";
 
                         var ipmi_config = `${ipmi_ip},${ipmi_port},${ipmi_user},${ipmi_password}`;
 
@@ -478,7 +478,7 @@ $('#button-next-step-modal-wizard-cluster-config-prepare').on('click', function 
                         .then(function(data){
                             var retVal = JSON.parse(data);
                             if(retVal.code == "200"){
-                                var pcs_config_setting_cmd = ['python3', pluginpath + '/python/pcs/gfs-manage.py', '--extend-pcs-cluster', '--password', 'password', '--stonith', ipmi_config, '--list-ip', all_host_name];
+                                var pcs_config_setting_cmd = ['python3', pluginpath + '/python/pcs/gfs-manage.py', '--extend-pcs-cluster', '--password', 'password', '--stonith', ipmi_config, '--mount-point', gfs_mount_point, '--list-ip', all_host_name];
                                 console.log(pcs_config_setting_cmd);
                                 cockpit.spawn(pcs_config_setting_cmd)
                                 .then(function(data){

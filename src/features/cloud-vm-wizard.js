@@ -1422,7 +1422,7 @@ function deployCloudCenterVM() {
     setProgressStep("span-ccvm-progress-step1",1);
     var console_log = true;
     createLoggerInfo("deployCloudCenterVM start");
-    var host_ping_test_and_cluster_config_cmd = ['python3', pluginpath + '/python/cluster/cluster_config.py', 'insertScvmHost', '-js', ret_json_string, '-cmi', mgmt_ip, '-pcl', host1_name, host2_name, host3_name];
+    var host_ping_test_and_cluster_config_cmd = ['python3', pluginpath + '/python/cluster/cluster_config.py', 'insertScvmHost', '-js', ret_json_string, '-cmi', mgmt_ip, '-pcl', all_host_name];
     if(console_log){console.log(host_ping_test_and_cluster_config_cmd);}
     cockpit.spawn(host_ping_test_and_cluster_config_cmd)
         .then(function(data){
@@ -1759,7 +1759,7 @@ function deployCloudCenterVM() {
         setProgressStep("span-ccvm-progress-step1",1);
         var console_log = true;
         createLoggerInfo("deployCloudCenterVM start");
-        var host_ping_test_and_cluster_config_cmd = ['python3', pluginpath + '/python/cluster/cluster_config.py', 'check', '-js', ret_json_string, '-cmi', mgmt_ip, '-pcl', ...host_names];
+        var host_ping_test_and_cluster_config_cmd = ['python3', pluginpath + '/python/cluster/cluster_config.py', 'check', '-js', ret_json_string, '-cmi', mgmt_ip, '-pcl', all_host_name];
         if(console_log){console.log(host_ping_test_and_cluster_config_cmd);}
         cockpit.spawn(host_ping_test_and_cluster_config_cmd)
             .then(function(data){
@@ -2427,7 +2427,6 @@ function validateCloudCenterVm(){
         const hostElement = document.getElementById(`form-input-cloud-vm-failover-cluster-host${i}-name`);
         if (hostElement) {
             const hostName = $(`#form-input-cloud-vm-failover-cluster-host${i}-name`).val();
-            all_host_name += (all_host_name ? " " : "") + hostName;
             if (hostName) {
                 host_names.push(hostName); // 유효한 이름만 배열에 추가
             }
@@ -2850,7 +2849,33 @@ function updateHostFields(count) {
 
     for (let i = 1; i <= hostCount; i++) {
         // 각 호스트 정보를 위한 HTML 생성
-        const hostFieldHTML = `
+        if (os_type == "general-virtualization"){
+            var hostFieldHTML = `
+            <div class="pf-c-form__field-group">
+                <div class="pf-c-form__field-group-header" style="padding-bottom:8px;">
+                    <div class="pf-c-form__field-group-header-main">
+                        <div class="pf-c-form__field-group-header-title">
+                            <div class="pf-c-form__field-group-header-title-text">PCS 호스트 #${i} 정보</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="pf-c-form__field-group-body" style="padding-top:0px;">
+                    <div class="pf-c-form__group" style="padding:0px;">
+                        <div class="pf-c-form__group-label">
+                            <label class="pf-c-form__label" for="form-input-cloud-vm-failover-cluster-host${i}-name">
+                                <span class="pf-c-form__label-text">MGMT IP</span>
+                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                            </label>
+                        </div>
+                        <div class="pf-c-form__group-control">
+                            <input class="pf-c-form-control" style="width:70%" type="text" id="form-input-cloud-vm-failover-cluster-host${i}-name" name="form-input-cloud-vm-failover-cluster-host${i}-name" required />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        }else{
+            var hostFieldHTML = `
             <div class="pf-c-form__field-group">
                 <div class="pf-c-form__field-group-header" style="padding-bottom:8px;">
                     <div class="pf-c-form__field-group-header-main">
@@ -2874,7 +2899,7 @@ function updateHostFields(count) {
                 </div>
             </div>
         `;
-
+        }
         // 상위 컨테이너에 바로 호스트 정보 HTML을 추가
         formSection.insertAdjacentHTML('beforeend', hostFieldHTML);
     }

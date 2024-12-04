@@ -1406,7 +1406,6 @@ function checkDeployStatus(){
                         showRibbon('warning','클라우드센터 클러스터는 구성되었으나 리소스 구성이 되지 않았습니다. 리소스 구성을 진행하십시오.');
                     }
                 }else{
-                    console.log(step7,step6)
                     if(step8!="true" && (step7!="true" && (step6=="HEALTH_ERR"||step6==null))){
                         //클라우드센터 VM 배포 버튼
                         $('#button-open-modal-wizard-cloud-vm').show();
