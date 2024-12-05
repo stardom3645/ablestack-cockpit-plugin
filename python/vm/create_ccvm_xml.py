@@ -35,9 +35,10 @@ def createArgumentParser():
     parser.add_argument('-c', '--cpu', metavar='[cpu cores]', type=int, help='input Value to cpu cores', required=True)
     parser.add_argument('-m', '--memory', metavar='[memory gb]', type=int, help='input Value to memory GB', required=True)
 
+    # GFS용 마운트 포인트
+    parser.add_argument('-gmp', '--gfs-mount-point', metavar='[gfs mount point]', type=str, help='input Value to bridge name of the gfs mount point')
     #--management-network-bridge br0                                        | 1택, 필수
     parser.add_argument('-mnb', '--management-network-bridge', metavar='[bridge name]', type=str, help='input Value to bridge name of the management network', required=True)
-
     #--service-network-bridge br1                                           | 1택, 조건부 필수
     parser.add_argument('-snb', '--service-network-bridge', metavar='[bridge name]', type=str, help='input Value to bridge name of the service network')
 
@@ -53,6 +54,18 @@ def createArgumentParser():
     parser.add_argument('-V', '--Version', action='version', version='%(prog)s 1.0')
 
     return parser
+
+json_file_path = pluginpath+"/tools/properties/cluster.json"
+
+def openClusterJson():
+    try:
+        with open(json_file_path, 'r') as json_file:
+            ret = json.load(json_file)
+    except Exception as e:
+        ret = createReturn(code=500, val='cluster.json read error')
+        print ('EXCEPTION : ',e)
+
+    return ret
 
 def generateMacAddress():
 
@@ -84,7 +97,11 @@ def createSecretKey(host_names):
 
     return createReturn(code=200, val="pcs 클러스터 secret.xm 설정 성공")
 
+json_data = openClusterJson()
+os_type = json_data["clusterConfig"]["type"]
+
 def createCcvmXml(args):
+
     try:
         # 템플릿 파일을 /usr/share/cockpit/ablestack/tools/vmconfig/ccvm 경로로 복사
         slot_hex_num = generateDecToHex()
@@ -93,7 +110,6 @@ def createCcvmXml(args):
         os.system("yes|cp -f "+pluginpath+"/tools/xml-template/ccvm-xml-template.xml "+pluginpath+"/tools/vmconfig/ccvm/ccvm-temp.xml")
 
         template_file = pluginpath+'/tools/vmconfig/ccvm/ccvm-temp.xml'
-
         with fileinput.FileInput(template_file, inplace=True, backup='.bak' ) as fi:
 
             for line in fi:
@@ -113,18 +129,40 @@ def createCcvmXml(args):
                     cci_txt += "    </disk>"
 
                     line = line.replace('<!--ccvm_cloudinit-->', cci_txt)
-                elif '<!--management_network_bridge-->' in line:
-                    mnb_txt = "    <interface type='bridge'>\n"
-                    mnb_txt += "      <mac address='" + generateMacAddress() + "'/>\n"
-                    mnb_txt += "      <source bridge='" + args.management_network_bridge + "'/>\n"
-                    mnb_txt += "      <target dev='vnet" + str(br_num) + "'/>\n"
-                    mnb_txt += "      <model type='virtio'/>\n"
-                    mnb_txt += "      <alias name='net" + str(br_num) + "'/>\n"
-                    mnb_txt += "      <address type='pci' domain='0x0000' bus='0x00' slot='" + slot_hex_num.pop(0) + "' function='0x0'/>\n"
-                    mnb_txt += "    </interface>"
+                elif '<!--ccvm_disk-->' in line:
+                    if os_type == "ABLESTACK-HCI":
+                        crd_txt = "    <disk type='network' device='disk'>\n"
+                        crd_txt += "      <source protocol='rbd' name='rbd/ccvm'>\n"
+                        crd_txt += "        <host name='scvm' port='6789'/>\n"
+                        crd_txt += "      </source>\n"
+                        crd_txt += "      <driver name='qemu' type='raw' cache='writeback' io='io_uring'/>\n"
+                        crd_txt += "      <auth username='admin'>\n"
+                        crd_txt += "        <secret type='ceph' uuid='11111111-1111-1111-1111-111111111111'/>\n"
+                        crd_txt += "      </auth>\n"
+                        crd_txt += "      <target dev='vda' bus='virtio'/>\n"
+                        crd_txt += "    </disk>"
+                    else:
+                        crd_txt = "     <disk type='file' device='disk'>\n"
+                        crd_txt += "      <driver name='qemu' type='qcow2'/>\n"
+                        crd_txt += "      <source file='"+ args.gfs_mount_point + "/ccvm.qcow2' index='1'/>\n"
+                        crd_txt += "      <target dev='vda' bus='virtio'/>\n"
+                        crd_txt += "      <address type='pci' domain='0x0000' bus='0x04' slot='0x00' function='0x0'/>\n"
+                        crd_txt += "    </disk>"
 
-                    br_num += 1
-                    line = line.replace('<!--management_network_bridge-->', mnb_txt)
+                    line = line.replace('<!--ccvm_disk-->',crd_txt)
+
+                elif '<!--management_network_bridge-->' in line:
+                        mnb_txt = "    <interface type='bridge'>\n"
+                        mnb_txt += "      <mac address='" + generateMacAddress() + "'/>\n"
+                        mnb_txt += "      <source bridge='" + args.management_network_bridge + "'/>\n"
+                        mnb_txt += "      <target dev='vnet" + str(br_num) + "'/>\n"
+                        mnb_txt += "      <model type='virtio'/>\n"
+                        mnb_txt += "      <alias name='net" + str(br_num) + "'/>\n"
+                        mnb_txt += "      <address type='pci' domain='0x0000' bus='0x00' slot='" + slot_hex_num.pop(0) + "' function='0x0'/>\n"
+                        mnb_txt += "    </interface>"
+
+                        br_num += 1
+                        line = line.replace('<!--management_network_bridge-->', mnb_txt)
                 elif '<!--service_network_bridge-->' in line:
                     if args.service_network_bridge is not None:
                         snb_txt = "    <interface type='bridge'>\n"
@@ -210,12 +248,17 @@ if __name__ == '__main__':
     logger = createLogger(verbosity=logging.CRITICAL, file_log_level=logging.ERROR, log_file='test.log')
 
     # secret.xml 생성 및 virsh 등록
-    secret_ret = json.loads(createSecretKey(args.host_names))
+    if os_type == "ABLESTACK-HCI":
+        secret_ret = json.loads(createSecretKey(args.host_names))
 
-    if secret_ret["code"] == 200 :
+        if secret_ret["code"] == 200 :
+            ret = createCcvmXml(args)
+            print(ret)
+        else:
+            print(json.dumps(secret_ret))
+    elif os_type == "PowerFlex":
         ret = createCcvmXml(args)
         print(ret)
-    else:
-        print(json.dumps(secret_ret))
+
 
     # 실제 로직 부분 호출 및 결과 출력

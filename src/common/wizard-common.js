@@ -38,7 +38,7 @@ $(".tab-available").keydown(function (e) {
         });
     }else{
         cockpit.spawn(cmd,{ host: excute_host}).then(function(data){
-            
+
             setNicSelectBox(select_box_id, data)
 
         }).catch(function(){
@@ -308,7 +308,52 @@ function setSshKeyFileReader(input, file_name, callBackFunction) {
         alert("진행 상태를 잘못 입력했습니다.");
     }
 }
+/**
+ * Meathod Name : setPfmpProgressStep
+ * Date Created : 2024.09.04
+ * Writer  : 정민철
+ * Description : span id와 status 입력받아 해당하는 span의 진행상태를 입력받은 status 변경
+ * Parameter : String, String
+ * Return  : 없음
+ * History  : 2024.09.04 최초 작성
+ */
+function setPfmpProgressStep(span_id, status){
+    //proceeding or 1: 진행중, completed or 2: 완료됨, aborted or 3: 중단됨
+    if(status=="proceeding" || status=="completed" || status=="aborted" || status==1 || status==2 || status==3){
+        var span = $('#'+span_id);
+        var icon = $('#'+span_id).children('span').children('span').children("i");
+        var progress_text = $('#'+span_id).children('span').children('p');
 
+        // 초기화
+        span.removeClass('pf-m-blue pf-m-green pf-m-orange pf-m-red');
+        icon.removeClass('fa-info-circle fa-check-circle fa-play fa-exclamation-circle');
+
+        if(status == "proceeding" || status==1){
+            if(span.attr('id') == "span-pfmp-progress-step1"){
+                $('#progress-step-text').text('PFMP 가상머신을 배포 중입니다. 전체 4단계 중 1단계 진행 중입니다.');
+            } else if(span.attr('id') == "span-pfmp-progress-step2"){
+                $('#progress-step-text').text('PFMP 가상머신을 배포 중입니다. 전체 4단계 중 2단계 진행 중입니다.');
+            } else if(span.attr('id') == "span-pfmp-progress-step3"){
+                $('#progress-step-text').text('PFMP 가상머신을 배포 중입니다. 전체 4단계 중 3단계 진행 중입니다.');
+            } else if(span.attr('id') == "span-pfmp-progress-step4"){
+                $('#progress-step-text').text('PFMP 가상머신을 배포 중입니다. 전체 4단계 중 4단계 진행 중입니다.');
+            }
+            span.addClass('pf-m-orange');
+            icon.addClass('fa-play');
+            progress_text.text('진행중');
+        } else if(status=="completed" || status==2){
+            span.addClass('pf-m-green');
+            icon.addClass('fa-check-circle');
+            progress_text.text('완료됨');
+        } else if(status=="aborted" || status==3){
+            span.addClass('pf-m-red');
+            icon.addClass('fa-exclamation-circle');
+            progress_text.text('중단됨');
+        }
+    }else{
+        alert("진행 상태를 잘못 입력했습니다.");
+    }
+}
 /**
  * Meathod Name : setWallProgressStep
  * Date Created : 2021.09.03
@@ -630,6 +675,7 @@ function settingProfile(clusterJsonConf, option){
                 return false;
             }
         });
+        $("#form-input-storage-os-type").val(clusterJsonConf.clusterConfig.type);
     }
 
     if(option == "-ccvm"){
@@ -640,6 +686,8 @@ function settingProfile(clusterJsonConf, option){
         $("#form-input-cloud-vm-failover-cluster-host1-name").val("");
         $("#form-input-cloud-vm-failover-cluster-host2-name").val("");
         $("#form-input-cloud-vm-failover-cluster-host3-name").val("");
+
+        $("#form-input-cloud-os-type").val(clusterJsonConf.clusterConfig.type);
 
         // 값 세팅
         if(clusterJsonConf.clusterConfig.ccvm.ip != "" && clusterJsonConf.clusterConfig.ccvm.ip != null){
@@ -655,7 +703,6 @@ function settingProfile(clusterJsonConf, option){
         if(c_mngt_dns != ""){
             $("#form-input-cloud-vm-dns").val(c_mngt_dns);
         }
-
         if(clusterJsonConf.clusterConfig.pcsCluster.hostname1 != "" && clusterJsonConf.clusterConfig.pcsCluster.hostname1 != null){
             $("#form-input-cloud-vm-failover-cluster-host1-name").val(clusterJsonConf.clusterConfig.pcsCluster.hostname1);
         }else if(clusterJsonConf.clusterConfig.hosts.length > 0 && clusterJsonConf.clusterConfig.hosts[0].hostname != "" && clusterJsonConf.clusterConfig.hosts[0].hostname != null){
@@ -691,6 +738,8 @@ function settingProfile(clusterJsonConf, option){
             $('#form-textarea-storage-vm-ssh-private-key-file').val(data);
         }else if(option == "-ccvm"){
             $('#form-textarea-cloud-vm-ssh-private-key-file').val(data);
+        }else if(option == "-pfmp"){
+            $('#form-textarea-pfmp-vm-ssh-private-key-file').val(data);
         }
     }).catch(function(err){
          createLoggerInfo("호스트의 id_rsa 파일 읽기 실패" + err);
@@ -703,6 +752,8 @@ function settingProfile(clusterJsonConf, option){
             $('#form-textarea-storage-vm-ssh-public-key-file').val(data);
         }else if(option == "-ccvm"){
             $('#form-textarea-cloud-vm-ssh-public-key-file').val(data);
+        }else if(option == "-pfmp"){
+            $('#form-textarea-pfmp-vm-ssh-public-key-file').val(data);
         }
     }).catch(function(err){
          createLoggerInfo("호스트의 id_rsa.pub 파일 읽기 실패" + err);
@@ -753,7 +804,6 @@ function settingProfile(clusterJsonConf, option){
 //         console.log("There are no data");
 //     }
 // }
-
 /**
  * Meathod Name : putHostsValueIntoTextarea
  * Date Created : 2021.03.22
@@ -764,19 +814,19 @@ function settingProfile(clusterJsonConf, option){
  * History  : 2021.10.21 수정
  **/
 
- function putHostsValueIntoTextarea(radio_value, option) {
+function putHostsValueIntoTextarea(radio_value, option, os_type) {
     if (radio_value == "new") {
         // hosts file 준비 방법 표시 및 값 설정
         $('#span-hosts-file'+option+'').text("신규 생성");
 
-        let result = tableToHostsText($('#form-table-tbody-cluster-config-new-host-profile'+option+' tr'), option);
+        let result = tableToHostsText($('#form-table-tbody-cluster-config-new-host-profile'+option+' tr'), option, os_type);
         $('#div-textarea-cluster-config-confirm-hosts-file'+option+'').val(result.trim());
 
     } else if (radio_value == "existing") {
         // hosts file 준비 방법 표시 및 값 설정
         $('#span-hosts-file'+option+'').text("기존 파일 사용");
 
-        let result = tableToHostsText($('#form-table-tbody-cluster-config-existing-host-profile'+option+' tr'), option);
+        let result = tableToHostsText($('#form-table-tbody-cluster-config-existing-host-profile'+option+' tr'), option, os_type);
         $('#div-textarea-cluster-config-confirm-hosts-file'+option+'').val(result.trim());
     }
 }
@@ -790,7 +840,7 @@ function settingProfile(clusterJsonConf, option){
  * Return  : hosts text
  * History  : 2022.08.24 최초 작성
  **/
-function tableToHostsText(table_tr_obj, option){
+function tableToHostsText(table_tr_obj, option, os_type){
 
     // 신규로 생성할 경우 테이블의 내용을 table에 넣는 코드
     let hsots_text = "";
@@ -837,24 +887,40 @@ function tableToHostsText(table_tr_obj, option){
         // 100.200.3.11	scvm1-cn	scvm-cn
 
         let temp_text = "";
-        if(current_host_name == host_name){
-            temp_text = host_ip + "\t" + host_name + "\t" + "ablecube" + "\n";
-            temp_text += scvm_mngt_ip + "\t"  + "scvm"+idx+"-mngt" + "\t" + "scvm-mngt" + "\n";
-            temp_text += host_pn_ip + "\t"  + "ablecube"+idx+"-pn" + "\t" + "ablecube-pn" + "\n";
-            temp_text += scvm_pn_ip + "\t"  + "scvm"+idx+ "\t" + "scvm" + "\n";
-            temp_text += scvm_cn_ip + "\t"  + "scvm"+idx+"-cn" + "\t" + "scvm-cn" + "\n";
-        } else {
-            temp_text = host_ip + "\t" + host_name + "\n";
-            temp_text += scvm_mngt_ip + "\t"  + "scvm"+idx+"-mngt" + "\n";
-            temp_text += host_pn_ip + "\t"  + "ablecube"+idx+"-pn" + "\n";
-            temp_text += scvm_pn_ip + "\t"  + "scvm"+idx+ "\n";
-            temp_text += scvm_cn_ip + "\t"  + "scvm"+idx+"-cn" + "\n";
+        if (os_type == "PowerFlex"){
+            if(current_host_name == host_name){
+                temp_text = host_ip + "\t" + host_name + "\t" + "ablecube" + "\n";
+                temp_text += scvm_mngt_ip + "\t"  + "scvm"+idx+"-mngt" + "\t" + "scvm-mngt" + "\n";
+                temp_text += host_pn_ip + "\t"  + "ablecube"+idx+"-pn" + "\t" + "ablecube-pn" + "\n";
+                temp_text += scvm_pn_ip + "\t"  + "scvm"+idx+"-pn" + "\t" + "scvm-pn" + "\n";
+                temp_text += scvm_cn_ip + "\t"  + "scvm"+idx+"-cn" + "\t" + "scvm-cn" + "\n";
+            } else {
+                temp_text = host_ip + "\t" + host_name + "\n";
+                temp_text += scvm_mngt_ip + "\t"  + "scvm"+idx+"-mngt" + "\n";
+                temp_text += host_pn_ip + "\t"  + "ablecube"+idx+"-pn" + "\n";
+                temp_text += scvm_pn_ip + "\t"  + "scvm"+idx+"-pn" + "\n";
+                temp_text += scvm_cn_ip + "\t"  + "scvm"+idx+"-cn" + "\n";
+            }
+        }else{
+            if(current_host_name == host_name){
+                temp_text = host_ip + "\t" + host_name + "\t" + "ablecube" + "\n";
+                temp_text += scvm_mngt_ip + "\t"  + "scvm"+idx+"-mngt" + "\t" + "scvm-mngt" + "\n";
+                temp_text += host_pn_ip + "\t"  + "ablecube"+idx+"-pn" + "\t" + "ablecube-pn" + "\n";
+                temp_text += scvm_pn_ip + "\t"  + "scvm"+idx+ "\t" + "scvm" + "\n";
+                temp_text += scvm_cn_ip + "\t"  + "scvm"+idx+"-cn" + "\t" + "scvm-cn" + "\n";
+            } else {
+                temp_text = host_ip + "\t" + host_name + "\n";
+                temp_text += scvm_mngt_ip + "\t"  + "scvm"+idx+"-mngt" + "\n";
+                temp_text += host_pn_ip + "\t"  + "ablecube"+idx+"-pn" + "\n";
+                temp_text += scvm_pn_ip + "\t"  + "scvm"+idx+ "\n";
+                temp_text += scvm_cn_ip + "\t"  + "scvm"+idx+"-cn" + "\n";
+            }
         }
+
         hsots_text += temp_text;
     });
     return hsots_text;
 }
-
 /**
  * Meathod Name : clusterConfigTableChange()
  * Date Created : 2022.08.23

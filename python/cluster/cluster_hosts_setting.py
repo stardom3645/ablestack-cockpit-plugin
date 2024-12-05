@@ -34,13 +34,13 @@ def createArgumentParser():
 
     # 인자 추가: https://docs.python.org/ko/3/library/argparse.html#the-add-argument-method
     parser.add_argument('action', choices=['hostOnly','withScvm','withCcvm'], help='choose one of the actions')
-
+    parser.add_argument('-t', '--type', metavar='[OS Type]', type=str, help='input Value to OS Type')
     # output 민감도 추가(v갯수에 따라 output및 log가 많아짐):
     parser.add_argument('-v', '--verbose', action='count', default=0, help='increase output verbosity')
-    
+
     # flag 추가(샘플임, 테스트용으로 json이 아닌 plain text로 출력하는 플래그 역할)
     parser.add_argument('-H', '--Human', action='store_const', dest='flag_readerble', const=True, help='Human readable')
-    
+
     # Version 추가
     parser.add_argument('-V', '--Version', action='version', version='%(prog)s 1.0')
 
@@ -55,64 +55,115 @@ def openClusterJson():
         print ('EXCEPTION : ',e)
 
     return ret
+json_data = openClusterJson()
+os_type = json_data["clusterConfig"]["type"]
 
 # 파라미터로 받은 json 값으로 cluster_config.py 무조건 바꾸는 함수 (동일한 값이 있으면 변경, 없으면 추가)
 def changeHosts(args):
     try:
-        
-        # 수정할 cluster.json 파일 읽어오기
-        json_data = openClusterJson()
+
         hostname = socket.gethostname()
         my_hosts = Hosts(path=hosts_file_path)
         hosts_arry = []
-        
         if json_data["clusterConfig"]["ccvm"]["ip"] != '':
-            my_hosts.remove_all_matching(address=json_data["clusterConfig"]["ccvm"]["ip"])
-            my_hosts.remove_all_matching(name="ccvm-mngt")
-            my_hosts.remove_all_matching(name="ccvm")
-            entry = HostsEntry(entry_type='ipv4', address=json_data["clusterConfig"]["ccvm"]["ip"], names=["ccvm-mngt", "ccvm"])
-            my_hosts.add([entry])
+
+            if args.type == "PowerFlex":
+                # PowerFlex용 SCVM 호스트 파일
+                my_hosts.remove_all_matching(address=json_data["clusterConfig"]["ccvm"]["ip"])
+                my_hosts.remove_all_matching(name="ccvm-mngt")
+                my_hosts.remove_all_matching(name="ccvm")
+
+                entry = HostsEntry(entry_type='ipv4', address=json_data["clusterConfig"]["ccvm"]["ip"], names=["ccvm-mngt", "ccvm"])
+                my_hosts.add([entry])
+            else:
+                my_hosts.remove_all_matching(address=json_data["clusterConfig"]["ccvm"]["ip"])
+                my_hosts.remove_all_matching(name="ccvm-mngt")
+                my_hosts.remove_all_matching(name="ccvm")
+
+                entry = HostsEntry(entry_type='ipv4', address=json_data["clusterConfig"]["ccvm"]["ip"], names=["ccvm-mngt", "ccvm"])
+                my_hosts.add([entry])
 
         for f_val in json_data["clusterConfig"]["hosts"]:
             json_ips = {}
             hostname_arry = []
-            # hosts 파일 내용 ip로 제거
-            my_hosts.remove_all_matching(address=f_val["ablecube"])
-            my_hosts.remove_all_matching(address=f_val["scvmMngt"])
-            my_hosts.remove_all_matching(address=f_val["ablecubePn"])
-            my_hosts.remove_all_matching(address=f_val["scvm"])
-            my_hosts.remove_all_matching(address=f_val["scvmCn"])
-            # hosts 파일 내용 도메인으로 제거
-            my_hosts.remove_all_matching(name=f_val["hostname"])
-            my_hosts.remove_all_matching(name="scvm"+f_val["index"]+"-mngt")
-            my_hosts.remove_all_matching(name="ablecube"+f_val["index"]+"-pn")
-            my_hosts.remove_all_matching(name="scvm"+f_val["index"])
-            my_hosts.remove_all_matching(name="scvm"+f_val["index"]+"-cn")
+            if args.type == "PowerFlex":
+                # PowerFlex용 SCVM 호스트 파일
+                my_hosts.remove_all_matching(address=f_val["ablecube"])
+                my_hosts.remove_all_matching(address=f_val["scvmMngt"])
+                my_hosts.remove_all_matching(address=f_val["ablecubePn"])
+                my_hosts.remove_all_matching(address=f_val["scvm"])
+                my_hosts.remove_all_matching(address=f_val["scvmCn"])
+                # PowerFlex용 SCVM 호스트 파일
+                my_hosts.remove_all_matching(name=f_val["hostname"])
+                my_hosts.remove_all_matching(name="scvm"+f_val["index"])
+                my_hosts.remove_all_matching(name="ablecube"+f_val["index"]+"-pn")
+                my_hosts.remove_all_matching(name="scvm"+f_val["index"]+"-pn")
+                my_hosts.remove_all_matching(name="scvm"+f_val["index"]+"-cn")
+            else:
+                # hosts 파일 내용 ip로 제거
+                my_hosts.remove_all_matching(address=f_val["ablecube"])
+                my_hosts.remove_all_matching(address=f_val["scvmMngt"])
+                my_hosts.remove_all_matching(address=f_val["ablecubePn"])
+                my_hosts.remove_all_matching(address=f_val["scvm"])
+                my_hosts.remove_all_matching(address=f_val["scvmCn"])
+                # hosts 파일 내용 도메인으로 제거
+                my_hosts.remove_all_matching(name=f_val["hostname"])
+                my_hosts.remove_all_matching(name="scvm"+f_val["index"]+"-mngt")
+                my_hosts.remove_all_matching(name="ablecube"+f_val["index"]+"-pn")
+                my_hosts.remove_all_matching(name="scvm"+f_val["index"])
+                my_hosts.remove_all_matching(name="scvm"+f_val["index"]+"-cn")
 
             if hostname == f_val["hostname"]:
-                entry = HostsEntry(entry_type='ipv4', address=f_val["ablecube"], names=[f_val["hostname"], 'ablecube'])
-                my_hosts.add([entry])
-                entry = HostsEntry(entry_type='ipv4', address=f_val["scvmMngt"], names=["scvm"+f_val["index"]+"-mngt", 'scvm-mngt'])
-                my_hosts.add([entry])
-                entry = HostsEntry(entry_type='ipv4', address=f_val["ablecubePn"], names=["ablecube"+f_val["index"]+"-pn", 'ablecube-pn'])
-                my_hosts.add([entry])
-                entry = HostsEntry(entry_type='ipv4', address=f_val["scvm"], names=["scvm"+f_val["index"], 'scvm'])
-                my_hosts.add([entry])
-                entry = HostsEntry(entry_type='ipv4', address=f_val["scvmCn"], names=["scvm"+f_val["index"]+"-cn", 'scvm-cn'])
-                my_hosts.add([entry])
+
+                if args.type == "PowerFlex":
+                    # PowerFlex용 SCVM 호스트 파일
+                    entry = HostsEntry(entry_type='ipv4', address=f_val["ablecube"], names=[f_val["hostname"], 'ablecube'])
+                    my_hosts.add([entry])
+                    entry = HostsEntry(entry_type='ipv4', address=f_val["scvmMngt"], names=["scvm"+f_val["index"], 'scvm'])
+                    my_hosts.add([entry])
+                    entry = HostsEntry(entry_type='ipv4', address=f_val["ablecubePn"], names=["ablecube"+f_val["index"]+"-pn", 'ablecube-pn'])
+                    my_hosts.add([entry])
+                    entry = HostsEntry(entry_type='ipv4', address=f_val["scvm"], names=["scvm"+f_val["index"]+"-pn", 'scvm-pn'])
+                    my_hosts.add([entry])
+                    entry = HostsEntry(entry_type='ipv4', address=f_val["scvmCn"], names=["scvm"+f_val["index"]+"-cn", 'scvm-cn'])
+                    my_hosts.add([entry])
+                else:
+                    entry = HostsEntry(entry_type='ipv4', address=f_val["ablecube"], names=[f_val["hostname"], 'ablecube'])
+                    my_hosts.add([entry])
+                    entry = HostsEntry(entry_type='ipv4', address=f_val["scvmMngt"], names=["scvm"+f_val["index"]+"-mngt", 'scvm-mngt'])
+                    my_hosts.add([entry])
+                    entry = HostsEntry(entry_type='ipv4', address=f_val["ablecubePn"], names=["ablecube"+f_val["index"]+"-pn", 'ablecube-pn'])
+                    my_hosts.add([entry])
+                    entry = HostsEntry(entry_type='ipv4', address=f_val["scvm"], names=["scvm"+f_val["index"], 'scvm'])
+                    my_hosts.add([entry])
+                    entry = HostsEntry(entry_type='ipv4', address=f_val["scvmCn"], names=["scvm"+f_val["index"]+"-cn", 'scvm-cn'])
+                    my_hosts.add([entry])
 
             else:
-                entry = HostsEntry(entry_type='ipv4', address=f_val["ablecube"], names=[f_val["hostname"]])
-                my_hosts.add([entry])
-                entry = HostsEntry(entry_type='ipv4', address=f_val["scvmMngt"], names=["scvm"+f_val["index"]+"-mngt"])
-                my_hosts.add([entry])
-                entry = HostsEntry(entry_type='ipv4', address=f_val["ablecubePn"], names=["ablecube"+f_val["index"]+"-pn"])
-                my_hosts.add([entry])
-                entry = HostsEntry(entry_type='ipv4', address=f_val["scvm"], names=["scvm"+f_val["index"]])
-                my_hosts.add([entry])
-                entry = HostsEntry(entry_type='ipv4', address=f_val["scvmCn"], names=["scvm"+f_val["index"]+"-cn"])
-                my_hosts.add([entry])
-            
+                if args.type == "PowerFlex":
+                    # PowerFlex용 SCVM 호스트 파일
+                    entry = HostsEntry(entry_type='ipv4', address=f_val["ablecube"], names=[f_val["hostname"]])
+                    my_hosts.add([entry])
+                    entry = HostsEntry(entry_type='ipv4', address=f_val["scvmMngt"], names=["scvm"+f_val["index"]])
+                    my_hosts.add([entry])
+                    entry = HostsEntry(entry_type='ipv4', address=f_val["ablecubePn"], names=["ablecube"+f_val["index"]+"-pn"])
+                    my_hosts.add([entry])
+                    entry = HostsEntry(entry_type='ipv4', address=f_val["scvm"], names=["scvm"+f_val["index"]+"-pn"])
+                    my_hosts.add([entry])
+                    entry = HostsEntry(entry_type='ipv4', address=f_val["scvmCn"], names=["scvm"+f_val["index"]+"-cn"])
+                    my_hosts.add([entry])
+                else:
+                    entry = HostsEntry(entry_type='ipv4', address=f_val["ablecube"], names=[f_val["hostname"]])
+                    my_hosts.add([entry])
+                    entry = HostsEntry(entry_type='ipv4', address=f_val["scvmMngt"], names=["scvm"+f_val["index"]+"-mngt"])
+                    my_hosts.add([entry])
+                    entry = HostsEntry(entry_type='ipv4', address=f_val["ablecubePn"], names=["ablecube"+f_val["index"]+"-pn"])
+                    my_hosts.add([entry])
+                    entry = HostsEntry(entry_type='ipv4', address=f_val["scvm"], names=["scvm"+f_val["index"]])
+                    my_hosts.add([entry])
+                    entry = HostsEntry(entry_type='ipv4', address=f_val["scvmCn"], names=["scvm"+f_val["index"]+"-cn"])
+                    my_hosts.add([entry])
+
         my_hosts.write()
 
         python3(pluginpath+'/python/host/ssh-scan.py')
@@ -128,10 +179,11 @@ def hostOnly(args):
 
 def withScvm(args):
     ret = changeHosts(args)
-    os.system("scp -q -o StrictHostKeyChecking=no " + hosts_file_path + " root@scvm-mngt:/etc/hosts")
+    if os_type == "ABLESTACK-HCI":
+        os.system("scp -q -o StrictHostKeyChecking=no " + hosts_file_path + " root@scvm-mngt:/etc/hosts")
     # os.system("scp -q "+ hosts_file_path +" root@scvm-mngt:/etc/hosts")
     return ret
-    
+
 def withCcvm(args):
     ret = changeHosts(args)
     os.system("scp -q -o StrictHostKeyChecking=no " + hosts_file_path + " root@ccvm-mngt:/etc/hosts")

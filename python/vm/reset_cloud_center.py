@@ -44,58 +44,96 @@ def createArgumentParser():
 
     return parser
 
+json_file_path = pluginpath+"/tools/properties/cluster.json"
+
+def openClusterJson():
+    try:
+        with open(json_file_path, 'r') as json_file:
+            ret = json.load(json_file)
+    except Exception as e:
+        ret = createReturn(code=500, val='cluster.json read error')
+        print ('EXCEPTION : ',e)
+
+    return ret
+
+json_data = openClusterJson()
+os_type = json_data["clusterConfig"]["type"]
+
 def resetCloudCenter(args):
 
     success_bool = True
 
-    #=========== pcs cluster 초기화 ===========
-    # 리소스 삭제
-    result = json.loads(python3(pluginpath + '/python/pcs/main.py', 'remove', '--resource', 'cloudcenter_res'))
-    if result['code'] not in [200,400]:
-        success_bool = False
+    if os_type == "ABLESTACK-HCI":
+        #=========== pcs cluster 초기화 ===========
+        # 리소스 삭제
+        result = json.loads(python3(pluginpath + '/python/pcs/main.py', 'remove', '--resource', 'cloudcenter_res'))
+        if result['code'] not in [200,400]:
+            success_bool = False
 
-    # 클러스터 삭제
-    result = json.loads(python3(pluginpath + '/python/pcs/main.py', 'destroy'))
-    if result['code'] not in [200,400]:
-        success_bool = False
+        # 클러스터 삭제
+        result = json.loads(python3(pluginpath + '/python/pcs/main.py', 'destroy'))
+        if result['code'] not in [200,400]:
+            success_bool = False
 
-    # ceph rbd 이미지 삭제
-    result = os.system("rbd ls -p rbd | grep ccvm > /dev/null")
-    if result == 0:
-        os.system("rbd rm --no-progress rbd/ccvm")
+        # ceph rbd 이미지 삭제
+        result = os.system("rbd ls -p rbd | grep ccvm > /dev/null")
+        if result == 0:
+            os.system("rbd rm --no-progress rbd/ccvm")
 
-    # virsh 초기화
-    os.system("virsh destroy ccvm > /dev/null")
-    os.system("virsh undefine ccvm --keep-nvram> /dev/null")
+        # virsh 초기화
+        os.system("virsh destroy ccvm > /dev/null")
+        os.system("virsh undefine ccvm --keep-nvram> /dev/null")
 
-    # 작업폴더 생성
-    os.system("mkdir -p "+pluginpath+"/tools/vmconfig/ccvm")
+        # 작업폴더 생성
+        os.system("mkdir -p "+pluginpath+"/tools/vmconfig/ccvm")
 
-    # cloudinit iso 삭제
-    os.system("rm -f /var/lib/libvirt/images/ccvm-cloudinit.iso")
-    '''
-    # vm xml 템플릿 삭제
-    os.system("rm -f "+pluginpath+"/tools/vmconfig/ccvm/ccvm.xml")
+        # cloudinit iso 삭제
+        os.system("rm -f /var/lib/libvirt/images/ccvm-cloudinit.iso")
 
-    # cloudinit iso에 사용할 hosts 삭제
-    os.system("rm -f "+pluginpath+"/tools/vmconfig/ccvm/hosts")
+        # 확인후 폴더 밑 내용 다 삭제해도 무관하면 아래 코드 수행
+        os.system("rm -rf "+pluginpath+"/tools/vmconfig/ccvm/*")
 
-    # cloudinit iso에 사용할 개인키 : id_rsa 삭제
-    os.system("rm -f "+pluginpath+"/tools/vmconfig/ccvm/id_rsa")
+        # 결과값 리턴
+        if success_bool:
+            return createReturn(code=200, val="cloud center reset success")
+        else:
+            return createReturn(code=500, val="cloud center reset fail")
 
-    # cloudinit iso에 사용할 공개키 : id_rsa.pub 삭제
-    os.system("rm -f "+pluginpath+"/tools/vmconfig/ccvm/id_rsa.pub")
-    '''
+    elif os_type == "PowerFlex":
+        pcs_list = []
 
-    # 확인후 폴더 밑 내용 다 삭제해도 무관하면 아래 코드 수행
-    os.system("rm -rf "+pluginpath+"/tools/vmconfig/ccvm/*")
+        if json_data["clusterConfig"]["pcsCluster"]["hostname1"] is not None:
+            pcs_list.append(json_data["clusterConfig"]["pcsCluster"]["hostname1"])
 
-    # 결과값 리턴
-    if success_bool:
-        return createReturn(code=200, val="cloud center reset success")
-    else:
-        return createReturn(code=500, val="cloud center reset fail")
+        if json_data["clusterConfig"]["pcsCluster"]["hostname2"] is not None:
+            pcs_list.append(json_data["clusterConfig"]["pcsCluster"]["hostname2"])
 
+        if json_data["clusterConfig"]["pcsCluster"]["hostname3"] is not None:
+            pcs_list.append(json_data["clusterConfig"]["pcsCluster"]["hostname3"])
+
+        result = json.loads(python3(pluginpath + '/python/pcs/main.py', 'remove', '--resource', 'cloudcenter_res'))
+        if result['code'] not in [200,400]:
+            success_bool = False
+        # GFS용 초기화
+        json.loads(python3(pluginpath + '/python/pcs/gfs-manage.py', '--init-pcs-cluster', '--disks', '/dev/scinia', '--vg-name', 'vg_glue', '--lv-name', 'lv_glue', '--list-ip','\"'+pcs_list[0]+' '+pcs_list[1]+' '+pcs_list[2]+'\"'))
+
+        # virsh 초기화
+        os.system("virsh destroy ccvm > /dev/null 2>&1")
+        os.system("virsh undefine ccvm --keep-nvram> /dev/null 2>&1")
+
+        # 작업폴더 생성
+        os.system("mkdir -p "+pluginpath+"/tools/vmconfig/ccvm")
+
+        # cloudinit iso 삭제
+        os.system("rm -f /var/lib/libvirt/images/ccvm-cloudinit.iso")
+
+        # 확인후 폴더 밑 내용 다 삭제해도 무관하면 아래 코드 수행
+        os.system("rm -rf "+pluginpath+"/tools/vmconfig/ccvm/*")
+        # 결과값 리턴
+        if success_bool:
+            return createReturn(code=200, val="cloud center reset success")
+        else:
+            return createReturn(code=500, val="cloud center reset fail")
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     # parser 생성

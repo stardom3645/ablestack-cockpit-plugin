@@ -8,10 +8,10 @@
 // 변수 선언
 var cur_step_wizard_cluster_config_prepare = "1";
 var option = "";
-
 // Document.ready 시작
 $(document).ready(function () {
     // 마법사 페이지 준비
+    $('#div-modal-wizard-cluster-config-operating-system').hide();
     $('#div-modal-wizard-cluster-config-ssh-key').hide();
     $('#div-modal-wizard-cluster-config-ip-info').hide();
     $('#div-modal-wizard-cluster-config-time-server').hide();
@@ -31,9 +31,35 @@ $(document).ready(function () {
 
     $('#nav-button-cluster-config-overview').addClass('pf-m-current');
 
-    // Hosts 파일 단계에서 Host OS 종류와 Host명을 불러오는 함수
-    //checkHostsOs();
     checkHostName(option);
+});
+
+$('[name="cluster-config-operating-system-card"]').click(function() {
+    var $clickedButton = $(this);
+
+    // 클릭한 버튼이 이미 선택되어 있는 경우, 선택을 해제하고 숨겨진 입력 값을 재설정합니다.
+    if ($clickedButton.hasClass('is-selected')) {
+        $clickedButton.removeClass('is-selected');
+        $clickedButton.find('i').removeClass('fa-check');
+
+        // 선택이 취소되었으므로 숨겨진 입력을 재설정합니다.
+        $('#selected-operating-system').val('');
+
+    } else {
+        // 다른 모든 버튼의 선택을 해제합니다.
+        $('[name="cluster-config-operating-system-card"]').removeClass('is-selected').each(function() {
+            $(this).find('i').removeClass('fa-check');
+        });
+
+        // 클릭한 버튼을 선택하세요
+        $clickedButton.addClass('is-selected');
+        $clickedButton.find('i').addClass('fa-check').css('color', 'green');
+
+        // 선택된 값을 숨겨진 입력으로 설정
+        var selectedValue = $clickedButton.val();
+        $('#selected-operating-system').val(selectedValue);
+
+    }
 });
 
 // 타이틀 닫기 버튼 이벤트 처리
@@ -42,7 +68,6 @@ $('#button-close-modal-wizard-cluster-config-prepare').on('click', function () {
 });
 
 /* 마법사 사이드 메뉴 버튼 클릭 이벤트 처리 시작 */
-
 $('#nav-button-cluster-config-overview').on('click', function () {
     resetClusterConfigWizard();
 
@@ -54,7 +79,17 @@ $('#nav-button-cluster-config-overview').on('click', function () {
 
     cur_step_wizard_cluster_config_prepare = "1";
 });
+$('#nav-button-cluster-config-operating-system').on('click', function () {
+    resetClusterConfigWizard();
 
+    $('#div-modal-wizard-cluster-config-operating-system').show();
+    $('#nav-button-cluster-config-operating-system').addClass('pf-m-current');
+
+    $('#button-next-step-modal-wizard-cluster-config-prepare').attr('disabled', false);
+    $('#button-before-step-modal-wizard-cluster-config-prepare').attr('disabled', false);
+
+    cur_step_wizard_cluster_config_prepare = "2";
+});
 $('#nav-button-cluster-config-ssh-key').on('click', function () {
     resetClusterConfigWizard();
 
@@ -64,7 +99,7 @@ $('#nav-button-cluster-config-ssh-key').on('click', function () {
     $('#button-next-step-modal-wizard-cluster-config-prepare').attr('disabled', false);
     $('#button-before-step-modal-wizard-cluster-config-prepare').attr('disabled', false);
 
-    cur_step_wizard_cluster_config_prepare = "2";
+    cur_step_wizard_cluster_config_prepare = "3";
 });
 
 $('#nav-button-cluster-config-ip-info').on('click', function () {
@@ -76,7 +111,7 @@ $('#nav-button-cluster-config-ip-info').on('click', function () {
     $('#button-next-step-modal-wizard-cluster-config-prepare').attr('disabled', false);
     $('#button-before-step-modal-wizard-cluster-config-prepare').attr('disabled', false);
 
-    cur_step_wizard_cluster_config_prepare = "3";
+    cur_step_wizard_cluster_config_prepare = "4";
 });
 
 $('#nav-button-cluster-config-time-server').on('click', function () {
@@ -106,7 +141,7 @@ $('#nav-button-cluster-config-time-server').on('click', function () {
     }else {
         $('#form-radio-timeserver-int').attr('disabled', false);
     }
-    cur_step_wizard_cluster_config_prepare = "4";
+    cur_step_wizard_cluster_config_prepare = "5";
 });
 
 $('#nav-button-cluster-config-review').on('click', function () {
@@ -119,7 +154,7 @@ $('#nav-button-cluster-config-review').on('click', function () {
     $('#button-before-step-modal-wizard-cluster-config-prepare').attr('disabled', false);
 
     $('#button-next-step-modal-wizard-cluster-config-prepare').html('완료');
-    cur_step_wizard_cluster_config_prepare = "5";
+    cur_step_wizard_cluster_config_prepare = "6";
 
     // 변경된 키 내용을 설정 확인에 반영
     let ssh_key_type = $('input[name=radio-ssh-key]:checked').val();
@@ -166,7 +201,7 @@ $('#nav-button-cluster-config-finish').on('click', function () {
 
     $('#button-next-step-modal-wizard-cluster-config-prepare').html('종료');
 
-    cur_step_wizard_cluster_config_prepare = "6";
+    cur_step_wizard_cluster_config_prepare = "7";
 
     // 변경된 키 내용을 설정 확인에 반영
     let ssh_key_type = $('input[name=radio-ssh-key]:checked').val();
@@ -186,18 +221,18 @@ $('#nav-button-cluster-config-finish').on('click', function () {
 
 $('#button-next-step-modal-wizard-cluster-config-prepare').on('click', function () {
     resetClusterConfigWizard();
-
-    if (cur_step_wizard_cluster_config_prepare == "1") {
-        $('#div-modal-wizard-cluster-config-ssh-key').show();
-        $('#nav-button-cluster-config-ssh-key').addClass('pf-m-current');
+    if (cur_step_wizard_cluster_config_prepare == "1"){
+        $('#div-modal-wizard-cluster-config-operating-system').show();
+        $('#nav-button-cluster-config-operating-system').addClass('pf-m-current');
 
         $('#button-next-step-modal-wizard-cluster-config-prepare').attr('disabled', false);
         $('#button-before-step-modal-wizard-cluster-config-prepare').attr('disabled', false);
 
         cur_step_wizard_cluster_config_prepare = "2";
+
     } else if (cur_step_wizard_cluster_config_prepare == "2") {
-        $('#div-modal-wizard-cluster-config-ip-info').show();
-        $('#nav-button-cluster-config-ip-info').addClass('pf-m-current');
+        $('#div-modal-wizard-cluster-config-ssh-key').show();
+        $('#nav-button-cluster-config-ssh-key').addClass('pf-m-current');
 
         $('#button-next-step-modal-wizard-cluster-config-prepare').attr('disabled', false);
         $('#button-before-step-modal-wizard-cluster-config-prepare').attr('disabled', false);
@@ -205,13 +240,22 @@ $('#button-next-step-modal-wizard-cluster-config-prepare').on('click', function 
         cur_step_wizard_cluster_config_prepare = "3";
 
     } else if (cur_step_wizard_cluster_config_prepare == "3") {
+        $('#div-modal-wizard-cluster-config-ip-info').show();
+        $('#nav-button-cluster-config-ip-info').addClass('pf-m-current');
+
+        $('#button-next-step-modal-wizard-cluster-config-prepare').attr('disabled', false);
+        $('#button-before-step-modal-wizard-cluster-config-prepare').attr('disabled', false);
+
+        cur_step_wizard_cluster_config_prepare = "4";
+
+    } else if (cur_step_wizard_cluster_config_prepare == "4") {
         $('#div-modal-wizard-cluster-config-time-server').show();
         $('#nav-button-cluster-config-time-server').addClass('pf-m-current');
 
         $('#button-next-step-modal-wizard-cluster-config-prepare').attr('disabled', false);
         $('#button-before-step-modal-wizard-cluster-config-prepare').attr('disabled', false);
 
-        cur_step_wizard_cluster_config_prepare = "4";
+        cur_step_wizard_cluster_config_prepare = "5";
 
         // 변경된 키 내용을 설정 확인에 반영
         let ssh_key_type = $('input[name=radio-ssh-key]:checked').val();
@@ -250,7 +294,7 @@ $('#button-next-step-modal-wizard-cluster-config-prepare').on('click', function 
             $('#form-radio-timeserver-int').attr('disabled', false);
         }
 
-    } else if (cur_step_wizard_cluster_config_prepare == "4") {
+    } else if (cur_step_wizard_cluster_config_prepare == "5") {
         $('#div-modal-wizard-cluster-config-review').show();
         $('#nav-button-cluster-config-review').addClass('pf-m-current');
 
@@ -258,7 +302,7 @@ $('#button-next-step-modal-wizard-cluster-config-prepare').on('click', function 
         $('#button-before-step-modal-wizard-cluster-config-prepare').attr('disabled', false);
 
         $('#button-next-step-modal-wizard-cluster-config-prepare').html('완료');
-        cur_step_wizard_cluster_config_prepare = "5";
+        cur_step_wizard_cluster_config_prepare = "6";
 
         // 변경된 키 내용을 설정 확인에 반영
         let ssh_key_type = $('input[name=radio-ssh-key]:checked').val();
@@ -271,7 +315,7 @@ $('#button-next-step-modal-wizard-cluster-config-prepare').on('click', function 
         let timeserver_type = $('input[name=radio-timeserver]:checked').val();
         putTimeServerValueIntoTextarea(timeserver_type);
 
-    } else if (cur_step_wizard_cluster_config_prepare == "5") {
+    } else if (cur_step_wizard_cluster_config_prepare == "6") {
 
         // 유효성 검증 후 완료 버튼을 누르면 선택한 내용대로 파일이 호스트에 저장
         let timeserver_type = $('input[name=radio-timeserver]:checked').val();
@@ -280,6 +324,7 @@ $('#button-next-step-modal-wizard-cluster-config-prepare').on('click', function 
             $('#div-modal-wizard-cluster-config-deploy').show();
 
             $('#nav-button-cluster-config-overview').addClass('pf-m-disabled');
+            $('#nav-button-cluster-config-operating-system').addClass('pf-m-disabled');
             $('#nav-button-cluster-config-ssh-key').addClass('pf-m-disabled');
             $('#nav-button-cluster-config-ip-info').addClass('pf-m-disabled');
             $('#nav-button-cluster-config-time-server').addClass('pf-m-disabled');
@@ -306,6 +351,7 @@ $('#button-next-step-modal-wizard-cluster-config-prepare').on('click', function 
 
             let ret_json_string = tableToClusterConfigJsonString(host_file_type, option);
 
+            var os_type = $('#selected-operating-system').val();
             // ccvm_mngt_ip
             var ccvm_mgmt_ip = $('#form-input-cluster-ccvm-mngt-ip').val();
 
@@ -329,7 +375,7 @@ $('#button-next-step-modal-wizard-cluster-config-prepare').on('click', function 
                 // writeConfigFile(ret_json_string);
                 let cluster_host_yn = $('input[name=radio-cluster-host]:checked').val()
                 if(cluster_host_yn == "new"){
-                    var cluster_config_cmd = ["python3", pluginpath+"/python/cluster/cluster_config.py", "insert", "-js", ret_json_string, '-cmi', ccvm_mgmt_ip, '-pcl', host1_name, host2_name, host3_name];
+                    var cluster_config_cmd = ["python3", pluginpath+"/python/cluster/cluster_config.py", "insert", "-t", os_type, "-js", ret_json_string, '-cmi', ccvm_mgmt_ip, '-pcl', host1_name, host2_name, host3_name];
                     if(mngt_nic_cidr != ""){
                         cluster_config_cmd.push("-mnc",mngt_nic_cidr)
                     }
@@ -431,9 +477,9 @@ $('#button-next-step-modal-wizard-cluster-config-prepare').on('click', function 
             $('#nav-button-cluster-config-review').addClass('pf-m-current');
             $('#button-next-step-modal-wizard-cluster-config-prepare').attr('disabled', false);
             $('#button-before-step-modal-wizard-cluster-config-prepare').attr('disabled', false);
-            cur_step_wizard_cluster_config_prepare = "5";
+            cur_step_wizard_cluster_config_prepare = "7";
         }
-    } else if (cur_step_wizard_cluster_config_prepare == "6") {
+    } else if (cur_step_wizard_cluster_config_prepare == "7") {
         resetClusterConfigWizard();
         resetClusterConfigWizardWithData();
         cur_step_wizard_cluster_config_prepare = "1";
@@ -454,32 +500,40 @@ $('#button-before-step-modal-wizard-cluster-config-prepare').on('click', functio
         $('#button-before-step-modal-wizard-cluster-config-prepare').attr('disabled', true);
 
         cur_step_wizard_cluster_config_prepare = "1";
-    } else if (cur_step_wizard_cluster_config_prepare == "3") {
+    }else if (cur_step_wizard_cluster_config_prepare == "3") {
+        $('#div-modal-wizard-cluster-config-operating-system').show();
+        $('#nav-button-cluster-config-operating-system').addClass('pf-m-current');
+
+        $('#button-next-step-modal-wizard-cluster-config-prepare').attr('disabled', false);
+        $('#button-before-step-modal-wizard-cluster-config-prepare').attr('disabled', false);
+
+        cur_step_wizard_cluster_config_prepare = "2";
+    }else if (cur_step_wizard_cluster_config_prepare == "4") {
         $('#div-modal-wizard-cluster-config-ssh-key').show();
         $('#nav-button-cluster-config-ssh-key').addClass('pf-m-current');
 
         $('#button-next-step-modal-wizard-cluster-config-prepare').attr('disabled', false);
         $('#button-before-step-modal-wizard-cluster-config-prepare').attr('disabled', false);
 
-        cur_step_wizard_cluster_config_prepare = "2";
+        cur_step_wizard_cluster_config_prepare = "3";
 
-    } else if (cur_step_wizard_cluster_config_prepare == "4") {
+    } else if (cur_step_wizard_cluster_config_prepare == "5") {
         $('#div-modal-wizard-cluster-config-ip-info').show();
         $('#nav-button-cluster-config-ip-info').addClass('pf-m-current');
 
         $('#button-next-step-modal-wizard-cluster-config-prepare').attr('disabled', false);
         $('#button-before-step-modal-wizard-cluster-config-prepare').attr('disabled', false);
 
-        cur_step_wizard_cluster_config_prepare = "3";
-    } else if (cur_step_wizard_cluster_config_prepare == "5") {
+        cur_step_wizard_cluster_config_prepare = "4";
+    } else if (cur_step_wizard_cluster_config_prepare == "6") {
         $('#div-modal-wizard-cluster-config-time-server').show();
         $('#nav-button-cluster-config-time-server').addClass('pf-m-current');
 
         $('#button-next-step-modal-wizard-cluster-config-prepare').attr('disabled', false);
         $('#button-before-step-modal-wizard-cluster-config-prepare').attr('disabled', false);
 
-        cur_step_wizard_cluster_config_prepare = "4";
-    } else if (cur_step_wizard_cluster_config_prepare == "6") {
+        cur_step_wizard_cluster_config_prepare = "5";
+    } else if (cur_step_wizard_cluster_config_prepare == "7") {
         $('#div-modal-wizard-cluster-config-review').show();
         $('#nav-button-cluster-config-review').addClass('pf-m-current');
 
@@ -487,7 +541,7 @@ $('#button-before-step-modal-wizard-cluster-config-prepare').on('click', functio
         $('#button-before-step-modal-wizard-cluster-config-prepare').attr('disabled', false);
 
         $('#nav-button-cluster-config-finish').addClass('pf-m-disabled');
-        cur_step_wizard_cluster_config_prepare = "5";
+        cur_step_wizard_cluster_config_prepare = "6";
     }
 });
 
@@ -525,6 +579,7 @@ $('#form-radio-hosts-new').on('click', function () {
     $('#form-input-cluster-config-host-number').removeAttr('disabled');
     $('#form-table-tbody-cluster-config-existing-host-profile tr').remove();
     $('#form-input-cluster-config-hosts-file').val("");
+
 
     $("#form-input-cluster-ccvm-mngt-ip").val("");
     $("#form-input-cluster-mngt-nic-cidr").val("");
@@ -566,7 +621,6 @@ $('#form-radio-hosts-file').on('click', function () {
     $("#form-input-cluster-pcs-hostname1").val("");
     $("#form-input-cluster-pcs-hostname2").val("");
     $("#form-input-cluster-pcs-hostname3").val("");
-
     $("#form-input-cluster-ccvm-mngt-ip").attr('disabled', true);
     $("#form-input-cluster-mngt-nic-cidr").attr('disabled', true);
     $("#form-input-cluster-mngt-nic-gateway").attr('disabled', true);
@@ -957,6 +1011,7 @@ $('#button-execution-modal-cluster-config-prepare-cancel').on('click', function 
 
 function resetClusterConfigWizard() {
     $('#nav-button-cluster-config-overview').removeClass('pf-m-current');
+    $('#nav-button-cluster-config-operating-system').removeClass('pf-m-current');
     $('#nav-button-cluster-config-ssh-key').removeClass('pf-m-current');
     $('#nav-button-cluster-config-ip-info').removeClass('pf-m-current');
     $('#nav-button-cluster-config-time-server').removeClass('pf-m-current');
@@ -964,6 +1019,7 @@ function resetClusterConfigWizard() {
     $('#nav-button-cluster-config-finish').removeClass('pf-m-current');
 
     $('#div-modal-wizard-cluster-config-overview').hide();
+    $('#div-modal-wizard-cluster-config-operating-system').hide();
     $('#div-modal-wizard-cluster-config-ssh-key').hide();
     $('#div-modal-wizard-cluster-config-ip-info').hide();
     $('#div-modal-wizard-cluster-config-time-server').hide();
@@ -988,6 +1044,7 @@ async function resetClusterConfigWizardWithData() {
 
     // 입력된 모든 데이터를 초기화한다.
     $('#nav-button-cluster-config-overview').addClass('pf-m-current');
+    $('#nav-button-cluster-config-operating-system').removeClass('pf-m-current');
     $('#nav-button-cluster-config-ssh-key').removeClass('pf-m-current');
     $('#nav-button-cluster-config-ip-info').removeClass('pf-m-current');
     $('#nav-button-cluster-config-time-server').removeClass('pf-m-current');
@@ -1054,6 +1111,7 @@ async function resetClusterConfigWizardWithData() {
     // nav, button등 이벤트에 적용된 속성 원복
     $('#nav-button-cluster-config-finish').addClass('pf-m-disabled');
     $('#nav-button-cluster-config-overview').removeClass('pf-m-disabled');
+    $('#nav-button-cluster-config-operating-system').removeClass('pf-m-disabled');
     $('#nav-button-cluster-config-ssh-key').removeClass('pf-m-disabled');
     $('#nav-button-cluster-config-ip-info').removeClass('pf-m-disabled');
     $('#nav-button-cluster-config-time-server').removeClass('pf-m-disabled');
@@ -1375,25 +1433,6 @@ async function writeSshKeyFile(text1, text2) {
 // }
 
 
-/**
- * Meathod Name : checkHostsOs
- * Date Created : 2021.04.05
- * Writer  : 류홍욱
- * Description : 호스트 OS를 체크하는 함수
- * Parameter : 없음
- * Return  : string
- * History  : 2021.04.05
- */
-
-function checkHostsOs() {
-    cockpit.script(["awk -F= '$1==\"ID\" { print $2 ;}' /etc/os-release"])
-        .then(function (data) {
-            let os_type = data.replaceAll("\"", "");
-            $('#os-type').val(os_type);
-        })
-        .catch(function (error) {
-        });
-}
 
 /**
  * Meathod Name : inputPnIntoTimeServer
@@ -1600,6 +1639,7 @@ function validateClusterConfigPrepare(timeserver_type) {
 
     let host_file_type = $('input[name=radio-hosts-file]:checked').val();
 
+    let os_type = $('#selected-operating-system').val();
     let ccvm_mngt_ip = $('#form-input-cluster-ccvm-mngt-ip').val().trim();
     let mngt_nic_cidr =  $("#form-input-cluster-mngt-nic-cidr").val();
     let mngt_nic_gateway = $("#form-input-cluster-mngt-nic-gateway").val();
@@ -1620,7 +1660,10 @@ function validateClusterConfigPrepare(timeserver_type) {
         validate_check = false;
     } else if (validateClusterConfigProfile(host_file_type, option)) { // config 유효성 검사
         validate_check = false;
-    } else if (ccvm_mngt_ip == "") {
+    } else if (os_type == ""){
+        alert("OS Type을 선택해주세요.")
+        validate_check = false;
+    }else if (ccvm_mngt_ip == "") {
         alert("CCVM 관리 IP정보를 입력해주세요.");
         validate_check = false;
     } else if(!checkIp(ccvm_mngt_ip)){
@@ -1716,5 +1759,5 @@ function validateClusterConfigPrepare(timeserver_type) {
     $('#div-modal-wizard-cluster-config-finish').show();
     $('#nav-button-cluster-config-finish').removeClass('pf-m-disabled');
     $('#nav-button-cluster-config-finish').addClass('pf-m-current');
-    cur_step_wizard_cluster_config_prepare = "6";
+    cur_step_wizard_cluster_config_prepare = "7";
 }

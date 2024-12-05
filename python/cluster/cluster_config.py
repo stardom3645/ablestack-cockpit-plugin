@@ -35,7 +35,8 @@ def createArgumentParser():
 
     # 인자 추가: https://docs.python.org/ko/3/library/argparse.html#the-add-argument-method
     parser.add_argument('action', choices=['insert','insertScvmHost','insertAllHost','remove'], help='choose one of the actions')
-    parser.add_argument('-cmi', '--ccvm-mngt-ip', metavar='[coludcenter vm IP information]', type=str, help='input Value to coludcenter vm IP information')
+    parser.add_argument('-t', '--type', metavar='[OS Type]', type=str, help='input Value to OS Type')
+    parser.add_argument('-cmi', '--ccvm-mngt-ip', metavar='[cloudcenter vm IP information]', type=str, help='input Value to coludcenter vm IP information')
     parser.add_argument('-mnc', '--mngt-nic-cidr', metavar='[management Nic cidr]', type=str, help='input Value to management Nic cidr')
     parser.add_argument('-mng', '--mngt-nic-gw', metavar='[management Nic gateway]', type=str, help='input Value to management Nic gateway')
     parser.add_argument('-mnd', '--mngt-nic-dns', metavar='[management Nic DNS]', type=str, help='management Nic DNS')
@@ -66,13 +67,16 @@ def openClusterJson():
 
     return ret
 
+json_data = openClusterJson()
+os_type = json_data["clusterConfig"]["type"]
+
 # 파라미터로 받은 json 값으로 cluster_config.py 무조건 바꾸는 함수 (동일한 값이 있으면 변경, 없으면 추가)
 def insert(args):
     try:
-        # 수정할 cluster.json 파일 읽어오기
-        json_data = openClusterJson()
-
+    # 수정할 cluster.json 파일 읽어오
         # 기존 file json 데이터를 param 데이터로 교체
+        if args.type is not None :
+            json_data["clusterConfig"]["type"] = args.type
         if args.ccvm_mngt_ip is not None:
             json_data["clusterConfig"]["ccvm"]["ip"] = args.ccvm_mngt_ip
 
@@ -122,7 +126,6 @@ def insert(args):
                         "scvm": p_val["scvm"],
                         "scvmCn": p_val["scvmCn"]
                     })
-
         # json 변환 정보 cluster.json 파일 수정
         with open(json_file_path, "w") as cluster_json:
             cluster_json.write(json.dumps(json_data, indent=4))
@@ -130,7 +133,7 @@ def insert(args):
         # hosts 파일 복사 실패시 3번 시도까지 하도록 개선
         result = {}
         for i in [1,2,3]:
-            result = json.loads(python3(pluginpath + '/python/cluster/cluster_hosts_setting.py', args.copy_option))
+            result = json.loads(python3(pluginpath + '/python/cluster/cluster_hosts_setting.py', args.copy_option, "-t", args.type))
             if result["code"] == 200:
                 break
 
@@ -174,15 +177,18 @@ def insertScvmHost(args):
                         return createReturn(code=500, val=return_val + " : " + p_val2["scvmMngt"])
 
                 # 원격 ablecube 호스트 및 scvm의 hosts 정보를 수정하는 명령 수행
-                return_val = "insertScvmHost Failed to modify cluster_config.py and hosts file."
-                for p_val3 in param_json:
-                    cmd_str = "python3 /usr/share/cockpit/ablestack/python/cluster/cluster_config.py insert"
-                    cmd_str += " -js '" + args.json_string + "'"
-                    cmd_str += " -co withScvm"
+                if os_type != "PowerFlex":
+                    return_val = "insertScvmHost Failed to modify cluster_config.py and hosts file."
+                    for p_val3 in param_json:
+                        cmd_str = "python3 /usr/share/cockpit/ablestack/python/cluster/cluster_config.py insert"
+                        cmd_str += " -js '" + args.json_string + "'"
+                        cmd_str += " -co withScvm"
+                        cmd_str += " -t " + args.type
 
-                    ret = ssh('-o', 'StrictHostKeyChecking=no', p_val3["ablecube"], cmd_str, " -cmi "+args.ccvm_mngt_ip, " -pcl "+args.pcs_cluster_list[0] +" "+ args.pcs_cluster_list[1] +" "+ args.pcs_cluster_list[2])
-                    if json.loads(ret)["code"] != 200:
-                        return createReturn(code=500, val=return_val + " : " + p_val3["ablecube"])
+                        ret = ssh('-o', 'StrictHostKeyChecking=no', p_val3["ablecube"], cmd_str, " -cmi "+args.ccvm_mngt_ip, " -pcl "+args.pcs_cluster_list[0] +" "+ args.pcs_cluster_list[1] +" "+ args.pcs_cluster_list[2])
+
+                        if json.loads(ret)["code"] != 200:
+                            return createReturn(code=500, val=return_val + " : " + p_val3["ablecube"])
 
                 #모든 작업이 수행 완료되면 성공결과 return
                 return createReturn(code=200, val="Cluster Config insertScvmHost Success")
@@ -268,8 +274,6 @@ def insertAllHost(args):
 # 호스트명을 파라미터로 받고 해당 호스트 정보를 cluster_config.py에서 삭제하는 함수
 def remove(args):
     try:
-        # 수정할 cluster.json 파일 읽어오기
-        json_data = openClusterJson()
         json_index = 0
         match_yn = False
         for f_val in json_data["clusterConfig"]["hosts"]:
@@ -297,7 +301,6 @@ def remove(args):
 
             #json_data 삭제
             del(json_data["clusterConfig"]["hosts"][json_index])
-
         # json 변환 정보 cluster.json 파일 수정
         with open(json_file_path, "w") as outfile:
             outfile.write(json.dumps(json_data, indent=4))
@@ -310,7 +313,7 @@ def remove(args):
                 break
 
         if result["code"] != 200:
-            return createReturn(code=500, val=return_val + " : " + p_val3["ablecube"])
+            return createReturn(code=500, val=result + " : " + p_val3["ablecube"])
         else:
             return createReturn(code=200, val="Cluster Config remove Success")
 

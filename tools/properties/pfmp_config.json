@@ -1,0 +1,31 @@
+{
+    "Nodes": [
+      {
+        "hostname": "scvm1",
+        "ipaddress": "1.1.1.1"
+      },
+      {
+        "hostname": "scvm2",
+        "ipaddress": "2.2.2.2"
+      },
+      {
+        "hostname": "scvm3",
+        "ipaddress": "3.3.3.3"
+      }
+    ],
+    "ClusterReservedIPPoolCIDR": "10.42.0.0/23",
+    "ServiceReservedIPPoolCIDR": "10.43.0.0/23",
+    "RoutableIPPoolCIDR": [
+      {
+        "mgmt": "10.240.126.0/25"
+      },
+      {
+        "data1": "10.240.127.0/25"
+      },
+      {
+        "data2": "10.240.128.0/25"
+      }
+    ],
+    "PFMPHostname": "manager.ablestack.local",
+    "PFMPHostIP": "10.240.126.5"
+}

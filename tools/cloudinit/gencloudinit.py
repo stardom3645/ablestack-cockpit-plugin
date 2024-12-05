@@ -59,6 +59,7 @@ def argumentParser():
     subparsers = tmp_parser.add_subparsers(help='select vm type action', dest='type')
     ccvm_parser = subparsers.add_parser('ccvm', help='Cloud Center Virtual Machine을 위한 cloudinit')
     scvm_parser = subparsers.add_parser('scvm', help='Storage Center Virtual Machine을 위한 cloudinit')
+    pfmp_parser = subparsers.add_parser('pfmp', help='PowerFlex Install을 위한 cloudinit')
     gwvm_parser = subparsers.add_parser('gwvm', help='GateWay Virtual Machine을 위한 cloudinit')
     # 선택지 추가(동작 선택)
     tmp_parser.add_argument('--iso-path', metavar='ISO file', help="저장할 ISO파일 이름")
@@ -75,12 +76,12 @@ def argumentParser():
     tmp_parser.add_argument('--sn-ip', metavar='Service IP', help="서비스 네트워크 IP               (ccvm만)")
     tmp_parser.add_argument('--sn-prefix', metavar='Service prefix', help="서비스 네트워크 prefix   (ccvm만)")
     tmp_parser.add_argument('--sn-gw', metavar='Service gw', help="서비스 네트워크 gw               (ccvm만)")
-    tmp_parser.add_argument('--pn-nic', metavar='Storage NIC',  help="스토리지 네트워크 NIC         (scvm만)")
-    tmp_parser.add_argument('--pn-ip', metavar='Storage IP',    help="스토리지 네트워크 IP          (scvm만)")
-    tmp_parser.add_argument('--pn-prefix', metavar='Service prefix', help="스토리지 네트워크 prefix (scvm만)", default=24)
-    tmp_parser.add_argument('--cn-nic', metavar='Cluster NIC',  help="클러스터 네트워크 NIC         (scvm만)")
-    tmp_parser.add_argument('--cn-ip', metavar='Cluster IP',    help="클러스터 네트워크 IP          (scvm만)")
-    tmp_parser.add_argument('--cn-prefix', metavar='Service prefix', help="클러스터 네트워크 prefix (scvm만)", default=24)
+    tmp_parser.add_argument('--pn-nic', metavar='Storage NIC',  help="스토리지 네트워크 NIC         ")
+    tmp_parser.add_argument('--pn-ip', metavar='Storage IP',    help="스토리지 네트워크 IP          ")
+    tmp_parser.add_argument('--pn-prefix', metavar='Service prefix', help="스토리지 네트워크 prefix ", default=24)
+    tmp_parser.add_argument('--cn-nic', metavar='Cluster NIC',  help="클러스터 네트워크 NIC         ")
+    tmp_parser.add_argument('--cn-ip', metavar='Cluster IP',    help="클러스터 네트워크 IP          ")
+    tmp_parser.add_argument('--cn-prefix', metavar='Service prefix', help="클러스터 네트워크 prefix ", default=24)
     tmp_parser.add_argument('--master', action='store_const', dest='master', const=True, metavar='SCVM Master', help="SCVM의 마스터로 지정 (scvm만)", default=False)
 
     # ccvm_parser.add_argument('--hostname', metavar='hostname', help="VM의 이름")
@@ -110,6 +111,7 @@ def argumentParser():
                             version="%(prog)s 1.0")
     return tmp_parser.parse_args()
 
+json_file_path = pluginpath+"/tools/properties/cluster.json"
 
 """
 ISO를 생성하는 함수
@@ -119,8 +121,9 @@ ISO를 생성하는 함수
 """
 def genCloudInit(filename: str):
     genisoimage = sh.Command("/usr/bin/genisoimage")
-    output = genisoimage("-output", filename, "-volid", "cidata", "-joliet", "-input-charset", "utf-8", "-rock",
-                         f'{tmpdir}/user-data', f'{tmpdir}/meta-data''', f'{tmpdir}/network-config')
+
+    genisoimage("-output", filename, "-volid", "cidata", "-joliet", "-input-charset", "utf-8", "-rock",
+                        f'{tmpdir}/user-data', f'{tmpdir}/meta-data''', f'{tmpdir}/network-config')
     item = {
         "ctime": str(datetime.datetime.fromtimestamp(os.path.getctime(filename))),
         # 수정시간을 타임 스탬프로 출력
@@ -133,6 +136,18 @@ def genCloudInit(filename: str):
     }
     return json.dumps(json.loads(createReturn(val=item, code=200)), indent=2)
 
+def openClusterJson():
+    try:
+        with open(json_file_path, 'r') as json_file:
+            ret = json.load(json_file)
+    except Exception as e:
+        ret = createReturn(code=500, val='cluster.json read error')
+        print ('EXCEPTION : ',e)
+
+    return ret
+
+json_data = openClusterJson()
+os_type = json_data["clusterConfig"]["type"]
 
 """
 meta-data파일을 생성하는 함수
@@ -243,91 +258,151 @@ def genUserFromFile(pubkeyfile: str, privkeyfile: str, hostsfile: str):
         #     privkey += line.strip() + "\n"
         privkey = f.read()
     # privkey = privkey.replace("\n", "")
-
     with open(hostsfile, 'rt') as f:
         hosts = f.read()
-    yam = {
-        'disable_root': 0,
-        'ssh_pwauth': True,
-        'users': [
-            {
-                'homedir': '/var/lib/ceph',
-                'groups': 'sudo',
-                'lock_passwd': False,
-                'name': 'ceph',
-                'plain_text_passwd': 'Ablecloud1!',
-                'ssh-authorized-keys': [pubkey],
-                'sudo': ['ALL=(ALL) NOPASSWD:ALL']
-            },
-            {
-                'groups': 'sudo',
-                'lock_passwd': False,
-                'name': 'ablecloud',
-                'plain_text_passwd': 'Ablecloud1!',
-                'ssh-authorized-keys': [pubkey],
-                'sudo': ['ALL=(ALL) NOPASSWD:ALL']
-            },
-            {
-                'disable_root': 0,
-                'ssh_pwauth': True,
-                'name': 'root',
-                'plain_text_passwd': 'Ablecloud1!',
-                'ssh-authorized-keys': [pubkey],
-            }
-        ],
-        'write_files':
-            [
+    if os_type == "ABLESTACK-HCI":
+        yam = {
+            'disable_root': False,
+            'ssh_pwauth': True,
+            'users': [
                 {
-                    'encoding': 'base64',
-                    'content': base64.encodebytes(pubkey.encode()),
-                    'owner': 'root:root',
-                    'path': '/root/.ssh/id_rsa.pub',
-                    'permissions': '0644'
+                    'homedir': '/var/lib/ceph',
+                    'groups': 'sudo',
+                    'lock_passwd': False,
+                    'name': 'ceph',
+                    'plain_text_passwd': 'Ablecloud1!',
+                    'ssh-authorized-keys': [pubkey],
+                    'sudo': ['ALL=(ALL) NOPASSWD:ALL']
                 },
                 {
-                    'encoding': 'base64',
-                    'content': base64.encodebytes(privkey.encode()),
-                    'owner': 'root:root',
-                    'path': '/root/.ssh/id_rsa',
-                    'permissions': '0600'
+                    'groups': 'sudo',
+                    'lock_passwd': False,
+                    'name': 'ablecloud',
+                    'plain_text_passwd': 'Ablecloud1!',
+                    'ssh-authorized-keys': [pubkey],
+                    'sudo': ['ALL=(ALL) NOPASSWD:ALL']
                 },
                 {
-                    'encoding': 'base64',
-                    'content': base64.encodebytes(pubkey.encode()),
-                    'owner': 'ceph:ceph',
-                    'path': '/var/lib/ceph/.ssh/id_rsa.pub',
-                    'permissions': '0644'
-                },
-                {
-                    'encoding': 'base64',
-                    'content': base64.encodebytes(privkey.encode()),
-                    'owner': 'ceph:ceph',
-                    'path': '/var/lib/ceph/.ssh/id_rsa',
-                    'permissions': '0600'
-                },
-                {
-                    'encoding': 'base64',
-                    'content': base64.encodebytes(pubkey.encode()),
-                    'owner': 'ablecloud:ablecloud',
-                    'path': '/home/ablecloud/.ssh/id_rsa.pub',
-                    'permissions': '0644'
-                },
-                {
-                    'encoding': 'base64',
-                    'content': base64.encodebytes(privkey.encode()),
-                    'owner': 'ablecloud:ablecloud',
-                    'path': '/home/ablecloud/.ssh/id_rsa',
-                    'permissions': '0600'
-                },
-                {
-                    'encoding': 'base64',
-                    'content': base64.encodebytes(hosts.encode()),
-                    'owner': 'root:root',
-                    'path': '/etc/hosts',
-                    'permissions': '0644'
+                    'disable_root': False,
+                    'ssh_pwauth': True,
+                    'name': 'root',
+                    'plain_text_passwd': 'Ablecloud1!',
+                    'ssh-authorized-keys': [pubkey],
                 }
-            ]
-    }
+            ],
+            'write_files':
+                [
+                    {
+                        'encoding': 'base64',
+                        'content': base64.encodebytes(pubkey.encode()),
+                        'owner': 'root:root',
+                        'path': '/root/.ssh/id_rsa.pub',
+                        'permissions': '0644'
+                    },
+                    {
+                        'encoding': 'base64',
+                        'content': base64.encodebytes(privkey.encode()),
+                        'owner': 'root:root',
+                        'path': '/root/.ssh/id_rsa',
+                        'permissions': '0600'
+                    },
+                    {
+                        'encoding': 'base64',
+                        'content': base64.encodebytes(pubkey.encode()),
+                        'owner': 'ceph:ceph',
+                        'path': '/var/lib/ceph/.ssh/id_rsa.pub',
+                        'permissions': '0644'
+                    },
+                    {
+                        'encoding': 'base64',
+                        'content': base64.encodebytes(privkey.encode()),
+                        'owner': 'ceph:ceph',
+                        'path': '/var/lib/ceph/.ssh/id_rsa',
+                        'permissions': '0600'
+                    },
+                    {
+                        'encoding': 'base64',
+                        'content': base64.encodebytes(pubkey.encode()),
+                        'owner': 'ablecloud:ablecloud',
+                        'path': '/home/ablecloud/.ssh/id_rsa.pub',
+                        'permissions': '0644'
+                    },
+                    {
+                        'encoding': 'base64',
+                        'content': base64.encodebytes(privkey.encode()),
+                        'owner': 'ablecloud:ablecloud',
+                        'path': '/home/ablecloud/.ssh/id_rsa',
+                        'permissions': '0600'
+                    },
+                    {
+                        'encoding': 'base64',
+                        'content': base64.encodebytes(hosts.encode()),
+                        'owner': 'root:root',
+                        'path': '/etc/hosts',
+                        'permissions': '0644'
+                    }
+                ]
+        }
+    elif os_type == 'PowerFlex':
+                yam = {
+            'disable_root': False,
+            'ssh_pwauth': True,
+            'users': [
+                {
+                    'groups': 'sudo',
+                    'lock_passwd': False,
+                    'name': 'ablecloud',
+                    'plain_text_passwd': 'Ablecloud1!',
+                    'ssh-authorized-keys': [pubkey],
+                    'sudo': ['ALL=(ALL) NOPASSWD:ALL']
+                },
+                {
+                    'disable_root': 0,
+                    'ssh_pwauth': True,
+                    'name': 'root',
+                    'plain_text_passwd': 'Ablecloud1!',
+                    'ssh-authorized-keys': [pubkey],
+                }
+            ],
+            'write_files':
+                [
+                    {
+                        'encoding': 'base64',
+                        'content': base64.encodebytes(pubkey.encode()),
+                        'owner': 'root:root',
+                        'path': '/root/.ssh/id_rsa.pub',
+                        'permissions': '0644'
+                    },
+                    {
+                        'encoding': 'base64',
+                        'content': base64.encodebytes(privkey.encode()),
+                        'owner': 'root:root',
+                        'path': '/root/.ssh/id_rsa',
+                        'permissions': '0600'
+                    },
+                    {
+                        'encoding': 'base64',
+                        'content': base64.encodebytes(pubkey.encode()),
+                        'owner': 'ablecloud:ablecloud',
+                        'path': '/home/ablecloud/.ssh/id_rsa.pub',
+                        'permissions': '0644'
+                    },
+                    {
+                        'encoding': 'base64',
+                        'content': base64.encodebytes(privkey.encode()),
+                        'owner': 'ablecloud:ablecloud',
+                        'path': '/home/ablecloud/.ssh/id_rsa',
+                        'permissions': '0600'
+                    },
+                    {
+                        'encoding': 'base64',
+                        'content': base64.encodebytes(hosts.encode()),
+                        'owner': 'root:root',
+                        'path': '/etc/hosts',
+                        'permissions': '0644'
+                    }
+                ]
+        }
     # base64.decodebytes(base64.encodebytes(pubkey.encode())).decode()
     # with open('user-data', 'wt') as f:
     with open(f'{tmpdir}/user-data', 'wt') as f:
@@ -341,16 +416,16 @@ ccvm용 네트워크설정(스토리지 네트워크 추가 없음)하는 부분
 :param 없음
 :return yaml 파일
 """
-def ccvmGen( sn_nic: str, sn_ip: str, sn_prefix: int, sn_gw: str):
+def ccvmGen(sn_nic:str, sn_ip:str, sn_prefix: int, sn_gw:str):
     with open(f'{tmpdir}/network-config.mgmt', 'rt') as f:
         yam = yaml.safe_load(f)
 
     if sn_nic is not None or sn_ip is not None or sn_prefix is not None or sn_gw is not None :
-        yam['network']['config'].append({'name': sn_nic,
-                                         'subnets': [{'address': f'{sn_ip}/{sn_prefix}',
-                                                      'gateway': sn_gw,
-                                                      'type': 'static'}],
-                                         'type': 'physical'})
+            yam['network']['config'].append({'name': sn_nic,
+                                            'subnets': [{'address': f'{sn_ip}/{sn_prefix}',
+                                                        'gateway': sn_gw,
+                                                        'type': 'static'}],
+                                            'type': 'physical'})
     with open(f'{tmpdir}/network-config', 'wt') as f:
         f.write(yaml.dump(yam))
 
@@ -386,54 +461,73 @@ scvm용 네트워크설정(스토리지 네트워크 추가)하는 부분
 def scvmGen(pn_nic=None, pn_ip=None, pn_prefix=24, cn_nic=None, cn_ip=None, cn_prefix=24, master=False):
     with open(f'{tmpdir}/network-config.mgmt', 'rt') as f:
         yam = yaml.safe_load(f)
-    yam['network']['config'].append({'mtu': 9000, 'name': pn_nic,
-                                     'subnets': [{'address': f'{pn_ip}/{pn_prefix}',
-                                                  'type': 'static'}],
-                                     'type': 'physical'})
-    yam['network']['config'].append({'mtu': 9000, 'name': cn_nic,
-                                     'subnets': [{'address': f'{cn_ip}/{cn_prefix}',
-                                                  'type': 'static'}],
-                                     'type': 'physical'})
+
+        yam['network']['config'].append({'mtu': 9000, 'name': pn_nic,
+                                        'subnets': [{'address': f'{pn_ip}/{pn_prefix}',
+                                                    'type': 'static'}],
+                                        'type': 'physical'})
+        yam['network']['config'].append({'mtu': 9000, 'name': cn_nic,
+                                        'subnets': [{'address': f'{cn_ip}/{cn_prefix}',
+                                                    'type': 'static'}],
+                                        'type': 'physical'})
+
     with open(f'{tmpdir}/network-config', 'wt') as f:
         f.write(yaml.dump(yam))
     with open(f'{tmpdir}/user-data', 'rt') as f:
         yam2 = yaml.safe_load(f)
-    yam2['bootcmd'] = [
-        ['/usr/bin/systemctl', 'enable', '--now', 'cockpit.socket'],
-        ['/usr/bin/systemctl', 'enable', '--now', 'cockpit.service']
-    ]
     # if master:
     #     yam2['bootcmd'].append(
     #         [f'/usr/bin/script', '-c', '/root/bootstrap.sh', 'bootstrap.log']
     #     )
+    if os_type == "ABLESTACK-HCI":
+        yam2['bootcmd'] = [
+        ['/usr/bin/systemctl', 'enable', '--now', 'cockpit.socket'],
+        ['/usr/bin/systemctl', 'enable', '--now', 'cockpit.service'],
+        ]
+        with open(f'{pluginpath}/shell/host/scvm_bootstrap.sh', 'rt') as bootstrapfile:
+            bootstrap = bootstrapfile.read()
+            yam2['write_files'].append(
+                {
+                    'encoding': 'base64',
+                    'content': base64.encodebytes(bootstrap.encode()),
+                    'owner': 'root:root',
+                    'path': '/root/bootstrap.sh',
+                    'permissions': '0777'
+                }
+            )
+        with open(f'{pluginpath}/shell/host/ipcorrector', 'rt') as ipcorrectorfile:
+            ipcorrector = ipcorrectorfile.read()
+            yam2['write_files'].append(
+                {
+                    'encoding': 'base64',
+                    'content': base64.encodebytes(ipcorrector.encode()),
+                    'owner': 'root:root',
+                    'path': '/usr/local/bin/ipcorrector',
+                    'permissions': '0777'
+                }
+            )
+    elif os_type == "PowerFlex":
+        with open(f'{pluginpath}/shell/host/scvm_pf_bootstrap.sh', 'rt') as bootstrapfile:
+            bootstrap = bootstrapfile.read()
+            yam2['write_files'].append(
+                {
+                    'encoding': 'base64',
+                    'content': base64.encodebytes(bootstrap.encode()),
+                    'owner': 'root:root',
+                    'path': '/root/bootstrap.sh',
+                    'permissions': '0777'
+                }
+            )
+    # 인터페이스 이름이 동일 하지 않을 경우, scvm에 np0, np1이 붙을 수 있기에 고정으로 사용
+    yam2['runcmd'] = [
+    ['/usr/bin/sh', '/usr/local/sbin/sortEth.sh']
+    ]
 
-    with open(f'{pluginpath}/shell/host/scvm_bootstrap.sh', 'rt') as bootstrapfile:
-        bootstrap = bootstrapfile.read()
-        yam2['write_files'].append(
-            {
-                'encoding': 'base64',
-                'content': base64.encodebytes(bootstrap.encode()),
-                'owner': 'root:root',
-                'path': '/root/bootstrap.sh',
-                'permissions': '0777'
-            }
-        )
-    with open(f'{pluginpath}/shell/host/ipcorrector', 'rt') as ipcorrectorfile:
-        ipcorrector = ipcorrectorfile.read()
-        yam2['write_files'].append(
-            {
-                'encoding': 'base64',
-                'content': base64.encodebytes(ipcorrector.encode()),
-                'owner': 'root:root',
-                'path': '/usr/local/bin/ipcorrector',
-                'permissions': '0777'
-            }
-        )
     with open(f'{tmpdir}/user-data', 'wt') as f:
         f.write('#cloud-config\n')
         f.write(yaml.dump(yam2).replace("\n\n", "\n"))
     return json.dumps(indent=4, obj=json.loads(createReturn(code=200, val=yam)))
-    
+
 """
 gwvm용 네트워크설정(네트워크 추가 없음)하는 부분
 
@@ -473,7 +567,19 @@ def gwvmGen( sn_nic: str, sn_ip: str, sn_prefix: int):
 
     return json.dumps(indent=4, obj=json.loads(createReturn(code=200, val=yam)))
 
+"""
+pfmp용 네트워크설정(네트워크 추가 없음)하는 부분
 
+:param 없음
+:return yaml 파일
+"""
+def pfmpGen():
+    with open(f'{tmpdir}/network-config.mgmt', 'rt') as f:
+        yam = yaml.safe_load(f)
+    with open(f'{tmpdir}/network-config', 'wt') as f:
+        f.write(yaml.dump(yam))
+
+    return json.dumps(indent=4, obj=json.loads(createReturn(code=200, val=yam)))
 """
 cloudinit iso를 생성하는 스크립트입니다.
 
@@ -507,7 +613,7 @@ ex)
     --mgmt-nic=ens12 --mgmt-ip 10.10.14.150 --mgmt-prefix 16 --mgmt-gw 10.10.0.1 --dns 8.8.8.8 \
     [--sn-nic ens13 --sn-ip 10.10.14.151 --sn-prefix 16 --sn-gw 10.10.0.1] \
     --iso-path ccvm.iso ccvm
-    
+
 :return yaml 파일
 """
 def main(args):
@@ -517,10 +623,10 @@ def main(args):
     genManagement(mgmt_nic=args.mgmt_nic, mgmt_ip=args.mgmt_ip, mgmt_prefix=args.mgmt_prefix, mgmt_gw=args.mgmt_gw,
                   dns=args.dns)
     """
-    privkey='/root/cockpit-plugin-ablestack/tools/cloudinit/id_rsa', hostname='test', 
+    privkey='/root/cockpit-plugin-ablestack/tools/cloudinit/id_rsa', hostname='test',
     pubkey='/root/cockpit-plugin-ablestack/tools/cloudinit/id_rsa.pub', type='ccvm'
-    mgmt_nic=None, mgmt_ip=None, mgmt_prefix=None, mgmt_gw=None, dns=None,     
-    pn_nic=None, pn_ip=None, cn_nic=None, cn_ip=None, 
+    mgmt_nic=None, mgmt_ip=None, mgmt_prefix=None, mgmt_gw=None, dns=None,
+    pn_nic=None, pn_ip=None, cn_nic=None, cn_ip=None,
     """
     if args.type == 'ccvm':
         ret = ccvmGen(sn_nic=args.sn_nic, sn_ip=args.sn_ip, sn_prefix=args.sn_prefix, sn_gw=args.sn_gw)
@@ -528,6 +634,9 @@ def main(args):
         ret = scvmGen(pn_nic=args.pn_nic, pn_ip=args.pn_ip, pn_prefix=args.pn_prefix, cn_nic=args.cn_nic, cn_ip=args.cn_ip, cn_prefix=args.cn_prefix, master=args.master)
     elif args.type == 'gwvm':
         ret = gwvmGen(sn_nic=args.sn_nic, sn_ip=args.sn_ip, sn_prefix=args.sn_prefix)
+    elif args.type == 'pfmp':
+        ret = pfmpGen()
+
     ret = genCloudInit(filename=args.iso_path)
     return ret
 

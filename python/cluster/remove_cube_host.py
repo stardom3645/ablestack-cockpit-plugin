@@ -57,7 +57,8 @@ def openClusterJson():
         print ('EXCEPTION : ',e)
 
     return ret
-
+json_data = openClusterJson()
+os_type = json_data["clusterConfig"]["type"]
 # 설정 정보 초기화
 # 1) 다른 호스트에 hosts, cluster.json 파일에 해당 제거 호스트 정보 삭제
 # 2) hosts 파일 초기화
@@ -67,7 +68,6 @@ def openClusterJson():
 def remove(args):
     try:
         current_hostname = socket.gethostname()
-        json_data = openClusterJson()
 
         # 다른 cube host에 삭제되는 호스트 정보 삭제
         for f_val in json_data["clusterConfig"]["hosts"]:
@@ -86,39 +86,70 @@ def remove(args):
         with open(ablecloud_file_path, 'w') as outfile:
             outfile.write('{\n')
             outfile.write('    "bootstrap": {\n')
-            outfile.write('        "scvm": "true",\n')
-            outfile.write('        "ccvm": "true"\n')
+            outfile.write('        "scvm": "false",\n')
+            outfile.write('        "ccvm": "false"\n')
+            outfile.write('        "pfmp": "false"\n')
             outfile.write('    },\n')
             outfile.write('    "monitoring": {\n')
-            outfile.write('        "wall": "true"\n')
+            outfile.write('        "wall": "false"\n')
             outfile.write('    }\n')
             outfile.write('}')
+        if os_type == 'PowerFlex':
+            with open(cluster_file_path, 'w') as outfile:
+                outfile.write('{\n')
+                outfile.write('    "clusterConfig": {\n')
+                outfile.write('        "ccvm": {\n')
+                outfile.write('            "ip": ""\n')
+                outfile.write('            "pn": ""\n')
+                outfile.write('            "cn": ""\n')
+                outfile.write('        },\n')
+                outfile.write('        "gwvm": {\n')
+                outfile.write('            "ip": "",\n')
+                outfile.write('            "pn": ""\n')
+                outfile.write('        },\n')
+                outfile.write('        "pfmp": {\n')
+                outfile.write('            "ip": ""\n')
+                outfile.write('        },\n')
+                outfile.write('        "mngtNic": {\n')
+                outfile.write('            "cidr": "",\n')
+                outfile.write('            "gw": "",\n')
+                outfile.write('            "dns": ""\n')
+                outfile.write('        },\n')
+                outfile.write('        "pcsCluster": {\n')
+                outfile.write('            "hostname1": "",\n')
+                outfile.write('            "hostname2": "",\n')
+                outfile.write('            "hostname3": ""\n')
+                outfile.write('        },\n')
+                outfile.write('        "hosts": [\n')
+                outfile.write('        ]\n')
+                outfile.write('    }\n')
+                outfile.write('}\n')
 
-        with open(cluster_file_path, 'w') as outfile:
-            outfile.write('{\n')
-            outfile.write('    "clusterConfig": {\n')
-            outfile.write('        "ccvm": {\n')
-            outfile.write('            "ip": ""\n')
-            outfile.write('        },\n')
-            outfile.write('        "gwvm": {\n')
-            outfile.write('            "ip": "",\n')
-            outfile.write('            "pn": ""\n')
-            outfile.write('        },\n')
-            outfile.write('        "mngtNic": {\n')
-            outfile.write('            "cidr": "",\n')
-            outfile.write('            "gw": "",\n')
-            outfile.write('            "dns": ""\n')
-            outfile.write('        },\n')
-            outfile.write('        "pcsCluster": {\n')
-            outfile.write('            "hostname1": "",\n')
-            outfile.write('            "hostname2": "",\n')
-            outfile.write('            "hostname3": ""\n')
-            outfile.write('        },\n')
-            outfile.write('        "hosts": [\n')
-            outfile.write('        ]\n')
-            outfile.write('    }\n')
-            outfile.write('}\n')
-
+        else:   #os_type == "ABLESTACK-HCI"
+            with open(cluster_file_path, 'w') as outfile:
+                outfile.write('{\n')
+                outfile.write('    "clusterConfig": {\n')
+                outfile.write('        "ccvm": {\n')
+                outfile.write('            "ip": ""\n')
+                outfile.write('        },\n')
+                outfile.write('        "gwvm": {\n')
+                outfile.write('            "ip": "",\n')
+                outfile.write('            "pn": ""\n')
+                outfile.write('        },\n')
+                outfile.write('        "mngtNic": {\n')
+                outfile.write('            "cidr": "",\n')
+                outfile.write('            "gw": "",\n')
+                outfile.write('            "dns": ""\n')
+                outfile.write('        },\n')
+                outfile.write('        "pcsCluster": {\n')
+                outfile.write('            "hostname1": "",\n')
+                outfile.write('            "hostname2": "",\n')
+                outfile.write('            "hostname3": ""\n')
+                outfile.write('        },\n')
+                outfile.write('        "hosts": [\n')
+                outfile.write('        ]\n')
+                outfile.write('    }\n')
+                outfile.write('}\n')
         os.system("rm -rf "+ccvm_config_path)
         os.system("rm -rf "+scvm_config_path)
 

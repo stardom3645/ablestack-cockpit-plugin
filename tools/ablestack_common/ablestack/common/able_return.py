@@ -29,11 +29,12 @@ def createReturn(retname: str = "",
         type_str = str(type(val)).replace('<class \'', '').replace('\'>', '')
     if retname == "":
         retname = callername()
+
     retdic = {
-        'code': code,
-        'val': val,
-        'name': retname,
-        'type':type_str
+        "code": code,
+        "val": val,
+        "name": retname,
+        "type":type_str
     }
     ret = json.dumps(retdic)
     return ret

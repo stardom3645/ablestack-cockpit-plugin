@@ -36,16 +36,7 @@
   <devices>
     <emulator>/usr/libexec/qemu-kvm</emulator>
     <!--ccvm_cloudinit-->
-    <disk type='network' device='disk'>
-      <source protocol='rbd' name='rbd/ccvm'>
-        <host name='scvm' port='6789'/>
-      </source>
-      <driver name='qemu' type='raw' cache='writeback' io='io_uring'/>
-      <auth username='admin'>
-        <secret type='ceph' uuid='11111111-1111-1111-1111-111111111111'/>
-      </auth>
-      <target dev='vda' bus='virtio'/>
-    </disk>
+    <!--ccvm_disk-->
     <controller type='usb' index='0' model='qemu-xhci' ports='15'>
       <alias name='usb'/>
       <address type='pci' domain='0x0000' bus='0x02' slot='0x00' function='0x0'/>
