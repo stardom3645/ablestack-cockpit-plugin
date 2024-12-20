@@ -687,7 +687,6 @@ function checkStorageClusterStatus(){
                     }else{  //bootstrap.sh 실행 후
                         sessionStorage.setItem("scvm_bootstrap_status","true");
                         $("#scvm-after-bootstrap-run").html("<a class='pf-c-dropdown__menu-item' href='#' id='menu-item-linkto-storage-center' onclick='scc_link_go()'>스토리지센터 연결</a>");
-                        // $("#scvm-after-update-glue-config").html("<a class='pf-c-dropdown__menu-item' href='#' id='menu-item-pfmp-install' onclick='pfmp_install()'>PFMP 설치</a>");
                         $("#scvm-before-bootstrap-run").html("");
                     }
                     //PowerFlex PFMP의 bootstrap 실행전
@@ -840,7 +839,7 @@ function checkStorageClusterStatus(){
                         if(retVal.val.bootstrap.scvm == "false"){ //bootstrap.sh 실행 전
                             sessionStorage.setItem("scvm_bootstrap_status","false");
                             $("#scvm-after-bootstrap-run").html("");
-                            $("#scvm-before-bootstrap-run").html("<a class='pf-c-dropdown__menu-item' href='#' id='menu-item-bootstrap-run' onclick='scvm_bootstrap_run()'>Bootstrap 실행</a>");
+                            $("#scvm-before-bootstrap-run").html("<a class='pf-c-dropdown__menu-item' href='#' id='menu-item-bootstrap-run' onclick='scvm_bootstrap_run()'>스토리지센터 구성하기</a>");
                         }else{  //bootstrap.sh 실행 후
                             sessionStorage.setItem("scvm_bootstrap_status","true");
                             $("#scvm-after-bootstrap-run").html("<a class='pf-c-dropdown__menu-item' href='#' id='menu-item-linkto-storage-center' onclick='scc_link_go()'>스토리지센터 연결</a>");
