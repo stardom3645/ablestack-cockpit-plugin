@@ -103,12 +103,12 @@ def listDiskInterface(H=False, classify=None, action=None):
             if len(line_sp) == 2:
                 disk_path.append(line_sp)
 
-    item = json.loads(lsblk_cmd(J=True, o="name,path,rota,model,size,state,group,type,tran,subsystems,vendor"))
+    item = json.loads(lsblk_cmd(J=True, o="name,path,rota,model,size,state,group,type,tran,subsystems,vendor,wwn"))
     bd = item['blockdevices']
     newbd = []
     for dev in bd:
         if action == 'gfs-list':
-            if 'loop' not in dev['type'] and 'usb' not in dev['tran'] and 'cdrom' not in dev['group']:
+            if 'loop' not in dev['type'] and  (dev['tran'] is None or 'usb' not in dev['tran']) and 'cdrom' not in dev['group']:
                 for dp in disk_path:
                     if dev["name"] == dp[0]:
                         dev["path"] = dp[1]

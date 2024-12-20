@@ -78,7 +78,7 @@ def createGwvmCloudinit(args):
     if result['code'] not in [200]:
         success_bool = False
     else:
-        for host_name in args.host_names:
+        for host_name in args.host_names[0].split():
             ret_num = 0
 
             # pcs 클러스터 호스트에 /vmconfig/gwvm 폴더생성 명령 실패

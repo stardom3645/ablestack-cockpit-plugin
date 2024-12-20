@@ -442,17 +442,17 @@
                                             </label>
                                         </div>
                                         <div class="pf-c-form__group-control pf-m-inline" style="margin-top:10px">
-                                            <div class="pf-c-radio">
+                                            <!-- <div class="pf-c-radio">
                                                 <input class="pf-c-radio__input" type="radio" id="form-radio-timeserver-ext" name="radio-timeserver" value="external" checked/>
                                                 <label class="pf-c-radio__label" for="form-radio-timeserver-ext">외부 시간서버</label>
-                                            </div>
+                                            </div> -->
                                             <div class="pf-c-radio">
-                                                <input class="pf-c-radio__input" type="radio" id="form-radio-timeserver-int" name="radio-timeserver" value="internal" />
+                                                <input class="pf-c-radio__input" type="radio" id="form-radio-timeserver-int" name="radio-timeserver" value="internal" checked/>
                                                 <label class="pf-c-radio__label" for="form-radio-timeserver-int">로컬 시간서버</label>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="pf-c-form__group" id="div-timeserver-host-num" style="display:none">
+                                    <div class="pf-c-form__group" id="div-timeserver-host-num">
                                         <div class="pf-c-form__group-label">
                                             <label class="pf-c-form__label">
                                                 <span class="pf-c-form__label-text">현재 Host</span>
@@ -472,6 +472,16 @@
                                                 <input class="pf-c-radio__input" type="radio" id="form-radio-timeserver-host-num-3" name="radio-timeserver_host_num" value="3" />
                                                 <label class="pf-c-radio__label" for="form-radio-timeserver-host-num-3">Other Sever</label>
                                             </div>
+                                        </div>
+                                    </div>
+                                    <div class="pf-c-form__group" id="form-input-cluster-config-int-to-ext">
+                                        <div class="pf-c-form__group-label">
+                                            <label class="pf-c-form__label" for="form-input-cluster-config-external-time-server-ip">
+                                                <span class="pf-c-form__label-text">외부 시간서버</span>
+                                            </label>
+                                        </div>
+                                        <div class="pf-c-form__group-control">
+                                            <input class="pf-c-form-control" style="width:60%" type="text" id="form-input-cluster-config-external-time-server-ip" name="form-input-cluster-config-timeserver"/>
                                         </div>
                                     </div>
                                     <div class="pf-c-form__group">

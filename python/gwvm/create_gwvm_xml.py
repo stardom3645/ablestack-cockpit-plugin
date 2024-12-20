@@ -145,7 +145,7 @@ def createGwvmXml(args):
                 # 라인 수정
                 sys.stdout.write(line)
 
-        for host_name in args.host_names:
+        for host_name in args.host_names[0].split():
             ret_num = 0
             # pcs 클러스터 호스트에 gwvm.xml 복사 실패
             for i in [1,2,3]:

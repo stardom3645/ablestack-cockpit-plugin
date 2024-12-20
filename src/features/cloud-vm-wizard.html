@@ -26,6 +26,9 @@
                                 <button class="pf-c-wizard__nav-link" id="nav-button-cloud-vm-appliance">클라우드센터 VM 설정</button>
                                 <ol class="pf-c-wizard__nav-list">
                                     <li class="pf-c-wizard__nav-item">
+                                        <button class="pf-c-wizard__nav-link" id="nav-button-cloud-vm-cluster-sync-mechanism">클러스터 민감도</button>
+                                    </li>
+                                    <li class="pf-c-wizard__nav-item">
                                         <button class="pf-c-wizard__nav-link" id="nav-button-cloud-vm-compute">컴퓨트</button>
                                     </li>
                                     <li class="pf-c-wizard__nav-item">
@@ -95,6 +98,59 @@
                                         </div>
                                     </section>
                                 </form>
+                            </div>
+                        </div><div class="pf-c-wizard__main-body" id="div-modal-wizard-cloud-vm-cluster-sync-mechanism">
+                            <div class="pf-c-content">
+                                <p>
+                                    <strong>클라우드센터 VM</strong>에서 클러스터 노드 간 동기화는 중요한 역할을 합니다.
+                                    이를 통해 통신의 순서와 타이밍을 제어하고,
+                                    리더 노드를 결정하며, 장애 복구를 지원합니다.
+                                </p>
+                                <ul style="margin-top: 15px; padding-left: 20px;">
+                                    <li>
+                                        <strong>통신 순서 제어</strong>: 다수의 노드가 동시에 데이터를 전송하는 클러스터 네트워크에서
+                                        데이터 충돌을 방지하고, 순차적인 통신을 보장합니다.
+                                    </li>
+                                    <li style="margin-top: 10px;">
+                                        <strong>타이밍 동기화</strong>: 각 노드는 Token을 통해
+                                        동기화된 시간 기준으로 작업을 수행하며, 이를 통해 타임아웃 문제를 예방합니다.
+                                    </li>
+                                    <li style="margin-top: 10px;">
+                                        <strong>장애 복구</strong>: 각 노드는 정상 동작 여부를 주기적으로 확인하며,
+                                        Token이 전달되지 않으면 장애를 감지하고 자동 복구를 시도합니다.
+                                    </li>
+                                </ul>
+                                <form novalidate class="pf-c-form pf-m-horizontal" style="margin-left:15px;margin-top:32px">
+                                    <section class="pf-c-form__section" id="cluster-sync-mechanism-session">
+                                        <div class="pf-c-form__group">
+                                            <div class="pf-c-form__group-label">
+                                                <label class="pf-c-form__label" for="form-input-cloud-vm-cluster-sync-mechanism">
+                                                    <span class="pf-c-form__label-text">클러스터 민감도(초)</span>
+                                                    <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+                                                </label>
+                                            </div>
+                                            <div class="pf-c-form__group-control pf-m-inline">
+                                                <input class="pf-c-form-control" style="width:12%" type="number" id="form-input-cloud-vm-cluster-sync-mechanism" name="form-input-cloud-vm-cluster-sync-mechanism" min="0" value="0">
+                                            </div>
+                                        </div>
+                                    </section>
+                                </form>
+                                <div class="pf-c-alert pf-m-info pf-m-inline" aria-label="VM Compute Info" style="margin-left:15px;margin-top:32px">
+                                    <div class="pf-c-alert__icon">
+                                        <i class="fas fa-fw fa-info-circle" aria-hidden="true"></i>
+                                    </div>
+                                    <p class="pf-c-alert__title pf-m-truncate">
+                                        <strong><span class="pf-screen-reader">Info alert:</span>클러스터 민감도 설정 시 참고사항</strong>
+                                    </p>
+                                    <div class="pf-c-alert__description">
+                                        <p>클러스터의 동기화와 장애 복구를 원활하게 처리하는 핵심 메커니즘입니다</p>
+                                        <p>
+                                            안정적인 클러스터 동작을 위해서는 <strong>최소 1초에서 최대 5분</strong>의 시간 범위 내에서 네트워크 품질을 유지하는 것이 권장됩니다.
+                                            이 범위는 클러스터 노드 간의 데이터 전송 및 장애 감지, 복구 시간이 효율적으로 이루어지도록 보장하는 데 중요한 역할을 합니다.
+                                        </p>
+                                        <p>클러스터 환경의 규모나 복잡성에 따라 동기화 시간과 장애 복구 시간이 다를 수 있습니다. 예를 들어, 노드 수가 많을수록 Token의 전파 시간이 늘어나며, 이로 인해 복구 및 동기화 시간이 영향을 받을 수 있습니다. </p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <div class="pf-c-wizard__main-body" id="div-modal-wizard-cloud-vm-compute">
@@ -583,6 +639,16 @@
                                         <dl class="pf-c-description-list pf-m-horizontal" style="--pf-c-description-list--RowGap: 10px;margin-left: 10px">
                                             <div class="pf-c-description-list__group">
                                                 <dt class="pf-c-description-list__term">
+                                                    <span class="pf-c-description-list__text">클러스터 민감도</span>
+                                                </dt>
+                                                <dd class="pf-c-description-list__description">
+                                                    <div class="pf-c-description-list__text">
+                                                        <span id="span-cloud-vm-cluster-sync-mechanism"></span>
+                                                    </div>
+                                                </dd>
+                                            </div>
+                                            <div class="pf-c-description-list__group">
+                                                <dt class="pf-c-description-list__term">
                                                     <span class="pf-c-description-list__text">CPU Core</span>
                                                 </dt>
                                                 <dd class="pf-c-description-list__description">
@@ -722,77 +788,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="pf-c-accordion" style="margin-top:32px;margin-left:10px;display: none;" id="div-accordion-cloud-ipmi">
-                                <h3>
-                                    <button class="pf-c-accordion__toggle" aria-expanded="false" id="button-accordion-cloud-vm-ipmi">
-                                        <span class="pf-c-accordion__toggle-text">IPMI 정보</span>
-                                        <span class="pf-c-accordion__toggle-icon">
-                                            <i class="fas fa-angle-right" aria-hidden="true"></i>
-                                        </span>
-                                    </button>
-                                </h3>
-                                <div class="pf-c-accordion__expanded-content" id="div-accordion-cloud-vm-ipmi">
-                                    <div class="pf-c-accordion__expanded-content-body">
-                                        <dl class="pf-c-description-list pf-m-horizontal" style="--pf-c-description-list--RowGap: 10px;margin-left: 10px">
-                                            <div class="pf-c-description-list__group">
-                                                <dt class="pf-c-description-list__term">
-                                                    <span class="pf-c-description-list__text">IPMI 구성 준비 </span>
-                                                </dt>
-                                                <dd class="pf-c-description-list__description">
-                                                    <div class="pf-c-description-list__text"></div>
-                                                </dd>
-                                            </div>
-                                            <div class="pf-c-description-list__group">
-                                                <dt class="pf-c-description-list__term">
-                                                    <span class="pf-c-description-list__text">1번 호스트</span>
-                                                </dt>
-                                                <dd class="pf-c-description-list__description">
-                                                    <div class="pf-c-description-list__text">
-                                                        IPMI IP :  <span id="span-cloud-vm-ipmi-ip1"></span><br/>
-                                                        <span id="span-cloud-vm-ipmi-user1"></span></br>
-                                                        <span id="span-cloud-vm-ipmi-password1"></span>
-                                                    </div>
-                                                </dd>
-                                            </div>
-                                            <div class="pf-c-description-list__group">
-                                                <dt class="pf-c-description-list__term">
-                                                    <span class="pf-c-description-list__text">2번 호스트</span>
-                                                </dt>
-                                                <dd class="pf-c-description-list__description">
-                                                    <div class="pf-c-description-list__text">
-                                                        IPMI IP : <span id="span-cloud-vm-ipmi-ip2"></span><br/>
-                                                        <span id="span-cloud-vm-ipmi-user2"></span></br>
-                                                        <span id="span-cloud-vm-ipmi-password2"></span>
-                                                    </div>
-                                                </dd>
-                                            </div>
-                                            <div class="pf-c-description-list__group">
-                                                <dt class="pf-c-description-list__term">
-                                                    <span class="pf-c-description-list__text">3번 호스트</span>
-                                                </dt>
-                                                <dd class="pf-c-description-list__description">
-                                                    <div class="pf-c-description-list__text">
-                                                        IPMI IP : <span id="span-cloud-vm-ipmi-ip3"></span><br/>
-                                                        <span id="span-cloud-vm-ipmi-user3"></span></br>
-                                                        <span id="span-cloud-vm-ipmi-password3"></span>
-                                                    </div>
-                                                </dd>
-                                            </div>
-                                            <div class="pf-c-description-list__group" id="accordion-common-ipmi" style="display: none;">
-                                                <dt class="pf-c-description-list__term">
-                                                    <span class="pf-c-description-list__text">모든 호스트 자격 증명</span>
-                                                </dt>
-                                                <dd class="pf-c-description-list__description">
-                                                    <div class="pf-c-description-list__text">
-                                                        IPMI 아이디 : <span id="span-cloud-vm-ipmi-user"></span></br>
-                                                        IPMI 비밀번호 : <span id="span-cloud-vm-ipmi-password"></span>
-                                                    </div>
-                                                </dd>
-                                            </div>
-                                        </dl>
-                                    </div>
-                                </div>
-                            </div>
+                            <div class="pf-c-accordion" style="margin-top:32px;margin-left:10px;display: none;" id="div-accordion-cloud-ipmi"></div>
                             <div class="pf-c-accordion" style="margin-top:32px;margin-left:10px">
                                 <h3>
                                     <button class="pf-c-accordion__toggle" aria-expanded="false" id="button-accordion-cloud-vm-ssh-key">
@@ -829,60 +825,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="pf-c-accordion" style="margin-top:32px;margin-left:10px">
-                                <h3>
-                                    <button class="pf-c-accordion__toggle" aria-expanded="false" id="button-accordion-cloud-vm-failover-cluster">
-                                        <span class="pf-c-accordion__toggle-text">장애조치 클러스터 설정</span>
-                                        <span class="pf-c-accordion__toggle-icon">
-                                            <i class="fas fa-angle-right" aria-hidden="true"></i>
-                                        </span>
-                                    </button>
-                                </h3>
-                                <div class="pf-c-accordion__expanded-content" id="div-accordion-cloud-vm-failover-cluster">
-                                    <div class="pf-c-accordion__expanded-content-body">
-                                        <dl class="pf-c-description-list pf-m-horizontal" style="--pf-c-description-list--RowGap: 10px;margin-left: 10px">
-                                            <div class="pf-c-description-list__group">
-                                                <dt class="pf-c-description-list__term">
-                                                    <span class="pf-c-description-list__text">클러스터 멤버 수 </span>
-                                                </dt>
-                                                <dd class="pf-c-description-list__description">
-                                                    <div class="pf-c-description-list__text">3</div>
-                                                </dd>
-                                            </div>
-                                            <div class="pf-c-description-list__group">
-                                                <dt class="pf-c-description-list__term">
-                                                    <span class="pf-c-description-list__text">PCS 호스트 #1</span>
-                                                </dt>
-                                                <dd class="pf-c-description-list__description">
-                                                    <div class="pf-c-description-list__text">
-                                                        PN IP : <span id="span-cloud-vm-failover-cluster-host1-name"></span><br/>
-                                                    </div>
-                                                </dd>
-                                            </div>
-                                            <div class="pf-c-description-list__group">
-                                                <dt class="pf-c-description-list__term">
-                                                    <span class="pf-c-description-list__text">PCS 호스트 #2</span>
-                                                </dt>
-                                                <dd class="pf-c-description-list__description">
-                                                    <div class="pf-c-description-list__text">
-                                                        PN IP : <span id="span-cloud-vm-failover-cluster-host2-name"></span><br/>
-                                                    </div>
-                                                </dd>
-                                            </div>
-                                            <div class="pf-c-description-list__group">
-                                                <dt class="pf-c-description-list__term">
-                                                    <span class="pf-c-description-list__text">PCS 호스트 #3</span>
-                                                </dt>
-                                                <dd class="pf-c-description-list__description">
-                                                    <div class="pf-c-description-list__text">
-                                                        PN IP : <span id="span-cloud-vm-failover-cluster-host3-name"></span><br/>
-                                                    </div>
-                                                </dd>
-                                            </div>
-                                        </dl>
-                                    </div>
-                                </div>
-                            </div>
+                            <div class="pf-c-accordion" style="margin-top:32px;margin-left:10px;" id="div-accordion-cloud-failover-cluster"></div>
                         </div>
                         <div class="pf-c-wizard__main-body" id="div-modal-wizard-cloud-vm-deploy">
                             <p id='ccvm-progress-step-text'>

@@ -249,7 +249,7 @@ if __name__ == '__main__':
 
     # secret.xml 생성 및 virsh 등록
     if os_type == "ABLESTACK-HCI":
-        secret_ret = json.loads(createSecretKey(args.host_names))
+        secret_ret = json.loads(createSecretKey(args.host_names[0].split()))
 
         if secret_ret["code"] == 200 :
             ret = createCcvmXml(args)

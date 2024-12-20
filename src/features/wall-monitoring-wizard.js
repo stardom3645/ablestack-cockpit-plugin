@@ -8,6 +8,7 @@
 // 변수 선언
 var cur_step_wizard_wall_vm = "1";
 var completed = false;
+var os_type = sessionStorage.getItem("os_type");
 
 /* Document Ready 이벤트 처리 시작 */
 
@@ -29,6 +30,7 @@ $(document).ready(function () {
     $('#button-before-step-modal-wizard-wall-monitoring').attr('disabled', true);
     $('#button-cancel-config-modal-wizard-wall-monitoring').attr('disabled', false);
 
+    screenChange();
     // 첫번째 스텝에서 시작
     cur_step_wizard_wall_vm = "1";
 
@@ -383,9 +385,11 @@ function resetWallMonitoringWizard() {
         host_ping_test_cmd.push(cubehost_ip);
     }
 
-    for(var i = 1 ; i <= host_count ; i ++ ){
-        var scvm_ip = $('#form-input-wall-monitoring-scvm'+i+'-ip').val();
-        host_ping_test_cmd.push(scvm_ip);
+    if (os_type != "general-virtualization"){
+        for(var i = 1 ; i <= host_count ; i ++ ){
+            var scvm_ip = $('#form-input-wall-monitoring-scvm'+i+'-ip').val();
+            host_ping_test_cmd.push(scvm_ip);
+        }
     }
 
     if (console_log) { console.log(host_ping_test_cmd); }
@@ -417,16 +421,23 @@ function resetWallMonitoringWizard() {
                             setWallProgressStep("span-wall-progress-step1",2);
                             setWallProgressStep("span-wall-progress-step2",1);
 
-                            var prometheus_config_cmd = ['python3', pythonPath + 'config_wall.py', 'config','--ccvm', ccvm_ip];
+                            if(os_type == "general-virtualization"){
+                                var prometheus_config_cmd = ['python3', pythonPath + 'config_wall.py', 'configGfs','--ccvm', ccvm_ip];
+                            }else{
+                                var prometheus_config_cmd = ['python3', pythonPath + 'config_wall.py', 'config','--ccvm', ccvm_ip];
+                            }
+
                             prometheus_config_cmd.push('--cube');
                             for(var i = 1 ; i <= host_count ; i ++ ){
                                 var cubehost_ip = $('#form-input-wall-monitoring-cubehost'+i+'-ip').val();
                                 prometheus_config_cmd.push(cubehost_ip);
                             }
-                            prometheus_config_cmd.push('--scvm');
-                            for(var i = 1 ; i <= host_count ; i ++ ){
-                                var scvm_ip = $('#form-input-wall-monitoring-scvm'+i+'-ip').val();
-                                prometheus_config_cmd.push(scvm_ip);
+                            if (os_type != "general-virtualization"){
+                                prometheus_config_cmd.push('--scvm');
+                                for(var i = 1 ; i <= host_count ; i ++ ){
+                                    var scvm_ip = $('#form-input-wall-monitoring-scvm'+i+'-ip').val();
+                                    prometheus_config_cmd.push(scvm_ip);
+                                }
                             }
                             if (console_log) { console.log(prometheus_config_cmd); }
                             cockpit.spawn(prometheus_config_cmd, { host: ccvm_ip })
@@ -722,13 +733,14 @@ function setWallReviewInfo() {
             $('#span-wall-monitoring-cubehost'+i+'-ip').text(cubehost_ip);
         }
     }
-
-    for(var i = 1 ; i <= host_count ; i ++ ){
-        var scvm_ip = $('#form-input-wall-monitoring-scvm'+i+'-ip').val();
-        if (scvm_ip == '') {
-            $('#span-wall-monitoring-scvm'+i+'-ip').text("미입력");
-        } else {
-            $('#span-wall-monitoring-scvm'+i+'-ip').text(scvm_ip);
+    if (os_type != "general-virtualization"){
+        for(var i = 1 ; i <= host_count ; i ++ ){
+            var scvm_ip = $('#form-input-wall-monitoring-scvm'+i+'-ip').val();
+            if (scvm_ip == '') {
+                $('#span-wall-monitoring-scvm'+i+'-ip').text("미입력");
+            } else {
+                $('#span-wall-monitoring-scvm'+i+'-ip').text(scvm_ip);
+            }
         }
     }
 
@@ -824,16 +836,17 @@ function validateWallMonitoringVm() {
             validate_check = false;
         }
     }
+    if (os_type != "general-virtualization"){
+        for(var i = 1 ; i <= host_count ; i ++ ){
+            if (validate_check && $('#form-input-wall-monitoring-scvm'+i+'-ip').val() == "") {
+                alert('SCVM'+i+' 관리 IP를 입력해주세요.');
+                validate_check = false;
+            }
 
-    for(var i = 1 ; i <= host_count ; i ++ ){
-        if (validate_check && $('#form-input-wall-monitoring-scvm'+i+'-ip').val() == "") {
-            alert('SCVM'+i+' 관리 IP를 입력해주세요.');
-            validate_check = false;
-        }
-
-        if (validate_check && !checkIp($('#form-input-wall-monitoring-scvm'+i+'-ip').val())) {
-            alert('SCVM'+i+' 관리 IP 형식을 확인해주세요.');
-            validate_check = false;
+            if (validate_check && !checkIp($('#form-input-wall-monitoring-scvm'+i+'-ip').val())) {
+                alert('SCVM'+i+' 관리 IP 형식을 확인해주세요.');
+                validate_check = false;
+            }
         }
     }
 
@@ -891,117 +904,117 @@ $('input[type=text][id="form-input-wall-host-number"]').on('change', function ()
 
 function setWallIpInput(host_count){
     $('input[type=text][id="form-input-wall-host-number"]').val(host_count);
-    if(host_count >= 3 && host_count <= 100){
-        $('#div-wall-ccvm-ip-area').empty();
-        $('#div-wall-cubehost-ip-area').empty();
-        $('#div-wall-scvm-ip-area').empty();
-        $('#div-wall-review-area').empty();
+    $('#div-wall-ccvm-ip-area').empty();
+    $('#div-wall-cubehost-ip-area').empty();
+    $('#div-wall-scvm-ip-area').empty();
+    $('#div-wall-review-area').empty();
 
-        var ccvm_el ='';
-        ccvm_el +='    <div class="pf-c-form__field-group-header"  style="padding-bottom:8px;">';
-        ccvm_el +='        <div class="pf-c-form__field-group-header-main">';
-        ccvm_el +='            <div class="pf-c-form__field-group-header-title">';
-        ccvm_el +='                <div class="pf-c-form__field-group-header-title-text">클라우드센터 VM</div>';
-        ccvm_el +='            </div>';
-        ccvm_el +='        </div>';
-        ccvm_el +='    </div>';
-        ccvm_el +='    <div class="pf-c-form__field-group-body" style="padding-top:0px;">';
-        ccvm_el +='        <div class="pf-c-form__group" style="padding:0px;">';
-        ccvm_el +='            <div class="pf-c-form__group-label">';
-        ccvm_el +='                <label class="pf-c-form__label" for="form-input-wall-monitoring-ccvm-ip">';
-        ccvm_el +='                    <span class="pf-c-form__label-text">CCVM 관리 IP</span>';
-        ccvm_el +='                    <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>';
-        ccvm_el +='                </label>';
-        ccvm_el +='            </div>';
-        ccvm_el +='            <div class="pf-c-form__group-control">';
-        ccvm_el +='                <input class="pf-c-form-control" style="width:70%" type="text" id="form-input-wall-monitoring-ccvm-ip" name="form-input-wall-monitoring-ccvm-ip" required />';
-        ccvm_el +='            </div>';
-        ccvm_el +='        </div>';
-        ccvm_el +='    </div>';
+    var ccvm_el ='';
+    ccvm_el +='    <div class="pf-c-form__field-group-header"  style="padding-bottom:8px;">';
+    ccvm_el +='        <div class="pf-c-form__field-group-header-main">';
+    ccvm_el +='            <div class="pf-c-form__field-group-header-title">';
+    ccvm_el +='                <div class="pf-c-form__field-group-header-title-text">클라우드센터 VM</div>';
+    ccvm_el +='            </div>';
+    ccvm_el +='        </div>';
+    ccvm_el +='    </div>';
+    ccvm_el +='    <div class="pf-c-form__field-group-body" style="padding-top:0px;">';
+    ccvm_el +='        <div class="pf-c-form__group" style="padding:0px;">';
+    ccvm_el +='            <div class="pf-c-form__group-label">';
+    ccvm_el +='                <label class="pf-c-form__label" for="form-input-wall-monitoring-ccvm-ip">';
+    ccvm_el +='                    <span class="pf-c-form__label-text">CCVM 관리 IP</span>';
+    ccvm_el +='                    <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>';
+    ccvm_el +='                </label>';
+    ccvm_el +='            </div>';
+    ccvm_el +='            <div class="pf-c-form__group-control">';
+    ccvm_el +='                <input class="pf-c-form-control" style="width:70%" type="text" id="form-input-wall-monitoring-ccvm-ip" name="form-input-wall-monitoring-ccvm-ip" required />';
+    ccvm_el +='            </div>';
+    ccvm_el +='        </div>';
+    ccvm_el +='    </div>';
 
-        var cube_host_el = '';
-        cube_host_el += '    <div class="pf-c-form__field-group-header"  style="padding-bottom:8px;">';
-        cube_host_el += '        <div class="pf-c-form__field-group-header-main">';
-        cube_host_el += '            <div class="pf-c-form__field-group-header-title">';
-        cube_host_el += '                <div class="pf-c-form__field-group-header-title-text">Cube 호스트</div>';
+    var cube_host_el = '';
+    cube_host_el += '    <div class="pf-c-form__field-group-header"  style="padding-bottom:8px;">';
+    cube_host_el += '        <div class="pf-c-form__field-group-header-main">';
+    cube_host_el += '            <div class="pf-c-form__field-group-header-title">';
+    cube_host_el += '                <div class="pf-c-form__field-group-header-title-text">Cube 호스트</div>';
+    cube_host_el += '            </div>';
+    cube_host_el += '        </div>';
+    cube_host_el += '    </div>';
+    cube_host_el += '    <div class="pf-c-form__field-group-body" style="padding-top:0px;">';
+    for(var i = 1 ; i <= host_count ; i ++ ){
+        cube_host_el += '        <div class="pf-c-form__group" style="padding:0px;">';
+        cube_host_el += '            <div class="pf-c-form__group-label">';
+        cube_host_el += '                <label class="pf-c-form__label" for="form-input-wall-monitoring-cubehost'+i+'-ip">';
+        cube_host_el += '                    <span class="pf-c-form__label-text">Cube'+i+' 관리 IP</span>';
+        cube_host_el += '                    <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>';
+        cube_host_el += '                </label>';
+        cube_host_el += '            </div>';
+        cube_host_el += '            <div class="pf-c-form__group-control">';
+        cube_host_el += '                <input class="pf-c-form-control" style="width:70%" type="text" id="form-input-wall-monitoring-cubehost'+i+'-ip" name="form-input-wall-monitoring-cubehost'+i+'-ip" required />';
         cube_host_el += '            </div>';
         cube_host_el += '        </div>';
-        cube_host_el += '    </div>';
-        cube_host_el += '    <div class="pf-c-form__field-group-body" style="padding-top:0px;">';
-        for(var i = 1 ; i <= host_count ; i ++ ){
-            cube_host_el += '        <div class="pf-c-form__group" style="padding:0px;">';
-            cube_host_el += '            <div class="pf-c-form__group-label">';
-            cube_host_el += '                <label class="pf-c-form__label" for="form-input-wall-monitoring-cubehost'+i+'-ip">';
-            cube_host_el += '                    <span class="pf-c-form__label-text">Cube'+i+' 관리 IP</span>';
-            cube_host_el += '                    <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>';
-            cube_host_el += '                </label>';
-            cube_host_el += '            </div>';
-            cube_host_el += '            <div class="pf-c-form__group-control">';
-            cube_host_el += '                <input class="pf-c-form-control" style="width:70%" type="text" id="form-input-wall-monitoring-cubehost'+i+'-ip" name="form-input-wall-monitoring-cubehost'+i+'-ip" required />';
-            cube_host_el += '            </div>';
-            cube_host_el += '        </div>';
-        }
-        cube_host_el += '    </div>';
+    }
+    cube_host_el += '    </div>';
 
 
-        var scvm_el ='';
-        scvm_el +='    <div class="pf-c-form__field-group-header"  style="padding-bottom:8px;">';
-        scvm_el +='        <div class="pf-c-form__field-group-header-main">';
-        scvm_el +='            <div class="pf-c-form__field-group-header-title">';
-        scvm_el +='                <div class="pf-c-form__field-group-header-title-text">스토리지센터 VM</div>';
+    var scvm_el ='';
+    scvm_el +='    <div class="pf-c-form__field-group-header"  style="padding-bottom:8px;">';
+    scvm_el +='        <div class="pf-c-form__field-group-header-main">';
+    scvm_el +='            <div class="pf-c-form__field-group-header-title">';
+    scvm_el +='                <div class="pf-c-form__field-group-header-title-text">스토리지센터 VM</div>';
+    scvm_el +='            </div>';
+    scvm_el +='        </div>';
+    scvm_el +='    </div>';
+    scvm_el +='    <div class="pf-c-form__field-group-body" style="padding-top:0px;">';
+    for(var i = 1 ; i <= host_count ; i ++ ){
+        scvm_el +='        <div class="pf-c-form__group" style="padding:0px;">';
+        scvm_el +='            <div class="pf-c-form__group-label">';
+        scvm_el +='                <label class="pf-c-form__label" for="form-input-wall-monitoring-scvm1-ip">';
+        scvm_el +='                    <span class="pf-c-form__label-text">SCVM'+i+' 관리 IP</span>';
+        scvm_el +='                    <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>';
+        scvm_el +='                </label>';
+        scvm_el +='            </div>';
+        scvm_el +='            <div class="pf-c-form__group-control">';
+        scvm_el +='                <input class="pf-c-form-control" style="width:70%" type="text" id="form-input-wall-monitoring-scvm'+i+'-ip" name="form-input-wall-monitoring-scvm'+i+'-ip" required />';
         scvm_el +='            </div>';
         scvm_el +='        </div>';
-        scvm_el +='    </div>';
-        scvm_el +='    <div class="pf-c-form__field-group-body" style="padding-top:0px;">';
-        for(var i = 1 ; i <= host_count ; i ++ ){
-            scvm_el +='        <div class="pf-c-form__group" style="padding:0px;">';
-            scvm_el +='            <div class="pf-c-form__group-label">';
-            scvm_el +='                <label class="pf-c-form__label" for="form-input-wall-monitoring-scvm1-ip">';
-            scvm_el +='                    <span class="pf-c-form__label-text">SCVM'+i+' 관리 IP</span>';
-            scvm_el +='                    <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>';
-            scvm_el +='                </label>';
-            scvm_el +='            </div>';
-            scvm_el +='            <div class="pf-c-form__group-control">';
-            scvm_el +='                <input class="pf-c-form-control" style="width:70%" type="text" id="form-input-wall-monitoring-scvm'+i+'-ip" name="form-input-wall-monitoring-scvm'+i+'-ip" required />';
-            scvm_el +='            </div>';
-            scvm_el +='        </div>';
-        }
-        scvm_el +='    </div>';
+    }
+    scvm_el +='    </div>';
 
-        var review_el ='';
-        review_el +='    <dl class="pf-c-description-list pf-m-horizontal" style="--pf-c-description-list--RowGap: 10px;margin-left: 10px">';
-        review_el +='        <div class="pf-c-description-list__group">';
-        review_el +='            <dt class="pf-c-description-list__term">';
-        review_el +='                <span class="pf-c-description-list__text">호스트 수</span>';
-        review_el +='            </dt>';
-        review_el +='             <dd class="pf-c-description-list__description">';
-        review_el +='               <div class="pf-c-description-list__text">';
-        review_el +='                    <span id="span-wall-host-number"></span><br/>';
-        review_el +='               </div>';
-        review_el +='            </dd>';
-        review_el +='        </div>';
-        review_el +='        <div class="pf-c-description-list__group">';
-        review_el +='            <dt class="pf-c-description-list__term">';
-        review_el +='                <span class="pf-c-description-list__text">클라우드센터 VM</span>';
-        review_el +='            </dt>';
-        review_el +='             <dd class="pf-c-description-list__description">';
-        review_el +='               <div class="pf-c-description-list__text">';
-        review_el +='                    CCVM 관리 IP : <span id="span-wall-monitoring-ccvm-ip"></span><br/>';
-        review_el +='               </div>';
-        review_el +='            </dd>';
-        review_el +='        </div>';
-        review_el +='        <div class="pf-c-description-list__group">';
-        review_el +='            <dt class="pf-c-description-list__term">';
-        review_el +='                <span class="pf-c-description-list__text">Cube 호스트</span>';
-        review_el +='            </dt>';
-        review_el +='           <dd class="pf-c-description-list__description">';
-        for(var i = 1 ; i <= host_count ; i ++ ){
-            review_el +='                <div class="pf-c-description-list__text">';
-            review_el +='                    Cube'+i+' 관리 IP : <span id="span-wall-monitoring-cubehost'+i+'-ip"></span><br/>';
-            review_el +='                </div>';
-        }
-        review_el +='            </dd>';
-        review_el +='        </div>';
+    var review_el ='';
+    review_el +='    <dl class="pf-c-description-list pf-m-horizontal" style="--pf-c-description-list--RowGap: 10px;margin-left: 10px">';
+    review_el +='        <div class="pf-c-description-list__group">';
+    review_el +='            <dt class="pf-c-description-list__term">';
+    review_el +='                <span class="pf-c-description-list__text">호스트 수</span>';
+    review_el +='            </dt>';
+    review_el +='             <dd class="pf-c-description-list__description">';
+    review_el +='               <div class="pf-c-description-list__text">';
+    review_el +='                    <span id="span-wall-host-number"></span><br/>';
+    review_el +='               </div>';
+    review_el +='            </dd>';
+    review_el +='        </div>';
+    review_el +='        <div class="pf-c-description-list__group">';
+    review_el +='            <dt class="pf-c-description-list__term">';
+    review_el +='                <span class="pf-c-description-list__text">클라우드센터 VM</span>';
+    review_el +='            </dt>';
+    review_el +='             <dd class="pf-c-description-list__description">';
+    review_el +='               <div class="pf-c-description-list__text">';
+    review_el +='                    CCVM 관리 IP : <span id="span-wall-monitoring-ccvm-ip"></span><br/>';
+    review_el +='               </div>';
+    review_el +='            </dd>';
+    review_el +='        </div>';
+    review_el +='        <div class="pf-c-description-list__group">';
+    review_el +='            <dt class="pf-c-description-list__term">';
+    review_el +='                <span class="pf-c-description-list__text">Cube 호스트</span>';
+    review_el +='            </dt>';
+    review_el +='           <dd class="pf-c-description-list__description">';
+    for(var i = 1 ; i <= host_count ; i ++ ){
+        review_el +='                <div class="pf-c-description-list__text">';
+        review_el +='                    Cube'+i+' 관리 IP : <span id="span-wall-monitoring-cubehost'+i+'-ip"></span><br/>';
+        review_el +='                </div>';
+    }
+    review_el +='            </dd>';
+    review_el +='        </div>';
+    if (os_type != "general-virtualization"){
         review_el +='        <div class="pf-c-description-list__group">';
         review_el +='            <dt class="pf-c-description-list__term">';
         review_el +='                <span class="pf-c-description-list__text">스토리지센터 VM</span>';
@@ -1014,15 +1027,15 @@ function setWallIpInput(host_count){
         }
         review_el +='            </dd>';
         review_el +='       </div>';
-        review_el +='    </dl>';
-
-        $('#div-wall-ccvm-ip-area').append(ccvm_el);
-        $('#div-wall-cubehost-ip-area').append(cube_host_el);
-        $('#div-wall-scvm-ip-area').append(scvm_el);
-        $('#div-wall-review-area').append(review_el);
-    } else {
-        alert("호스트 수는 3 이상 100 이하로 입력할 수 있습니다.");
     }
+    review_el +='    </dl>';
+
+    $('#div-wall-ccvm-ip-area').append(ccvm_el);
+    $('#div-wall-cubehost-ip-area').append(cube_host_el);
+    if (os_type != "general-virtualization"){
+        $('#div-wall-scvm-ip-area').append(scvm_el);
+    }
+    $('#div-wall-review-area').append(review_el);
 }
 
 function autoConfigWallIP(){
@@ -1037,7 +1050,9 @@ function autoConfigWallIP(){
         $("#form-input-wall-monitoring-ccvm-ip").val(clusterJsonConf.clusterConfig.ccvm.ip);
         for (let i = 0 ; i < host_count ; i++){
             $("#form-input-wall-monitoring-cubehost"+(i+1)+"-ip").val(clusterJsonConf.clusterConfig.hosts[i].ablecube);
-            $("#form-input-wall-monitoring-scvm"+(i+1)+"-ip").val(clusterJsonConf.clusterConfig.hosts[i].scvmMngt);
+            if (os_type != "general-virtualization"){
+                $("#form-input-wall-monitoring-scvm"+(i+1)+"-ip").val(clusterJsonConf.clusterConfig.hosts[i].scvmMngt);
+            }
         }
     })
     .catch(function(data){
@@ -1046,4 +1061,9 @@ function autoConfigWallIP(){
     });
 }
 
+function screenChange(){
+    if (os_type == "general-virtualization"){
+        $('#div-wall-scvm-ip-area').hide();
+    }
+}
 /* 함수 정의 끝 */

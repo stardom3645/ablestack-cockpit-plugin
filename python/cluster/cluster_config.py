@@ -118,12 +118,9 @@ def insert(args):
                         })
         else :
             if args.pcs_cluster_list is not None:
-                if args.pcs_cluster_list[0] is not None:
-                    json_data["clusterConfig"]["pcsCluster"]["hostname1"] = args.pcs_cluster_list[0]
-                if args.pcs_cluster_list[1] is not None:
-                    json_data["clusterConfig"]["pcsCluster"]["hostname2"] = args.pcs_cluster_list[1]
-                if args.pcs_cluster_list[2] is not None:
-                    json_data["clusterConfig"]["pcsCluster"]["hostname3"] = args.pcs_cluster_list[2]
+                    for i in range(len(args.pcs_cluster_list)):
+                        if args.pcs_cluster_list[i] is not None:
+                            json_data["clusterConfig"]["pcsCluster"]["hostname"+str(i+1)] = args.pcs_cluster_list[i]
 
             if args.mngt_nic_cidr is not None:
                 json_data["clusterConfig"]["mngtNic"]["cidr"] = args.mngt_nic_cidr
@@ -198,7 +195,7 @@ def insertScvmHost(args):
                 ping_check_list.append(p_val1["ablecube"])
                 ping_check_list.append(p_val1["scvmMngt"])
 
-            ping_result = json.loads(python3(pluginpath+'/python/vm/host_ping_test.py', '-hns',ping_check_list))
+            ping_result = json.loads(python3(pluginpath+'/python/vm/host_ping_test.py', '-hns', ping_check_list))
 
             if ping_result["code"] == 200:
                 # 명령 수행이 가능한 상태인지 체크하는 부분
@@ -222,7 +219,9 @@ def insertScvmHost(args):
                         cmd_str += " -co withScvm"
                         cmd_str += " -t " + args.type
 
-                        ret = ssh('-o', 'StrictHostKeyChecking=no', p_val3["ablecube"], cmd_str, " -cmi "+args.ccvm_mngt_ip, " -pcl "+args.pcs_cluster_list[0] +" "+ args.pcs_cluster_list[1] +" "+ args.pcs_cluster_list[2])
+                        pcs_list = " ".join(args.pcs_cluster_list)
+
+                        ret = ssh('-o', 'StrictHostKeyChecking=no', p_val3["ablecube"], cmd_str, " -cmi "+args.ccvm_mngt_ip, " -pcl "+pcs_list)
 
                         if json.loads(ret)["code"] != 200:
                             return createReturn(code=500, val=return_val + " : " + p_val3["ablecube"])
@@ -449,7 +448,8 @@ if __name__ == '__main__':
 
     # 실제 로직 부분 호출 및 결과 출력
     if args.action == 'insert':
-        reset_cluster_config()
+        if os_type == "general-virtualization":
+            reset_cluster_config()
         ret = insert(args)
         print(ret)
     elif args.action == 'insertScvmHost':

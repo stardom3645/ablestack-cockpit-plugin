@@ -75,10 +75,9 @@ $(document).ready(function(){
     $('#div-modal-db-backup-cloud-vm-first').load("./src/features/cloud-vm-dbbackup.html");
     $('#div-modal-db-backup-cloud-vm-first').hide();
 
-    if (os_type == "general-virtualization"){
-        $('#div-card-storage-cluster-status').hide();
-        $('#div-card-storage-vm-status').hide();
-    }
+    // 일반 가상화일 경우 화면 변환
+    screenConversion();
+
     cockpit.spawn(['python3', pluginpath + '/python/pcs/pcsExehost.py'])
     .then(function (data) {
         let retVal = JSON.parse(data);
@@ -1427,11 +1426,13 @@ function checkDeployStatus(){
                                 showRibbon('success','ABLESTACK 클라우드센터 VM 배포되었으며 모니터링센터 구성이 완료되었습니다. 가상어플라이언스 상태가 정상입니다.');
                                 // 운영 상태조회
                                 let msg ="";
-                                if(step6!="RUNNING"){
-                                    msg += '클라우드센터 가상머신이 '+step6+' 상태 입니다.\n';
-                                    msg += '클라우드센터 가상머신 Mold 서비스 , DB 상태를 확인하여 정지상태일 경우 서비스 재시작\n';
-                                    msg += '또는 클라우드센터 클러스터 상태 카드에서 가상머신 시작하여 문제를 해결할 수 있습니다.';
-                                    showRibbon('warning', msg);
+                                if (step6 != null){
+                                    if(step6!="RUNNING"){
+                                        msg += '클라우드센터 가상머신이 '+step6+' 상태 입니다.\n';
+                                        msg += '클라우드센터 가상머신 Mold 서비스 , DB 상태를 확인하여 정지상태일 경우 서비스 재시작\n';
+                                        msg += '또는 클라우드센터 클러스터 상태 카드에서 가상머신 시작하여 문제를 해결할 수 있습니다.';
+                                        showRibbon('warning', msg);
+                                    }
                                 }
                             }
                         }
@@ -1754,4 +1755,12 @@ function updatePfmpInstall(time_value, unit) {
             clearInterval(interval); // 100%가 되면 타이머 종료
         }
     }, intervalTime);
+}
+function screenConversion(){
+    if (os_type == "general-virtualization"){
+        $('#div-card-storage-cluster-status').hide();
+        $('#div-card-storage-vm-status').hide();
+        $('#ccvm-gfs-maintenance-update').show();
+        $('#ccvm-gfs-qdevice-init').show();
+    }
 }

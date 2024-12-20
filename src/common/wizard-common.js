@@ -220,15 +220,15 @@ function setSshKeyFileReader(input, file_name, callBackFunction) {
  * History  : 2021.03.22 최초 작성
  */
  function setProgressStep(span_id, status){
-    //proceeding or 1: 진행중, completed or 2: 완료됨, aborted or 3: 중단됨
-    if(status=="proceeding" || status=="completed" || status=="aborted" || status==1 || status==2 || status==3){
+    //proceeding or 1: 진행중, completed or 2: 완료됨, aborted or 3: 중단됨 or 4: formatting, 포맷중
+    if(status=="proceeding" || status=="completed" || status=="aborted" || status=="formatting"|| status==1 || status==2 || status==3 || status==4){
         var span = $('#'+span_id);
         var icon = $('#'+span_id).children('span').children('span').children("i");
         var progress_text = $('#'+span_id).children('span').children('p');
 
         // 초기화
-        span.removeClass('pf-m-blue pf-m-green pf-m-orange pf-m-red');
-        icon.removeClass('fa-info-circle fa-check-circle fa-play fa-exclamation-circle');
+        span.removeClass('pf-m-blue pf-m-green pf-m-orange pf-m-red pf-m-purple');
+        icon.removeClass('fa-info-circle fa-check-circle fa-play fa-exclamation-circle fa-hourglass-half');
 
         if(status == "proceeding" || status==1){
             if(span.attr('id') == "span-ccvm-progress-step1"){
@@ -255,6 +255,10 @@ function setSshKeyFileReader(input, file_name, callBackFunction) {
             span.addClass('pf-m-red');
             icon.addClass('fa-exclamation-circle');
             progress_text.text('중단됨');
+        } else if(status=="formatting" || status==4){
+            span.addClass('pf-m-purple');
+            icon.addClass('fa-hourglass-half');
+            progress_text.text('포맷중');
         }
     }else{
         alert("진행 상태를 잘못 입력했습니다.");

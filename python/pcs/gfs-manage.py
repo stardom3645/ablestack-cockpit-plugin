@@ -101,15 +101,14 @@ def modify_lvm_conf(ips):
                 'sed -i \'s/# types = \\[ "fd", 16 \\]/types = \\[ "scini", 16 \\]/\' /etc/lvm/lvm.conf;'
                 'sed -i "s/# use_lvmlockd = 0/use_lvmlockd = 1/" /etc/lvm/lvm.conf;'
                 'sed -i "s/use_devicesfile = 0/use_devicesfile = 1/" /etc/lvm/lvm.conf;'
-                'systemctl enable lvmlockd.service;'
             )
             ret = createReturn(code=200, val="Modify Lvm Conf Success,"+powerflex_disk_name)
         else:
             modify_command = (
                 'sed -i "s/# use_lvmlockd = 0/use_lvmlockd = 1/" /etc/lvm/lvm.conf;'
                 'sed -i "s/use_devicesfile = 0/use_devicesfile = 1/" /etc/lvm/lvm.conf;'
-                'systemctl enable lvmlockd.service;'
             )
+            ret = createReturn(code=200, val="Modify Lvm Conf Success")
 
         if ips:
             for ip in ips:
@@ -119,7 +118,6 @@ def modify_lvm_conf(ips):
         else:
             run_command(modify_command)
 
-        ret = createReturn(code=200, val="Modify Lvm Conf Success")
         return print(json.dumps(json.loads(ret), indent=4))
     except Exception:
         ret = createReturn(code=500, val="Modify Lvm Conf Failure")
@@ -253,8 +251,8 @@ def configure_stonith_devices(stonith_info, list_ips):
             command_constraint = (f'pcs constraint location {device_name} avoids {storage_ip}')
             run_command(command_constraint, ignore_errors=True)
         run_command("pcs property set stonith-enabled=true", ignore_errors=True)
-        run_command("pcs resource create glue-dlm --group glue-locking ocf:pacemaker:controld op monitor interval=60s on-fail=fence", ignore_errors=True)
-        run_command("pcs resource create glue-lvmlockd --group glue-locking ocf:heartbeat:lvmlockd op monitor interval=60s on-fail=fence", ignore_errors=True)
+        run_command("pcs resource create glue-dlm --group glue-locking ocf:pacemaker:controld op monitor interval=45s on-fail=fence", ignore_errors=True)
+        run_command("pcs resource create glue-lvmlockd --group glue-locking ocf:heartbeat:lvmlockd op monitor interval=45s on-fail=fence", ignore_errors=True)
         run_command("pcs resource clone glue-locking interleave=true", ignore_errors=True)
 
         ret = createReturn(code=200, val="Configure Stonith Devices Success")
@@ -283,7 +281,7 @@ def get_lv_path(vg_name, lv_name):
     raise FileNotFoundError(f"Logical Volume {vg_name}/{lv_name} 경로를 찾을 수 없습니다.")
 
 def create_gfs(disks, vg_name, lv_name, gfs_name, mount_point, cluster_name, num_journals, list_ips):
-    time.sleep(15)
+    time.sleep(20)
     """Create and a single GFS2 file system on the provided disks."""
     try:
         # Prepare a list to store disk devices
@@ -313,8 +311,7 @@ def create_gfs(disks, vg_name, lv_name, gfs_name, mount_point, cluster_name, num
         run_command(f"lvcreate --yes --activate sy -l+100%FREE -n {lv_name} {vg_name} ")
         # GFS2 파일 시스템 생성
         lv_path = get_lv_path(vg_name, lv_name)
-        run_command(f"mkfs.gfs2 -j{num_journals} -p lock_dlm -t {cluster_name}:{gfs_name} {lv_path} -O ")
-
+        run_command(f"mkfs.gfs2 -j{num_journals} -p lock_dlm -t {cluster_name}:{gfs_name} {lv_path} -O -K")
 
         for ip in list_ips:
             ssh_client = connect_to_host(ip)
@@ -355,24 +352,83 @@ def create_gfs(disks, vg_name, lv_name, gfs_name, mount_point, cluster_name, num
         ret = createReturn(code=500, val="Create GFS Failure")
         return print(json.dumps(json.loads(ret), indent=4))
 
-def create_ccvm_cluster(gfs_name,mount_point,cluster_name):
+def create_ccvm_cluster(gfs_name, mount_point, cluster_name, list_ips):
     try:
-
         time.sleep(10)
 
         run_command("cp "+ pluginpath + f"/tools/vmconfig/ccvm/ccvm.xml {mount_point}/ccvm.xml")
         run_command(f"cp /var/lib/libvirt/images/ablestack-template.qcow2 {mount_point}/ccvm.qcow2")
-        run_command(f"qemu-img resize {mount_point}/ccvm.qcow2 +350G > /dev/null")
+        run_command(f"qemu-img resize {mount_point}/ccvm.qcow2 +350G")
 
-        run_command(f"pcs resource create {cluster_name} VirtualDomain hypervisor=qemu:///system config={mount_point}/ccvm.xml migration_transport=ssh meta allow-migrate=true priority=100 op start timeout=120s op stop timeout=120s op monitor timeout=120s interval=20s")
+        if len(list_ips) % 2 == 0:
+            run_command(f"virsh create {mount_point}/ccvm.xml")
+            ip = run_command("grep 'ccvm-mngt' /etc/hosts | awk '{print $1}'").strip()
+
+            # Setup qdevice
+            qdevice_command = (
+                "echo 'hacluster:password' | chpasswd; "
+                "systemctl enable --now pcsd; "
+                "pcs qdevice setup model net --enable --start; "
+                "firewall-cmd --permanent --add-service=high-availability; "
+                "firewall-cmd --add-service=high-availability"
+            )
+
+            retries = 5
+            interval = 2
+            for _ in range(retries):
+                response = subprocess.run(
+                    ["ping", "-c", "1", "ccvm"],
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE,
+                    text=True
+                )
+                if response.returncode == 0:
+                    time.sleep(2)
+                    ssh_client = connect_to_host(ip)
+                    run_command(qdevice_command, ssh_client)
+                    ssh_client.close()
+                    break
+                else:
+                    time.sleep(interval)
+
+            pcs_command = (
+                f"pcs host auth {ip} -u hacluster -p password; "
+                "pcs cluster stop --all; "
+                f"pcs quorum device add model net host={ip} algorithm=ffsplit; "
+                "pcs cluster start --all;"
+            )
+            run_command(pcs_command)
+
+            ccvm_command = (
+                "virsh destroy ccvm; "
+                "sed -i 's|/mnt/ccvm.qcow2|/mnt/glue-gfs/ccvm.qcow2|g' /mnt/ccvm.xml; "
+                f"cp {mount_point}/ccvm.* /mnt/glue-gfs/; "
+                f"rm -rf {mount_point}/ccvm.*;"
+            )
+            time.sleep(40)
+            run_command(ccvm_command)
+
+            config_path = f"{mount_point}/glue-gfs/ccvm.xml"
+        else:
+            config_path = f"{mount_point}/ccvm.xml"
+
+        pcs_resource_command = (
+            f"pcs resource create {cluster_name} VirtualDomain hypervisor=qemu:///system config={config_path} "
+            "migration_transport=ssh meta allow-migrate=true priority=100 "
+            "op start timeout=120s op stop timeout=120s op monitor timeout=120s interval=10s"
+        )
+        run_command(pcs_resource_command)
+
+        # Set PCS constraints
         run_command(f"pcs constraint order start {gfs_name}-clone then {cluster_name}")
-
 
         ret = createReturn(code=200, val="Create CCVM Cluster Success")
         return print(json.dumps(json.loads(ret), indent=4))
+
     except Exception:
         ret = createReturn(code=500, val="Create CCVM Cluster Failure")
         return print(json.dumps(json.loads(ret), indent=4))
+
 def extend_pcs_cluster(username,password,stonith_info,mount_point,list_ips):
     try:
         host_ip = socket.gethostbyname(socket.getfqdn())
@@ -443,6 +499,150 @@ def extend_pcs_cluster(username,password,stonith_info,mount_point,list_ips):
     except Exception:
         ret = createReturn(code=500, val="Extend Pcs Cluster Failure")
         return print(json.dumps(json.loads(ret), indent=4))
+def check_ipmi(stonith_str):
+    """
+    Check the power status of STONITH devices and log errors per device.
+    Input is a semicolon-separated string of STONITH device details.
+    """
+    error_logs = []
+    success_logs = []
+
+    try:
+        # Parse the input string
+        stonith_info = []
+        for item in stonith_str.split(";"):
+            try:
+                ipaddr, port, login, passwd = item.split(",")
+                stonith_info.append({"ipaddr": ipaddr, "port": port, "login": login, "passwd": passwd})
+            except ValueError:
+                error_logs.append({"entry": item, "error": "Invalid STONITH entry format"})
+
+        # Process each STONITH device
+        for info in stonith_info:
+            ip = info["ipaddr"]
+            username = info["login"]
+            password = info["passwd"]
+
+            command = f'ipmitool -I lanplus -H {ip} -U {username} -P {password} power status'
+            try:
+                result = run_command(command, ignore_errors=False).strip()
+                if not result:  # Check if the result is empty
+                    error_logs.append({"ip": ip, "error": "Status not available"})
+                else:
+                    success_logs.append({"ip": ip, "status": result})
+            except Exception as e:
+                error_logs.append({"ip": ip, "error": str(e)})
+
+        # Construct message
+        if error_logs:  # If there are any errors, return code 500
+            error_ips = ", ".join([f"{err['ip']}: {err['error']}" for err in error_logs if 'ip' in err])
+            general_message = f"Errors detected in the following STONITH devices: {error_ips}"
+            ret = createReturn(
+                code=500,
+                val={
+                    "message": general_message,
+                    "errors": error_logs,
+                    "success": success_logs
+                }
+            )
+        else:
+            general_message = "All STONITH devices checked successfully"
+            ret = createReturn(
+                code=200,
+                val={
+                    "message": general_message,
+                    "success": success_logs
+                }
+            )
+
+        return print(json.dumps(json.loads(ret), indent=4))
+
+    except Exception as e:
+        ret = createReturn(code=500, val="Check Stonith Devices Failure")
+        return print(json.dumps(json.loads(ret), indent=4))
+
+
+def check_stonith(control):
+    try:
+        if control == "check":
+            hosts = run_command("pcs stonith status | awk '{print $4}' | uniq").strip()
+
+            ret = createReturn(code=200, val=hosts)
+            return print(json.dumps(json.loads(ret), indent=4))
+
+        if control == "enable":
+            hosts = run_command("pcs stonith status | awk '{print $2}'").split()
+            for host in hosts:
+                run_command(f"pcs stonith enable {host}")
+            ret = createReturn(code=200, val="Stonith Enable Pcs Cluster Success")
+            return print(json.dumps(json.loads(ret), indent=4))
+        elif control == "disable":
+            hosts = run_command("pcs stonith status | awk '{print $2}'").split()
+            for host in hosts:
+                run_command(f"pcs stonith disable {host}")
+            ret = createReturn(code=200, val="Stonith Disable Pcs Cluster Success")
+            return print(json.dumps(json.loads(ret), indent=4))
+
+    except Exception:
+        ret = createReturn(code=500, val="Stonith Pcs Cluster Failure")
+        return print(json.dumps(json.loads(ret), indent=4))
+def init_qdevice():
+    try:
+            ip = run_command("grep 'ccvm-mngt' /etc/hosts | awk '{print $1}'").strip()
+
+            retries = 5
+            interval = 1
+
+            run_command("pcs quorum device remove")
+
+            for i in range(1, retries + 1):
+                response = subprocess.run(
+                    ["ping", "-c", "1", "ccvm"],
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE,
+                    text=True
+                )
+                if response.returncode == 0:
+                    run_command(f"pcs quorum device add model net host={ip} algorithm=ffsplit")
+                else:
+                    time.sleep(interval)
+
+            ret = createReturn(code=200, val="Qdevice Init Success")
+            return print(json.dumps(json.loads(ret), indent=4))
+
+    except Exception:
+        ret = createReturn(code=500, val="Qdevice Init Failure")
+        return print(json.dumps(json.loads(ret), indent=4))
+import subprocess
+
+def check_qdevice():
+    try:
+        # Step 1: Run the pcs quorum config command
+        result = subprocess.run(
+            ["pcs", "quorum", "config"],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True
+        )
+
+        if result.returncode != 0:
+            ret = createReturn(code=500, val="Qdevice Check Failure")
+            return print(json.dumps(json.loads(ret), indent=4))
+
+        output = result.stdout
+
+        # Step 3: Check for `Device:` section
+        if "Device:" in output:
+            ret = createReturn(code=200, val="Qdevice Structure Check Success")
+            return print(json.dumps(json.loads(ret), indent=4))
+        else:
+            ret = createReturn(code=204, val="Qdevice Structure Check Success, No Device Text")
+            return print(json.dumps(json.loads(ret), indent=4))
+
+    except Exception as e:
+        ret = createReturn(code=500, val="Qdevice Check Failure")
+        return print(json.dumps(json.loads(ret), indent=4))
+
 def main():
     parser = argparse.ArgumentParser(description="Cluster configuration script")
 
@@ -463,6 +663,11 @@ def main():
     parser.add_argument('--init-gfs',action='store_true', help='Flag to init GFS2 file system.')
     parser.add_argument('--create-ccvm-cluster', action='store_true', help='Flag to create CCVM Cluster.')
     parser.add_argument('--init-pcs-cluster', action='store_true', help='Flag to init Pcs Cluster.')
+    parser.add_argument('--check-stonith', action='store_true', help='Flag to Check Pcs Cluster Stonith.')
+    parser.add_argument('--control', type=str, help='Flag to Pcs Cluster Stonith Maintenance Control.')
+    parser.add_argument('--check-ipmi',action='store_true', help='Flag to Check Pcs Cluster IPMI Status.')
+    parser.add_argument('--init-qdevice', action='store_true', help='Flag to Qdevice Init.')
+    parser.add_argument('--check-qdevice', action='store_true', help='Flag to Check Pcs Cluster Qdevice Structure.')
     # 확장할 시에 사용되는 parser들
     parser.add_argument('--password',  help="Extend Host Set the hacluster user password.")
     parser.add_argument('--stonith',  help="Extend Host Set Configure STONITH devices with a list of comma-separated values (ipaddr,port,username,password).")
@@ -518,8 +723,8 @@ def main():
         setup_cluster(args.setup_cluster, list_ips)
 
     if args.init_pcs_cluster:
-        if not all([args.list_ip]):
-            print("All arguments are required when using --init-pcs-cluster")
+        if not args.list_ip:
+            print("--list-ip is required for --init-pcs-cluster")
             parser.print_help()
         else:
             if args.disks != None:
@@ -552,15 +757,16 @@ def main():
             create_gfs(disks, vg_name, lv_name, gfs_name, mount_point, cluster_name, num_journals, list_ips)
 
     if args.create_ccvm_cluster:
-        if not all([args.gfs_name, args.cluster_name,args.mount_point]):
+        if not all([args.gfs_name, args.cluster_name,args.mount_point, args.list_ip]):
             print("All arguments are required when using --create-ccvm-cluster")
             parser.print_help()
         else:
             gfs_name = args.gfs_name
             mount_point = args.mount_point
             cluster_name = args.cluster_name
+            list_ips = args.list_ip.split()
 
-            create_ccvm_cluster(gfs_name, mount_point, cluster_name)
+            create_ccvm_cluster(gfs_name, mount_point, cluster_name, list_ips)
 
     if args.extend_pcs_cluster:
         if not all([args.password, args.stonith, args.mount_point, args.list_ip]):
@@ -580,6 +786,26 @@ def main():
             list_ips = args.list_ip.split()
 
             extend_pcs_cluster('hacluster', password, stonith_info, mount_point, list_ips)
+    if args.check_ipmi:
+        if not args.stonith:
+            print("--stonith are required when using --check-ipmi")
+            parser.print_help()
+        else:
+            stonith_info = args.stonith
+
+            check_ipmi(stonith_info)
+
+    if args.check_stonith:
+        if not args.control:
+             parser.error("--control is required for --check-stonith")
+        control = args.control
+        check_stonith(control)
+
+    if args.init_qdevice:
+        init_qdevice()
+
+    if args.check_qdevice:
+        check_qdevice()
 
 if __name__ == "__main__":
     main()

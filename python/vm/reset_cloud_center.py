@@ -15,6 +15,7 @@ import os
 
 from ablestack import *
 from sh import python3
+from sh import ssh
 
 def createArgumentParser():
     '''
@@ -167,6 +168,10 @@ def resetCloudCenter(args):
         os.system("rm -rf "+pluginpath+"/tools/vmconfig/ccvm/*")
         # 결과값 리턴
         if success_bool:
+            for i in range(len(json_data["clusterConfig"]["hosts"])):
+                ablecube = json_data["clusterConfig"]["hosts"][i]["ablecube"]
+                ssh('-o', 'StrictHostKeyChecking=no', '-o', 'ConnectTimeout=5',ablecube,'python3', pluginpath + '/python/ablestack_json/ablestackJson.py', 'update','--depth1', 'bootstrap', '--depth2', 'ccvm', '--value', 'false')
+                ssh('-o', 'StrictHostKeyChecking=no', '-o', 'ConnectTimeout=5',ablecube,'python3', pluginpath + '/python/ablestack_json/ablestackJson.py', 'update','--depth1', 'monitoring', '--depth2', 'wall', '--value', 'false')
             return createReturn(code=200, val="cloud center reset success")
         else:
             return createReturn(code=500, val="cloud center reset fail")

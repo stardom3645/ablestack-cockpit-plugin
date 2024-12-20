@@ -79,9 +79,7 @@ def jsonUpdate():
             ret_val = res
 
         else:
-            print(json_data)
             json_data[args.depth1][args.depth2] = args.value
-            print(json_data)
             with open(file_path, 'w') as outfile:
                 json.dump(json_data, outfile, indent=4)
             ret = createReturn(code=200, val=ret_val)

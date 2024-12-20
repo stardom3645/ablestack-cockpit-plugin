@@ -41,6 +41,8 @@ def main():
         pcs.statusResource(args.resource)
     elif (args.action) == 'stop' :
         pcs.stopCluster()
+    elif (args.action) == 'sync' :
+        pcs.clustersynctime(args.time)
 
 if __name__ == "__main__":
     main()

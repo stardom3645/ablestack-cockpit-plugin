@@ -128,6 +128,7 @@ $('#nav-button-cluster-config-ip-info').on('click', function () {
 $('#nav-button-cluster-config-time-server').on('click', function () {
     resetClusterConfigWizard();
 
+
     $('#div-modal-wizard-cluster-config-time-server').show();
     $('#nav-button-cluster-config-time-server').addClass('pf-m-current');
 
@@ -139,19 +140,19 @@ $('#nav-button-cluster-config-time-server').on('click', function () {
         inputPnIntoTimeServer(os_type);
     }
     // 구성할 호스트 수가 3대 미만이면 로컬 시간 서버 비활성화
-    if($('#form-input-cluster-config-host-number').val() < 3) {
-        $("input[name='radio-timeserver'][value='external']").prop("checked", true);
-        $('#form-radio-timeserver-int').attr('disabled', true);
-        $('#span-timeserver2-required').hide();
-        $('#span-timeserver3-required').hide();
-        $('#form-input-cluster-config-time-server-ip-2').removeAttr('required');
-        // 현재 host radio 버튼 숨김
-        $('#div-timeserver-host-num').hide();
-        // radio 버튼 클릭 시 ip 정보 초기화
-        $('input[name=form-input-cluster-config-timeserver]').val("");
-    }else {
-        $('#form-radio-timeserver-int').attr('disabled', false);
-    }
+    // if($('#form-input-cluster-config-host-number').val() < 3) {
+    //     $("input[name='radio-timeserver'][value='external']").prop("checked", true);
+    //     $('#form-radio-timeserver-int').attr('disabled', true);
+    //     $('#span-timeserver2-required').hide();
+    //     $('#span-timeserver3-required').hide();
+    //     $('#form-input-cluster-config-time-server-ip-2').removeAttr('required');
+    //     // 현재 host radio 버튼 숨김
+    //     $('#div-timeserver-host-num').hide();
+    //     // radio 버튼 클릭 시 ip 정보 초기화
+    //     $('input[name=form-input-cluster-config-timeserver]').val("");
+    // }else {
+    //     $('#form-radio-timeserver-int').attr('disabled', false);
+    // }
     cur_step_wizard_cluster_config_prepare = "5";
 });
 
@@ -185,19 +186,19 @@ $('#nav-button-cluster-config-review').on('click', function () {
     putHostsValueIntoTextarea(host_file_type, option,os_type);
     // time server 내용을 설정 확인에 반영
     // 구성할 호스트 수가 3대 미만이면 로컬 시간 서버 비활성화
-    if($('#form-input-cluster-config-host-number').val() < 3) {
-        $("input[name='radio-timeserver'][value='external']").prop("checked", true);
-        $('#form-radio-timeserver-int').attr('disabled', true);
-        $('#span-timeserver2-required').hide();
-        $('#span-timeserver3-required').hide();
-        $('#form-input-cluster-config-time-server-ip-2').removeAttr('required');
-        // 현재 host radio 버튼 숨김
-        $('#div-timeserver-host-num').hide();
-        // radio 버튼 클릭 시 ip 정보 초기화
-        $('input[name=form-input-cluster-config-timeserver]').val("");
-    }else {
-        $('#form-radio-timeserver-int').attr('disabled', false);
-    }
+    // if($('#form-input-cluster-config-host-number').val() < 3) {
+    //     $("input[name='radio-timeserver'][value='external']").prop("checked", true);
+    //     $('#form-radio-timeserver-int').attr('disabled', true);
+    //     $('#span-timeserver2-required').hide();
+    //     $('#span-timeserver3-required').hide();
+    //     $('#form-input-cluster-config-time-server-ip-2').removeAttr('required');
+    //     // 현재 host radio 버튼 숨김
+    //     $('#div-timeserver-host-num').hide();
+    //     // radio 버튼 클릭 시 ip 정보 초기화
+    //     $('input[name=form-input-cluster-config-timeserver]').val("");
+    // }else {
+    //     $('#form-radio-timeserver-int').attr('disabled', false);
+    // }
     let timeserver_type = $('input[name=radio-timeserver]:checked').val();
     putTimeServerValueIntoTextarea(timeserver_type);
 });
@@ -269,6 +270,7 @@ $('#button-next-step-modal-wizard-cluster-config-prepare').on('click', function 
         cur_step_wizard_cluster_config_prepare = "4";
 
     } else if (cur_step_wizard_cluster_config_prepare == "4") {
+
         $('#div-modal-wizard-cluster-config-time-server').show();
         $('#nav-button-cluster-config-time-server').addClass('pf-m-current');
 
@@ -301,19 +303,19 @@ $('#button-next-step-modal-wizard-cluster-config-prepare').on('click', function 
             inputPnIntoTimeServer(os_type);
         }
         // 구성할 호스트 수가 3대 미만이면 로컬 시간 서버 비활성화
-        if($('#form-input-cluster-config-host-number').val() < 3) {
-            $("input[name='radio-timeserver'][value='external']").prop("checked", true);
-            $('#form-radio-timeserver-int').attr('disabled', true);
-            $('#span-timeserver2-required').hide();
-            $('#span-timeserver3-required').hide();
-            $('#form-input-cluster-config-time-server-ip-2').removeAttr('required');
-            // 현재 host radio 버튼 숨김
-            $('#div-timeserver-host-num').hide();
-            // radio 버튼 클릭 시 ip 정보 초기화
-            $('input[name=form-input-cluster-config-timeserver]').val("");
-        }else {
-            $('#form-radio-timeserver-int').attr('disabled', false);
-        }
+        // if($('#form-input-cluster-config-host-number').val() < 3) {
+        //     $("input[name='radio-timeserver'][value='external']").prop("checked", true);
+        //     $('#form-radio-timeserver-int').attr('disabled', true);
+        //     $('#span-timeserver2-required').hide();
+        //     $('#span-timeserver3-required').hide();
+        //     $('#form-input-cluster-config-time-server-ip-2').removeAttr('required');
+        //     // 현재 host radio 버튼 숨김
+        //     $('#div-timeserver-host-num').hide();
+        //     // radio 버튼 클릭 시 ip 정보 초기화
+        //     $('input[name=form-input-cluster-config-timeserver]').val("");
+        // }else {
+        //     $('#form-radio-timeserver-int').attr('disabled', false);
+        // }
 
     } else if (cur_step_wizard_cluster_config_prepare == "5") {
         $('#div-modal-wizard-cluster-config-review').show();
@@ -646,6 +648,8 @@ $('#button-before-step-modal-wizard-cluster-config-prepare').on('click', functio
 
         cur_step_wizard_cluster_config_prepare = "4";
     } else if (cur_step_wizard_cluster_config_prepare == "6") {
+
+
         $('#div-modal-wizard-cluster-config-time-server').show();
         $('#nav-button-cluster-config-time-server').addClass('pf-m-current');
 
@@ -824,103 +828,17 @@ $('#form-input-cluster-config-host-number').on('change', function () {
     }
 });
 
-// Host 파일 준비 중 신규생성을 선택한 경우 Host 수에 따라 텍스트 값 변경
-// $('#form-input-cluster-config-host-number, #form-input-cluster-config-host-number-plus, #form-input-cluster-config-host-number-minus' +
-// ', #form-input-cluster-config-current-host-number, #form-input-cluster-config-current-host-number-plus, #form-input-cluster-config-current-host-number-minus').on('change click', function () {
-//     let current_host_num_val = $('#form-input-cluster-config-current-host-number').val();
-//     let total_host_num_val = $('#form-input-cluster-config-host-number').val();
-//     if (total_host_num_val <= 99 && current_host_num_val <= 99) {
-//         let target_table = $("#form-table-tbody-cluster-config-new-host-profile");
-//         target_table.empty();
-//         let insert_tr;
-//         insert_tr += "<tr>";
-//         insert_tr += "<td contenteditable='true'>192.168.0.10</td>";
-//         insert_tr += "<td contenteditable='flase'>ccvm-mngt</td>";
-//         insert_tr += "<td contenteditable='flase'>ccvm</td>";
-//         insert_tr += "</tr>";
-
-//         for (let i = 1; i <= total_host_num_val; i++) {
-//             let sum = 0 + i;
-//             insert_tr += "<tr>";
-//             insert_tr += "<td contenteditable='true'>192.168.1."+ sum +"</td>";
-//             insert_tr += "<td contenteditable='true'>ablecube"+ i +"</td>";
-//             if(current_host_num_val == sum) {
-//                 insert_tr += "<td contenteditable='true'>ablecube</td>";
-//             }else {
-//                 insert_tr += "<td contenteditable='flase'></td>";
-//             }
-//             insert_tr += "</tr>";
-//         }
-//         for (let i = 1; i <= total_host_num_val; i++) {
-//             let sum = 0 + i;
-//             insert_tr += "<tr>";
-//             insert_tr += "<td contenteditable='true'>192.168.2."+ sum +"</td>";
-//             insert_tr += "<td contenteditable='flase'>scvm"+ i +"-mngt</td>";
-//             if(current_host_num_val == sum) {
-//                 insert_tr += "<td contenteditable='flase'>scvm-mngt</td>";
-//             }else {
-//                 insert_tr += "<td contenteditable='flase'></td>";
-//             }
-//             insert_tr += "</tr>";
-//         }
-//         for (let i = 1; i <= total_host_num_val; i++) {
-//             let sum = 0 + i;
-//             insert_tr += "<tr>";
-//             insert_tr += "<td contenteditable='true'>100.100.10."+ sum +"</td>";
-//             insert_tr += "<td contenteditable='true'>ablecube"+ i +"-pn" +"</td>";
-//             if(current_host_num_val == sum) {
-//                 insert_tr += "<td contenteditable='true'>ablecube-pn</td>";
-//             }else {
-//                 insert_tr += "<td contenteditable='flase'></td>";
-//             }
-//             insert_tr += "</tr>";
-//         }
-//         for (let i = 1; i <= total_host_num_val; i++) {
-//             let sum = 100 + i;
-//             insert_tr += "<tr>";
-//             insert_tr += "<td contenteditable='true'>100.100.10."+ sum +"</td>";
-//             insert_tr += "<td contenteditable='flase'>scvm"+ i +"</td>";
-//             if(current_host_num_val == sum-100) {
-//                 insert_tr += "<td contenteditable='flase'>scvm</td>";
-//             }else {
-//                 insert_tr += "<td contenteditable='flase'></td>";
-//             }
-//             insert_tr += "</tr>";
-//         }
-//         for (let i = 1; i <= total_host_num_val; i++) {
-//             let sum = 10 + i;
-//             insert_tr += "<tr>";
-//             insert_tr += "<td contenteditable='true'>100.200.10."+ sum +"</td>";
-//             insert_tr += "<td contenteditable='flase'>scvm"+ i +"-cn</td>";
-//             if(current_host_num_val == sum-10) {
-//                 insert_tr += "<td contenteditable='flase'>scvm-cn</td>";
-//             }else {
-//                 insert_tr += "<td contenteditable='flase'></td>";
-//             }
-//             insert_tr += "</tr>";
-//         }
-//         $("#form-table-cluster-config-new-host-profile").append(insert_tr);
-
-//     } else {
-//         $('#form-input-cluster-config-host-number').val(99);
-//         $('#form-input-cluster-config-current-host-number').val(99);
-//         alert("1~99까지의 숫자만 입력할 수 있습니다.");
-//     }
-//     // 기존 파일 사용 시, 현재 호스트 + 또는 - 클릭 시 Alias2 변경
-//     let option = "";
-//     changeAlias2(option);
-// });
-
 // 로컬 시간서버를 외부 시간서버로 선택하면 시간서버 2, 3은 선택 입력으로 전환한다.
-$('#form-radio-timeserver-ext').on('click', function () {
-    $('#span-timeserver2-required').hide();
-    $('#span-timeserver3-required').hide();
-    $('#form-input-cluster-config-time-server-ip-2').removeAttr('required');
-    // 현재 host radio 버튼 숨김
-    $('#div-timeserver-host-num').hide();
-    // radio 버튼 클릭 시 ip 정보 초기화
-    $('input[name=form-input-cluster-config-timeserver]').val("");
-});
+// $('#form-radio-timeserver-ext').on('click', function () {
+//     $('#span-timeserver2-required').hide();
+//     $('#span-timeserver3-required').hide();
+//     $('#form-input-cluster-config-time-server-ip-2').removeAttr('required');
+//     // 현재 host radio 버튼 숨김
+//     $('#div-timeserver-host-num').hide();
+//     $('#form-input-cluster-config-int-to-ext').hide();
+//     // radio 버튼 클릭 시 ip 정보 초기화
+//     $('input[name=form-input-cluster-config-timeserver]').val("");
+// });
 
 // 외부 시간서버를 로컬 시간서버로 선택하면 시간서버 2, 3은 필수 입력으로 전환한다.
 $('#form-radio-timeserver-int').on('click', function () {
@@ -928,11 +846,11 @@ $('#form-radio-timeserver-int').on('click', function () {
     $('#span-timeserver3-required').show();
     $('#form-input-cluster-config-time-server-ip-2').attr('required', 'required');
     // 현재 host radio 버튼 보임
-    $('#div-timeserver-host-num').show();
-    $('input[name=form-input-cluster-config-timeserver]').val("");
-    // PN 아이피 주소 자동 입력
+    // $('#div-timeserver-host-num').show();
     var os_type = $('#selected-cluster-type').val();
     inputPnIntoTimeServer(os_type);
+    // $('input[name=form-input-cluster-config-timeserver]').val("");
+    // PN 아이피 주소 자동 입력
 });
 
 // 아코디언 개체의 버튼 클릭 이벤트 처리
@@ -1245,10 +1163,10 @@ async function resetClusterConfigWizardWithData() {
     clusterConfigProfile(os_type,"reset");
 
     // 시간 서버
-    $('#form-radio-timeserver-ext').prop('checked', true);
-    $('#form-radio-timeserver-int').prop('checked', false);
+    // $('#form-radio-timeserver-ext').prop('checked', true);
+    $('#form-radio-timeserver-int').prop('checked', true);
     $('input[name=form-input-cluster-config-timeserver]').val("");
-    $('#div-timeserver-host-num').hide();
+    // $('#div-timeserver-host-num').hide();
     $('#form-radio-timeserver-host-num-1').prop('checked', true);
     $('#form-radio-timeserver-host-num-2').prop('checked', false);
     $('#form-radio-timeserver-host-num-3').prop('checked', false);
@@ -1534,68 +1452,6 @@ async function writeSshKeyFile(text1, text2) {
 }
 
 /**
- * Meathod Name : writeConfigFile
- * Date Created : 2021.08.25
- * Writer  : 배태주
- * Description : 해당 호스트에서 클러스터 설정파일 편집을 수행하는 python 프로그램 호출
- * Parameter : 없음
- * Return  : 없음
- * History  : 2021.03.11 최초 작성
- **/
-// function writeConfigFile(json_string){
-//     cockpit.spawn(["python3", pluginpath+"/python/cluster/cluster_config.py", "insert", "-js", json_string ])
-//     .then(function(data){
-//         var retVal = JSON.parse(data);
-//         if(retVal.code == "200"){
-//             // 해당 호스트의 수정된 cluster.json 파일을 다운로드 링크로 만드는 함수 호출
-//             createClusterJsonLink();
-//         }else{
-//             createLoggerInfo(":::Please check the cluster.json file.:::");
-//             console.log(":::Please check the cluster.json file.::: "+ data);
-//         }
-//     })
-//     .catch(function(data){
-//         createLoggerInfo(":::Please check the cluster.json file.:::");
-//         console.log(":::Please check the cluster.json file.::: "+ data);
-//     });
-// }
-
-/**
- * Meathod Name : writeHostsFile
- * Date Created : 2021.03.17
- * Writer  : 류홍욱
- * Description : 클러스터 준비 마법사에서 완료를 누를 때 설정확인의 정보대로 파일(hosts)을 host에 업로드하거나 수정하는 함수
- * Parameter : text1, os_type
- * Return  : 없음
- * History  : 2021.03.11 최초 작성
- **/
-
-// async function writeHostsFile(text1, os_type, host_name) {
-//     if (os_type.match("centos")) {
-//         let hosts_centos_default_text = "127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4\n" +
-//             "::1         localhost localhost.localdomain localhost6 localhost6.localdomain6\n\n";
-//         cockpit.script(["touch /etc/hosts"])
-//         cockpit.file("/etc/hosts").replace(hosts_centos_default_text + text1)
-//             .done(function (tag) {
-//             })
-//             .fail(function (error) {
-//             });
-//     } else if (os_type.match("ubuntu")) {
-//         host_name = host_name.trim();
-//         let hosts_ubuntu_default_text = "127.0.0.1\tlocalhost\n" +
-//             "127.0.1.1\t" + host_name + "\t" + host_name + "\n\n";
-//         cockpit.script(["touch /etc/hosts"])
-//         cockpit.file("/etc/hosts").replace(hosts_ubuntu_default_text + text1)
-//             .done(function (tag) {
-//             })
-//             .fail(function (error) {
-//             });
-//     }
-// }
-
-
-
-/**
  * Meathod Name : inputPnIntoTimeServer
  * Date Created : 2021.11.01
  * Writer  : 류홍욱
@@ -1619,6 +1475,13 @@ function inputPnIntoTimeServer(os_type) {
     }
 
     let currentHostName = $('#form-input-current-host-name').val();
+
+    if ($('#'+tbody_tr).length == 1){
+        $('#form-radio-timeserver-host-num-2').prop('disabled', true);
+        $('#form-radio-timeserver-host-num-3').prop('disabled', true);
+    }else if ($('#'+tbody_tr).length == 2){
+        $('#form-radio-timeserver-host-num-3').prop('disabled', true);
+    }
     if (os_type == "general-virtualization"){
         $('#'+ tbody_tr).each(function(index){
             idx_num = $(this).find('td').eq(0).text();
@@ -1633,8 +1496,10 @@ function inputPnIntoTimeServer(os_type) {
                 if(idx_num == 1){
                     $('#form-radio-timeserver-host-num-1').prop('checked', true);
                 }else if(idx_num == 2){
+                    $('#form-input-cluster-config-int-to-ext').hide();
                     $('#form-radio-timeserver-host-num-2').prop('checked', true);
                 }else{
+                    $('#form-input-cluster-config-int-to-ext').hide();
                     $('#form-radio-timeserver-host-num-3').prop('checked', true);
                 }
             }
@@ -1653,8 +1518,10 @@ function inputPnIntoTimeServer(os_type) {
                 if(idx_num == 1){
                     $('#form-radio-timeserver-host-num-1').prop('checked', true);
                 }else if(idx_num == 2){
+                    $('#form-input-cluster-config-int-to-ext').hide();
                     $('#form-radio-timeserver-host-num-2').prop('checked', true);
                 }else{
+                    $('#form-input-cluster-config-int-to-ext').hide();
                     $('#form-radio-timeserver-host-num-3').prop('checked', true);
                 }
             }
@@ -1663,70 +1530,18 @@ function inputPnIntoTimeServer(os_type) {
 
 }
 
-/**
- * Meathod Name : modifyTimeServer
- * Date Created : 2021.03.24
- * Writer  : 류홍욱
- * Description : 클러스터 준비 마법사에서 완료를 누를 때 설정확인 메뉴에서 확인했던 time server 정보대로 host에 업데이트하는 함수
- * Parameter : timeserver_confirm_ip_text(설정확인 단계에서의 ip주소 값), file_type(외부 또는 로컬서버) , timeserver_current_host_num(현재 설정 중인 호스트 번호)
- * Return  : 없음
- * History  : 2021.04.12 수정
- * History  : 2022.11.15 수정 : 1. 간헐적으로 chrony.conf가 정상적으로 변경되지 않는 문제가 있어서 수정함
- *                             2. 문제의 원인은 비동기 처리방식인 cockpit.script()가 너무 많이 사용되어 발생
- *                             3. cockpit.script() 사용을 최소화 하여 문제 해결
- **/
-
-// async function modifyTimeServer(timeserver_confirm_ip_text, file_type, timeserver_current_host_num) {
-//     let chrony_file_root = "/etc/chrony.conf"
-//     cockpit.script(["sed -i '/^server /d' /" + chrony_file_root + ""])
-//     cockpit.script(["sed -i '/^pool /d' /" + chrony_file_root + ""])
-
-//     // 외부 시간 서버
-//     if (file_type == "external") {
-//         // chrony.conf 파일 서버 리스트 부분 초기화
-//         cockpit.script(["sed -i '/^#allow /d' /" + chrony_file_root + ""])
-//         cockpit.script(["sed -i '/^allow /d' /" + chrony_file_root + ""])
-//         // cockpit.script(["sed -i '/allow /d' /" + chrony_file_root + ""])
-//         cockpit.script(["sed -i '/^local stratum /d' /" + chrony_file_root + ""])
-//         cockpit.script(["sed -i '/local stratum /d' /" + chrony_file_root + ""])
-//         // cockpit.script(["sed -i'' -r -e \"/# Allow NTP client access from local network/a\\#allow 192.168.0.0/16\" /" + chrony_file_root + ""])
-//         cockpit.script(["sed -i'' -r -e \"/# Serve time even if not synchronized to a time source/a\\#local stratum 10\" /" + chrony_file_root + ""])
-//         for (let i in timeserver_confirm_ip_text) {
-//             cockpit.script(["sed -i'' -r -e \"/# Please consider joining the pool/a\\server " + timeserver_confirm_ip_text[i] + " iburst minpoll 0 maxpoll 0\" /" + chrony_file_root + ""])
-//         }
-//         let allow_ip = "0.0.0.0/0";
-//         cockpit.script(["sed -i'' -r -e \"/# Allow NTP client access from local network/a\\allow " + allow_ip + "\" /" + chrony_file_root + ""])
-//     }
-//     // 로컬 시간 서버
-//     if (file_type == "internal") {
-//         // chrony.conf 파일 서버 리스트 부분 초기화
-//         cockpit.script(["sed -i '/^#allow /d' /" + chrony_file_root + ""])
-//         cockpit.script(["sed -i '/^allow /d' /" + chrony_file_root + ""])
-//         cockpit.script(["sed -i '/^#local stratum /d' /" + chrony_file_root + ""])
-//         cockpit.script(["sed -i '/^local stratum /d' /" + chrony_file_root + ""])
-//         if (timeserver_current_host_num == 1) {
-//             cockpit.script(["sed -i'' -r -e \"/# Please consider joining the pool/a\\server " + timeserver_confirm_ip_text[0] + " iburst minpoll 0 maxpoll 0\" /" + chrony_file_root + ""])
-//         }
-//         if (timeserver_current_host_num == 2) {
-//             cockpit.script(["sed -i'' -r -e \"/# Please consider joining the pool/a\\server " + timeserver_confirm_ip_text[0] + " prefer iburst minpoll 0 maxpoll 0\" /" + chrony_file_root + ""])
-//             cockpit.script(["sed -i'' -r -e \"/# Please consider joining the pool/a\\server " + timeserver_confirm_ip_text[1] + " minpoll 0 maxpoll 0\" /" + chrony_file_root + ""])
-//         }
-//         if (timeserver_current_host_num == 3) {
-//             cockpit.script(["sed -i'' -r -e \"/# Please consider joining the pool/a\\server " + timeserver_confirm_ip_text[1] + " prefer iburst minpoll 0 maxpoll 0\" /" + chrony_file_root + ""])
-//             cockpit.script(["sed -i'' -r -e \"/# Please consider joining the pool/a\\server " + timeserver_confirm_ip_text[0] + " iburst minpoll 0 maxpoll 0\" /" + chrony_file_root + ""])
-//         }
-//         // 공통 수정 부분
-//         let allow_ip = "0.0.0.0/0";
-//         cockpit.script(["sed -i'' -r -e \"/# Allow NTP client access from local network/a\\allow " + allow_ip + "\" /" + chrony_file_root + ""])
-//         cockpit.script(["sed -i'' -r -e \"/# Serve time even if not synchronized to a time source/a\\local stratum 10\" /" + chrony_file_root + ""])
-//         // chronyd restart
-//         cockpit.script(["systemctl restart chronyd"])
-//     }
-// }
-
-async function modifyTimeServer(timeserver_confirm_ip_text, file_type, timeserver_current_host_num) {
+async function modifyTimeServer(timeserver_confirm_ip_text, file_type, timeserver_current_host_num, external_time_server) {
     let chrony_file_root = "/etc/chrony.conf"
     let chrony_text = "";
+    let tbody_tr;
+    radio_value = $('input[name=radio-hosts-file]:checked').val();
+    if (radio_value == "new") {
+        //colcnt = $('#form-table-cluster-config-new-host-profile colgroup col').length;
+        tbody_tr = 'form-table-tbody-cluster-config-new-host-profile tr';
+    }else if(radio_value == "existing") {
+        //colcnt = $('#form-table-cluster-config-existing-host-profile colgroup col').length;
+        tbody_tr = 'form-table-tbody-cluster-config-existing-host-profile tr';
+    }
 
     chrony_text +="# These servers were defined in the installation:"+"\n";
     chrony_text +="# Use public servers from the pool.ntp.org project."+"\n";
@@ -1737,14 +1552,25 @@ async function modifyTimeServer(timeserver_confirm_ip_text, file_type, timeserve
             chrony_text +="server " + timeserver_confirm_ip_text[i] + " iburst"+"\n";
         }
     } else if (file_type == "internal") {// 로컬 시간 서버
-        if (timeserver_current_host_num == 1) {
-            chrony_text +="server " + timeserver_confirm_ip_text[0] + " iburst minpoll 0 maxpoll 0"+"\n";
-        } else if (timeserver_current_host_num == 2) {
-            chrony_text +="server " + timeserver_confirm_ip_text[0] + " iburst minpoll 0 maxpoll 0"+"\n";
-        } else if (timeserver_current_host_num == 3) {
-            chrony_text +="server " + timeserver_confirm_ip_text[0] + " iburst minpoll 0 maxpoll 0"+"\n";
-            chrony_text +="server " + timeserver_confirm_ip_text[1] + " prefer iburst minpoll 0 maxpoll 0"+"\n";
-        }
+
+            if (timeserver_current_host_num == 1) {
+                if (external_time_server == "true"){
+                    chrony_text +="server " + timeserver_confirm_ip_text.slice(-1) + " iburst"+"\n";
+                }
+                if ($('#'+tbody_tr).length != 2){
+                    chrony_text +="server " + timeserver_confirm_ip_text[0] + " iburst minpoll 0 maxpoll 0"+"\n";
+                }
+                else{
+                    chrony_text +="server " + timeserver_confirm_ip_text[1] + " iburst minpoll 0 maxpoll 0"+"\n";
+                }
+
+            } else if (timeserver_current_host_num == 2) {
+                chrony_text +="server " + timeserver_confirm_ip_text[0] + " iburst minpoll 0 maxpoll 0"+"\n";
+            } else if (timeserver_current_host_num == 3) {
+                chrony_text +="server " + timeserver_confirm_ip_text[0] + " iburst minpoll 0 maxpoll 0"+"\n";
+                chrony_text +="server " + timeserver_confirm_ip_text[1] + " prefer iburst minpoll 0 maxpoll 0"+"\n";
+            }
+
     }
     chrony_text +=""+"\n";
 
@@ -1946,10 +1772,18 @@ function validateClusterConfigPrepare(timeserver_type, os_type) {
     for (let i = 1; i <= 2; i++) {
         timeserver_confirm_ip_list.push($('#form-input-cluster-config-time-server-ip-' + i).val());
     }
-    timeserver_confirm_ip_list = timeserver_confirm_ip_list.filter(function (item) {
-        return item !== null && item !== undefined && item !== '';
-    });
-    modifyTimeServer(timeserver_confirm_ip_list, timeserver_type, timeserver_current_host_num);
+    if ($('#form-input-cluster-config-external-time-server-ip').val() != ""){
+        timeserver_confirm_ip_list.push($('#form-input-cluster-config-external-time-server-ip').val());
+        timeserver_confirm_ip_list = timeserver_confirm_ip_list.filter(function (item) {
+            return item !== null && item !== undefined && item !== '';
+        });
+        modifyTimeServer(timeserver_confirm_ip_list, timeserver_type, timeserver_current_host_num, "true");
+    }else{
+        timeserver_confirm_ip_list = timeserver_confirm_ip_list.filter(function (item) {
+            return item !== null && item !== undefined && item !== '';
+        });
+        modifyTimeServer(timeserver_confirm_ip_list, timeserver_type, timeserver_current_host_num);
+    }
 
     $('#button-next-step-modal-wizard-cluster-config-prepare').show();
     $('#button-next-step-modal-wizard-cluster-config-prepare').html('종료');
