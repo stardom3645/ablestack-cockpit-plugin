@@ -43,7 +43,7 @@ def createArgumentParser():
     parser.add_argument('-snb', '--service-network-bridge', metavar='[bridge name]', type=str, help='input Value to bridge name of the service network')
 
     # three host names
-    parser.add_argument('-hns', '--host-names', metavar=('[hostname1]','[hostname2]','[hostname3]'), type=str, nargs=3, help='input Value to three host names', required=True)
+    parser.add_argument('-hns', '--host-names', metavar='IP', type=str, nargs='+', help='input Value to three host names', required=True)
 
     # output 민감도 추가(v갯수에 따라 output및 log가 많아짐):
     parser.add_argument('-v', '--verbose', action='count', default=0, help='increase output verbosity')
@@ -183,7 +183,7 @@ def createCcvmXml(args):
                 # 라인 수정
                 sys.stdout.write(line)
 
-        for host_name in args.host_names:
+        for host_name in args.host_names[0].split():
 
             ret_num = 0
 
@@ -249,14 +249,14 @@ if __name__ == '__main__':
 
     # secret.xml 생성 및 virsh 등록
     if os_type == "ABLESTACK-HCI":
-        secret_ret = json.loads(createSecretKey(args.host_names))
+        secret_ret = json.loads(createSecretKey(args.host_names[0].split()))
 
         if secret_ret["code"] == 200 :
             ret = createCcvmXml(args)
             print(ret)
         else:
             print(json.dumps(secret_ret))
-    elif os_type == "PowerFlex":
+    else:
         ret = createCcvmXml(args)
         print(ret)
 

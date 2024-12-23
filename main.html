@@ -44,7 +44,7 @@
             <div class="pf-l-grid pf-m-gutter">
                 <div class="pf-l-grid__item pf-m-12-col">
                     <div class="pf-l-grid pf-m-gutter">
-                        <div class="pf-l-grid__item pf-m-6-col">
+                        <div class="pf-l-grid__item pf-m-6-col" id="div-card-storage-cluster-status">
                             <!-- 스토리지 센터 클러스터 상태 카드 영역 시작-->
                             <div class="pf-c-card pf-m-hoverable pf-m-compact" id="card-storage-cluster-status">
                                 <div class="pf-c-card__header">
@@ -210,11 +210,17 @@
                                                         class="pf-c-dropdown__menu-item pf-m-disabled"
                                                         type="button">클라우드센터 클러스터 클린업</button>
                                                 </li>
+                                                <li id="ccvm-gfs-maintenance-update" style="display: none;"></li>
                                                 <li class="pf-c-divider" role="separator"></li>
                                                 <li>
                                                     <button id="button-cloud-cluster-migration"
                                                         class="pf-c-dropdown__menu-item pf-m-disabled"
                                                         type="button">클라우드센터VM 마이그레이션</button>
+                                                </li>
+                                                <li id="ccvm-gfs-qdevice-init" style="display: none;">
+                                                    <button id="button-cloud-qdevice-init"
+                                                    class="pf-c-dropdown__menu-item pf-m-disabled"
+                                                    type="button">클라우드센터VM 쿼럼 초기화</button>
                                                 </li>
                                                 <li class="pf-c-divider" role="separator"></li>
                                                 <li id="ccvm-after-bootstrap-run"></li>
@@ -303,7 +309,7 @@
                             </div>
                             <!-- 클라우드센터 클러스터 상태 카드 영역 끝 -->
                         </div>
-                        <div class="pf-l-grid__item pf-m-6-col">
+                        <div class="pf-l-grid__item pf-m-6-col" id="div-card-storage-vm-status">
                             <!-- 스토리지센터VM 상태 카드 영역 시작-->
                             <div class="pf-c-card pf-m-hoverable pf-m-compact" id="card-storage-vm-status">
                                 <div class="pf-c-card__header">
@@ -940,30 +946,6 @@
 </div>
 <!-- 실행중 : PFMP Modal 영역 끝 -->
 
-<!-- 실행완료 : Modal 영역 시작 -->
-<div id="div-modal-start-cloud-vm" class="pf-c-backdrop" style="display:none">
-    <div class="pf-l-bullseye">
-        <div class="pf-c-modal-box pf-m-sm" role="dialog" aria-modal="true" aria-label="Cloud VM start">
-            <button id="button-close-modal-cloud-vm-start" aria-disabled="false" aria-label="Close"
-                class="pf-c-button pf-m-plain" type="button">
-                <i class="fas fa-times" aria-hidden="true"></i>
-            </button>
-            <header class="pf-c-modal-box__header">
-                <h1 class="pf-c-modal-box__title"><span class="pf-c-modal-box__title-text">클라우드센터VM 시작</span></h1>
-            </header>
-            <div class="pf-c-modal-box__body">
-                <div>클라우드센터VM을 시작하시겠습니까?</div>
-            </div>
-            <footer class="pf-c-modal-box__footer">
-                <button id="button-execution-modal-cloud-vm-start" aria-disabled="false"
-                    class="pf-c-button pf-m-primary" type="button" data-ouia-safe="true">실행</button>
-                <button id="button-cancel-modal-cloud-vm-start" aria-disabled="false" class="pf-c-button pf-m-link"
-                    type="button" data-ouia-safe="true">취소</button>
-            </footer>
-        </div>
-    </div>
-</div>
-<!-- 실행완료 : Modal 영역 끝 -->
 <!-- 상태 alert : Modal 영역 시작 -->
 <div id="div-modal-status-alert" class="pf-c-backdrop" style="display:none;">
     <div class="pf-l-bullseye">
@@ -1346,6 +1328,53 @@
 </div>
 <!-- PFMP 설치 : Modal 영역 끝 -->
 
+<!-- 클라우드센터 유지보수 설정 : Modal 영역 시작 -->
+<div id="div-modal-cloud-vm-maintenance-setting" class="pf-c-backdrop" style="display:none">
+    <div class="pf-l-bullseye">
+        <div class="pf-c-modal-box pf-m-sm" role="dialog" aria-modal="true" aria-label="Cloud VM Maintenance Setting">
+            <button id="button-close-modal-cloud-vm-maintenance-setting" aria-disabled="false" aria-label="Close"
+                class="pf-c-button pf-m-plain" type="button">
+                <i class="fas fa-times" aria-hidden="true"></i>
+            </button>
+            <header class="pf-c-modal-box__header">
+                <h1 class="pf-c-modal-box__title"><span class="pf-c-modal-box__title-text" id="cloud-vm-maintenance-setting-head">클라우드센터 유지보수 설정</span></h1>
+            </header>
+            <div class="pf-c-modal-box__body">
+                <div id="cloud-vm-maintenance-setting-body">클라우드센터 VM을 유지보수를 설정하시겠습니까?</div>
+            </div>
+            <footer class="pf-c-modal-box__footer">
+                <button id="button-execution-modal-cloud-vm-maintenance-setting" aria-disabled="false"
+                    class="pf-c-button pf-m-primary" type="button" data-ouia-safe="true">실행</button>
+                <button id="button-cancel-modal-cloud-vm-maintenance-setting" aria-disabled="false" class="pf-c-button pf-m-link"
+                    type="button" data-ouia-safe="true">취소</button>
+            </footer>
+        </div>
+    </div>
+</div>
+
+<!-- 클라우드센터 쿼럼 초기화 : Modal 영역 시작 -->
+<div id="div-modal-cloud-vm-qdevice-init" class="pf-c-backdrop" style="display:none">
+    <div class="pf-l-bullseye">
+        <div class="pf-c-modal-box pf-m-sm" role="dialog" aria-modal="true" aria-label="Cloud VM qdevice-init">
+            <button id="button-close-modal-cloud-vm-qdevice-init" aria-disabled="false" aria-label="Close"
+                class="pf-c-button pf-m-plain" type="button">
+                <i class="fas fa-times" aria-hidden="true"></i>
+            </button>
+            <header class="pf-c-modal-box__header">
+                <h1 class="pf-c-modal-box__title"><span class="pf-c-modal-box__title-text" id="cloud-vm-qdevice-init-head">클라우드센터 쿼럼 초기화 설정</span></h1>
+            </header>
+            <div class="pf-c-modal-box__body">
+                <div id="cloud-vm-qdevice-init-body">클라우드센터 VM의 쿼럼 초기화를 설정하시겠습니까?</div>
+            </div>
+            <footer class="pf-c-modal-box__footer">
+                <button id="button-execution-modal-cloud-vm-qdevice-init" aria-disabled="false"
+                    class="pf-c-button pf-m-primary" type="button" data-ouia-safe="true">실행</button>
+                <button id="button-cancel-modal-cloud-vm-qdevice-init" aria-disabled="false" class="pf-c-button pf-m-link"
+                    type="button" data-ouia-safe="true">취소</button>
+            </footer>
+        </div>
+    </div>
+</div>
 <!-- 모달 영역 끝  -->
 
 <!-- 클라우드센터VM 용량 변경에 관한 modal : ./src/features/cloud-vm-change.html을 내용으로 load -->

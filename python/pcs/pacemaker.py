@@ -9,6 +9,7 @@ Copyright (c) 2021 ABLECLOUD Co. Ltd
 # -*- coding: utf-8 -*-
 
 import argparse
+import os
 import sys
 import json
 import lxml
@@ -28,12 +29,13 @@ def parseArgs():
     parser = argparse.ArgumentParser(description='Pacemaker cluster for Cloud Center VM',
                                      epilog='copyrightⓒ 2021 All rights reserved by ABLECLOUD™')
 
-    parser.add_argument('action', choices=['config', 'create', 'enable', 'disable', 'move', 'cleanup', 'status', 'remove', 'destroy', 'stop'], help='choose one of the actions')
+    parser.add_argument('action', choices=['config', 'create', 'enable', 'disable', 'move', 'cleanup', 'status', 'remove', 'destroy', 'stop','sync'], help='choose one of the actions')
     parser.add_argument('--cluster', metavar='name', type=str, help='The name of the cluster to be created')
     parser.add_argument('--hosts', metavar='name', type=str, nargs='*', help='Hostnames to form a cluster')
     parser.add_argument('--resource', metavar='name', type=str, help='The name of the resource to be created')
     parser.add_argument('--xml', metavar='name', type=str, help='Cloud Center VM\'s xml file PATH')
     parser.add_argument('--target', metavar='name', type=str, help='Target hostname to migrate Cloud Center VM')
+    parser.add_argument('--time', metavar='name', type=str, help='Cluster Sync Mechanism of Cloud Center VM')
     return parser.parse_args()
 
 '''
@@ -49,6 +51,7 @@ class Pacemaker:
         self.resource_name = None
         self.xml_path = None
         self.target_host = None
+        self.time = None
 
     # 함수명 : configCluster
     # 주요 기능 : pcs cluster 구성
@@ -274,5 +277,19 @@ class Pacemaker:
         ret_val = {'clustered_host':node_list, 'nodes':nodes, 'started':current_host, 'role':res_role, 'active': res_active, 'blocked': res_blocked, 'failed': res_failed}
         ret = createReturn(code=200, val=ret_val)
         print(json.dumps(json.loads(ret), indent=4))
+
+        return ret
+
+    def clustersynctime(self, time):
+        self.time = time
+
+        try:
+            pcs('cluster', 'config', 'update', 'totem', f'token={self.time}')
+
+            ret = createReturn(code=200, val='Cloud VM Cluster Sync Mechanism Success')
+            print(json.dumps(json.loads(ret), indent=4))
+        except:
+            ret = createReturn(code=400, val='Cloud VM Cluster Sync Mechanism Failed.')
+            print(json.dumps(json.loads(ret), indent=4))
 
         return ret

@@ -42,7 +42,7 @@ def createArgumentParser():
     parser.add_argument('-snb', '--storage-network-bridge', metavar='[bridge name]', type=str, help='input Value to bridge name of the storage network')
 
     # three host names
-    parser.add_argument('-hns', '--host-names', metavar=('[hostname1]','[hostname2]','[hostname3]'), type=str, nargs=3, help='input Value to three host names', required=True)
+    parser.add_argument('-hns', '--host-names', metavar='IP', type=str, nargs='+', help='input Value to three host names', required=True)
 
     # output 민감도 추가(v갯수에 따라 output및 log가 많아짐):
     parser.add_argument('-v', '--verbose', action='count', default=0, help='increase output verbosity')
@@ -145,7 +145,7 @@ def createGwvmXml(args):
                 # 라인 수정
                 sys.stdout.write(line)
 
-        for host_name in args.host_names:
+        for host_name in args.host_names[0].split():
             ret_num = 0
             # pcs 클러스터 호스트에 gwvm.xml 복사 실패
             for i in [1,2,3]:

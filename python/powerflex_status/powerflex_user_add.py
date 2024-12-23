@@ -51,7 +51,10 @@ def openClusterJson():
     return ret
 
 json_data = openClusterJson()
-ip_address = json_data["clusterConfig"]["pfmp"]["ingress_ip"]
+hostname = os.popen("hostname").read().strip()
+for i in range(len(json_data["clusterConfig"]["hosts"])):
+    if json_data["clusterConfig"]["hosts"][i]["hostname"] == hostname:
+        ip_address = json_data["clusterConfig"]["hosts"][i]["scvmMngt"]
 
 def Powerflex_Auth_Status():
     try:

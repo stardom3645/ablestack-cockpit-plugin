@@ -75,6 +75,9 @@ $(document).ready(function(){
     $('#div-modal-db-backup-cloud-vm-first').load("./src/features/cloud-vm-dbbackup.html");
     $('#div-modal-db-backup-cloud-vm-first').hide();
 
+    // 일반 가상화일 경우 화면 변환
+    screenConversion();
+
     cockpit.spawn(['python3', pluginpath + '/python/pcs/pcsExehost.py'])
     .then(function (data) {
         let retVal = JSON.parse(data);
@@ -684,7 +687,6 @@ function checkStorageClusterStatus(){
                     }else{  //bootstrap.sh 실행 후
                         sessionStorage.setItem("scvm_bootstrap_status","true");
                         $("#scvm-after-bootstrap-run").html("<a class='pf-c-dropdown__menu-item' href='#' id='menu-item-linkto-storage-center' onclick='scc_link_go()'>스토리지센터 연결</a>");
-                        // $("#scvm-after-update-glue-config").html("<a class='pf-c-dropdown__menu-item' href='#' id='menu-item-pfmp-install' onclick='pfmp_install()'>PFMP 설치</a>");
                         $("#scvm-before-bootstrap-run").html("");
                     }
                     //PowerFlex PFMP의 bootstrap 실행전
@@ -837,7 +839,7 @@ function checkStorageClusterStatus(){
                         if(retVal.val.bootstrap.scvm == "false"){ //bootstrap.sh 실행 전
                             sessionStorage.setItem("scvm_bootstrap_status","false");
                             $("#scvm-after-bootstrap-run").html("");
-                            $("#scvm-before-bootstrap-run").html("<a class='pf-c-dropdown__menu-item' href='#' id='menu-item-bootstrap-run' onclick='scvm_bootstrap_run()'>Bootstrap 실행</a>");
+                            $("#scvm-before-bootstrap-run").html("<a class='pf-c-dropdown__menu-item' href='#' id='menu-item-bootstrap-run' onclick='scvm_bootstrap_run()'>스토리지센터 구성하기</a>");
                         }else{  //bootstrap.sh 실행 후
                             sessionStorage.setItem("scvm_bootstrap_status","true");
                             $("#scvm-after-bootstrap-run").html("<a class='pf-c-dropdown__menu-item' href='#' id='menu-item-linkto-storage-center' onclick='scc_link_go()'>스토리지센터 연결</a>");
@@ -1326,7 +1328,7 @@ function checkDeployStatus(){
                                 showRibbon('warning','파워플렉스 관리 플랫폼의 쿠버네티스 설정을 위해 파워플렉스 관리 플랫폼 VM Bootstrap 실행 작업을 진행하십시오.');
                             }else{
                                 if(step8!="true" && (step5=="HEALTH_ERR1"||step5=="HEALTH_ERR2"||step5==null)){
-                                    //클라우드센터 VM 배포 버튼, 스토리지센터 연결 버튼 show
+                                    //클라우드센터 VM 배포 버튼
                                     $('#button-open-modal-wizard-cloud-vm').show();
                                     $('#button-link-storage-center-dashboard').show();
                                     if(step8!="true" && (step5=="HEALTH_ERR1"||step5==null)){
@@ -1377,6 +1379,58 @@ function checkDeployStatus(){
                                                 }
                                             }
                                         }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }else if (os_type == "general-virtualization"){
+            console.log("step1 :: " + step1 + ", step5 :: " + step5 + ", step6 :: " + step6 + ", step7 :: " + step7 + ", step8 :: " + step8);
+
+            if (step1 != "true"){
+                $('#button-open-modal-wizard-storage-cluster').show();
+                showRibbon('warning','클라우드센터 VM이 배포되지 않았습니다. 클러스터 구성준비를 진행하십시오.');
+            }else{
+                $('#button-config-file-download').show();
+                if(step8!="true" && step5=="HEALTH_ERR1"||step5=="HEALTH_ERR2"||step5==null){
+                    //클라우드센터 VM 배포 버튼
+                    $('#button-open-modal-wizard-storage-cluster').show();
+                    $('#button-open-modal-wizard-cloud-vm').show();
+                    if(step8!="true" && step5=="HEALTH_ERR1"||step5==null){
+                        showRibbon('warning','클라우드센터 클러스터가 구성되지 않았습니다. 클라우드센터 클러스터 구성을 진행하십시오.');
+                    }else{
+                        showRibbon('warning','클라우드센터 클러스터는 구성되었으나 리소스 구성이 되지 않았습니다. 리소스 구성을 진행하십시오.');
+                    }
+                }else{
+                    if(step8!="true" && (step7!="true" && (step6=="HEALTH_ERR"||step6==null))){
+                        //클라우드센터 VM 배포 버튼
+                        $('#button-open-modal-wizard-cloud-vm').show();
+                        showRibbon('warning','클라우드센터 VM이 배포되지 않았습니다. 클라우드센터 VM 배포를 진행하십시오.');
+                    }else{
+                        if(step8!="true" && step7!="true"){
+                            showRibbon('warning','클라우드센터에 연결할 수 있도록 클라우드센터 VM Bootstrap 실행 작업을 진행하십시오.');
+                        }else{
+                            // 스토리지센터 연결 버튼, 클라우드센터 연결 버튼 show, 모니터링센터 구성 버튼 show
+                            $('#button-link-cloud-center').show();
+
+                            if(step8!="true"){
+                                $('#button-open-modal-wizard-monitoring-center').show();
+                                showRibbon('warning','모니터링센터에 연결할 수 있도록 모니터링센터 구성 작업을 진행하십시오.');
+                            }else{
+                                // 모니터링센터 구성 연결 버튼 show
+                                $('#button-link-monitoring-center').show();
+
+                                showRibbon('success','ABLESTACK 클라우드센터 VM 배포되었으며 모니터링센터 구성이 완료되었습니다. 가상어플라이언스 상태가 정상입니다.');
+                                // 운영 상태조회
+                                let msg ="";
+                                if (step6 != null){
+                                    if(step6!="RUNNING"){
+                                        msg += '클라우드센터 가상머신이 '+step6+' 상태 입니다.\n';
+                                        msg += '클라우드센터 가상머신 Mold 서비스 , DB 상태를 확인하여 정지상태일 경우 서비스 재시작\n';
+                                        msg += '또는 클라우드센터 클러스터 상태 카드에서 가상머신 시작하여 문제를 해결할 수 있습니다.';
+                                        showRibbon('warning', msg);
                                     }
                                 }
                             }
@@ -1526,11 +1580,26 @@ function saveHostInfo(){
 }
 
 function ribbonWorker() {
-    Promise.all([pcsExeHost(), checkConfigStatus(), checkStorageClusterStatus(),
-        checkStorageVmStatus(), CardCloudClusterStatus(), new CloudCenterVirtualMachine().checkCCVM()]).then(function(){
-            scanHostKey();
-            checkDeployStatus();
-    });
+    if (os_type == "general-virtualization"){
+        Promise.all([
+            pcsExeHost(),
+            checkConfigStatus(),
+            CardCloudClusterStatus(),
+            new CloudCenterVirtualMachine().checkCCVM()
+        ])
+            .then(function () {
+                scanHostKey();
+            })
+            .finally(function () {
+                checkDeployStatus();
+            });
+    }else{
+        Promise.all([pcsExeHost(), checkConfigStatus(), checkStorageClusterStatus(),
+            checkStorageVmStatus(), CardCloudClusterStatus(), new CloudCenterVirtualMachine().checkCCVM()]).then(function(){
+                scanHostKey();
+                checkDeployStatus();
+        });
+    }
 }
 
 /**
@@ -1685,4 +1754,12 @@ function updatePfmpInstall(time_value, unit) {
             clearInterval(interval); // 100%가 되면 타이머 종료
         }
     }, intervalTime);
+}
+function screenConversion(){
+    if (os_type == "general-virtualization"){
+        $('#div-card-storage-cluster-status').hide();
+        $('#div-card-storage-vm-status').hide();
+        $('#ccvm-gfs-maintenance-update').show();
+        $('#ccvm-gfs-qdevice-init').show();
+    }
 }

@@ -32,7 +32,7 @@ def createArgumentParser():
 
     #parser.add_argument('action', choices=['reset'], help='choose one of the actions')
 
-    parser.add_argument('-hns', '--host-names', metavar=('[hostname1]','[hostname2]','[hostname3]'), type=str, nargs=3, help='input Value to three host names', required=True)
+    parser.add_argument('-hns', '--host-names', metavar='IP', type=str, nargs='+', help='input Value to three host names', required=True)
 
     # output 민감도 추가(v갯수에 따라 output및 log가 많아짐):
     parser.add_argument('-v', '--verbose', action='count', default=0, help='increase output verbosity')
@@ -50,7 +50,7 @@ def setupPcsCluster(args):
     success_bool = True
 
     # psc 구성한 3대의 호스트 crontab에 ccvm 스냅샷 기능 추가
-    for host in args.host_names:
+    for host in args.host_names[0].split():
         check_err = 0
 
         check_err = os.system("ssh root@"+host+" \"rm -f /var/spool/cron/tmpfile\"")
@@ -81,8 +81,9 @@ def setupPcsCluster(args):
     # ccvm image resize
     os.system("rbd resize -s 500G ccvm")
 
+    host_names = args.host_names[0].split()
     # 클러스터 구성
-    result = json.loads(python3(pluginpath + '/python/pcs/main.py', 'config', '--cluster', 'cloudcenter_cluster', '--hosts', args.host_names[0], args.host_names[1], args.host_names[2] ))
+    result = json.loads(python3(pluginpath + '/python/pcs/main.py', 'config', '--cluster', 'cloudcenter_cluster', '--hosts', host_names[0], host_names[1], host_names[2] ))
     if result['code'] not in [200]:
         success_bool = False
 

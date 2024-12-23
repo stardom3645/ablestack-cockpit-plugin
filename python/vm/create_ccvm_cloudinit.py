@@ -48,7 +48,7 @@ def createArgumentParser():
     parser.add_argument('--sn-prefix', metavar='Service prefix', help="서비스 네트워크 prefix")
     parser.add_argument('--sn-gw', metavar='Service gw', help="서비스 네트워크 gw")
     parser.add_argument('--sn-dns',metavar='Service DNS', help="서비스 DNS 주소")
-    parser.add_argument('-hns', '--host-names', metavar=('[hostname1]','[hostname2]','[hostname3]'), type=str, nargs=3, help='input Value to three host names', required=True)
+    parser.add_argument('-hns', '--host-names', metavar='IP', type=str, nargs='+', help='input Value to three host names', required=True)
 
     # output 민감도 추가(v갯수에 따라 output및 log가 많아짐):
     parser.add_argument('-v', '--verbose', action='count', default=0, help='increase output verbosity')
@@ -82,7 +82,6 @@ def createCcvmCloudinit(args):
     cmd += args.text3
     cmd += "\nEOF"
     os.system(cmd)
-
     # cloudinit iso 생성 (/usr/share/cockpit/ablestack/tools/vmconfig/ccvm/ccvm-cloudinit.iso)
     result = ""
     if args.sn_nic == None: #서비스 네트워크가 없을 경우
@@ -138,7 +137,7 @@ def createCcvmCloudinit(args):
     if result['code'] not in [200]:
         success_bool = False
     else:
-        for host_name in args.host_names:
+        for host_name in args.host_names[0].split():
             ret_num = 0
 
             # pcs 클러스터 호스트에 /vmconfig/ccvm 폴더생성 명령 실패

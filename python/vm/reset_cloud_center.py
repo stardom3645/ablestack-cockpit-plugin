@@ -15,6 +15,7 @@ import os
 
 from ablestack import *
 from sh import python3
+from sh import ssh
 
 def createArgumentParser():
     '''
@@ -30,9 +31,7 @@ def createArgumentParser():
     # 인자 추가: https://docs.python.org/ko/3/library/argparse.html#the-add-argument-method
 
     #parser.add_argument('action', choices=['reset'], help='choose one of the actions')
-
-    #parser.add_argument('-hns', '--host-names', metavar=('[hostname1]','[hostname2]','[hostname3]'), type=str, nargs=3, help='input Value to three host names', required=True)
-
+    parser.add_argument('-d', '--disk', metavar='[Disk Path]', type=str, help='input Value to GFS Disk Path')
     # output 민감도 추가(v갯수에 따라 output및 log가 많아짐):
     parser.add_argument('-v', '--verbose', action='count', default=0, help='increase output verbosity')
 
@@ -102,20 +101,58 @@ def resetCloudCenter(args):
     elif os_type == "PowerFlex":
         pcs_list = []
 
-        if json_data["clusterConfig"]["pcsCluster"]["hostname1"] is not None:
-            pcs_list.append(json_data["clusterConfig"]["pcsCluster"]["hostname1"])
+        for i in range(len(json_data["clusterConfig"]["pcsCluster"])):
+            if json_data["clusterConfig"]["pcsCluster"]["hostname"+str(i+1)]:
+                pcs_list.append(json_data["clusterConfig"]["pcsCluster"]["hostname"+str(i+1)])
 
-        if json_data["clusterConfig"]["pcsCluster"]["hostname2"] is not None:
-            pcs_list.append(json_data["clusterConfig"]["pcsCluster"]["hostname2"])
-
-        if json_data["clusterConfig"]["pcsCluster"]["hostname3"] is not None:
-            pcs_list.append(json_data["clusterConfig"]["pcsCluster"]["hostname3"])
-
-        result = json.loads(python3(pluginpath + '/python/pcs/main.py', 'remove', '--resource', 'cloudcenter_res'))
-        if result['code'] not in [200,400]:
-            success_bool = False
+        pcs_list_str = " ".join(pcs_list)
         # GFS용 초기화
-        json.loads(python3(pluginpath + '/python/pcs/gfs-manage.py', '--init-pcs-cluster', '--disks', '/dev/scinia', '--vg-name', 'vg_glue', '--lv-name', 'lv_glue', '--list-ip','\"'+pcs_list[0]+' '+pcs_list[1]+' '+pcs_list[2]+'\"'))
+        vg_name_check = os.popen("pvs --noheadings -o vg_name | grep 'vg_glue'").read().strip().splitlines()
+        if vg_name_check:
+            disk = os.popen("pvs --noheadings -o pv_name,vg_name | grep 'vg_glue' | awk '{print $1}' | sed 's/[0-9]*$//'").read()
+            result = json.loads(python3(pluginpath + '/python/pcs/gfs-manage.py', '--init-pcs-cluster','--disks', disk ,'--vg-name', 'vg_glue', '--lv-name', 'lv_glue', '--list-ip', pcs_list_str))
+            if result['code'] not in [200,400]:
+                success_bool = False
+        else:
+            result = json.loads(python3(pluginpath + '/python/pcs/gfs-manage.py', '--init-pcs-cluster', '--list-ip', pcs_list_str))
+            if result['code'] not in [200,400]:
+                success_bool = False
+        # virsh 초기화
+        os.system("virsh destroy ccvm > /dev/null 2>&1")
+        os.system("virsh undefine ccvm --keep-nvram> /dev/null 2>&1")
+
+        # 작업폴더 생성
+        os.system("mkdir -p "+pluginpath+"/tools/vmconfig/ccvm")
+
+        # cloudinit iso 삭제
+        os.system("rm -f /var/lib/libvirt/images/ccvm-cloudinit.iso")
+
+        # 확인후 폴더 밑 내용 다 삭제해도 무관하면 아래 코드 수행
+        os.system("rm -rf "+pluginpath+"/tools/vmconfig/ccvm/*")
+        # 결과값 리턴
+        if success_bool:
+            return createReturn(code=200, val="cloud center reset success")
+        else:
+            return createReturn(code=500, val="cloud center reset fail")
+    elif os_type == "general-virtualization":
+        pcs_list = []
+
+        for i in range(len(json_data["clusterConfig"]["pcsCluster"])):
+            if json_data["clusterConfig"]["pcsCluster"]["hostname"+str(i+1)]:
+                pcs_list.append(json_data["clusterConfig"]["pcsCluster"]["hostname"+str(i+1)])
+        # GFS용 초기화
+        pcs_list_str = " ".join(pcs_list)
+        vg_name_check = os.popen("pvs --noheadings -o vg_name 2>/dev/null | grep 'vg_glue' | uniq").read().strip().splitlines()
+        if vg_name_check:
+            disk_list = os.popen("pvs --noheadings -o pv_name,vg_name 2>/dev/null | grep 'vg_glue' | awk '{print $1}' | sed 's/[0-9]*$//'").read().strip().split("\n")
+            disk = ",".join(disk_list)
+            result = json.loads(python3(pluginpath + '/python/pcs/gfs-manage.py', '--init-pcs-cluster','--disks', disk ,'--vg-name', 'vg_glue', '--lv-name', 'lv_glue', '--list-ip', pcs_list_str))
+            if result['code'] not in [200,400]:
+                success_bool = False
+        else:
+            result = json.loads(python3(pluginpath + '/python/pcs/gfs-manage.py', '--init-pcs-cluster', '--list-ip', pcs_list_str))
+            if result['code'] not in [200,400]:
+                success_bool = False
 
         # virsh 초기화
         os.system("virsh destroy ccvm > /dev/null 2>&1")
@@ -131,6 +168,10 @@ def resetCloudCenter(args):
         os.system("rm -rf "+pluginpath+"/tools/vmconfig/ccvm/*")
         # 결과값 리턴
         if success_bool:
+            for i in range(len(json_data["clusterConfig"]["hosts"])):
+                ablecube = json_data["clusterConfig"]["hosts"][i]["ablecube"]
+                ssh('-o', 'StrictHostKeyChecking=no', '-o', 'ConnectTimeout=5',ablecube,'python3', pluginpath + '/python/ablestack_json/ablestackJson.py', 'update','--depth1', 'bootstrap', '--depth2', 'ccvm', '--value', 'false')
+                ssh('-o', 'StrictHostKeyChecking=no', '-o', 'ConnectTimeout=5',ablecube,'python3', pluginpath + '/python/ablestack_json/ablestackJson.py', 'update','--depth1', 'monitoring', '--depth2', 'wall', '--value', 'false')
             return createReturn(code=200, val="cloud center reset success")
         else:
             return createReturn(code=500, val="cloud center reset fail")

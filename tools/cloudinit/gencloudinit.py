@@ -343,7 +343,7 @@ def genUserFromFile(pubkeyfile: str, privkeyfile: str, hostsfile: str):
                     }
                 ]
         }
-    elif os_type == 'PowerFlex':
+    elif os_type == 'PowerFlex' or os_type == 'general-virtualization':
                 yam = {
             'disable_root': False,
             'ssh_pwauth': True,
@@ -442,7 +442,17 @@ def ccvmGen(sn_nic:str, sn_ip:str, sn_prefix: int, sn_gw:str):
                 'permissions': '0777'
             }
         )
-
+        with open(f'{pluginpath}/tools/properties/cluster.json', 'rt') as clusterjsonfile:
+            cluster_json = clusterjsonfile.read()
+        yam2['write_files'].append(
+            {
+                'encoding': 'base64',
+                'content': base64.encodebytes(cluster_json.encode()),
+                'owner': 'root:root',
+                'path': '/etc/cluster.json',
+                'permissions': '0777'
+            }
+        )
     with open(f'{tmpdir}/user-data', 'wt') as f:
         f.write('#cloud-config\n')
         f.write(yaml.dump(yam2).replace("\n\n", "\n"))

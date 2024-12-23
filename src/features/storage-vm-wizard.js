@@ -444,7 +444,7 @@ $('#form-radio-hosts-new-scvm').on('click', function () {
     $('#form-input-cluster-config-host-number-scvm').val(3);
     // "기존 파일 사용"에서 "신규 생성"을 클릭하면 초기화 된다.
     $("#form-table-tbody-cluster-config-new-host-profile-scvm").empty();
-    clusterConfigTableChange("form-input-cluster-config-host-number-scvm", "form-table-tbody-cluster-config-new-host-profile-scvm");
+    clusterConfigTableChange("form-input-cluster-config-host-number-scvm", "form-table-tbody-cluster-config-new-host-profile-scvm",os_type);
     resetScvmNetworkInfo();
     //$('#form-input-cluster-config-current-host-number-scvm').val(1);
     $('#form-input-cluster-config-host-number-plus-scvm').removeAttr('disabled');
@@ -467,7 +467,7 @@ $('#form-radio-hosts-file-scvm').on('click', function () {
     $('#div-form-hosts-input-current-number-scvm').show();
     $('#form-input-cluster-config-host-number-scvm').val(0);
     $("#form-table-tbody-cluster-config-existing-host-profile-scvm").empty();
-    clusterConfigTableChange("form-input-cluster-config-host-number-scvm", "form-table-tbody-cluster-config-existing-host-profile-scvm");
+    clusterConfigTableChange("form-input-cluster-config-host-number-scvm", "form-table-tbody-cluster-config-existing-host-profile-scvm",os_type);
     resetScvmNetworkInfo();
     // $('#form-input-cluster-config-current-host-number-scvm').val(1);
     $('#form-input-cluster-config-host-number-plus-scvm').attr('disabled', 'true');
@@ -495,13 +495,13 @@ $('#form-input-cluster-config-host-number-plus-scvm').on('click', function () {
     let num = $("#form-input-cluster-config-host-number-scvm").val();
     $("#form-input-cluster-config-host-number-scvm").val(num * 1 + 1);
 
-    clusterConfigTableChange("form-input-cluster-config-host-number-scvm", "form-table-tbody-cluster-config-new-host-profile-scvm");
+    clusterConfigTableChange("form-input-cluster-config-host-number-scvm", "form-table-tbody-cluster-config-new-host-profile-scvm",os_type);
 });
 $('#form-input-cluster-config-host-number-minus-scvm').on('click', function () {
     let num = $("#form-input-cluster-config-host-number-scvm").val();
     if(num > 3){
         $('#form-input-cluster-config-host-number-scvm').val(num * 1 - 1)
-        clusterConfigTableChange("form-input-cluster-config-host-number-scvm", "form-table-tbody-cluster-config-new-host-profile-scvm");
+        clusterConfigTableChange("form-input-cluster-config-host-number-scvm", "form-table-tbody-cluster-config-new-host-profile-scvm",os_type);
     }
 });
 
@@ -510,10 +510,10 @@ $('#form-input-cluster-config-host-number-scvm').on('change', function () {
     if (this.value < 3 || this.value > 99) {
         this.value = 3;
         alert("3~99까지의 숫자만 입력할 수 있습니다.")
-        clusterConfigTableChange("form-input-cluster-config-host-number-scvm", "form-table-tbody-cluster-config-new-host-profile-scvm");
+        clusterConfigTableChange("form-input-cluster-config-host-number-scvm", "form-table-tbody-cluster-config-new-host-profile-scvm",os_type);
         return;
     } else {
-        clusterConfigTableChange("form-input-cluster-config-host-number-scvm", "form-table-tbody-cluster-config-new-host-profile-scvm");
+        clusterConfigTableChange("form-input-cluster-config-host-number-scvm", "form-table-tbody-cluster-config-new-host-profile-scvm",os_type);
     }
 });
 
@@ -1298,7 +1298,7 @@ function validateStorageVm(){
     }else if($('#div-textarea-cluster-config-confirm-hosts-file-scvm').val().trim() == "") {
         alert("클러스터 구성 프로파일 정보를 확인해 주세요.");
         validate_check = false;
-    }else if(validateClusterConfigProfile(host_file_type, option_scvm)) { //cluster config 유효성 검사
+    }else if(validateClusterConfigProfile(host_file_type, option_scvm,os_type)) { //cluster config 유효성 검사
         validate_check = false;
     }else if($("#form-input-storage-vm-hostname").val() == ""){
         alert("호스트명을 입력해주세요.");

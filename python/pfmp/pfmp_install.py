@@ -68,6 +68,7 @@ def ContainerInstall():
     for i in range(len(json_data["clusterConfig"]["hosts"])):
         host = json_data["clusterConfig"]["hosts"][i]["ablecube"]
         os.system("scp -o StrictHostKeyChecking=no " + pfmp_json_file_path + " " + host + ":" + pfmp_json_file_path + " > /dev/null")
+        os.system("systemctl disable --now firewalld.service")
 
     result = os.system("scp -o StrictHostKeyChecking=no " + pfmp_json_file_path + " pfmp:"+ pfmp_config_path + " > /dev/null")
 
