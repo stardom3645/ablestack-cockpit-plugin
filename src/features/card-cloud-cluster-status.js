@@ -548,7 +548,7 @@ $('#button-execution-modal-cloud-vm-maintenance-setting').on('click', function()
     if (stonith_status == "Started"){
         $('#div-modal-spinner-header-txt').text('클러스터센터 유지보수 설정 중입니다.');
         $('#div-modal-spinner').show();
-        cockpit.spawn(['python3', pluginpath + '/python/pcs/gfs-manage.py', '--check-stonith', '--control', 'disable'])
+        cockpit.spawn(['python3', pluginpath + '/python/gfs/gfs_manage.py', '--check-stonith', '--control', 'disable'])
         .then(function(data){
             $('#div-modal-spinner').hide();
             var retVal = JSON.parse(data);
@@ -565,7 +565,7 @@ $('#button-execution-modal-cloud-vm-maintenance-setting').on('click', function()
     }else{
         $('#div-modal-spinner-header-txt').text('클러스터센터 유지보수 해제 중입니다.');
         $('#div-modal-spinner').show();
-        cockpit.spawn(['python3', pluginpath + '/python/pcs/gfs-manage.py', '--check-stonith', '--control', 'enable'])
+        cockpit.spawn(['python3', pluginpath + '/python/gfs/gfs_manage.py', '--check-stonith', '--control', 'enable'])
         .then(function(data){
             var retVal = JSON.parse(data);
             if (retVal.code == "200"){
@@ -599,7 +599,7 @@ $('#button-execution-modal-cloud-vm-qdevice-init').on('click', function(){
     $("#modal-status-alert-title").html("클라우드센터 VM 쿼럼 초기화");
     $("#modal-status-alert-body").html("클라우드센터 VM 쿼럼 초기화를 실패하였습니다.<br/>클라우드센터 VM 쿼럼 상태를 확인해주세요.");
 
-    cockpit.spawn(["python3", pluginpath + "/python/pcs/gfs-manage.py", "--init-qdevice"])
+    cockpit.spawn(["python3", pluginpath + "/python/gfs/gfs_manage.py", "--init-qdevice"])
     .then(function(data){
         var retVal = JSON.parse(data);
         if(retVal.code == "200"){
@@ -863,7 +863,7 @@ function CardCloudClusterStatus(){
                 console.log('ClusterStatusInfo spawn error');
             }
             if (os_type == "general-virtualization"){
-                cockpit.spawn(['python3', pluginpath + '/python/pcs/gfs-manage.py', '--check-stonith','--control', 'check'])
+                cockpit.spawn(['python3', pluginpath + '/python/gfs/gfs_manage.py', '--check-stonith','--control', 'check'])
                 .then(function(data){
                     var retVal = JSON.parse(data);
                     sessionStorage.setItem("stonith_status", retVal.val);
@@ -877,7 +877,7 @@ function CardCloudClusterStatus(){
                         $('#ccvm-gfs-maintenance-update').html('<a class="pf-c-dropdown__menu-item pf-m-disabled" href="#" id="menu-item-gfs-maintenance-ccvm" onclick="gfs_maintenance_run()">클라우드센터 유지보수 설정</a>');
                     }
                 })
-                cockpit.spawn(['python3', pluginpath + '/python/pcs/gfs-manage.py', '--check-qdevice'])
+                cockpit.spawn(['python3', pluginpath + '/python/gfs/gfs_manage.py', '--check-qdevice'])
                 .then(function(data){
                     var retVal =JSON.parse(data);
                     if (retVal.code == "200"){

@@ -428,7 +428,7 @@ $('#button-next-step-modal-wizard-cloud-vm').on('click', function(){
             ipmi_data.forEach((entry, index) => {
                 ipmi_config += `${index > 0 ? ";" : ""}${entry.ip},${ipmi_port},${entry.user},${entry.password}`;
             });
-            check_ipmi_cmd = ['python3',pluginpath + '/python/pcs/gfs-manage.py' , '--check-ipmi', '--stonith', ipmi_config];
+            check_ipmi_cmd = ['python3',pluginpath + '/python/gfs/gfs_manage.py' , '--check-ipmi', '--stonith', ipmi_config];
             console.log(check_ipmi_cmd);
             cockpit.spawn(check_ipmi_cmd)
             .then(function(data){
@@ -616,7 +616,7 @@ $('#button-next-step-modal-wizard-cloud-vm').on('click', function(){
             ipmi_data.forEach((entry, index) => {
                 ipmi_config += `${index > 0 ? ";" : ""}${entry.ip},${ipmi_port},${entry.user},${entry.password}`;
             });
-            check_ipmi_cmd = ['python3',pluginpath + '/python/pcs/gfs-manage.py' , '--check-ipmi', '--stonith', ipmi_config];
+            check_ipmi_cmd = ['python3',pluginpath + '/python/gfs/gfs_manage.py' , '--check-ipmi', '--stonith', ipmi_config];
             console.log(check_ipmi_cmd);
             cockpit.spawn(check_ipmi_cmd)
             .then(function(data){
@@ -1728,7 +1728,7 @@ function deployCloudCenterVM() {
                             setProgressStep("span-ccvm-progress-step2",1);
                             //=========== 2. GFS 구성 설정 및 Pcs 설정 ===========
                             // 설정 초기화 ( 필요시 python까지 종료 )
-                            var set_lvm_conf_cmd = ['python3', pluginpath + '/python/pcs/gfs-manage.py', '--modify-lvm-conf', '--list-ip', all_host_name];
+                            var set_lvm_conf_cmd = ['python3', pluginpath + '/python/gfs/gfs_manage.py', '--modify-lvm-conf', '--list-ip', all_host_name];
                             console.log(set_lvm_conf_cmd);
                             cockpit.spawn(set_lvm_conf_cmd)
                             .then(function(data){
@@ -1736,28 +1736,28 @@ function deployCloudCenterVM() {
                                 var powerflex_disk_name = set_lvm_conf_result.val.split(',')[1];
                                 console.log(set_lvm_conf_result)
                                 if (set_lvm_conf_result.code == "200"){
-                                    var set_password_cmd = ['python3', pluginpath + '/python/pcs/gfs-manage.py', '--set-password', 'password', '--list-ip', all_host_name];
+                                    var set_password_cmd = ['python3', pluginpath + '/python/gfs/gfs_manage.py', '--set-password', 'password', '--list-ip', all_host_name];
                                     console.log(set_password_cmd);
                                     cockpit.spawn(set_password_cmd)
                                     .then(function(data){
                                         var set_password_result = JSON.parse(data);
                                         console.log(set_password_result)
                                         if (set_password_result.code == "200"){
-                                            var auth_hosts_cmd = ['python3', pluginpath + '/python/pcs/gfs-manage.py', '--auth-hosts', 'password', '--list-ip', all_host_name];
+                                            var auth_hosts_cmd = ['python3', pluginpath + '/python/gfs/gfs_manage.py', '--auth-hosts', 'password', '--list-ip', all_host_name];
                                             console.log(auth_hosts_cmd);
                                             cockpit.spawn(auth_hosts_cmd)
                                             .then(function(data){
                                                 var auth_hosts_result = JSON.parse(data);
                                                 console.log(auth_hosts_result)
                                                 if (auth_hosts_result.code == "200"){
-                                                    var setup_cluster_cmd = ['python3', pluginpath + '/python/pcs/gfs-manage.py', '--setup-cluster', gfs_cluster_name, '--list-ip', all_host_name];
+                                                    var setup_cluster_cmd = ['python3', pluginpath + '/python/gfs/gfs_manage.py', '--setup-cluster', gfs_cluster_name, '--list-ip', all_host_name];
                                                     console.log(setup_cluster_cmd);
                                                     cockpit.spawn(setup_cluster_cmd)
                                                     .then(function(data){
                                                         var setup_cluster_result = JSON.parse(data);
                                                         console.log(setup_cluster_result)
                                                         if (setup_cluster_result.code == "200"){
-                                                            var set_configure_stonith_cmd = ['python3', pluginpath + '/python/pcs/gfs-manage.py', '--configure-stonith',
+                                                            var set_configure_stonith_cmd = ['python3', pluginpath + '/python/gfs/gfs_manage.py', '--configure-stonith',
                                                                                             ipmi_config, '--list-ip', all_host_name];
                                                             console.log(set_configure_stonith_cmd);
                                                             cockpit.spawn(set_configure_stonith_cmd)
@@ -1766,7 +1766,7 @@ function deployCloudCenterVM() {
                                                                 console.log(set_configure_stonith_result);
                                                                 if (set_configure_stonith_result.code == "200"){
                                                                     setProgressStep("span-ccvm-progress-step2",4);
-                                                                    var create_gfs_cmd = ['python3', pluginpath + '/python/pcs/gfs-manage.py', '--create-gfs',
+                                                                    var create_gfs_cmd = ['python3', pluginpath + '/python/gfs/gfs_manage.py', '--create-gfs',
                                                                                             '--disks', '/dev/' + powerflex_disk_name, '--vg-name', gfs_vg_name, '--lv-name', gfs_lv_name,
                                                                                             '--gfs-name', gfs_name, '--mount-point', gfs_mount_point, '--cluster-name', gfs_cluster_name,
                                                                                             '--journal-nums', journal_nums, '--list-ip', all_host_name]
@@ -1831,7 +1831,7 @@ function deployCloudCenterVM() {
                                                                                                     //클러스터 생성
                                                                                                     setProgressStep("span-ccvm-progress-step4",2);
                                                                                                     setProgressStep("span-ccvm-progress-step5",1);
-                                                                                                    var pcs_config = ['python3', pluginpath + '/python/pcs/gfs-manage.py', '--create-ccvm-cluster', '--gfs-name', gfs_name, '--mount-point', gfs_mount_point, '--cluster-name', gfs_cluster_name,'--list-ip', all_host_name];
+                                                                                                    var pcs_config = ['python3', pluginpath + '/python/gfs/gfs_manage.py', '--create-ccvm-cluster', '--gfs-name', gfs_name, '--mount-point', gfs_mount_point, '--cluster-name', gfs_cluster_name,'--list-ip', all_host_name];
                                                                                                     if(console_log){console.log(pcs_config);}
                                                                                                     cockpit.spawn(pcs_config)
                                                                                                         .then(function(data){
@@ -2062,35 +2062,35 @@ function deployCloudCenterVM() {
                                 setProgressStep("span-ccvm-progress-step2",1);
                                 //=========== 2. GFS 구성 설정 및 Pcs 설정 ===========
                                 // 설정 초기화 ( 필요시 python까지 종료 )
-                                var set_lvm_conf_cmd = ['python3', pluginpath + '/python/pcs/gfs-manage.py', '--modify-lvm-conf', '--list-ip', all_host_name];
+                                var set_lvm_conf_cmd = ['python3', pluginpath + '/python/gfs/gfs_manage.py', '--modify-lvm-conf', '--list-ip', all_host_name];
                                 console.log(set_lvm_conf_cmd);
                                 cockpit.spawn(set_lvm_conf_cmd)
                                 .then(function(data){
                                     var set_lvm_conf_result = JSON.parse(data);
                                     console.log(set_lvm_conf_result);
                                     if (set_lvm_conf_result.code == "200"){
-                                        var set_password_cmd = ['python3', pluginpath + '/python/pcs/gfs-manage.py', '--set-password', 'password', '--list-ip', all_host_name];
+                                        var set_password_cmd = ['python3', pluginpath + '/python/gfs/gfs_manage.py', '--set-password', 'password', '--list-ip', all_host_name];
                                         console.log(set_password_cmd);
                                         cockpit.spawn(set_password_cmd)
                                         .then(function(data){
                                             var set_password_result = JSON.parse(data);
                                             console.log(set_password_result)
                                             if (set_password_result.code == "200"){
-                                                var auth_hosts_cmd = ['python3', pluginpath + '/python/pcs/gfs-manage.py', '--auth-hosts', 'password', '--list-ip', all_host_name];
+                                                var auth_hosts_cmd = ['python3', pluginpath + '/python/gfs/gfs_manage.py', '--auth-hosts', 'password', '--list-ip', all_host_name];
                                                 console.log(auth_hosts_cmd);
                                                 cockpit.spawn(auth_hosts_cmd)
                                                 .then(function(data){
                                                     var auth_hosts_result = JSON.parse(data);
                                                     console.log(auth_hosts_result)
                                                     if (auth_hosts_result.code == "200"){
-                                                        var setup_cluster_cmd = ['python3', pluginpath + '/python/pcs/gfs-manage.py', '--setup-cluster', gfs_cluster_name, '--list-ip', all_host_name];
+                                                        var setup_cluster_cmd = ['python3', pluginpath + '/python/gfs/gfs_manage.py', '--setup-cluster', gfs_cluster_name, '--list-ip', all_host_name];
                                                         console.log(setup_cluster_cmd);
                                                         cockpit.spawn(setup_cluster_cmd)
                                                         .then(function(data){
                                                             var setup_cluster_result = JSON.parse(data);
                                                             console.log(setup_cluster_result)
                                                             if (setup_cluster_result.code == "200"){
-                                                                var set_configure_stonith_cmd = ['python3', pluginpath + '/python/pcs/gfs-manage.py', '--configure-stonith',
+                                                                var set_configure_stonith_cmd = ['python3', pluginpath + '/python/gfs/gfs_manage.py', '--configure-stonith',
                                                                                                     ipmi_config, '--list-ip', all_host_name];
                                                                 console.log(set_configure_stonith_cmd);
                                                                 cockpit.spawn(set_configure_stonith_cmd)
@@ -2099,7 +2099,7 @@ function deployCloudCenterVM() {
                                                                     console.log(set_configure_stonith_result);
                                                                     if (set_configure_stonith_result.code == "200"){
                                                                         setProgressStep("span-ccvm-progress-step2",4);
-                                                                        var create_gfs_cmd = ['python3', pluginpath + '/python/pcs/gfs-manage.py', '--create-gfs',
+                                                                        var create_gfs_cmd = ['python3', pluginpath + '/python/gfs/gfs_manage.py', '--create-gfs',
                                                                                                 '--disks', general_virtual_disk_name , '--vg-name', gfs_vg_name, '--lv-name', gfs_lv_name,
                                                                                                 '--gfs-name', gfs_name, '--mount-point', gfs_mount_point, '--cluster-name', gfs_cluster_name,
                                                                                                 '--journal-nums', journal_nums, '--list-ip', all_host_name]
@@ -2168,7 +2168,7 @@ function deployCloudCenterVM() {
                                                                                                         //클러스터 생성
                                                                                                         setProgressStep("span-ccvm-progress-step4",2);
                                                                                                         setProgressStep("span-ccvm-progress-step5",1);
-                                                                                                        var pcs_config = ['python3', pluginpath + '/python/pcs/gfs-manage.py', '--create-ccvm-cluster', '--gfs-name', gfs_name, '--mount-point', gfs_mount_point, '--cluster-name', gfs_cluster_name, '--list-ip', all_host_name];
+                                                                                                        var pcs_config = ['python3', pluginpath + '/python/gfs/gfs_manage.py', '--create-ccvm-cluster', '--gfs-name', gfs_name, '--mount-point', gfs_mount_point, '--cluster-name', gfs_cluster_name, '--list-ip', all_host_name];
                                                                                                         if(console_log){console.log(pcs_config);}
                                                                                                         cockpit.spawn(pcs_config)
                                                                                                             .then(function(data){
