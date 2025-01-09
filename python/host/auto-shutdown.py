@@ -22,8 +22,8 @@ env['LANGUAGE']="en"
 예를들어 action을 요청하면 해당 action일 때 요구되는 파라미터를 입력받고 해당 코드를 수행합니다.
 '''
 def parseArgs():
-    parser = argparse.ArgumentParser(description='Storage Center VM action ', epilog='copyrightⓒ 2021 All rights reserved by ABLECLOUD™')    
-    parser.add_argument('action', choices=['check_mount', 'stop_scvms', 'shutdown_hosts'], help="Storage Center VM action")    
+    parser = argparse.ArgumentParser(description='Storage Center VM action ', epilog='copyrightⓒ 2021 All rights reserved by ABLECLOUD™')
+    parser.add_argument('action', choices=['check_mount', 'stop_scvms', 'shutdown_hosts'], help="Storage Center VM action")
     '''output 민감도 추가(v갯수에 따라 output및 log가 많아짐)'''
     parser.add_argument("-v", "--verbose", action='count', default=0, help="increase output verbosity")
     '''flag 추가(샘플임, 테스트용으로 json이 아닌 plain text로 출력하는 플래그 역할)'''
@@ -34,7 +34,7 @@ def parseArgs():
 
 '''
 함수명 : checkMount
-주요 기능 : 전체 시스템 종료 전, 호스트에 mount되어있는 볼륨이 umount되었는지 체크하고 필요 시 umount를 실행합니다. 
+주요 기능 : 전체 시스템 종료 전, 호스트에 mount되어있는 볼륨이 umount되었는지 체크하고 필요 시 umount를 실행합니다.
 '''
 def checkMount():
     try:
@@ -44,12 +44,12 @@ def checkMount():
         hosts = data_host_list.splitlines()
 
         #현재 호스트 추출(hosts 파일에서 3열의 값이 ablecloud-pn인 행을 찾은 후, 그 행의 2열 값을 출력)
-        output_hostname = subprocess.check_output("awk '{ if ( $3 == \"ablecube-pn\" ) print ($2) }' /etc/hosts", shell=True)
+        output_hostname = subprocess.check_output("awk '{ if ( $3 == \"pn-ablecube\" ) print ($2) }' /etc/hosts", shell=True)
         data_hostname = output_hostname.decode('utf8')
         hostname = data_hostname.splitlines()
 
         #마운트 해제(/etc/fstab 파일에 UUID로 시작되는 마운트 경로 검색한 후 해제)
-        
+
         for host in hosts:
             if hostname[0] != host:
                 # 명령을 내린 호스트를 제외한 호스트의 마운트 해제
@@ -105,7 +105,7 @@ def stopStorageVMs():
         hosts = data_host_list.splitlines()
 
         #현재 호스트 추출(hosts 파일에서 3열의 값이 ablecloud-pn인 행을 찾은 후, 그 행의 2열 값을 출력)
-        output_hostname = subprocess.check_output("awk '{ if ( $3 == \"ablecube-pn\" ) print ($2) }' /etc/hosts", shell=True)
+        output_hostname = subprocess.check_output("awk '{ if ( $3 == \"pn-ablecube\" ) print ($2) }' /etc/hosts", shell=True)
         data_hostname = output_hostname.decode('utf8')
         hostname = data_hostname.splitlines()
 
@@ -148,7 +148,7 @@ def shutdownHosts():
         hosts = data_host_list.splitlines()
 
         #현재 호스트 추출(hosts 파일에서 3열의 값이 ablecloud-pn인 행을 찾은 후, 그 행의 2열 값을 출력)
-        output_hostname = subprocess.check_output("awk '{ if ( $3 == \"ablecube-pn\" ) print ($2) }' /etc/hosts", shell=True)
+        output_hostname = subprocess.check_output("awk '{ if ( $3 == \"pn-ablecube\" ) print ($2) }' /etc/hosts", shell=True)
         data_hostname = output_hostname.decode('utf8')
         hostname = data_hostname.splitlines()
 

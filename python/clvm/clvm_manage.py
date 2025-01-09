@@ -70,6 +70,10 @@ def create_clvm(disks):
     try:
         # Prepare a list to store disk devices
         num = 1
+        result = subprocess.run(["grep", "ablecube", "/etc/hosts"],stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True,check=True)
+        lines = result.stdout.strip().split("\n")
+        list_ips = [line.split()[0] for line in lines if line.strip()]
+
         result = subprocess.run(["vgs", "-o", "vg_name", "--reportformat", "json"],stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True)
         output = json.loads(result.stdout)
         for i in range(len(output["report"][0]["vg"])):
@@ -94,6 +98,13 @@ def create_clvm(disks):
 
             num += 1
 
+            for ip in list_ips:
+                ssh_client = connect_to_host(ip)
+                # lvm.conf 초기화
+                run_command(f"partprobe {disk}",ssh_client,ignore_errors=True)
+                run_command(f"lvmdevices --adddev {partition}",ssh_client,ignore_errors=True)
+                ssh_client.close()
+
         ret = createReturn(code=200, val="Create CLVM Disk Success")
         return print(json.dumps(json.loads(ret), indent=4))
     except Exception:
@@ -107,40 +118,60 @@ def list_clvm():
             ["pvs", "-o", "vg_name,pv_name,pv_size", "--reportformat", "json"],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
-            text=True
+            text=True,
+            check=True
         )
+
         # lsblk 명령 실행
         lsblk_result = subprocess.run(
             ["lsblk", "-o", "name,wwn", "--json"],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
-            text=True
+            text=True,
+            check=True
         )
+
+        # multipathd 상태 확인
+        mpath_status = os.popen("systemctl is-active multipathd").read().strip()
 
         # JSON 파싱
         pvs_output = json.loads(pvs_result.stdout)
         lsblk_output = json.loads(lsblk_result.stdout)
 
-        # lsblk 결과를 사전으로 매핑 (name -> wwn)
-        lsblk_map = {dev["name"]: dev.get("wwn") for dev in lsblk_output["blockdevices"]}
+        # lsblk 데이터 맵핑
+        lsblk_map = {}
+        for dev in lsblk_output.get("blockdevices", []):
+            if mpath_status == "active" and "children" in dev:
+                for child in dev["children"]:
+                    lsblk_map[child["name"]] = dev.get("wwn", "N/A")
+            else:
+                lsblk_map[dev["name"]] = dev.get("wwn", "N/A")
 
-        # vg_name에서 "vg_clvm"이 포함된 항목 필터링
-        clvm_pvs = [
-            {
-                "vg_name": pv["vg_name"],
-                "pv_name": pv["pv_name"],
-                "pv_size": parse_size(pv["pv_size"]),
-                "wwn": lsblk_map.get(os.path.basename(pv["pv_name"].split("/")[-1].split("1")[0]), "N/A"),
-            }
-            for pv in pvs_output["report"][0]["pv"]
-            if "vg_clvm" in pv["vg_name"]
-        ]
+        # CLVM 필터링
+        clvm_pvs = []
+        for pv in pvs_output["report"][0]["pv"]:
+            vg_name = pv.get("vg_name", "")
+            if "vg_clvm" in vg_name:
+                pv_name = pv.get("pv_name", "")
+                pv_size = parse_size(pv.get("pv_size", "0"))
+                disk_name = os.path.basename(pv_name.split("/")[-1].split("1")[0])
+                wwn = lsblk_map.get(disk_name, "N/A")
 
-        # 필터링된 결과 반환
+                clvm_pvs.append({
+                    "vg_name": vg_name,
+                    "pv_name": pv_name,
+                    "pv_size": pv_size,
+                    "wwn": wwn,
+                })
+
+        # 결과 반환
         ret = createReturn(code=200, val=clvm_pvs)
         return print(json.dumps(json.loads(ret), indent=4))
+    except subprocess.CalledProcessError as e:
+        error_msg = f"Command '{e.cmd}' returned non-zero exit status {e.returncode}."
+        ret = createReturn(code=500, val=error_msg)
+        return print(json.dumps(json.loads(ret), indent=4))
     except Exception as e:
-        # 에러 발생 시 처리
         ret = createReturn(code=500, val=f"Error: {str(e)}")
         return print(json.dumps(json.loads(ret), indent=4))
 

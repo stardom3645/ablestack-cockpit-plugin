@@ -94,9 +94,9 @@ def changeHosts(args):
                 # PowerFlex용 SCVM 호스트 파일
                 my_hosts.remove_all_matching(name=f_val["hostname"])
                 my_hosts.remove_all_matching(name="scvm"+f_val["index"])
-                my_hosts.remove_all_matching(name="ablecube"+f_val["index"]+"-pn")
-                my_hosts.remove_all_matching(name="scvm"+f_val["index"]+"-pn")
-                my_hosts.remove_all_matching(name="scvm"+f_val["index"]+"-cn")
+                my_hosts.remove_all_matching(name="pn-"+"ablecube"+f_val["index"])
+                my_hosts.remove_all_matching(name="pn-"+"scvm"+f_val["index"])
+                my_hosts.remove_all_matching(name="cn-"+"scvm"+f_val["index"])
 
             elif args.type == "general-virtualization":
                 my_hosts.remove_all_matching(name=f_val["hostname"])
@@ -112,9 +112,9 @@ def changeHosts(args):
                 # hosts 파일 내용 도메인으로 제거
                 my_hosts.remove_all_matching(name=f_val["hostname"])
                 my_hosts.remove_all_matching(name="scvm"+f_val["index"]+"-mngt")
-                my_hosts.remove_all_matching(name="ablecube"+f_val["index"]+"-pn")
+                my_hosts.remove_all_matching(name="pn-"+"ablecube"+f_val["index"])
                 my_hosts.remove_all_matching(name="scvm"+f_val["index"])
-                my_hosts.remove_all_matching(name="scvm"+f_val["index"]+"-cn")
+                my_hosts.remove_all_matching(name="cn-"+"scvm"+f_val["index"])
 
             if hostname == f_val["hostname"]:
 
@@ -124,11 +124,11 @@ def changeHosts(args):
                     my_hosts.add([entry])
                     entry = HostsEntry(entry_type='ipv4', address=f_val["scvmMngt"], names=["scvm"+f_val["index"], 'scvm'])
                     my_hosts.add([entry])
-                    entry = HostsEntry(entry_type='ipv4', address=f_val["ablecubePn"], names=["ablecube"+f_val["index"]+"-pn", 'ablecube-pn'])
+                    entry = HostsEntry(entry_type='ipv4', address=f_val["ablecubePn"], names=["pn-"+"ablecube"+f_val["index"], 'pn-ablecube'])
                     my_hosts.add([entry])
-                    entry = HostsEntry(entry_type='ipv4', address=f_val["scvm"], names=["scvm"+f_val["index"]+"-pn", 'scvm-pn'])
+                    entry = HostsEntry(entry_type='ipv4', address=f_val["scvm"], names=["pn-"+"scvm"+f_val["index"], 'pn-scvm'])
                     my_hosts.add([entry])
-                    entry = HostsEntry(entry_type='ipv4', address=f_val["scvmCn"], names=["scvm"+f_val["index"]+"-cn", 'scvm-cn'])
+                    entry = HostsEntry(entry_type='ipv4', address=f_val["scvmCn"], names=["cn-"+"scvm"+f_val["index"], 'cn-scvm'])
                     my_hosts.add([entry])
                 elif args.type == "general-virtualization":
                     entry = HostsEntry(entry_type='ipv4', address=f_val["ablecube"], names=[f_val["hostname"], 'ablecube'])
@@ -138,11 +138,11 @@ def changeHosts(args):
                     my_hosts.add([entry])
                     entry = HostsEntry(entry_type='ipv4', address=f_val["scvmMngt"], names=["scvm"+f_val["index"]+"-mngt", 'scvm-mngt'])
                     my_hosts.add([entry])
-                    entry = HostsEntry(entry_type='ipv4', address=f_val["ablecubePn"], names=["ablecube"+f_val["index"]+"-pn", 'ablecube-pn'])
+                    entry = HostsEntry(entry_type='ipv4', address=f_val["ablecubePn"], names=["pn-"+"ablecube"+f_val["index"], 'pn-ablecube'])
                     my_hosts.add([entry])
                     entry = HostsEntry(entry_type='ipv4', address=f_val["scvm"], names=["scvm"+f_val["index"], 'scvm'])
                     my_hosts.add([entry])
-                    entry = HostsEntry(entry_type='ipv4', address=f_val["scvmCn"], names=["scvm"+f_val["index"]+"-cn", 'scvm-cn'])
+                    entry = HostsEntry(entry_type='ipv4', address=f_val["scvmCn"], names=["cn-"+"scvm"+f_val["index"], 'cn-scvm'])
                     my_hosts.add([entry])
 
             else:
@@ -152,11 +152,11 @@ def changeHosts(args):
                     my_hosts.add([entry])
                     entry = HostsEntry(entry_type='ipv4', address=f_val["scvmMngt"], names=["scvm"+f_val["index"]])
                     my_hosts.add([entry])
-                    entry = HostsEntry(entry_type='ipv4', address=f_val["ablecubePn"], names=["ablecube"+f_val["index"]+"-pn"])
+                    entry = HostsEntry(entry_type='ipv4', address=f_val["ablecubePn"], names=["pn-"+"ablecube"+f_val["index"]])
                     my_hosts.add([entry])
-                    entry = HostsEntry(entry_type='ipv4', address=f_val["scvm"], names=["scvm"+f_val["index"]+"-pn"])
+                    entry = HostsEntry(entry_type='ipv4', address=f_val["scvm"], names=["pn-"+"scvm"+f_val["index"]])
                     my_hosts.add([entry])
-                    entry = HostsEntry(entry_type='ipv4', address=f_val["scvmCn"], names=["scvm"+f_val["index"]+"-cn"])
+                    entry = HostsEntry(entry_type='ipv4', address=f_val["scvmCn"], names=["cn-"+"scvm"+f_val["index"]])
                     my_hosts.add([entry])
                 elif args.type == "general-virtualization":
                     entry = HostsEntry(entry_type='ipv4', address=f_val["ablecube"], names=[f_val["hostname"]])
@@ -166,11 +166,11 @@ def changeHosts(args):
                     my_hosts.add([entry])
                     entry = HostsEntry(entry_type='ipv4', address=f_val["scvmMngt"], names=["scvm"+f_val["index"]+"-mngt"])
                     my_hosts.add([entry])
-                    entry = HostsEntry(entry_type='ipv4', address=f_val["ablecubePn"], names=["ablecube"+f_val["index"]+"-pn"])
+                    entry = HostsEntry(entry_type='ipv4', address=f_val["ablecubePn"], names=["pn-"+"ablecube"+f_val["index"]])
                     my_hosts.add([entry])
                     entry = HostsEntry(entry_type='ipv4', address=f_val["scvm"], names=["scvm"+f_val["index"]])
                     my_hosts.add([entry])
-                    entry = HostsEntry(entry_type='ipv4', address=f_val["scvmCn"], names=["scvm"+f_val["index"]+"-cn"])
+                    entry = HostsEntry(entry_type='ipv4', address=f_val["scvmCn"], names=["cn-"+"scvm"+f_val["index"]])
                     my_hosts.add([entry])
 
         my_hosts.write()

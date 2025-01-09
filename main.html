@@ -65,16 +65,18 @@
                                             <ul class="pf-c-dropdown__menu pf-m-align-right"
                                                 aria-labelledby="card-action-gfs-cluster-status"
                                                 id="dropdown-menu-gfs-cluster-status">
-                                                <li>
-                                                    <button id="button-gfs-cluster-start"
-                                                        class="pf-c-dropdown__menu-item pf-m-disabled"
-                                                        type="button">클라우드센터VM 시작</button>
+                                                <li id="gfs-maintenance-update" style="display: none;"></li>
+                                                <li class="pf-c-divider" role="separator"></li>
+                                                <li id="gfs-multipath-sync">
+                                                    <button id="button-gfs-multipath-sync"
+                                                    class="pf-c-dropdown__menu-item"
+                                                    type="button">멀티패스 동기화</button>
                                                 </li>
                                                 <li class="pf-c-divider" role="separator"></li>
-                                                <li>
-                                                    <button id="button-cloud-cluster-migration"
-                                                        class="pf-c-dropdown__menu-item pf-m-disabled"
-                                                        type="button">클라우드센터VM 마이그레이션</button>
+                                                <li id="gfs-qdevice-init" style="display: none;">
+                                                    <button id="button-gfs-qdevice-init"
+                                                    class="pf-c-dropdown__menu-item pf-m-disabled"
+                                                    type="button">Quorum 초기화</button>
                                                 </li>
                                             </ul>
                                         </div>
@@ -349,17 +351,11 @@
                                                         class="pf-c-dropdown__menu-item pf-m-disabled"
                                                         type="button">클라우드센터 클러스터 클린업</button>
                                                 </li>
-                                                <li id="ccvm-gfs-maintenance-update" style="display: none;"></li>
                                                 <li class="pf-c-divider" role="separator"></li>
                                                 <li>
                                                     <button id="button-cloud-cluster-migration"
                                                         class="pf-c-dropdown__menu-item pf-m-disabled"
                                                         type="button">클라우드센터VM 마이그레이션</button>
-                                                </li>
-                                                <li id="ccvm-gfs-qdevice-init" style="display: none;">
-                                                    <button id="button-cloud-qdevice-init"
-                                                    class="pf-c-dropdown__menu-item pf-m-disabled"
-                                                    type="button">클라우드센터VM 쿼럼 초기화</button>
                                                 </li>
                                                 <li class="pf-c-divider" role="separator"></li>
                                                 <li id="ccvm-after-bootstrap-run"></li>
@@ -670,10 +666,6 @@
                                                 <li>
                                                     <button class="pf-c-dropdown__menu-item pf-m-disabled" type="button"
                                                         id="menu-item-set-gfs-disk-add">GFS 디스크 추가</button>
-                                                </li>
-                                                <li>
-                                                    <button class="pf-c-dropdown__menu-item pf-m-disabled" type="button"
-                                                        id="menu-item-set-gfs-disk-delete">GFS 디스크 삭제</button>
                                                 </li>
                                                 <li class="pf-c-divider" role="separator"></li>
                                                 <li>
@@ -1583,7 +1575,7 @@
 <!-- PFMP 설치 : Modal 영역 끝 -->
 
 <!-- 클라우드센터 유지보수 설정 : Modal 영역 시작 -->
-<div id="div-modal-cloud-vm-maintenance-setting" class="pf-c-backdrop" style="display:none">
+<div id="div-modal-gfs-maintenance-setting" class="pf-c-backdrop" style="display:none">
     <div class="pf-l-bullseye">
         <div class="pf-c-modal-box pf-m-sm" role="dialog" aria-modal="true" aria-label="Cloud VM Maintenance Setting">
             <button id="button-close-modal-cloud-vm-maintenance-setting" aria-disabled="false" aria-label="Close"
@@ -1591,15 +1583,15 @@
                 <i class="fas fa-times" aria-hidden="true"></i>
             </button>
             <header class="pf-c-modal-box__header">
-                <h1 class="pf-c-modal-box__title"><span class="pf-c-modal-box__title-text" id="cloud-vm-maintenance-setting-head">클라우드센터 유지보수 설정</span></h1>
+                <h1 class="pf-c-modal-box__title"><span class="pf-c-modal-box__title-text" id="gfs-maintenance-setting-head">클라우드센터 유지보수 설정</span></h1>
             </header>
             <div class="pf-c-modal-box__body">
-                <div id="cloud-vm-maintenance-setting-body">클라우드센터 VM을 유지보수를 설정하시겠습니까?</div>
+                <div id="gfs-maintenance-setting-body">클라우드센터 VM을 유지보수를 설정하시겠습니까?</div>
             </div>
             <footer class="pf-c-modal-box__footer">
-                <button id="button-execution-modal-cloud-vm-maintenance-setting" aria-disabled="false"
+                <button id="button-execution-modal-gfs-maintenance-setting" aria-disabled="false"
                     class="pf-c-button pf-m-primary" type="button" data-ouia-safe="true">실행</button>
-                <button id="button-cancel-modal-cloud-vm-maintenance-setting" aria-disabled="false" class="pf-c-button pf-m-link"
+                <button id="button-cancel-modal-gfs-maintenance-setting" aria-disabled="false" class="pf-c-button pf-m-link"
                     type="button" data-ouia-safe="true">취소</button>
             </footer>
         </div>

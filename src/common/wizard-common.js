@@ -853,49 +853,6 @@ function settingProfile(clusterJsonConf, option, os_type){
 }
 
 /**
- * Meathod Name : changeAlias2
- * Date Created : 2021.11.01
- * Writer  : 류홍욱
- * Description : 준비 마법사에서 기존 호스트 파일의 Alias2를 현재 호스트 숫자에 따라 변경하는 함수
- * Parameter : 없음
- * Return  : 없음
- * History  : 2021.11.01 수정
- **/
-//  function changeAlias2(option) {
-//     if($('#form-table-tbody-cluster-config-existing-host-profile'+option+' > tr').length && $('input[name="radio-hosts-file'+option+'"]:checked').val() == "existing") {
-//         let hosts_input_number = $('#form-input-cluster-config-host-number'+option+'').val();
-//         let current_hosts_input_number = $('#form-input-cluster-config-current-host-number'+option+'').val();
-//         current_hosts_input_number = current_hosts_input_number*1
-//         let tbody_td_number = $('#form-table-tbody-cluster-config-existing-host-profile'+option+' > tr > td').length;
-//         // 현재호트스 숫자 *1(Alias2 순서) + 1(ccvm 포함하여 2번째 줄부터) *3(1줄 3칸) -1(테이블 시작점 0)
-//         let ablecube = ((hosts_input_number*1)+1)*3-1;
-//         let scvm_mngt = ((hosts_input_number*2)+1)*3-1;
-//         let ablecube_pn = ((hosts_input_number*3)+1)*3-1;
-//         let scvm = ((hosts_input_number*4)+1)*3-1;
-//         let scvm_cn = ((hosts_input_number*5)+1)*3-1;
-//         let pre_td = 3;
-//         let gap_num = hosts_input_number-current_hosts_input_number;
-
-//         // Alias2 (ccvm제외) 모두 삭제
-//         for(let i=3; i < tbody_td_number; i++) {
-//             let j;
-//             j = i+1;
-//             if(j%3 == 0) {
-//                 $('#form-table-tbody-cluster-config-existing-host-profile'+option+'').find("td:eq("+(i)+")").text("");
-//             }
-//         }
-//         for(let i=0; i < tbody_td_number; i++) {
-//             $('#form-table-tbody-cluster-config-existing-host-profile'+option+'').find("td:eq("+(ablecube+(pre_td*gap_num)*-1)+")").text("ablecube");
-//             $('#form-table-tbody-cluster-config-existing-host-profile'+option+'').find("td:eq("+(scvm_mngt+(pre_td*gap_num)*-1)+")").text("scvm-mngt");
-//             $('#form-table-tbody-cluster-config-existing-host-profile'+option+'').find("td:eq("+(ablecube_pn+(pre_td*gap_num)*-1)+")").text("ablecube-pn");
-//             $('#form-table-tbody-cluster-config-existing-host-profile'+option+'').find("td:eq("+(scvm+(pre_td*gap_num)*-1)+")").text("scvm");
-//             $('#form-table-tbody-cluster-config-existing-host-profile'+option+'').find("td:eq("+(scvm_cn+(pre_td*gap_num)*-1)+")").text("scvm-cn");
-//         }
-//     }else if ($('input[name="0'+option+'"]:checked').val() == "existing"){
-//         console.log("There are no data");
-//     }
-// }
-/**
  * Meathod Name : putHostsValueIntoTextarea
  * Date Created : 2021.03.22
  * Writer  : 류홍욱
@@ -977,15 +934,15 @@ function tableToHostsText(table_tr_obj, option, os_type){
             if(current_host_name == host_name){
                 temp_text = host_ip + "\t" + host_name + "\t" + "ablecube" + "\n";
                 temp_text += scvm_mngt_ip + "\t"  + "scvm"+idx+"-mngt" + "\t" + "scvm-mngt" + "\n";
-                temp_text += host_pn_ip + "\t"  + "ablecube"+idx+"-pn" + "\t" + "ablecube-pn" + "\n";
-                temp_text += scvm_pn_ip + "\t"  + "scvm"+idx+"-pn" + "\t" + "scvm-pn" + "\n";
-                temp_text += scvm_cn_ip + "\t"  + "scvm"+idx+"-cn" + "\t" + "scvm-cn" + "\n";
+                temp_text += host_pn_ip + "\t"  + "pn-"+"ablecube"+idx+ + "\t" + "pn-ablecube" + "\n";
+                temp_text += scvm_pn_ip + "\t"  + "pn-"+"scvm"+idx + "\t" + "pn-scvm" + "\n";
+                temp_text += scvm_cn_ip + "\t"  + "cn-"+"scvm"+idx + "\t" + "cn-scvm" + "\n";
             } else {
                 temp_text = host_ip + "\t" + host_name + "\n";
                 temp_text += scvm_mngt_ip + "\t"  + "scvm"+idx+"-mngt" + "\n";
-                temp_text += host_pn_ip + "\t"  + "ablecube"+idx+"-pn" + "\n";
-                temp_text += scvm_pn_ip + "\t"  + "scvm"+idx+"-pn" + "\n";
-                temp_text += scvm_cn_ip + "\t"  + "scvm"+idx+"-cn" + "\n";
+                temp_text += host_pn_ip + "\t"  + "pn-"+"ablecube"+idx + "\n";
+                temp_text += scvm_pn_ip + "\t"  + "pn-"+"scvm"+idx + "\n";
+                temp_text += scvm_cn_ip + "\t"  + "cn-"+"scvm"+idx + "\n";
             }
         }else if(os_type == "general-virtualization"){
             let host_name = $(this).find('td').eq(1).text().trim();
@@ -1008,15 +965,15 @@ function tableToHostsText(table_tr_obj, option, os_type){
             if(current_host_name == host_name){
                 temp_text = host_ip + "\t" + host_name + "\t" + "ablecube" + "\n";
                 temp_text += scvm_mngt_ip + "\t"  + "scvm"+idx+"-mngt" + "\t" + "scvm-mngt" + "\n";
-                temp_text += host_pn_ip + "\t"  + "ablecube"+idx+"-pn" + "\t" + "ablecube-pn" + "\n";
+                temp_text += host_pn_ip + "\t"  + "pn-"+"ablecube"+idx + "\t" + "pn-ablecube" + "\n";
                 temp_text += scvm_pn_ip + "\t"  + "scvm"+idx+ "\t" + "scvm" + "\n";
-                temp_text += scvm_cn_ip + "\t"  + "scvm"+idx+"-cn" + "\t" + "scvm-cn" + "\n";
+                temp_text += scvm_cn_ip + "\t"  + "cn-"+"scvm"+idx + "\t" + "cn-scvm" + "\n";
             } else {
                 temp_text = host_ip + "\t" + host_name + "\n";
                 temp_text += scvm_mngt_ip + "\t"  + "scvm"+idx+"-mngt" + "\n";
-                temp_text += host_pn_ip + "\t"  + "ablecube"+idx+"-pn" + "\n";
+                temp_text += host_pn_ip + "\t"  + "pn-"+"ablecube"+idx + "\n";
                 temp_text += scvm_pn_ip + "\t"  + "scvm"+idx+ "\n";
-                temp_text += scvm_cn_ip + "\t"  + "scvm"+idx+"-cn" + "\n";
+                temp_text += scvm_cn_ip + "\t"  + "cn-"+"scvm"+idx + "\n";
             }
         }
         hsots_text += temp_text;

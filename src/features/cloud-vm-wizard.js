@@ -1450,6 +1450,7 @@ function deployCloudCenterVM() {
     $('#nav-button-cloud-vm-appliance').addClass('pf-m-disabled');
     $('#nav-button-cloud-vm-compute').addClass('pf-m-disabled');
     $('#nav-button-cloud-vm-ipmi').addClass('pf-m-disabled');
+    $('#nav-button-cloud-vm-disk').addClass('pf-m-disabled');
     $('#nav-button-cloud-vm-network').addClass('pf-m-disabled');
     $('#nav-button-cloud-vm-additional').addClass('pf-m-disabled');
     $('#nav-button-cloud-vm-ssh-key').addClass('pf-m-disabled');

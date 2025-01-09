@@ -22,6 +22,8 @@ $(document).ready(function(){
     $('#dropdown-menu-cloud-cluster-status').hide();
     $('#dropdown-menu-storage-vm-status').hide();
     $('#dropdown-menu-cloud-vm-status').hide();
+    $('#dropdown-menu-gfs-cluster-status').hide();
+    $('#dropdown-menu-gfs-disk-status').hide();
 
     $('#button-open-modal-wizard-storage-cluster').hide();
     $('#button-open-modal-wizard-storage-vm').hide();
@@ -1774,8 +1776,8 @@ function screenConversion(){
         $('#div-card-storage-cluster-status').hide();
         $('#div-card-storage-vm-status').hide();
         $('#div-card-gfs-disk-status').show();
-        $('#ccvm-gfs-maintenance-update').show();
-        $('#ccvm-gfs-qdevice-init').show();
+        $('#gfs-maintenance-update').show();
+        $('#gfs-qdevice-init').show();
     }
 }
 /**
@@ -1788,171 +1790,358 @@ function screenConversion(){
  * History  : 2025.01.06 최초 작성
  */
 function gfsResourceStatus() {
-    cockpit.spawn(['python3', pluginpath + '/python/gfs/gfs_resource_status.py'])
-    .then(function(data){
-        var retVal = JSON.parse(data);
-        if (retVal.code == "200"){
-            var gfs_fence_started_arr = [];
-            var gfs_fence_stopped_arr = [];
+    return new Promise((resolve) => {
+        //초기 상태 체크 중 표시
+        $('#gfs-fence-status, #gfs-lock-status, #gfs-resource-status, #gfs-file-system-status').html("상태 체크 중 &bull;&bull;&bull;&nbsp;&nbsp;&nbsp;<svg class='pf-c-spinner pf-m-md' role='progressbar' aria-valuetext='Loading...' viewBox='0 0 100 100' ><circle class='pf-c-spinner__path' cx='50' cy='50' r='45' fill='none'></circle></svg>");
+        $('#gfs-fence-back-color, #gfs-lock-back-color, #gfs-resource-back-color, #gfs-file-system-back-color').attr('class','pf-c-label pf-m-orange');
+        $('#gfs-fence-icon, #gfs-lock-icon, #gfs-resource-icon, #gfs-file-system-icon').attr('class','fas fa-fw fa-exclamation-triangle');
 
-            var gfs_lvmlockd_arr = [];
-            var gfs_dlm_arr = [];
-            var gfs_resource_arr = [];
-            var gfs_file_system_arr = [];
+        cockpit.spawn(['python3', pluginpath + '/python/gfs/gfs_resource_status.py'])
+        .then(function(data){
+            var retVal = JSON.parse(data);
+            if (retVal.code == "200"){
+                var gfs_fence_started_arr = [];
+                var gfs_fence_stopped_arr = [];
 
-            for (var i = 0; i < retVal.val.resources.fence_resources.length; i++){
-                var gfs_fence_host = retVal.val.resources.fence_resources[i].node_name;
-                var gfs_fence_status = retVal.val.resources.fence_resources[i].role;
+                var gfs_lvmlockd_arr = [];
+                var gfs_dlm_arr = [];
+                var gfs_resource_arr = [];
+                var gfs_file_system_arr = [];
 
-                if (gfs_fence_status == "Started"){
-                    gfs_fence_started_arr.push(gfs_fence_host);
-                }else {
-                    gfs_fence_stopped_arr.push(gfs_fence_host);
+                for (var i = 0; i < retVal.val.resources.fence_resources.length; i++){
+                    var gfs_fence_host = retVal.val.resources.fence_resources[i].node_name;
+                    var gfs_fence_status = retVal.val.resources.fence_resources[i].role;
+
+                    if (gfs_fence_status == "Started"){
+                        gfs_fence_started_arr.push(gfs_fence_host);
+                    }else {
+                        gfs_fence_stopped_arr.push(gfs_fence_host);
+                    }
                 }
-            }
 
-            for (var j = 0; j < retVal.val.node_history.length; j++) {
-                var node_name = retVal.val.node_history[j].node_name;
-                for (var k = 0; k < retVal.val.node_history[j].resource_histories.length; k++){
-                    var resource_name = retVal.val.node_history[j].resource_histories[k].resource_id;
-                    var resource_status;
-                    for (var n = 0; n < retVal.val.node_history[j].resource_histories[k].operations.length; n++){
-                        if(retVal.val.node_history[j].resource_histories[k].operations[n].task == "start" || retVal.val.node_history[j].resource_histories[k].operations[n].task == "stop" || retVal.val.node_history[j].resource_histories[k].operations[n].task == "probe"){
-                            if (resource_name === "glue-lvmlockd") {
-                                resource_status = retVal.val.node_history[j].resource_histories[k].operations[n].task;
-                                gfs_lvmlockd_arr.push([node_name, resource_status]); // 배열 추가
-                            } else if (resource_name === "glue-dlm") {
-                                resource_status = retVal.val.node_history[j].resource_histories[k].operations[n].task;
-                                gfs_dlm_arr.push([node_name, resource_status]); // 배열 추가
-                            } else if (resource_name === "glue-gfs_res") {
-                                resource_status = retVal.val.node_history[j].resource_histories[k].operations[n].task;
-                                gfs_resource_arr.push([node_name, resource_status]); // 배열 추가
-                            } else if (resource_name === "glue-gfs") {
-                                resource_status = retVal.val.node_history[j].resource_histories[k].operations[n].task;
-                                gfs_file_system_arr.push([node_name, resource_status]); // 배열 추가
+                for (var j = 0; j < retVal.val.node_history.length; j++) {
+                    var node_name = retVal.val.node_history[j].node_name;
+
+                    for (var k = 0; k < retVal.val.node_history[j].resource_histories.length; k++) {
+                        var resource_name = retVal.val.node_history[j].resource_histories[k].resource_id;
+                        var resource_status;
+                        var start_error_occurred = false; // start에서 error 발생 여부를 추적
+
+                        for (var n = 0; n < retVal.val.node_history[j].resource_histories[k].operations.length; n++) {
+                            var operation = retVal.val.node_history[j].resource_histories[k].operations[n];
+                            var task = operation.task;
+                            var rc_text = operation.rc_text;
+
+                            if (task == "start" || task == "stop" || task == "probe") {
+                                if (resource_name === "glue-lvmlockd") {
+                                    resource_status = task;
+
+                                    if (task == "start" && rc_text == "error") {
+                                        resource_status = task + "(" + rc_text + ")"
+                                        start_error_occurred = true; // start에서 오류 발생
+                                    }
+
+                                    if (task == "stop" && start_error_occurred) {
+                                        // start에서 error가 발생했으므로 stop 추가하지 않음
+                                        continue;
+                                    }
+                                    gfs_lvmlockd_arr.push([node_name, resource_status]); //
+
+                                } else if (resource_name === "glue-dlm") {
+                                    resource_status = task;
+                                    if (task == "start" && rc_text == "error") {
+                                        resource_status = task + "(" + rc_text + ")"
+                                        start_error_occurred = true; // start에서 오류 발생
+                                    }
+
+                                    if (task == "stop" && start_error_occurred) {
+                                        // start에서 error가 발생했으므로 stop 추가하지 않음
+                                        continue;
+                                    }
+                                    gfs_dlm_arr.push([node_name, resource_status]); // 배열 추가
+
+                                } else if (resource_name === "glue-gfs_res") {
+                                    resource_status = task;
+
+                                    if (task == "start" && rc_text == "error") {
+                                        resource_status = task + "(" + rc_text + ")"
+                                        start_error_occurred = true; // start에서 오류 발생
+                                    }
+
+                                    if (task == "stop" && start_error_occurred) {
+                                        // start에서 error가 발생했으므로 stop 추가하지 않음
+                                        continue;
+                                    }
+                                    gfs_resource_arr.push([node_name, resource_status]); // 배열 추가
+
+                                } else if (resource_name === "glue-gfs") {
+                                    resource_status = task;
+                                    if (task == "start" && rc_text == "error") {
+                                        resource_status = task + "(" + rc_text + ")"
+                                        start_error_occurred = true; // start에서 오류 발생
+                                    }
+
+                                    if (task == "stop" && start_error_occurred) {
+                                        // start에서 error가 발생했으므로 stop 추가하지 않음
+                                        continue;
+                                    }
+                                    gfs_file_system_arr.push([node_name, resource_status]); // 배열 추가
+                                }
                             }
                         }
                     }
                 }
-            }
-            if (gfs_fence_stopped_arr.length == 0){
-                $("#gfs-fence-back-color").attr('class','pf-c-label pf-m-green');
-                $("#gfs-fence-icon").attr('class','fas fa-fw fa-check-circle');
-                $('#gfs-fence-status').text("Health OK");
-                $('#gfs-fence-text').text('Started ( ' + gfs_fence_started_arr.reverse().join(', ') + ' )');
-            }else if (gfs_fence_started_arr.length == 0){
-                $("#gfs-fence-back-color").attr('class','pf-c-label pf-m-orange');
-                $('#gfs-fence-status').text("Health Warn");
-                $('#gfs-fence-text').text('Stopped ( ' + gfs_fence_stopped_arr.reverse().join(', ') + ' )');
-            }else{
-                $("#gfs-fence-back-color").attr('class','pf-c-label pf-m-orange');
-                $('#gfs-fence-status').text("Health Warn");
-                $('#gfs-fence-text').text('Started ( ' + gfs_fence_started_arr.reverse().join(', ') + ' ), '+ 'Stopped ( ' + gfs_fence_stopped_arr.reverse().join(', ') + ' )');
-            }
-            var gfs_lvmlockd_start_arr = [];
-            var gfs_lvmlockd_stop_arr = [];
-            var gfs_dlm_start_arr = [];
-            var gfs_dlm_stop_arr = [];
-            var gfs_resource_start_arr = [];
-            var gfs_resource_stop_arr = [];
-            var gfs_file_system_start_arr = [];
-            var gfs_file_system_stop_arr = [];
 
-            console.log(gfs_resource_arr)
-            for (var l = 0; l < gfs_lvmlockd_arr.length; l++){
-                if (gfs_lvmlockd_arr[l][1] == "stop"){
-                    gfs_lvmlockd_stop_arr.push(gfs_lvmlockd_arr[l][0]);
-                }else {
-                    gfs_lvmlockd_start_arr.push(gfs_lvmlockd_arr[l][0]);
+                if (gfs_fence_stopped_arr.length == 0){
+                    $("#gfs-fence-back-color").attr('class','pf-c-label pf-m-green');
+                    $("#gfs-fence-icon").attr('class','fas fa-fw fa-check-circle');
+                    $('#gfs-fence-status').text("Health OK");
+                    $('#gfs-fence-text').text('Started ( ' + gfs_fence_started_arr.reverse().join(', ') + ' )');
+                }else if (gfs_fence_started_arr.length == 0){
+                    $("#gfs-fence-back-color").attr('class','pf-c-label pf-m-orange');
+                    $('#gfs-fence-status').text("Health Warn");
+                    $('#gfs-fence-text').text('Stopped ( ' + gfs_fence_stopped_arr.reverse().join(', ') + ' )');
+                }else{
+                    $("#gfs-fence-back-color").attr('class','pf-c-label pf-m-orange');
+                    $('#gfs-fence-status').text("Health Warn");
+                    $('#gfs-fence-text').text('Started ( ' + gfs_fence_started_arr.reverse().join(', ') + ' ), '+ 'Stopped ( ' + gfs_fence_stopped_arr.reverse().join(', ') + ' )');
                 }
-                if (gfs_dlm_arr[l][1] == "stop"){
-                    gfs_dlm_stop_arr.push(gfs_dlm_arr[l][0]);
-                }else {
-                    gfs_dlm_start_arr.push(gfs_dlm_arr[l][0]);
-                }
-                if (gfs_resource_arr[l][1] == "stop"){
-                    gfs_resource_stop_arr.push(gfs_resource_arr[l][0]);
-                }else {
-                    gfs_resource_start_arr.push(gfs_resource_arr[l][0]);
-                }
-                if (gfs_file_system_arr[l][1] == "stop"){
-                    gfs_file_system_stop_arr.push(gfs_file_system_arr[l][0]);
-                }else {
-                    gfs_file_system_start_arr.push(gfs_file_system_arr[l][0]);
-                }
-            }
-            for (var m = 0; m < retVal.val.nodes_info.length; m++){
-                var node_name = retVal.val.nodes_info[m].name;
-                var state = retVal.val.nodes_info[m].online;
-                if (state == "false"){
-                    gfs_fence_stopped_arr.push(node_name);
-                    gfs_lvmlockd_stop_arr.push(node_name);
-                    gfs_dlm_stop_arr.push(node_name);
-                    gfs_resource_stop_arr.push(node_name);
-                    gfs_file_system_stop_arr.push(node_name);
-                }
-            }
-            if (gfs_dlm_stop_arr.length == 0 && gfs_lvmlockd_stop_arr.length == 0) {
-                $("#gfs-lock-back-color").attr('class', 'pf-c-label pf-m-green');
-                $("#gfs-lock-icon").attr('class', 'fas fa-fw fa-check-circle');
-                $('#gfs-lock-status').text("Health OK");
-                $('#gfs-lock-text').html(
-                    'glue-dlm : Started ( ' + gfs_dlm_start_arr.join(', ') + ' )</br>' +
-                    'glue-lvmlockd : Started ( ' + gfs_lvmlockd_start_arr.join(', ') + ' )'
-                );
-            } else if (gfs_dlm_start_arr.length == 0 && gfs_lvmlockd_start_arr.length == 0) {
-                $("#gfs-lock-back-color").attr('class', 'pf-c-label pf-m-orange');
-                $('#gfs-lock-status').text("Health Warn");
-                $('#gfs-lock-text').html(
-                    'glue-dlm : Stopped ( ' + gfs_dlm_stop_arr.join(', ') + ' )</br> ' +
-                    'glue-lvmlockd : Stopped ( ' + gfs_lvmlockd_stop_arr.join(', ') + ' )'
-                );
-            } else {
-                $("#gfs-lock-back-color").attr('class', 'pf-c-label pf-m-orange');
-                $('#gfs-lock-status').text("Health Warn");
-                $('#gfs-lock-text').html(
-                    'glue-dlm : Started ( ' + gfs_dlm_start_arr.join(', ') + ' ),</br>' +
-                               'Stopped ( ' + gfs_dlm_stop_arr.join(', ') + ' ) </br>' +
-                    'glue-lvmlockd : Started ( ' + gfs_lvmlockd_start_arr.join(', ') + ' ),</br> ' +
-                                    'Stopped ( ' + gfs_lvmlockd_stop_arr.join(', ') + ' )</br>'
-                );
-            }
-            if (gfs_resource_stop_arr == 0){
-                $("#gfs-resource-back-color").attr('class','pf-c-label pf-m-green');
-                $("#gfs-resource-icon").attr('class','fas fa-fw fa-check-circle');
-                $('#gfs-resource-status').text("Health OK");
-                $('#gfs-resource-text').text('Started ( ' + gfs_resource_start_arr.join(', ') + ' )');
-            }else if (gfs_resource_start_arr == 0){
-                $("#gfs-resource-back-color").attr('class','pf-c-label pf-m-orange');
-                $('#gfs-resource-status').text("Health Warn");
-                $('#gfs-resource-text').text('Stopped ( ' + gfs_resource_stop_arr.join(', ') + ' )');
-            }else{
-                $("#gfs-resource-back-color").attr('class','pf-c-label pf-m-orange');
-                $('#gfs-resource-status').text("Health Warn");
-                $('#gfs-resource-text').text('Started ( ' + gfs_resource_start_arr.join(', ') + ' ), '+ 'Stopped ( ' + gfs_resource_stop_arr.join(', ') + ' )');
-            }
+                var gfs_lvmlockd_start_arr = [];
+                var gfs_lvmlockd_stop_arr = [];
+                var gfs_dlm_start_arr = [];
+                var gfs_dlm_stop_arr = [];
+                var gfs_resource_start_arr = [];
+                var gfs_resource_stop_arr = [];
+                var gfs_file_system_start_arr = [];
+                var gfs_file_system_stop_arr = [];
 
-            if (gfs_file_system_stop_arr == 0){
-                $("#gfs-file-system-back-color").attr('class','pf-c-label pf-m-green');
-                $("#gfs-file-system-icon").attr('class','fas fa-fw fa-check-circle');
-                $('#gfs-file-system-status').text("Health OK");
-                $('#gfs-file-system-text').text('Started ( ' + gfs_file_system_start_arr.join(', ') + ' )');
-            }else if (gfs_file_system_start_arr == 0){
-                $("#gfs-file-system-back-color").attr('class','pf-c-label pf-m-orange');
-                $('#gfs-file-system-status').text("Health Warn");
-                $('#gfs-file-system-text').text('Stopped ( ' + gfs_file_system_stop_arr.join(', ') + ' )');
-            }else{
-                $("#gfs-file-system-back-color").attr('class','pf-c-label pf-m-orange');
-                $('#gfs-file-system-status').text("Health Warn");
-                $('#gfs-file-system-text').text('Started ( ' + gfs_file_system_start_arr.join(', ') + ' ), '+ 'Stopped ( ' + gfs_file_system_stop_arr.join(', ') + ' )');
-            }
+                try {
+                    for (var l = 0; l < gfs_lvmlockd_arr.length; l++) {
+                        // gfs_lvmlockd 처리
+                        if (l < gfs_lvmlockd_arr.length && gfs_lvmlockd_arr[l][1] !== undefined) {
+                            if (gfs_lvmlockd_arr[l][1] == "stop") {
+                                gfs_lvmlockd_stop_arr.push(gfs_lvmlockd_arr[l][0]);
+                            }else if (gfs_lvmlockd_arr[l][1] == "start(error)") {
+                                $('#gfs-lock-status, #gfs-resource-status, #gfs-file-system-status').text("Health Err");
+                                $('#gfs-lock-back-color, #gfs-resource-back-color, #gfs-file-system-back-color').attr('class','pf-c-label pf-m-red');
+                                $('#gfs-lock-icon, #gfs-resource-icon, #gfs-file-system-icon').attr('class','fas fa-fw fa-exclamation-triangle');
+                                $('#gfs-low-info').attr("style", "color: var(--pf-global--danger-color--100)");
+                                $('#gfs-low-info').text("GFS 잠금 장치 구성 중 오류가 발생했습니다.");
+                                return;
+                            }else {
+                                gfs_lvmlockd_start_arr.push(gfs_lvmlockd_arr[l][0]);
+                            }
+                        } else {
+                            $('#gfs-lock-status, #gfs-resource-status, #gfs-file-system-status').text("Health Err");
+                            $('#gfs-lock-back-color, #gfs-resource-back-color, #gfs-file-system-back-color').attr('class','pf-c-label pf-m-red');
+                            $('#gfs-lock-icon, #gfs-resource-icon, #gfs-file-system-icon').attr('class','fas fa-fw fa-exclamation-triangle');
+                            $('#gfs-low-info').attr("style", "color: var(--pf-global--danger-color--100)");
+                            $('#gfs-low-info').text("GFS 잠금 장치 구성 중 오류가 발생했습니다.");
+                        }
 
-            $('#gfs-low-info').attr("style","color: var(--pf-global--success-color--100)");
-            $('#gfs-low-info').text("GFS 리소스가 구성되었습니다.");
-        }
-    })
+                        // gfs_dlm 처리
+                        if (l < gfs_dlm_arr.length && gfs_dlm_arr[l][1] !== undefined) {
+                            if (gfs_dlm_arr[l][1] == "stop") {
+                                gfs_dlm_stop_arr.push(gfs_dlm_arr[l][0]);
+                            } else if (gfs_dlm_arr[l][1] == "start(error)"){
+                                $('#gfs-lock-status, #gfs-resource-status, #gfs-file-system-status').text("Health Err");
+                                $('#gfs-lock-back-color, #gfs-resource-back-color, #gfs-file-system-back-color').attr('class','pf-c-label pf-m-red');
+                                $('#gfs-lock-icon, #gfs-resource-icon, #gfs-file-system-icon').attr('class','fas fa-fw fa-exclamation-triangle');
+                                $('#gfs-low-info').attr("style", "color: var(--pf-global--danger-color--100)");
+                                $('#gfs-low-info').text("GFS 잠금 장치 구성 중 오류가 발생했습니다.");
+                                return;
+                            }else {
+                                gfs_dlm_start_arr.push(gfs_dlm_arr[l][0]);
+                            }
+                        } else {
+                            $('#gfs-lock-status, #gfs-resource-status, #gfs-file-system-status').text("Health Err");
+                            $('#gfs-lock-back-color, #gfs-resource-back-color, #gfs-file-system-back-color').attr('class','pf-c-label pf-m-red');
+                            $('#gfs-lock-icon, #gfs-resource-icon, #gfs-file-system-icon').attr('class','fas fa-fw fa-exclamation-triangle');
+                            $('#gfs-low-info').attr("style", "color: var(--pf-global--danger-color--100)");
+                            $('#gfs-low-info').text("GFS 잠금 장치 구성 중 오류가 발생했습니다.");
+                        }
+                    }
+                    if (gfs_dlm_stop_arr.length == 0 && gfs_lvmlockd_stop_arr.length == 0) {
+                        $("#gfs-lock-back-color").attr('class', 'pf-c-label pf-m-green');
+                        $("#gfs-lock-icon").attr('class', 'fas fa-fw fa-check-circle');
+                        $('#gfs-lock-status').text("Health OK");
+                        $('#gfs-lock-text').html(
+                            'glue-dlm : Started ( ' + gfs_dlm_start_arr.join(', ') + ' )</br>' +
+                            'glue-lvmlockd : Started ( ' + gfs_lvmlockd_start_arr.join(', ') + ' )'
+                        );
+                    } else if (gfs_dlm_start_arr.length == 0 && gfs_lvmlockd_start_arr.length == 0) {
+                        $("#gfs-lock-back-color").attr('class', 'pf-c-label pf-m-orange');
+                        $('#gfs-lock-status').text("Health Warn");
+                        $('#gfs-lock-text').html(
+                            'glue-dlm : Stopped ( ' + gfs_dlm_stop_arr.join(', ') + ' )</br> ' +
+                            'glue-lvmlockd : Stopped ( ' + gfs_lvmlockd_stop_arr.join(', ') + ' )'
+                        );
+                    } else {
+                        $("#gfs-lock-back-color").attr('class', 'pf-c-label pf-m-orange');
+                        $('#gfs-lock-status').text("Health Warn");
+                        $('#gfs-lock-text').html(
+                            'glue-dlm : Started ( ' + gfs_dlm_start_arr.join(', ') + ' ),</br>' +
+                                       'Stopped ( ' + gfs_dlm_stop_arr.join(', ') + ' ) </br>' +
+                            'glue-lvmlockd : Started ( ' + gfs_lvmlockd_start_arr.join(', ') + ' ),</br> ' +
+                                            'Stopped ( ' + gfs_lvmlockd_stop_arr.join(', ') + ' )</br>'
+                        );
+                    }
+                    for (var l = 0; l < gfs_resource_arr.length; l++) {
+                        // gfs_resource 처리
+                        if (l < gfs_resource_arr.length && gfs_resource_arr[l][1] !== undefined) {
+                            if (gfs_resource_arr[l][1] == "stop") {
+                                gfs_resource_stop_arr.push(gfs_resource_arr[l][0]);
+                            } else if (gfs_resource_arr[l][1] == "start(error)"){
+                                $('#gfs-resource-status, #gfs-file-system-status').text("Health Err");
+                                $('#gfs-resource-back-color, #gfs-file-system-back-color').attr('class','pf-c-label pf-m-red');
+                                $('#gfs-resource-icon, #gfs-file-system-icon').attr('class','fas fa-fw fa-exclamation-triangle');
+                                $('#gfs-low-info').attr("style", "color: var(--pf-global--danger-color--100)");
+                                $('#gfs-low-info').text("GFS 리소스 그룹 구성 중 오류가 발생했습니다.");
+                                return;
+                            }else {
+                                gfs_resource_start_arr.push(gfs_resource_arr[l][0]);
+                            }
+                        } else {
+                            $('#gfs-resource-status, #gfs-file-system-status').text("Health Err");
+                            $('#gfs-resource-back-color, #gfs-file-system-back-color').attr('class','pf-c-label pf-m-red');
+                            $('#gfs-resource-icon, #gfs-file-system-icon').attr('class','fas fa-fw fa-exclamation-triangle');
+                            $('#gfs-low-info').attr("style", "color: var(--pf-global--danger-color--100)");
+                            $('#gfs-low-info').text("GFS 리소스 그룹 구성 중 오류가 발생했습니다.");
+                        }
+                    }
+
+                    if (gfs_resource_stop_arr == 0){
+                        $("#gfs-resource-back-color").attr('class','pf-c-label pf-m-green');
+                        $("#gfs-resource-icon").attr('class','fas fa-fw fa-check-circle');
+                        $('#gfs-resource-status').text("Health OK");
+                        $('#gfs-resource-text').text('Started ( ' + gfs_resource_start_arr.join(', ') + ' )');
+                    }else if (gfs_resource_start_arr == 0){
+                        $("#gfs-resource-back-color").attr('class','pf-c-label pf-m-orange');
+                        $('#gfs-resource-status').text("Health Warn");
+                        $('#gfs-resource-text').text('Stopped ( ' + gfs_resource_stop_arr.join(', ') + ' )');
+                    }else{
+                        $("#gfs-resource-back-color").attr('class','pf-c-label pf-m-orange');
+                        $('#gfs-resource-status').text("Health Warn");
+                        $('#gfs-resource-text').text('Started ( ' + gfs_resource_start_arr.join(', ') + ' ), '+ 'Stopped ( ' + gfs_resource_stop_arr.join(', ') + ' )');
+                    }
+
+                    for (var l = 0; l < gfs_file_system_arr.length; l++) {
+                        // gfs_file_system 처리
+                        if (l < gfs_file_system_arr.length && gfs_file_system_arr[l][1] !== undefined) {
+                            if (gfs_file_system_arr[l][1] == "stop") {
+                                gfs_file_system_stop_arr.push(gfs_file_system_arr[l][0]);
+                            } else if (gfs_file_system_arr[l][1] == "start(error)"){
+                                $('#gfs-file-system-status').text("Health Err");
+                                $('#gfs-file-system-back-color').attr('class','pf-c-label pf-m-red');
+                                $('#gfs-file-system-icon').attr('class','fas fa-fw fa-exclamation-triangle');
+                                $('#gfs-low-info').attr("style", "color: var(--pf-global--danger-color--100)");
+                                $('#gfs-low-info').text("GFS 파일 시스템 구성 중 오류가 발생했습니다.");
+                                return;
+                            } else {
+                                gfs_file_system_start_arr.push(gfs_file_system_arr[l][0]);
+                            }
+                        } else {
+                            $('#gfs-file-system-status').text("Health Err");
+                            $('#gfs-file-system-back-color').attr('class','pf-c-label pf-m-red');
+                            $('#gfs-file-system-icon').attr('class','fas fa-fw fa-exclamation-triangle');
+                            $('#gfs-low-info').attr("style", "color: var(--pf-global--danger-color--100)");
+                            $('#gfs-low-info').text("GFS 파일 시스템 구성 중 오류가 발생했습니다.");
+                        }
+                    }
+
+                if (gfs_file_system_stop_arr == 0){
+                    $("#gfs-file-system-back-color").attr('class','pf-c-label pf-m-green');
+                    $("#gfs-file-system-icon").attr('class','fas fa-fw fa-check-circle');
+                    $('#gfs-file-system-status').text("Health OK");
+                    $('#gfs-file-system-text').text('Started ( ' + gfs_file_system_start_arr.join(', ') + ' )');
+                }else if (gfs_file_system_start_arr == 0){
+                    $("#gfs-file-system-back-color").attr('class','pf-c-label pf-m-orange');
+                    $('#gfs-file-system-status').text("Health Warn");
+                    $('#gfs-file-system-text').text('Stopped ( ' + gfs_file_system_stop_arr.join(', ') + ' )');
+                }else{
+                    $("#gfs-file-system-back-color").attr('class','pf-c-label pf-m-orange');
+                    $('#gfs-file-system-status').text("Health Warn");
+                    $('#gfs-file-system-text').text('Started ( ' + gfs_file_system_start_arr.join(', ') + ' ), '+ 'Stopped ( ' + gfs_file_system_stop_arr.join(', ') + ' )');
+                }
+                for (var m = 0; m < retVal.val.nodes_info.length; m++){
+                    var node_name = retVal.val.nodes_info[m].name;
+                    var state = retVal.val.nodes_info[m].online;
+                    if (state == "false"){
+                        gfs_fence_stopped_arr.push(node_name);
+                        gfs_lvmlockd_stop_arr.push(node_name);
+                        gfs_dlm_stop_arr.push(node_name);
+                        gfs_resource_stop_arr.push(node_name);
+                        gfs_file_system_stop_arr.push(node_name);
+                    }
+                }
+                } catch (error) {
+                    $('#gfs-lock-status, #gfs-resource-status, #gfs-file-system-status').text("Health Err");
+                    $('#gfs-lock-back-color, #gfs-resource-back-color, #gfs-file-system-back-color').attr('class','pf-c-label pf-m-red');
+                    $('#gfs-lock-icon, #gfs-resource-icon, #gfs-file-system-icon').attr('class','fas fa-fw fa-exclamation-triangle');
+                    // 오류 처리 추가 (필요 시 사용자 알림 등)
+                    $('#gfs-low-info').attr("style", "color: var(--pf-global--danger-color--100)");
+                    $('#gfs-low-info').text("GFS 리소스 구성 중 오류가 발생했습니다.");
+                    return;
+                }
+                $('#gfs-low-info').attr("style","color: var(--pf-global--success-color--100)");
+                $('#gfs-low-info').text("GFS 리소스가 구성되었습니다.");
+            }else{
+                $('#gfs-fence-status, #gfs-lock-status, #gfs-resource-status, #gfs-file-system-status').text("Health Err");
+                $('#gfs-fence-back-color, #gfs-lock-back-color, #gfs-resource-back-color, #gfs-file-system-back-color').attr('class','pf-c-label pf-m-red');
+                $('#gfs-fence-icon, #gfs-lock-icon, #gfs-resource-icon, #gfs-file-system-icon').attr('class','fas fa-fw fa-exclamation-triangle');
+                $('#gfs-fence-text, #gfs-lock-text, #gfs-resource-text, #gfs-file-system-text').text("N/A");
+            }
+            resolve();
+        })
+        cockpit.spawn(['python3', pluginpath + '/python/gfs/gfs_manage.py', '--check-stonith','--control', 'check'])
+        .then(function(data){
+            var retVal = JSON.parse(data);
+            sessionStorage.setItem("stonith_status", retVal.val);
+
+            if (retVal.val == "Started"){
+                $('#gfs-maintenance-update').html('<a class="pf-c-dropdown__menu-item" href="#" id="menu-item-gfs-maintenance" onclick="gfs_maintenance_run()">펜스 장치 유지보수 설정</a>');
+            }else if (retVal.val == "Stopped"){
+                $('#gfs-maintenance-update').html('<a class="pf-c-dropdown__menu-item" href="#" id="menu-item-gfs-maintenance" onclick="gfs_maintenance_run()">펜스 장치 유지보수 해제</a>');
+            }
+            else{
+                $('#gfs-maintenance-update').html('<a class="pf-c-dropdown__menu-item pf-m-disabled" href="#" id="menu-item-gfs-maintenance" onclick="gfs_maintenance_run()">펜스 장치 유지보수 설정</a>');
+            }
+            resolve();
+        })
+        cockpit.spawn(['python3', pluginpath + '/python/gfs/gfs_manage.py', '--check-qdevice'])
+        .then(function(data){
+            var retVal =JSON.parse(data);
+            if (retVal.code == "200"){
+                sessionStorage.setItem("qdevice_status","true");
+                $('#button-gfs-qdevice-init').removeClass("pf-m-disabled");
+            }else{
+                sessionStorage.setItem("qdevice_status","false");
+            }
+            resolve();
+        })
+})
 }
-
+/**
+ * Meathod Name : gfs_maintenance_run
+ * Date Created : 2024.12.09
+ * Writer  : 정민철
+ * Description : GFS 유지보수 일 경우 Stonith Disable or Enable 설정
+ * Parameter : 없음
+ * Return  : 없음
+ * History  : 2024.12.09 최초 작성
+ */
+function gfs_maintenance_run(){
+    var stonith_status = sessionStorage.getItem("stonith_status");
+    if (stonith_status == "Started"){
+        $('#gfs-maintenance-setting-head').text("펜스 장치 유지보수 설정");
+        $('#gfs-maintenance-setting-body').text("펜스 장치 유지보수를 설정하시겠습니까?");
+        $('#div-modal-gfs-maintenance-setting').show();
+    }else{
+        $('#gfs-maintenance-setting-head').text("펜스 장치 유지보수 해제");
+        $('#gfs-maintenance-setting-body').text("펜스 장치 유지보수를 해제하시겠습니까?");
+        $('#div-modal-gfs-maintenance-setting').show();
+    }
+}
 /**
  * Meathod Name : gfsDiskStatus
  * Date Created : 2025.01.07
@@ -1963,29 +2152,83 @@ function gfsResourceStatus() {
  * History  : 2025.01.06 최초 작성
  */
 function gfsDiskStatus(){
-    cockpit.spawn(['python3', pluginpath + '/python/gfs/gfs_disk_status.py'])
-    .then(function(data){
-        var retVal = JSON.parse(data);
-        var disk_name = [];
-        var displayedMultipaths = new Set();
-        var displayedMountpoints = new Set();
-        var multipath = [];
-        var disk_size = 0;
-        if (retVal.code == "200"){
-            if (retVal.val.mode == "multi"){
-                for (var i = 0; i < retVal.val.blockdevices.length; i++){
-                    var mpathName = retVal.val.blockdevices[i].children[0].name;
-                    disk_name.push(retVal.val.blockdevices[i].path);
-                    if (!displayedMultipaths.has(mpathName)) {
-                        multipath.push(retVal.val.blockdevices[i].children[0].name);
+    return new Promise((resolve) => {
+        //초기 상태 체크 중 표시
+        $('#gfs-disk-status').html("상태 체크 중 &bull;&bull;&bull;&nbsp;&nbsp;&nbsp;<svg class='pf-c-spinner pf-m-md' role='progressbar' aria-valuetext='Loading...' viewBox='0 0 100 100' ><circle class='pf-c-spinner__path' cx='50' cy='50' r='45' fill='none'></circle></svg>");
+        $("#gfs-disk-css").attr('class','pf-c-label pf-m-orange');
+        $("#gfs-disk-icon").attr('class','fas fa-fw fa-exclamation-triangle');
 
-                        mount_point = retVal.val.blockdevices[i].children[0].children[0].children[0].mountpoint;
-                        var size = Number(retVal.val.blockdevices[i].children[0].children[0].children[0].size.split('G')[0]);
-                        disk_size = size;
+        cockpit.spawn(['python3', pluginpath + '/python/gfs/gfs_disk_status.py'])
+        .then(function(data){
+            var retVal = JSON.parse(data);
+            var disk_name = [];
+            var displayedMultipaths = new Set();
+            var displayedMountpoints = new Set();
+            var multipath = [];
+            var disk_size = 0;
+            if (retVal.code == "200"){
+                if (retVal.val.mode == "multi"){
 
-                        if (!displayedMountpoints.has(mount_point)){
-                            $('#gfs-disk-mount-info').text(retVal.val.blockdevices[i].children[0].children[0].children[0].mountpoint);
-                            $('#gfs-disk-volume-group').text(retVal.val.blockdevices[i].children[0].children[0].children[0].path);
+                    for (var i = 0; i < retVal.val.blockdevices.length; i++){
+                        var mpathName = retVal.val.blockdevices[i].children[0].name;
+                        var children = Object.keys(retVal.val.blockdevices[i].children[0]).includes("children");
+                        if (mpathName.includes("mpath") && children){
+                            children = Object.keys(retVal.val.blockdevices[i].children[0].children[0]).includes("children");
+                            if (children){
+                                disk_name.push(retVal.val.blockdevices[i].path);
+                                if (!displayedMultipaths.has(mpathName))  {
+                                    multipath.push(retVal.val.blockdevices[i].children[0].name);
+
+                                    mount_point = retVal.val.blockdevices[i].children[0].children[0].children[0].mountpoint;
+                                    var size = Number(retVal.val.blockdevices[i].children[0].children[0].children[0].size.split('G')[0]);
+                                    disk_size = size;
+
+                                    if (!displayedMountpoints.has(mount_point)){
+                                        $('#gfs-disk-mount-info').text(retVal.val.blockdevices[i].children[0].children[0].children[0].mountpoint);
+                                        $('#gfs-disk-volume-group').text(retVal.val.blockdevices[i].children[0].children[0].children[0].path);
+                                        if (mount_point){
+                                            $('#gfs-disk-status').text("Health OK");
+                                            $('#gfs-disk-icon').attr('class','fas fa-fw fa-check-circle');
+                                            $('#gfs-disk-css').attr('class','pf-c-label pf-m-green');
+                                            $('#gfs-disk-deploy-status-check').text("GFS 디스크가 생성되었습니다.");
+                                            $('#gfs-disk-deploy-status-check').attr("style","color: var(--pf-global--success-color--100)");
+                                        }else{
+                                            $('#gfs-disk-status').text("Health Warn");
+                                            $('#gfs-disk-icon').attr('class','fas fa-fw fa-exclamation-triangle');
+                                            $('#gfs-disk-css').attr('class','pf-c-label pf-m-orange');
+                                        }
+                                        displayedMountpoints.add(mount_point);
+                                    }
+                                    displayedMultipaths.add(mpathName);
+                                }
+                            }
+                            $('#gfs-disk-mode').text("다중 모드");
+                            $('#gfs-disk-size').text(disk_size + "GB");
+                            $('#gfs-disk-physical-volume').text(disk_name.join(', ') + " ( " + multipath.join(', ') + " )");
+                        }else{
+                            if (disk_name.length == 0){
+                                $('#gfs-disk-status').text("Health Err");
+                                $('#gfs-disk-icon').attr('class','fas fa-fw fa-exclamation-triangle');
+                                $('#gfs-disk-css').attr('class','pf-c-label pf-m-red');
+                            }
+                        }
+                        }
+                        $('#menu-item-set-gfs-clvm-disk-add').removeClass('pf-m-disabled');
+                        $('#menu-item-set-gfs-clvm-disk-info').removeClass('pf-m-disabled');
+                        resolve();
+
+                }else if (retVal.val.mode == "single"){
+
+                    for(var j = 0; j < retVal.val.blockdevices.length; j++) {
+                        var children = Object.keys(retVal.val.blockdevices[i]).includes("children");
+                        if (children){
+                            disk_name.push(retVal.val.blockdevices[j].path);
+                            mount_point = retVal.val.blockdevices[j].children[0].children[0].mountpoint;
+                            var size = Number(retVal.val.blockdevices[j].children[0].children[0].size.split('G')[0]);
+                            disk_size = size;
+
+                            $('#gfs-disk-mount-info').text(retVal.val.blockdevices[j].children[0].children[0].mountpoint);
+                            $('#gfs-disk-volume-group').text(retVal.val.blockdevices[j].children[0].children[0].path);
                             if (mount_point){
                                 $('#gfs-disk-status').text("Health OK");
                                 $('#gfs-disk-icon').attr('class','fas fa-fw fa-check-circle');
@@ -1997,44 +2240,49 @@ function gfsDiskStatus(){
                                 $('#gfs-disk-icon').attr('class','fas fa-fw fa-exclamation-triangle');
                                 $('#gfs-disk-css').attr('class','pf-c-label pf-m-orange');
                             }
-                            displayedMountpoints.add(mount_point);
+                            $('#gfs-disk-mode').text("단일 모드");
+                            $('#gfs-disk-size').text(disk_size + "GB");
+                            $('#gfs-disk-physical-volume').text(disk_name.join(', '));
+                        }else{
+                            if(disk_name.length == 0){
+                                $('#gfs-disk-status').text("Health Err");
+                                $('#gfs-disk-icon').attr('class','fas fa-fw fa-exclamation-triangle');
+                                $('#gfs-disk-css').attr('class','pf-c-label pf-m-red');
+                            }
                         }
-                        displayedMultipaths.add(mpathName);
                     }
+                    // 디스크가 생성이 되어 있을 때, CLVM 디스크 추가란 enable
+                    $('#menu-item-set-gfs-clvm-disk-add').removeClass('pf-m-disabled');
+                    $('#menu-item-set-gfs-clvm-disk-info').removeClass('pf-m-disabled');
+                    resolve();
+                }else{
+                    $('#gfs-disk-status').text("Health Err");
+                    $('#gfs-disk-icon').attr('class','fas fa-fw fa-exclamation-triangle');
+                    $('#gfs-disk-css').attr('class','pf-c-label pf-m-red');
+                    $('#gfs-disk-deploy-status-check').text("GFS 디스크가 생성되지 않았습니다.");
+                    $('#gfs-disk-deploy-status-check').attr("style","color: var(--pf-global--danger-color--100)");
+                    $('#gfs-disk-mount-info').text("N/A");
+                    $('#gfs-disk-volume-group').text("N/A");
+                    $('#gfs-disk-mode').text("N/A");
+                    $('#gfs-disk-size').text("N/A");
+                    $('#gfs-disk-physical-volume').text("N/A");
+                    resolve();
                 }
-                $('#gfs-disk-mode').text("다중 모드");
-                $('#gfs-disk-size').text(disk_size + "GB");
-                $('#gfs-disk-physical-volume').text(disk_name.join(', ') + " ( " + multipath.join(', ') + " )");
-            }else if (retVal.val.mode == "single"){
-                for(var j = 0; j < retVal.val.blockdevices.length; j++) {
-                    disk_name.push(retVal.val.blockdevices[j].path);
-                    mount_point = retVal.val.blockdevices[j].children[0].children[0].mountpoint;
-                    var size = Number(retVal.val.blockdevices[j].children[0].children[0].size.split('G')[0]);
-                    disk_size = size;
-
-                    $('#gfs-disk-mount-info').text(retVal.val.blockdevices[j].children[0].children[0].mountpoint);
-                    $('#gfs-disk-volume-group').text(retVal.val.blockdevices[j].children[0].children[0].path);
-                    if (mount_point){
-                        $('#gfs-disk-status').text("Health OK");
-                        $('#gfs-disk-icon').attr('class','fas fa-fw fa-check-circle');
-                        $('#gfs-disk-css').attr('class','pf-c-label pf-m-green');
-                        $('#gfs-disk-deploy-status-check').text("GFS 디스크가 생성되었습니다.");
-                        $('#gfs-disk-deploy-status-check').attr("style","color: var(--pf-global--success-color--100)");
-                    }else{
-                        $('#gfs-disk-status').text("Health Warn");
-                        $('#gfs-disk-icon').attr('class','fas fa-fw fa-exclamation-triangle');
-                        $('#gfs-disk-css').attr('class','pf-c-label pf-m-orange');
-                    }
-                }
-                $('#gfs-disk-mode').text("단일 모드");
-                $('#gfs-disk-size').text(disk_size + "GB");
-                $('#gfs-disk-physical-volume').text(disk_name.join(', '));
+            }else{
+                $('#gfs-disk-status').text("Health Err");
+                $('#gfs-disk-icon').attr('class','fas fa-fw fa-exclamation-triangle');
+                $('#gfs-disk-css').attr('class','pf-c-label pf-m-red');
+                $('#gfs-disk-deploy-status-check').text("GFS 디스크가 생성되지 않았습니다.");
+                $('#gfs-disk-deploy-status-check').attr("style","color: var(--pf-global--danger-color--100)");
+                $('#gfs-disk-mount-info').text("N/A");
+                $('#gfs-disk-volume-group').text("N/A");
+                $('#gfs-disk-mode').text("N/A");
+                $('#gfs-disk-size').text("N/A");
+                $('#gfs-disk-physical-volume').text("N/A");
+                resolve();
             }
-            // 디스크가 생성이 되어 있을 때, CLVM 디스크 추가란 enable
-            $('#menu-item-set-gfs-clvm-disk-add').removeClass('pf-m-disabled');
-            $('#menu-item-set-gfs-clvm-disk-info').removeClass('pf-m-disabled');
-        }
-    })
+        })
+})
 }
 /**
  * Meathod Name : setClvmDiskInfo
@@ -2188,10 +2436,12 @@ $('#button-execution-modal-clvm-disk-add').on('click',function(){
         var retVal = JSON.parse(data);
         if (retVal.code == "200"){
             $('#div-modal-spinner').hide();
+            $('#modal-status-alert-title').html("CVLM 디스크 추가");
             $("#modal-status-alert-body").html("CLVM 디스크 논리 볼륨을 구성했습니다.");
             $('#div-modal-status-alert').show();
         }else{
             $('#div-modal-spinner').hide();
+            $('#modal-status-alert-title').html("CVLM 디스크 추가");
             $("#modal-status-alert-body").html("CLVM 디스크 논리 볼륨을 실패했습니다.");
             $('#div-modal-status-alert').show();
         }
@@ -2203,4 +2453,93 @@ $('#menu-item-set-gfs-clvm-disk-info').on('click',function(){
 });
 $('#button-execution-modal-clvm-disk-info, #button-close-modal-clvm-disk-info').on('click',function(){
     $('#div-modal-clvm-disk-info').hide();
+});
+$('#button-execution-modal-gfs-maintenance-setting').on('click', function(){
+    $('#div-modal-gfs-maintenance-setting').hide();
+    var stonith_status = sessionStorage.getItem('stonith_status');
+
+    if (stonith_status == "Started"){
+        $('#div-modal-spinner-header-txt').text('펜스 장치 유지보수 설정 중입니다.');
+        $('#div-modal-spinner').show();
+        cockpit.spawn(['python3', pluginpath + '/python/gfs/gfs_manage.py', '--check-stonith', '--control', 'disable'])
+        .then(function(data){
+            $('#div-modal-spinner').hide();
+            var retVal = JSON.parse(data);
+            if (retVal.code == "200"){
+                $("#modal-status-alert-title").html("펜스 장치 유지보수 설정 완료");
+                $("#modal-status-alert-body").html("펜스 장치 유지보수 설정을 완료하였습니다.");
+                $('#div-modal-status-alert').show();
+            }
+        }).catch(function(data){
+            $('#div-modal-spinner').hide();
+            $('#div-modal-status-alert').show();
+            createLoggerInfo("펜스 장치 유지보수 설정 실패 : " + data);
+        });
+    }else{
+        $('#div-modal-spinner-header-txt').text('펜스 장치 유지보수 해제 중입니다.');
+        $('#div-modal-spinner').show();
+        cockpit.spawn(['python3', pluginpath + '/python/gfs/gfs_manage.py', '--check-stonith', '--control', 'enable'])
+        .then(function(data){
+            var retVal = JSON.parse(data);
+            if (retVal.code == "200"){
+                $("#modal-status-alert-title").html("펜스 장치 유지보수 해제 완료");
+                $("#modal-status-alert-body").html("펜스 장치 유지보수 해제를 완료하였습니다.");
+                $('#div-modal-status-alert').show();
+            }
+        }).catch(function(data){
+            $('#div-modal-spinner').hide();
+            $('#div-modal-status-alert').show();
+            createLoggerInfo("펜스 장치 유지보수 해제 실패 : " + data);
+        });
+    }
+});
+$('#button-cancel-modal-gfs-maintenance-setting, #button-close-modal-cloud-vm-maintenance-setting').on('click', function(){
+    $('#div-modal-gfs-maintenance-setting').hide();
 })
+
+$('#button-gfs-qdevice-init').on('click', function(){
+    $('#div-modal-cloud-vm-qdevice-init').show();
+});
+$('#button-close-modal-cloud-vm-qdevice-init, #button-cancel-modal-cloud-vm-qdevice-init').on('click', function(){
+    $('#div-modal-cloud-vm-qdevice-init').hide();
+});
+$('#button-execution-modal-cloud-vm-qdevice-init').on('click', function(){
+    $('#div-modal-cloud-vm-qdevice-init').hide();
+
+    $('#div-modal-spinner-header-txt').text('쿼럼을 초기화하고 있습니다.');
+    $('#div-modal-spinner').show();
+
+    $("#modal-status-alert-title").html("쿼럼 초기화");
+    $("#modal-status-alert-body").html("쿼럼 초기화를 실패하였습니다.<br/>쿼럼 상태를 확인해주세요.");
+
+    cockpit.spawn(["python3", pluginpath + "/python/gfs/gfs_manage.py", "--init-qdevice"])
+    .then(function(data){
+        var retVal = JSON.parse(data);
+        if(retVal.code == "200"){
+            $('#div-modal-spinner').hide();
+            $("#modal-status-alert-title").html("쿼럼 초기화 완료");
+            $("#modal-status-alert-body").html("쿼럼 초기화를 완료하였습니다.");
+            $('#div-modal-status-alert').show();
+        }else{
+            $('#div-modal-spinner').hide();
+            $("#modal-status-alert-title").html("쿼럼 초기화 실패");
+            $("#modal-status-alert-body").html("쿼럼 초기화를 실패하였습니다.");
+            $('#div-modal-status-alert').show();
+        }
+    }).catch(function(data){
+        $('#div-modal-spinner').hide();
+        $('#div-modal-status-alert').show();
+        createLoggerInfo("쿼럼 초기화 실패 : " + data);
+    });
+
+});
+
+$('#button-gfs-multipath-sync').on("click",function(){
+    $('#div-modal-spinner-header-txt').text('멀티패스 장치 동기화하고 있습니다.');
+    $('#div-modal-spinner').show();
+
+    cockpit.spawn(["sh", pluginpath + "/shell/host/multipath_sync.sh"])
+    .then(function(data){
+        $('#div-modal-spinner').hide();
+    })
+});
