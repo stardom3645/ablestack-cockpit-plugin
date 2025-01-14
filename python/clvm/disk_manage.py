@@ -1,11 +1,25 @@
 #!/usr/bin/python3
 import argparse
+import re
 import paramiko
 import subprocess
 import os
 import json
 
 from ablestack import *
+
+json_file_path = pluginpath + "/tools/properties/cluster.json"
+def openClusterJson():
+    try:
+        with open(json_file_path, 'r') as json_file:
+            ret = json.load(json_file)
+    except Exception as e:
+        ret = createReturn(code=500, val='cluster.json read error')
+        print ('EXCEPTION : ',e)
+
+    return ret
+
+json_data = openClusterJson()
 
 def parse_size(size_str):
     # 단위 변환 로직 (t → TB, g → GB, m → MB)
@@ -204,18 +218,39 @@ def list_gfs():
         ret = createReturn(code=500, val=f"Error: {str(e)}")
         return print(json.dumps(json.loads(ret), indent=4))
 
+def delete_clvm(vg_names,pv_names):
+    try:
+        for vg_name, pv_name in zip(vg_names, pv_names):
+            run_command(f"vgremove {vg_name}")
+            run_command(f"pvremove {pv_name}")
+            mpath_name = re.sub(r'\d+$', '', pv_name)
+            run_command(f'echo -e "d\nw" | fdisk {mpath_name}')
+
+            for host in json_data["clusterConfig"]["hosts"]:
+                ssh_client = connect_to_host(host["ablecube"])
+                run_command(f"partprobe {mpath_name}",ssh_client)
+
+
+        ret = createReturn(code=200, val="Success to clvm delete")
+        return print(json.dumps(json.loads(ret), indent=4))
+    except Exception as e:
+        ret = createReturn(code=500, val=f"Error: {str(e)}")
+        return print(json.dumps(json.loads(ret), indent=4))
 def main():
     parser = argparse.ArgumentParser(description="Cluster configuration script")
 
     parser.add_argument('--create-clvm', action='store_true', help='Flag to create CLVM Disk.')
-    parser.add_argument('--disks', help='Comma separated list of disks to use.')
     parser.add_argument('--list-clvm', action='store_true', help='Comma separated list of CLVM Disk.')
     parser.add_argument('--list-gfs', action='store_true', help='List GFS Volume Groups.')
+    parser.add_argument('--delete-clvm', action='store_true', help='Delete CLVM Volume Group.')
+    parser.add_argument('--disks', help='Comma separated list of disks to use.')
+    parser.add_argument('--vg-names', help='Serveral VG Name.')
+    parser.add_argument('--pv-names', help='Serveral PV Name.')
     args = parser.parse_args()
 
     if args.create_clvm:
         if not all([args.disks]):
-            print("All arguments are required when using --create-clvm")
+            print("Please provide both '--disks' when using '--create-clvm'.")
             parser.print_help()
         else:
             disks = args.disks.split(',')
@@ -226,5 +261,13 @@ def main():
     if args.list_gfs:
         list_gfs()
 
+    if args.delete_clvm:
+        if not all ([args.vg_name, args.pv_name]):
+            print("Please provide both '--vg-name' and '--pv-name' when using '--delete-clvm'.")
+            parser.print_help()
+        else:
+            vg_names = args.vg_names.split(',')
+            pv_names = args.pv_names.split(',')
+        delete_clvm(vg_names, pv_names)
 if __name__ == "__main__":
     main()

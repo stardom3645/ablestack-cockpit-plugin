@@ -1836,9 +1836,9 @@ function gfsDiskStatus(){
                     var volumeGroup = blockDevice.lvm.split('-')[0]; // Assuming `lvm` contains volume group info
                     var diskSize = blockDevice.size;
                     if (i%3 == 0 ){
-                        margin = "margin-right: 10px"
+                        margin = "margin: 6px 0px;margin-right: 10px"
                     }else{
-                        margin = "margin: 0px 10px"
+                        margin = "margin: 6px 10px"
                     }
                     // Create a clickable link for the mount point
                     var linkHTML = `<a id=page-mount-path-${i} href="javascript:void(0);" class="gfs-mount-link pf-c-button pf-m-link"
@@ -1863,6 +1863,7 @@ function gfsDiskStatus(){
                     $('#page-gfs-disk-mount-info').append(linkHTML);
                 }
                 $('#menu-item-set-gfs-clvm-disk-add').removeClass('pf-m-disabled');
+                $('#menu-item-set-gfs-clvm-disk-delete').removeClass('pf-m-disabled');
                 $('#menu-item-set-gfs-clvm-disk-info').removeClass('pf-m-disabled');
                 $('#menu-item-set-gfs-disk-add').removeClass('pf-m-disabled');
                 // Add click event to show detailed information in a modal
@@ -2047,6 +2048,51 @@ function setDiskAction(type, action){
         }).catch(function() {
             createLoggerInfo("setDiskAction error");
         });
+    }else if (type == "clvm" && action == "delete"){
+        var cmd = ["python3", pluginpath + "/python/clvm/disk_manage.py", "--list-clvm"];
+
+        cockpit.spawn(cmd).then(function(data) {
+            // 초기화
+            $('#clvm-disk-delete-list').empty();
+
+            // JSON 데이터 파싱
+            var result = JSON.parse(data);
+
+            // 결과 리스트 가져오기
+            var clvmList = result.val;
+
+            var output = ''; // 최종 출력 문자열
+
+            if (clvmList.length > 0) {
+                // 데이터를 순회하면서 출력 형식 생성
+                for (var i = 0; i < clvmList.length; i++) {
+                    var clvm = clvmList[i];
+
+                    // 체크박스 추가
+                    output += `
+                        <div style="margin-bottom: 8px;">
+                            <input type="checkbox" class="clvm-checkbox" id="clvm-${i}" name="form-clvm-disk-delete"
+                                data-vg="${clvm.vg_name}"
+                                data-pv="${clvm.pv_name}"
+                                data-size="${clvm.pv_size}"
+                                data-wwn="${clvm.wwn}"
+                                style="margin-left:5px;transform: scale(1.3);">
+                            <label for="clvm-${i}">
+                                ${i + 1}. ${clvm.vg_name} ${clvm.pv_name} ${clvm.pv_size} ${clvm.wwn}
+                            </label>
+                        </div>
+                    `;
+                }
+            } else {
+                output = '데이터가 존재하지 않습니다.<br>';
+            }
+
+            // 출력 데이터 추가
+            $('#clvm-disk-delete-list').append(output);
+
+        }).catch(function() {
+            createLoggerInfo("setDiskAction error");
+        });
     }else if (type == "clvm" && action == "list"){
         var cmd = ["python3", pluginpath + "/python/clvm/disk_manage.py", "--list-clvm"];
 
@@ -2199,6 +2245,62 @@ $('#button-execution-modal-clvm-disk-add').on('click',function(){
             $('#div-modal-status-alert').show();
         }
     })
+});
+$(document).on('change', 'input[type=checkbox][name="form-clvm-checkbox-disk"]:checked', function() {
+    // 체크된 항목이 있는지 확인
+    var isChecked = $('input[type=checkbox][name="form-clvm-checkbox-disk"]:checked').length > 0;
+
+    // 체크되면 버튼 활성화, 아니면 비활성화
+    $('#button-execution-modal-gfs-disk-add').prop('disabled', !isChecked);
+});
+$('#menu-item-set-gfs-clvm-disk-delete').on('click',function(){
+    setDiskAction("clvm","delete")
+    $('#div-modal-clvm-disk-delete').show();
+});
+$('#button-close-modal-clvm-disk-delete, #button-cancel-modal-clvm-disk-delete').on('click',function(){
+    $('#div-modal-clvm-disk-delete').hide();
+});
+$('#button-execution-modal-clvm-disk-delete').on('click',function(){
+    $('#div-modal-clvm-disk-delete').hide();
+    $('#div-modal-spinner-header-txt').text("CLVM 디스크 논리 볼륨을 삭제 중입니다.")
+    $('#div-modal-spinner').show();
+
+    var vg_names = $('input[type=checkbox][name="form-clvm-disk-delete"]:checked')
+    .map(function () {
+        return $(this).data('vg'); // 체크된 값 가져오기
+    })
+    .get() // jQuery 객체를 배열로 변환
+    .join(','); // 쉼표로 연결
+
+    var pv_names = $('input[type=checkbox][name="form-clvm-disk-delete"]:checked')
+    .map(function () {
+        return $(this).data('pv'); // 체크된 값 가져오기
+    })
+    .get() // jQuery 객체를 배열로 변환
+    .join(','); // 쉼표로 연결
+
+    cockpit.spawn(['python3', pluginpath + '/python/clvm/disk_manage.py', '--delete-clvm', '--vg-names', vg_names, '--pv-names', pv_names])
+    .then(function(data){
+        var retVal = JSON.parse(data);
+        if (retVal.code == "200"){
+            $('#div-modal-spinner').hide();
+            $('#modal-status-alert-title').html("CVLM 디스크 삭제");
+            $("#modal-status-alert-body").html("CLVM 디스크 논리 볼륨을 삭제했습니다.");
+            $('#div-modal-status-alert').show();
+        }else{
+            $('#div-modal-spinner').hide();
+            $('#modal-status-alert-title').html("CVLM 디스크 삭제");
+            $("#modal-status-alert-body").html("CLVM 디스크 논리 볼륨 삭제를 실패했습니다.");
+            $('#div-modal-status-alert').show();
+        }
+    })
+});
+$(document).on('change', 'input[type=checkbox][name="form-clvm-disk-delete"]:checked', function() {
+    // 체크된 항목이 있는지 확인
+    var isChecked = $('input[type=checkbox][name="form-clvm-disk-delete"]:checked').length > 0;
+
+    // 체크되면 버튼 활성화, 아니면 비활성화
+    $('#button-execution-modal-gfs-disk-add').prop('disabled', !isChecked);
 });
 $('#menu-item-set-gfs-clvm-disk-info').on('click',function(){
     setDiskAction("clvm", "list")
@@ -2385,10 +2487,16 @@ $('#button-execution-modal-gfs-disk-add').on('click', function() {
         console.error("클러스터 정보를 불러오지 못했습니다.");
     });
 });
+$(document).on('change', 'input[type=checkbox][name="form-gfs-checkbox-disk"]', function() {
+    // 체크된 항목이 있는지 확인
+    var isChecked = $('input[type=checkbox][name="form-gfs-checkbox-disk"]:checked').length > 0;
+
+    // 체크되면 버튼 활성화, 아니면 비활성화
+    $('#button-execution-modal-gfs-disk-add').prop('disabled', !isChecked);
+});
 $('#button-close-modal-gfs-disk-info,#button-cancel-modal-gfs-disk-info').on('click', function(){
     $('#div-modal-gfs-disk-info').hide();
 });
-
 /**
  * Meathod Name : gfsResourceStatus
  * Date Created : 2025.01.06
