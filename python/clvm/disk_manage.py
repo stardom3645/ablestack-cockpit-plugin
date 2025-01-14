@@ -175,7 +175,34 @@ def list_clvm():
         ret = createReturn(code=500, val=f"Error: {str(e)}")
         return print(json.dumps(json.loads(ret), indent=4))
 
-
+def list_gfs():
+    try:
+        vgs_result = subprocess.run(
+            ["vgs", "-o", ",vg_name", "--reportformat", "json"],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            check=True
+        )
+        vgs_output = json.loads(vgs_result.stdout)
+        gfs_vgs = []
+        for vg in vgs_output["report"][0]["vg"]:
+            vg_name = vg.get("vg_name", "")
+            if "vg_glue" in vg_name:
+                vg_name = vg.get("vg_name", "")
+                gfs_vgs.append({
+                    "vg_name": vg_name,
+                })
+        # 결과 반환
+        ret = createReturn(code=200, val=gfs_vgs)
+        return print(json.dumps(json.loads(ret), indent=4))
+    except subprocess.CalledProcessError as e:
+        error_msg = f"Command '{e.cmd}' returned non-zero exit status {e.returncode}."
+        ret = createReturn(code=500, val=error_msg)
+        return print(json.dumps(json.loads(ret), indent=4))
+    except Exception as e:
+        ret = createReturn(code=500, val=f"Error: {str(e)}")
+        return print(json.dumps(json.loads(ret), indent=4))
 
 def main():
     parser = argparse.ArgumentParser(description="Cluster configuration script")
@@ -183,6 +210,7 @@ def main():
     parser.add_argument('--create-clvm', action='store_true', help='Flag to create CLVM Disk.')
     parser.add_argument('--disks', help='Comma separated list of disks to use.')
     parser.add_argument('--list-clvm', action='store_true', help='Comma separated list of CLVM Disk.')
+    parser.add_argument('--list-gfs', action='store_true', help='List GFS Volume Groups.')
     args = parser.parse_args()
 
     if args.create_clvm:
@@ -195,5 +223,8 @@ def main():
 
     if args.list_clvm:
         list_clvm()
+    if args.list_gfs:
+        list_gfs()
+
 if __name__ == "__main__":
     main()

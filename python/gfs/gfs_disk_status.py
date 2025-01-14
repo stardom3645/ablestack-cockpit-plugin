@@ -10,7 +10,7 @@ Copyright (c) 2021 ABLECLOUD Co. Ltd.
 import argparse
 import json
 import logging
-from collections import OrderedDict
+from collections import defaultdict, OrderedDict
 from ablestack import *
 import os
 import sh
@@ -82,97 +82,108 @@ def listPCIInterface(classify=None):
                     list_pci[newpci[classify]] = [newpci]
                 newpci = {}
     return list_pci
-
-"""
-디스크의 목록을 출력하는 함수
-
-:return: dict
-"""
-def filter_mpath_only(blockdevices):
+def get_gfs2_mounts():
     """
-    Filters blockdevices based on multipathd status:
-    - If active, include only children with type 'mpath'.
-    - If inactive, include only children with mountpoint '/mnt/glue-gfs'.
+    GFS2 파일 시스템으로 마운트된 디스크 목록을 반환합니다.
+    """
+    mounts = os.popen("mount | grep gfs2").read().splitlines()
+    gfs2_mounts = []
+
+    for mount in mounts:
+        parts = mount.split()
+        if len(parts) >= 3:
+            device = parts[0]  # ex) /dev/mapper/vg_glue-lv_glue
+            mountpoint = parts[2]  # ex) /mnt/glue-gfs
+            gfs2_mounts.append((device, mountpoint))
+
+    return gfs2_mounts
+
+
+def filter_gfs2_mounted_devices(blockdevices, gfs2_mounts):
+    """
+    GFS2로 마운트된 디스크만 필터링합니다.
+    - LVM 경로, 멀티패스 경로, 마운트 경로만 반환합니다.
     """
     filtered_devices = []
-    mpath_status = os.popen("systemctl is-active multipathd").read().strip()
 
     for device in blockdevices:
         if 'children' in device:
-            filtered_children = []
             for child in device['children']:
-                if mpath_status == "active":
-                    # Filter for type 'mpath' when multipathd is active
-                    if child.get('type') == 'mpath':
-                        filtered_children.append(child)
-                elif mpath_status == "inactive":
-                    # Filter for mountpoint '/mnt/glue-gfs' when multipathd is inactive
-                    if 'children' in child:  # Check if child has nested children
-                        nested_children = []
-                        for nested_child in child['children']:
-                            if nested_child.get('mountpoint') == '/mnt/glue-gfs':
-                                nested_children.append(nested_child)
-                        if nested_children:
-                            child['children'] = nested_children
-                            filtered_children.append(child)
-            if filtered_children:
-                device['children'] = filtered_children
-                filtered_devices.append(device)
+                if 'children' in child:
+                    for sub_child in child['children']:
+                        if 'children' in sub_child:
+                            for lvm in sub_child['children']:
+                                for gfs2_dev, gfs2_mount in gfs2_mounts:
+                                    if lvm['path'] == gfs2_dev:
+                                        filtered_devices.append({
+                                            "lvm": lvm['path'],
+                                            "multipath": sub_child['path'],
+                                            "device": device['path'],
+                                            "mountpoint": gfs2_mount,
+                                            "size": lvm['size']
+                                        })
     return filtered_devices
 
+def group_by_mountpoint(devices):
+    """
+    mountpoint 기준으로 그룹화하고, multipath와 device를 배열로 묶음
+    """
+    grouped = defaultdict(lambda: {"lvm": "", "multipaths": [], "devices": [], "size": ""})
 
-from collections import OrderedDict
+    for dev in devices:
+        mountpoint = dev["mountpoint"]
+        grouped[mountpoint]["lvm"] = dev["lvm"]
+        grouped[mountpoint]["size"] = dev["size"]
+        grouped[mountpoint]["multipaths"].append(dev["multipath"])
+        grouped[mountpoint]["devices"].append(dev["device"])
+
+    # 결과를 리스트 형태로 변환
+    return [
+        {
+            "lvm": value["lvm"],
+            "mountpoint": key,
+            "size": value["size"],
+            "multipaths": list(set(value["multipaths"])),
+            "devices": list(set(value["devices"]))
+        }
+        for key, value in grouped.items()
+    ]
+
 
 def listDiskInterface(H=False, classify=None):
-    disk_path = []
-    mode = ""
-    mpath_status = os.popen("systemctl is-active multipathd").read().strip()
+    mode = "multi" if os.popen("systemctl is-active multipathd").read().strip() == "active" else "single"
 
-    if mpath_status == "active":
-        mode = "multi"
-    elif mpath_status == "inactive":
-        mode = "single"
+    # GFS2 마운트 정보 수집
+    gfs2_mounts = get_gfs2_mounts()
 
-    item = json.loads(lsblk_cmd(J=True, o="name,path,rota,model,size,state,group,type,tran,subsystems,vendor,wwn,mountpoint"))
+    # 디스크 정보 수집
+    item = json.loads(lsblk_cmd(J=True, o="name,path,size,group,type,mountpoint"))
     bd = item['blockdevices']
-    newbd = []
-    for dev in bd:
-        if 'loop' not in dev['type'] and (dev['tran'] is None or 'usb' not in dev['tran']) and 'cdrom' not in dev['group']:
-            for dp in disk_path:
-                if dev["name"] == dp[0]:
-                    dev["path"] = dp[1]
-            newbd.append(dev)
 
-    # Filter devices to include only mpath type children
-    newbd = filter_mpath_only(newbd)
-    item['blockdevices'] = newbd
+    # GFS2로 마운트된 디스크만 필터링
+    filtered_devices = filter_gfs2_mounted_devices(bd, gfs2_mounts)
 
-    list_pci = listPCIInterface(classify=classify)
-    item['raidcontrollers'] = [
-    ]
-    for pci in list_pci:
-        if 'raid' in pci['Class'].lower() or "Non-Volatile memory controller" in pci['Class']:
-            item['raidcontrollers'].append(pci)
+    # mountpoint 기준으로 그룹화
+    grouped_devices = group_by_mountpoint(filtered_devices)
 
-    # Rearrange the order to make 'mode' the first key
-    ordered_item = OrderedDict([
+    # 결과 구성
+    result = OrderedDict([
         ("mode", mode),
-        ("blockdevices", item['blockdevices']),
-        ("raidcontrollers", item['raidcontrollers'])
+        ("blockdevices", grouped_devices)
     ])
 
-    if len(item['blockdevices']) == 0:
-        return createReturn(code=500, val=ordered_item)
-    return createReturn(code=200, val=ordered_item)
+    # 마운트된 디스크가 없으면 500 코드 반환
+    if len(grouped_devices) == 0:
+        return createReturn(code=500, val={"message": "GFS2로 마운트된 디스크가 없습니다."})
+
+    return createReturn(code=200, val=result)
+
+
 
 if __name__ == '__main__':
     parser = createArgumentParser()
     args = parser.parse_args()
-    verbose = (5 - args.verbose) * 10
 
-    # 로깅을 위한 logger 생성, 모든 인자에 default 인자가 있음.
-    logger = createLogger(verbosity=logging.CRITICAL, file_log_level=logging.ERROR, log_file='test.log')
-
-    # 실제 로직 부분 호출 및 결과 출력
+    # 결과 출력
     ret = listDiskInterface()
     print(ret)
