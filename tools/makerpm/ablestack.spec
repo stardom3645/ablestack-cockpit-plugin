@@ -3,7 +3,7 @@
 # 최초 작성일 : 2021. 04. 02
 
 Name: ablecube
-Version: %{?version}%{!?version:4.1}
+Version: %{?version}%{!?version:4.2}
 Release: %{?release}%{!?release:0.wip.el9.noarch}
 Source0: %{name}-%{version}.tar.gz
 Summary: ablestack cube package
@@ -33,7 +33,7 @@ Requires: /bin/bash
 %install
 rm -rf $RPM_BUILD_ROOT
 mkdir -p $RPM_BUILD_ROOT/usr/share/cockpit/ablestack
-cp -r $RPM_BUILD_ROOT/../../../{README.md,css,images,main.html,manifest.json,sample,shell,src,tools,python,index.html,index.js,main-glue.html,main-glue-no-permission.html} $RPM_BUILD_ROOT/usr/share/cockpit/ablestack
+cp -r $RPM_BUILD_ROOT/../../../{README.md,node_modules,images,main.html,manifest.json,sample,shell,src,tools,python,index.html,index.js,main-glue.html,main-glue-no-permission.html} $RPM_BUILD_ROOT/usr/share/cockpit/ablestack
 
 %post
 #echo 'AbleStack script'
