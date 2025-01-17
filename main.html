@@ -643,6 +643,10 @@
                                                     <button class="pf-c-dropdown__menu-item pf-m-disabled" type="button"
                                                         id="menu-item-set-gfs-disk-add">GFS 디스크 추가</button>
                                                 </li>
+                                                <li>
+                                                    <button class="pf-c-dropdown__menu-item pf-m-disabled" type="button"
+                                                        id="menu-item-set-gfs-disk-delete">GFS 디스크 삭제</button>
+                                                </li>
                                                 <li class="pf-c-divider" role="separator"></li>
                                                 <li>
                                                     <button class="pf-c-dropdown__menu-item pf-m-disabled" type="button"
@@ -652,6 +656,7 @@
                                                     <button class="pf-c-dropdown__menu-item pf-m-disabled" type="button"
                                                         id="menu-item-set-gfs-clvm-disk-delete">CLVM 디스크 삭제</button>
                                                 </li>
+                                                <li class="pf-c-divider" role="separator"></li>
                                                 <li>
                                                     <button class="pf-c-dropdown__menu-item pf-m-disabled" type="button"
                                                         id="menu-item-set-gfs-clvm-disk-info">CLVM 디스크 정보</button>
@@ -1587,7 +1592,7 @@
                                     <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
                                 </label>
                             </div>
-                            <div class="pf-c-form__group-control pf-m-stack" id="clvm-disk-list"
+                            <div class="pf-c-form__group-control pf-m-stack" id="clvm-disk-add-list"
                                 style="margin-top:8px;max-height: 400px;overflow-y: auto;">
                             </div>
                         </div>
@@ -1631,6 +1636,8 @@
             <footer class="pf-c-modal-box__footer">
                 <button id="button-execution-modal-clvm-disk-delete" aria-disabled="false"
                     class="pf-c-button pf-m-primary" type="button" data-ouia-safe="true" disabled>확인</button>
+                <button id="button-cancel-modal-clvm-disk-delete" aria-disabled="false" class="pf-c-button pf-m-link"
+                    type="button" data-ouia-safe="true">취소</button>
             </footer>
         </div>
     </div>
@@ -1695,7 +1702,7 @@
                                     <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
                                 </label>
                             </div>
-                            <div class="pf-c-form__group-control pf-m-stack" id="gfs-disk-list"
+                            <div class="pf-c-form__group-control pf-m-stack" id="gfs-disk-add-list"
                                 style="margin-top:8px;max-height: 400px;overflow-y: auto;">
                             </div>
                         </div>
@@ -1712,6 +1719,45 @@
     </div>
 </div>
 <!-- GFS 디스크 추가 : Modal 영역 끝 -->
+<!-- GFS 디스크 삭제 : Modal 영역 시작 -->
+<div id="div-modal-gfs-disk-delete" class="pf-c-backdrop" style="display:none">
+    <div class="pf-l-bullseye">
+        <div class="pf-c-modal-box pf-m-md" role="dialog" aria-modal="true" aria-label="GFS Disk delete">
+            <button id="button-close-modal-gfs-disk-delete" aria-disabled="false" aria-label="Close"
+                class="pf-c-button pf-m-plain" type="button">
+                <i class="fas fa-times" aria-hidden="true"></i>
+            </button>
+            <header class="pf-c-modal-box__header">
+                <h1 class="pf-c-modal-box__title">
+                    <span class="pf-c-modal-box__title-text">GFS 디스크 삭제</span>
+                </h1>
+                <div style="display: flex; align-items: center; margin-top: 20px;">
+                    <i class="fas fa-exclamation-triangle " aria-hidden="true" style="margin-right: 15px;font-size:25px; color: #d9822b;"></i>
+                    <span style="color:red;">선택한 디스크의 모든 데이터가 영구적으로 삭제됩니다!<br/>
+                        삭제된 데이터는 복구가 불가능하니, 반드시 신중하게 확인 후 진행하시기 바랍니다.</span>
+                </div>
+            </header>
+            <div class="pf-c-modal-box__body">
+                <form novalidate class="pf-c-form pf-m-horizontal">
+                    <section class="pf-c-form__section">
+                        <div class="pf-c-form__group" style="display: flex;">
+                            <div class="pf-c-form__group-control pf-m-stack" id="gfs-disk-delete-list"
+                                style="margin-top:8px;max-height: 400px;overflow-y: auto;">
+                            </div>
+                        </div>
+                    </section>
+                </form>
+            </div>
+            <footer class="pf-c-modal-box__footer">
+                <button id="button-execution-modal-gfs-disk-delete" aria-disabled="false"
+                    class="pf-c-button pf-m-primary" type="button" data-ouia-safe="true" disabled>삭제</button>
+                <button id="button-cancel-modal-gfs-disk-delete" aria-disabled="false" class="pf-c-button pf-m-link"
+                    type="button" data-ouia-safe="true">취소</button>
+            </footer>
+        </div>
+    </div>
+</div>
+<!-- GFS 디스크 삭제 : Modal 영역 끝 -->
 <!-- GFS 디스크 추가 : Modal 영역 시작 -->
 <div id="div-modal-gfs-disk-info" class="pf-c-backdrop" style="display:none">
     <div class="pf-l-bullseye">
