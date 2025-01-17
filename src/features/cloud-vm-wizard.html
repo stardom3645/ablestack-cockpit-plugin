@@ -312,32 +312,14 @@
                             </p>
                             <form novalidate class="pf-c-form pf-m-horizontal" style="margin-left:15px;margin-top:32px">
                                 <section class="pf-c-form__section">
-                                    <!-- <div class="pf-c-form__group">
-                                        <div class="pf-c-form__group-label">
-                                            <label class="pf-c-form__label">
-                                                <span class="pf-c-form__label-text">디스크 구성 방식</span>
-                                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
-                                            </label>
-                                        </div>
-                                        <div class="pf-c-form__group-control pf-m-inline" style="margin-top:10px">
-                                            <div class="pf-c-radio">
-                                                <input class="pf-c-radio__input" type="radio" id="raid-passthrough" value="rp" name="form-radio-cloud-vm-disk-type" checked/>
-                                                <label class="pf-c-radio__label" for="raid-passthrough">PCI Passthrough</label>
-                                            </div>
-                                            <div class="pf-c-radio">
-                                                <input class="pf-c-radio__input" type="radio" id="lun-passthrough" value="lp" name="form-radio-cloud-vm-disk-type" />
-                                                <label class="pf-c-radio__label" for="lun-passthrough">LUN Passthrough</label>
-                                            </div>
-                                        </div>
-                                    </div> -->
-                                    <div class="pf-c-form__group">
+                                    <div class="pf-c-form__group" style="display: block;">
                                         <div class="pf-c-form__group-label">
                                             <label class="pf-c-form__label" for="form-list-cloud-vm-data-disk">
                                                 <span class="pf-c-form__label-text">GFS용 디스크 구성 대상 장치</span>
                                                 <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
                                             </label>
                                         </div>
-                                        <div class="pf-c-form__group-control pf-m-stack" id="disk-cloud-vm-pci-list" style="margin-top:8px">
+                                        <div class="pf-c-form__group-control pf-m-stack" id="disk-cloud-vm-pci-list" style="margin-top:8px;max-height: 300px;overflow-y: auto;">
                                         </div>
                                     </div>
                                 </section>

@@ -64,7 +64,6 @@ def run_command(command, ssh_client=None, ignore_errors=False, suppress_errors=T
             print(f"Error running command: {command}: {e}")
             raise
 
-
 def connect_to_host(ip):
     """Establish an SSH connection to the host."""
     ssh = paramiko.SSHClient()
@@ -613,7 +612,6 @@ def init_qdevice():
     except Exception:
         ret = createReturn(code=500, val="Qdevice Init Failure")
         return print(json.dumps(json.loads(ret), indent=4))
-import subprocess
 
 def check_qdevice():
     try:

@@ -110,11 +110,11 @@ def resetCloudCenter(args):
         vg_name_check = os.popen("pvs --noheadings -o vg_name | grep 'vg_glue'").read().strip().splitlines()
         if vg_name_check:
             disk = os.popen("pvs --noheadings -o pv_name,vg_name | grep 'vg_glue' | awk '{print $1}' | sed 's/[0-9]*$//'").read()
-            result = json.loads(python3(pluginpath + '/python/pcs/gfs-manage.py', '--init-pcs-cluster','--disks', disk ,'--vg-name', 'vg_glue', '--lv-name', 'lv_glue', '--list-ip', pcs_list_str))
+            result = json.loads(python3(pluginpath + '/python/gfs/gfs_manage.py', '--init-pcs-cluster','--disks', disk ,'--vg-name', 'vg_glue', '--lv-name', 'lv_glue', '--list-ip', pcs_list_str))
             if result['code'] not in [200,400]:
                 success_bool = False
         else:
-            result = json.loads(python3(pluginpath + '/python/pcs/gfs-manage.py', '--init-pcs-cluster', '--list-ip', pcs_list_str))
+            result = json.loads(python3(pluginpath + '/python/gfs/gfs_manage.py', '--init-pcs-cluster', '--list-ip', pcs_list_str))
             if result['code'] not in [200,400]:
                 success_bool = False
         # virsh 초기화
@@ -146,11 +146,11 @@ def resetCloudCenter(args):
         if vg_name_check:
             disk_list = os.popen("pvs --noheadings -o pv_name,vg_name 2>/dev/null | grep 'vg_glue' | awk '{print $1}' | sed 's/[0-9]*$//'").read().strip().split("\n")
             disk = ",".join(disk_list)
-            result = json.loads(python3(pluginpath + '/python/pcs/gfs-manage.py', '--init-pcs-cluster','--disks', disk ,'--vg-name', 'vg_glue', '--lv-name', 'lv_glue', '--list-ip', pcs_list_str))
+            result = json.loads(python3(pluginpath + '/python/gfs/gfs_manage.py', '--init-pcs-cluster','--disks', disk ,'--vg-name', 'vg_glue', '--lv-name', 'lv_glue', '--list-ip', pcs_list_str))
             if result['code'] not in [200,400]:
                 success_bool = False
         else:
-            result = json.loads(python3(pluginpath + '/python/pcs/gfs-manage.py', '--init-pcs-cluster', '--list-ip', pcs_list_str))
+            result = json.loads(python3(pluginpath + '/python/gfs/gfs_manage.py', '--init-pcs-cluster', '--list-ip', pcs_list_str))
             if result['code'] not in [200,400]:
                 success_bool = False
 

@@ -15,6 +15,7 @@ let pcs_exe_host = "";
 var os_type = sessionStorage.getItem("os_type");
 //PFMP 설치 시 퍼센트 값 설정 초가화
 let interval;
+var gfs_file_system_arr = [];
 
 $(document).ready(function(){
 
@@ -22,6 +23,8 @@ $(document).ready(function(){
     $('#dropdown-menu-cloud-cluster-status').hide();
     $('#dropdown-menu-storage-vm-status').hide();
     $('#dropdown-menu-cloud-vm-status').hide();
+    $('#dropdown-menu-gfs-cluster-status').hide();
+    $('#dropdown-menu-gfs-disk-status').hide();
 
     $('#button-open-modal-wizard-storage-cluster').hide();
     $('#button-open-modal-wizard-storage-vm').hide();
@@ -108,7 +111,9 @@ $(document).ready(function(){
 $('#card-action-cloud-cluster-status').on('click', function(){
     $('#dropdown-menu-cloud-cluster-status').toggle();
 });
-
+$('#card-action-gfs-cluster-status').on('click', function(){
+    $('#dropdown-menu-gfs-cluster-status').toggle();
+});
 $('#card-action-storage-vm-status').on('click', function(){
     $('#dropdown-menu-storage-vm-status').toggle();
 });
@@ -345,7 +350,6 @@ function scvm_bootstrap_run(){
                 cockpit.spawn(["python3", pluginpath+"/python/cloudinit_status/cloudinit_status.py", "status", "--target",  "scvm"])
                     .then(function(data){
                         var retVal = JSON.parse(data);
-                        console.log(retVal.val);
                         //cloudinit status: done 일때
                         if(retVal.code == 200 && retVal.val == "status: done"){
                             $('#modal-title-scvm-status').text("스토리지센터 구성하기");
@@ -1585,6 +1589,8 @@ function ribbonWorker() {
             pcsExeHost(),
             checkConfigStatus(),
             CardCloudClusterStatus(),
+            gfsDiskStatus(),
+            gfsResourceStatus(),
             new CloudCenterVirtualMachine().checkCCVM()
         ])
             .then(function () {
@@ -1755,11 +1761,1175 @@ function updatePfmpInstall(time_value, unit) {
         }
     }, intervalTime);
 }
+/**
+ * Meathod Name : screenConversion
+ * Date Created : 2024.09.19
+ * Writer  : 정민철
+ * Description : 일반 가상화에 대한 화면 처리
+ * Parameter : 없음
+ * Return  : 없음
+ * History  : 2024.09.19 최초 작성
+ */
 function screenConversion(){
     if (os_type == "general-virtualization"){
+        $('#div-card-gfs-cluster-status').show();
         $('#div-card-storage-cluster-status').hide();
         $('#div-card-storage-vm-status').hide();
-        $('#ccvm-gfs-maintenance-update').show();
-        $('#ccvm-gfs-qdevice-init').show();
+        $('#div-card-gfs-disk-status').show();
+        $('#gfs-maintenance-update').show();
+        $('#gfs-qdevice-init').show();
     }
+}
+
+/**
+ * Meathod Name : gfs_maintenance_run
+ * Date Created : 2024.12.09
+ * Writer  : 정민철
+ * Description : GFS 유지보수 일 경우 Stonith Disable or Enable 설정
+ * Parameter : 없음
+ * Return  : 없음
+ * History  : 2024.12.09 최초 작성
+ */
+function gfs_maintenance_run(){
+    var stonith_status = sessionStorage.getItem("stonith_status");
+    if (stonith_status == "Started"){
+        $('#gfs-maintenance-setting-head').text("펜스 장치 유지보수 설정");
+        $('#gfs-maintenance-setting-body').text("펜스 장치 유지보수를 설정하시겠습니까?");
+        $('#div-modal-gfs-maintenance-setting').show();
+    }else{
+        $('#gfs-maintenance-setting-head').text("펜스 장치 유지보수 해제");
+        $('#gfs-maintenance-setting-body').text("펜스 장치 유지보수를 해제하시겠습니까?");
+        $('#div-modal-gfs-maintenance-setting').show();
+    }
+}
+
+function gfsDiskStatus(){
+    return new Promise((resolve) => {
+        $('#gfs-disk-status').html("상태 체크 중 &bull;&bull;&bull;&nbsp;&nbsp;&nbsp;<svg class='pf-c-spinner pf-m-md' role='progressbar' aria-valuetext='Loading...' viewBox='0 0 100 100' ><circle class='pf-c-spinner__path' cx='50' cy='50' r='45' fill='none'></circle></svg>");
+        $("#gfs-disk-css").attr('class','pf-c-label pf-m-orange');
+        $("#gfs-disk-icon").attr('class','fas fa-fw fa-exclamation-triangle');
+
+        cockpit.spawn(['python3', pluginpath + '/python/gfs/gfs_disk_status.py'])
+        .then(function(data) {
+            var retVal = JSON.parse(data);
+
+            if (retVal.code == "200"){
+                // Clear previous data
+                if (retVal.val.mode == "multi"){
+                    $('#page-gfs-disk-mode').text("다중 모드");
+                }else{
+                    $('#page-gfs-disk-mode').text("단일 모드");
+                }
+                $('#page-gfs-disk-mount-info').html("");
+                $('#gfs-disk-deploy-status-check').text("GFS 디스크가 생성되었습니다.");
+                $('#gfs-disk-deploy-status-check').attr("style","color: var(--pf-global--success-color--100)");
+                $('#gfs-disk-status').text("Health OK");
+                $('#gfs-disk-icon').attr('class','fas fa-fw fa-check-circle');
+                $('#gfs-disk-css').attr('class','pf-c-label pf-m-green');
+
+                for(var i=0; i < retVal.val.blockdevices.length; i++){
+                    var blockDevice = retVal.val.blockdevices[i];
+                    var mountPoint = blockDevice.mountpoint;
+                    var multipaths = blockDevice.multipaths.join(", ");
+                    var devices = blockDevice.devices.join(", ");
+                    var physicalVolume = blockDevice.lvm; // Assuming `lvm` is the physical volume
+                    var volumeGroup = blockDevice.lvm.split('-')[0]; // Assuming `lvm` contains volume group info
+                    var diskSize = blockDevice.size;
+                    if (i%3 == 0 ){
+                        margin = "margin: 6px 0px;margin-right: 10px"
+                    }else{
+                        margin = "margin: 6px 10px"
+                    }
+                    // Create a clickable link for the mount point
+                    var linkHTML = `<a id=page-mount-path-${i} href="javascript:void(0);" class="gfs-mount-link pf-c-button pf-m-link"
+                    style="display: inline-flex; align-items: center; padding: 8px 16px;
+                    border: 1px solid; border-radius: 4px;
+                    text-decoration: none; font-weight: bold; ${margin};
+                    transition: all 0.3s ease; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);"
+                    data-mountpoint="${mountPoint}"
+                    data-multipaths="${multipaths}"
+                    data-devices="${devices}"
+                    data-physicalvolume="${physicalVolume}"
+                    data-volumegroup="${volumeGroup}"
+                    data-disksize="${diskSize}">
+                    ${mountPoint}
+                </a>`;
+
+                    if ((i + 1) % 3 == 0) {
+                        linkHTML += "<br>";
+                    }
+
+                    // Append the link to the container
+                    $('#page-gfs-disk-mount-info').append(linkHTML);
+                }
+                $('#menu-item-set-gfs-clvm-disk-add').removeClass('pf-m-disabled');
+                $('#menu-item-set-gfs-clvm-disk-delete').removeClass('pf-m-disabled');
+                $('#menu-item-set-gfs-clvm-disk-info').removeClass('pf-m-disabled');
+                $('#menu-item-set-gfs-disk-add').removeClass('pf-m-disabled');
+                $('#menu-item-set-gfs-disk-delete').removeClass('pf-m-disabled');
+                // Add click event to show detailed information in a modal
+                $('.gfs-mount-link').on('click', function() {
+                    var mountPoint = $(this).data('mountpoint');
+                    var multipaths = $(this).data('multipaths');
+                    var devices = $(this).data('devices');
+                    var physicalVolume = $(this).data('physicalvolume');
+                    var volumeGroup = $(this).data('volumegroup');
+                    var diskSize = $(this).data('disksize');
+
+                    // Update modal content
+                    updateModalContent(mountPoint, multipaths, devices, physicalVolume, volumeGroup, diskSize);
+
+                    // Show the modal
+                    $('#div-modal-gfs-disk-info').show();
+                });
+
+            } else {
+                $('#gfs-disk-deploy-status-check').text("GFS 디스크가 생성되지 않았습니다.");
+                $('#gfs-disk-deploy-status-check').attr("style","color: var(--pf-global--danger-color--100)");
+                $('#page-gfs-disk-mount-info').html("");
+                $('#page-gfs-disk-mount-info').text("N/A");
+                $('#page-gfs-disk-mode').text("N/A");
+            }
+
+            resolve();
+        });
+    });
+}
+
+function updateModalContent(mountPoint, multipaths, devices, physicalVolume, volumeGroup, diskSize) {
+    // Populate the modal with relevant information
+    $('#gfs-disk-mount-info').text(mountPoint);
+    $('#gfs-disk-physical-volume').text(devices + " ( " + multipaths + " ) ");
+    $('#gfs-disk-volume-group').text(physicalVolume);
+    $('#gfs-disk-size').text(diskSize);
+    $('#gfs-disk-status').text("Health OK"); // You can customize based on the actual status
+    // You can adjust status class based on the state (e.g., if there's an error, change color)
+    $('#gfs-disk-css').removeClass('pf-m-red').addClass('pf-m-green'); // Adjust based on your logic
+    $('#gfs-disk-icon').removeClass('fa-exclamation-triangle').addClass('fa-check-circle'); // Adjust based on status\
+
+    $('#gfs-disk-text').text('N/A');
+    for (var i = 0; i < gfs_file_system_arr.length; i++){
+
+        if (gfs_file_system_arr[i][0] == mountPoint.split("/")[2]){
+
+            var offline_filteredIPs = gfs_file_system_arr
+                                .filter(item => item[2] === "offline")
+                                .map(item => item[1])
+                                .join(', ');
+            var start_filteredIPs = gfs_file_system_arr
+                                .filter(item => item[0] === mountPoint.split("/")[2] && item[2] === "start")
+                                .map(item => item[1])
+                                .join(', ');
+            var stop_filteredIPs = gfs_file_system_arr
+                                .filter(item => item[0] === mountPoint.split("/")[2] && item[2].includes("stop"))
+                                .map(item => item[1])
+                                .join(', ');
+
+            if (offline_filteredIPs) {
+                if (start_filteredIPs && !stop_filteredIPs){
+                    $('#gfs-disk-text').html('Started ( ' + start_filteredIPs + ' )</br>' + 'Offline ( ' + offline_filteredIPs + ' )');
+                }else if (!start_filteredIPs && stop_filteredIPs){
+                    $('#gfs-disk-text').html('Stopped ( ' + stop_filteredIPs + ' )</br>' + 'Offline ( ' + offline_filteredIPs + ' )');
+                }else{
+                    $('#gfs-disk-text').html('Started ( ' + start_filteredIPs + ' )</br>' + 'Offline ( ' + offline_filteredIPs + ' )');
+                }
+            }else{
+                if (start_filteredIPs && !stop_filteredIPs){
+                    $('#gfs-disk-text').text('Started ( ' + start_filteredIPs + ' )');
+                }else if (!start_filteredIPs && stop_filteredIPs){
+                    $('#gfs-disk-text').text('Stop ( ' + stop_filteredIPs + ' )');
+                }else{
+                    $('#gfs-disk-text').html('Started ( ' + start_filteredIPs + ' )</br> Stopped ( ' + stop_filteredIPs + ' )');
+                }
+            }
+        }
+    }
+}
+// Close button in the modal
+$('#button-close-modal-gfs-disk-info').on('click', function() {
+    $('#div-modal-gfs-disk-info').hide();;
+});
+
+// Cancel button in the modal (optional, depending on your design)
+$('#button-cancel-modal-gfs-disk-info').on('click', function() {
+    $('#div-modal-gfs-disk-info').hide();;
+});
+
+/**
+ * Meathod Name : setDiskAction
+ * Date Created : 2025.01.09
+ * Writer  : 정민철
+ * Description : CLVM 디스크 추가 및 GFS 디스크 추가
+ * Parameter : 없음
+ * Return  : 없음
+ * History  : 2025.01.07 최초 작성
+ */
+function setDiskAction(type, action){
+    if (type == "clvm" && action == "add"){
+        var cmd = ["python3", pluginpath + "/python/disk/disk_action.py", "gfs-list"];
+
+        cockpit.spawn(cmd).then(function(data) {
+            // 초기화
+            $('#clvm-disk-add-list').empty();
+
+            var el = '';
+            var multipathElements = ''; // MultiPath 정보를 저장할 변수
+            var result = JSON.parse(data);
+            var clvm_list = result.val.blockdevices;
+
+            // MultiPath 중복 제거용 세트
+            var displayedMultipaths = new Set();
+            var displayedName = new Set();
+
+            if (clvm_list.length > 0) {
+                for (var i = 0; i < clvm_list.length; i++) {
+                    var partition_text = '';
+                    var check_disable = '';
+
+                    if (clvm_list[i].children != undefined) {
+                        for (var j = 0; j < clvm_list[i].children.length; j++) {
+                            if (!clvm_list[i].wwn) {
+                                clvm_list[i].wwn = ""; // 값을 공백으로 설정
+                            }
+                            var mpathName = clvm_list[i].children[j].name;
+                            if (clvm_list[i].children[j].name.includes('mpath')) {
+                                if (clvm_list[i].children[j].children != undefined) {
+                                    partition_text = '( Partition exists count : ' + clvm_list[i].children[j].children.length + ' )';
+                                    check_disable = 'disabled';
+                                }
+                                // MultiPath가 이미 표시된 경우 스킵
+                                if (!displayedMultipaths.has(mpathName)) {
+                                    var mpathHtml = '';
+                                    mpathHtml += '<div class="pf-c-check">';
+                                    mpathHtml += '<input class="pf-c-check__input" type="checkbox" id="form-clvm-checkbox-disk-add' + i + '" name="form-clvm-checkbox-disk-add" value="' + clvm_list[i].children[j].path + '" ' + check_disable + ' />';
+                                    // mpathHtml += '<input class="pf-c-check__input" type="checkbox" id="form-clvm-checkbox-disk-add' + i + '" name="form-clvm-checkbox-disk-add" value="' + clvm_list[i].children[j].path + '" />';
+                                    mpathHtml += '<label class="pf-c-check__label" style="margin-top:5px" for="form-clvm-checkbox-disk-add' + i + '">' + clvm_list[i].children[j].path + ' ' + clvm_list[i].children[j].state + ' (' + clvm_list[i].children[j].type + ') ' + clvm_list[i].children[j].size + ' ' + ' ' + clvm_list[i].vendor + ' ' + clvm_list[i].wwn  + ' ' + partition_text + '</label>';
+                                    mpathHtml += '</div>';
+
+                                    multipathElements += mpathHtml; // MultiPath 요소를 multipathElements에 저장
+
+                                    displayedMultipaths.add(mpathName);  // MultiPath 이름을 Set에 추가
+                                }
+                            } else {
+                                partition_text = '( Partition exists count : ' + clvm_list[i].children.length + ' )';
+                                check_disable = 'disabled';
+
+                                var disk_name = clvm_list[i].name;
+                                if (!displayedName.has(disk_name)) {
+                                    el += '<div class="pf-c-check">';
+                                    el += '<input class="pf-c-check__input" type="checkbox" id="form-clvm-checkbox-disk-add' + i + '" name="form-clvm-checkbox-disk-add" value="' + clvm_list[i].path + '" ' + check_disable + ' />';
+                                    // el += '<input class="pf-c-check__input" type="checkbox" id="form-clvm-checkbox-disk-add' + i + '" name="form-clvm-checkbox-disk-add" value="' + clvm_list[i].path + '" />';
+                                    el += '<label class="pf-c-check__label" style="margin-top:5px" for="form-clvm-checkbox-disk-add' + i + '">' + clvm_list[i].path + ' ' + clvm_list[i].state + ' (' + clvm_list[i].tran + ') ' + clvm_list[i].size + ' ' + clvm_list[i].model + ' ' + clvm_list[i].wwn + partition_text + '</label>';
+                                    el += '</div>';
+
+                                    displayedName.add(disk_name);
+                                }
+                            }
+                        }
+                    } else {
+                        if (!clvm_list[i].wwn) {
+                            clvm_list[i].wwn = ""; // 값을 공백으로 설정
+                        }
+                        el += '<div class="pf-c-check">';
+                        el += '<input class="pf-c-check__input" type="checkbox" id="form-clvm-checkbox-disk-add' + i + '" name="form-clvm-checkbox-disk-add" value="' + clvm_list[i].path + '" ' + check_disable + ' />';
+                        // el += '<input class="pf-c-check__input" type="checkbox" id="form-clvm-checkbox-disk-add' + i + '" name="form-clvm-checkbox-disk-add" value="' + clvm_list[i].path + '" />';
+                        el += '<label class="pf-c-check__label" style="margin-top:5px" for="form-clvm-checkbox-disk-add' + i + '">' + clvm_list[i].path + ' ' + clvm_list[i].state + ' (' + clvm_list[i].tran + ') ' + clvm_list[i].size + ' ' + clvm_list[i].model + ' ' + clvm_list[i].wwn + partition_text + '</label>';
+                        el += '</div>';
+                    }
+                }
+            } else {
+                el += '<div class="pf-c-check">';
+                el += '<label class="pf-c-check__label" style="margin-top:5px">데이터가 존재하지 않습니다.</label>';
+                el += '</div>';
+            }
+
+            // 일반 장치 정보를 먼저 추가하고, 마지막에 MultiPath 정보를 추가
+            $('#clvm-disk-add-list').append(multipathElements + el);
+
+        }).catch(function() {
+            createLoggerInfo("setDiskAction error");
+        });
+    }else if (type == "clvm" && action == "delete"){
+        var cmd = ["python3", pluginpath + "/python/clvm/disk_manage.py", "--list-clvm"];
+
+        cockpit.spawn(cmd).then(function(data) {
+            // 초기화
+            $('#clvm-disk-delete-list').empty();
+
+            // JSON 데이터 파싱
+            var result = JSON.parse(data);
+
+            // 결과 리스트 가져오기
+            var clvmList = result.val;
+
+            var output = ''; // 최종 출력 문자열
+
+            if (clvmList.length > 0) {
+                // 데이터를 순회하면서 출력 형식 생성
+                for (var i = 0; i < clvmList.length; i++) {
+                    var clvm = clvmList[i];
+
+                    // 체크박스 추가
+                    output += `
+                        <div style="margin-bottom: 8px;">
+                            <input type="checkbox" class="clvm-checkbox" id="clvm-${i}" name="form-clvm-disk-delete"
+                                data-vg="${clvm.vg_name}"
+                                data-pv="${clvm.pv_name}"
+                                data-size="${clvm.pv_size}"
+                                data-wwn="${clvm.wwn}"
+                                style="margin-left:5px;transform: scale(1.3);">
+                            <label for="clvm-${i}">
+                                ${i + 1}. ${clvm.vg_name} ${clvm.pv_name} ${clvm.pv_size} ${clvm.wwn}
+                            </label>
+                        </div>
+                    `;
+                }
+            } else {
+                output = '데이터가 존재하지 않습니다.<br>';
+            }
+
+            // 출력 데이터 추가
+            $('#clvm-disk-delete-list').append(output);
+
+        }).catch(function() {
+            createLoggerInfo("setDiskAction error");
+        });
+    }else if (type == "clvm" && action == "list"){
+        var cmd = ["python3", pluginpath + "/python/clvm/disk_manage.py", "--list-clvm"];
+
+        cockpit.spawn(cmd).then(function(data) {
+            // 초기화
+            $('#clvm-disk-info-list').empty();
+
+            // JSON 데이터 파싱
+            var result = JSON.parse(data);
+
+            // 결과 리스트 가져오기
+            var clvmList = result.val;
+
+            var output = ''; // 최종 출력 문자열
+
+            if (clvmList.length > 0) {
+                // 데이터를 순회하면서 출력 형식 생성
+                for (var i = 0; i < clvmList.length; i++) {
+                    var clvm = clvmList[i];
+                    output += `${i + 1}. ${clvm.vg_name} ${clvm.pv_name} ${clvm.pv_size} ${clvm.wwn}<br>`;
+                }
+            } else {
+                output = '데이터가 존재하지 않습니다.<br>';
+            }
+            // 출력 데이터 추가
+            $('#clvm-disk-info-list').append(output);
+
+        }).catch(function() {
+            createLoggerInfo("setDiskAction error");
+        });
+    }else if (type == "gfs" && action == "add"){
+        var cmd = ["python3", pluginpath + "/python/disk/disk_action.py", "gfs-list"];
+
+        cockpit.spawn(cmd).then(function(data) {
+            // 초기화
+            $('#gfs-disk-add-list').empty();
+
+            var el = '';
+            var multipathElements = ''; // MultiPath 정보를 저장할 변수
+            var result = JSON.parse(data);
+            var gfs_list = result.val.blockdevices;
+
+            // MultiPath 중복 제거용 세트
+            var displayedMultipaths = new Set();
+            var displayedName = new Set();
+
+            if (gfs_list.length > 0) {
+                for (var i = 0; i < gfs_list.length; i++) {
+                    var partition_text = '';
+                    var check_disable = '';
+
+                    if (gfs_list[i].children != undefined) {
+                        for (var j = 0; j < gfs_list[i].children.length; j++) {
+                            if (!gfs_list[i].wwn) {
+                                gfs_list[i].wwn = ""; // 값을 공백으로 설정
+                            }
+                            var mpathName = gfs_list[i].children[j].name;
+                            if (gfs_list[i].children[j].name.includes('mpath')) {
+                                if (gfs_list[i].children[j].children != undefined) {
+                                    partition_text = '( Partition exists count : ' + gfs_list[i].children[j].children.length + ' )';
+                                    check_disable = 'disabled';
+                                }
+                                // MultiPath가 이미 표시된 경우 스킵
+                                if (!displayedMultipaths.has(mpathName)) {
+                                    var mpathHtml = '';
+                                    mpathHtml += '<div class="pf-c-check">';
+                                    mpathHtml += '<input class="pf-c-check__input" type="checkbox" id="form-gfs-checkbox-disk-add' + i + '" name="form-gfs-checkbox-disk-add" value="' + gfs_list[i].children[j].path + '" ' + check_disable + ' />';
+                                    // mpathHtml += '<input class="pf-c-check__input" type="checkbox" id="form-gfs-checkbox-disk-add' + i + '" name="form-gfs-checkbox-disk-add" value="' + gfs_list[i].children[j].path + '" />';
+                                    mpathHtml += '<label class="pf-c-check__label" style="margin-top:5px" for="form-gfs-checkbox-disk-add' + i + '">' + gfs_list[i].children[j].path + ' ' + gfs_list[i].children[j].state + ' (' + gfs_list[i].children[j].type + ') ' + gfs_list[i].children[j].size + ' ' + ' ' + gfs_list[i].vendor + ' ' + gfs_list[i].wwn  + ' ' + partition_text + '</label>';
+                                    mpathHtml += '</div>';
+
+                                    multipathElements += mpathHtml; // MultiPath 요소를 multipathElements에 저장
+
+                                    displayedMultipaths.add(mpathName);  // MultiPath 이름을 Set에 추가
+                                }
+                            } else {
+                                partition_text = '( Partition exists count : ' + gfs_list[i].children.length + ' )';
+                                check_disable = 'disabled';
+
+                                var disk_name = gfs_list[i].name;
+                                if (!displayedName.has(disk_name)) {
+                                    el += '<div class="pf-c-check">';
+                                    el += '<input class="pf-c-check__input" type="checkbox" id="form-gfs-checkbox-disk-add' + i + '" name="form-gfs-checkbox-disk-add" value="' + gfs_list[i].path + '" ' + check_disable + ' />';
+                                    // el += '<input class="pf-c-check__input" type="checkbox" id="form-gfs-checkbox-disk-add' + i + '" name="form-gfs-checkbox-disk-add" value="' + gfs_list[i].path + '" />';
+                                    el += '<label class="pf-c-check__label" style="margin-top:5px" for="form-gfs-checkbox-disk-add' + i + '">' + gfs_list[i].path + ' ' + gfs_list[i].state + ' (' + gfs_list[i].tran + ') ' + gfs_list[i].size + ' ' + gfs_list[i].model + ' ' + gfs_list[i].wwn + partition_text + '</label>';
+                                    el += '</div>';
+
+                                    displayedName.add(disk_name);
+                                }
+                            }
+                        }
+                    } else {
+                        if (!gfs_list[i].wwn) {
+                            gfs_list[i].wwn = ""; // 값을 공백으로 설정
+                        }
+                        el += '<div class="pf-c-check">';
+                        el += '<input class="pf-c-check__input" type="checkbox" id="form-gfs-checkbox-disk-add' + i + '" name="form-gfs-checkbox-disk-add" value="' + gfs_list[i].path + '" ' + check_disable + ' />';
+                        // el += '<input class="pf-c-check__input" type="checkbox" id="form-gfs-checkbox-disk-add' + i + '" name="form-gfs-checkbox-disk-add" value="' + gfs_list[i].path + '" />';
+                        el += '<label class="pf-c-check__label" style="margin-top:5px" for="form-gfs-checkbox-disk-add' + i + '">' + gfs_list[i].path + ' ' + gfs_list[i].state + ' (' + gfs_list[i].tran + ') ' + gfs_list[i].size + ' ' + gfs_list[i].model + ' ' + gfs_list[i].wwn + partition_text + '</label>';
+                        el += '</div>';
+                    }
+                }
+            }else {
+                el += '<div class="pf-c-check">';
+                el += '<label class="pf-c-check__label" style="margin-top:5px">데이터가 존재하지 않습니다.</label>';
+                el += '</div>';
+            }
+
+            // 일반 장치 정보를 먼저 추가하고, 마지막에 MultiPath 정보를 추가
+            $('#gfs-disk-add-list').append(multipathElements + el);
+
+        }).catch(function() {
+            createLoggerInfo("setDiskAction error");
+        });
+    } else if (type == "gfs" && action == "delete"){
+        var cmd = ["python3", pluginpath + "/python/gfs/gfs_disk_status.py"];
+
+        cockpit.spawn(cmd).then(function(data) {
+            $('#gfs-disk-delete-list').empty();
+
+            // JSON 데이터 파싱
+            var result = JSON.parse(data);
+            var gfsList = result.val.blockdevices;
+
+            var output = '';
+
+            if (gfsList.length > 0) {
+                for (var i = 0; i < gfsList.length; i++) {
+                    var gfs_disk = gfsList[i];
+                    var multipaths = gfs_disk.multipaths.join(', ');
+
+                    // 각 데이터 길이에 따라 너비 조정
+                    var mountpointWidth = Math.max(gfs_disk.mountpoint.length * 10, 160);  // 최소 200px
+                    var multipathWidth = Math.max(multipaths.length * 10, 200);           // 최소 300px
+                    var formattedMultipaths = '';
+
+                    // multipaths 배열을 여러 줄로 표시하도록 수정
+                    for (var j = 0; j < gfs_disk.multipaths.length; j += 2) {
+                        formattedMultipaths += `
+                            <div style="display: flex; gap: 10px; font-family: monospace;">
+                                <span>${gfs_disk.multipaths[j]}</span>
+                                ${gfs_disk.multipaths[j + 1] ? `<span>${gfs_disk.multipaths[j + 1]}</span>` : ''}
+                            </div>
+                        `;
+                    }
+
+                    output += `
+                        <div style="margin-bottom: 8px; display: flex; align-items: center; font-family: monospace;">
+                            <input type="checkbox" class="gfs-disk-delete-checkbox" id="gfs-disk-checkbox-delete-${i}"
+                                name="form-gfs-checkbox-disk-delete" data-mountpoint="${gfs_disk.mountpoint}"
+                                data-multipaths="${multipaths}" data-size="${gfs_disk.size}" data-lvm="${gfs_disk.lvm}"
+                                style="margin-left:5px; transform: scale(1.3); margin-right:10px;">
+
+                            <label for="gfs-disk-checkbox-delete-${i}"
+                                style="display: inline-block; min-width:${mountpointWidth}px; flex-grow: 1; overflow: hidden; text-overflow: ellipsis;">
+                                ${gfs_disk.mountpoint}
+                            </label>
+
+                            <label for="gfs-disk-checkbox-delete-${i}"
+                                style="display: inline-block; min-width:${multipathWidth}px; flex-grow: 2; overflow: hidden; text-overflow: ellipsis;">
+                                ${formattedMultipaths}
+                            </label>
+
+                            <label for="gfs-disk-checkbox-delete-${i}"
+                                style="display: inline-block; width: 100px; text-align: right;">
+                                ${gfs_disk.size}
+                            </label>
+
+                        </div>
+                    `;
+                }
+            } else {
+                output = '데이터가 존재하지 않습니다.<br>';
+            }
+
+            $('#gfs-disk-delete-list').append(output);
+        });
+
+    }
+}
+$('#menu-item-set-gfs-clvm-disk-add').on('click',function(){
+    setDiskAction("clvm","add")
+    $('#div-modal-clvm-disk-add').show();
+});
+$('#button-close-modal-clvm-disk-add, #button-cancel-modal-clvm-disk-add').on('click',function(){
+    $('#div-modal-clvm-disk-add').hide();
+});
+$('#button-execution-modal-clvm-disk-add').on('click',function(){
+    $('#div-modal-clvm-disk-add').hide();
+    $('#div-modal-spinner-header-txt').text("CLVM 디스크 논리 볼륨을 구성 중입니다.")
+    $('#div-modal-spinner').show();
+
+    var clvm_disk_name = $('input[type=checkbox][name="form-clvm-checkbox-disk-add"]:checked')
+    .map(function () {
+        return $(this).val(); // 체크된 값 가져오기
+    })
+    .get() // jQuery 객체를 배열로 변환
+    .join(','); // 쉼표로 연결
+    cmd = ['python3', pluginpath + '/python/clvm/disk_manage.py', '--create-clvm', '--disks', clvm_disk_name];
+    console.log(cmd);
+    cockpit.spawn(cmd)
+    .then(function(data){
+        var retVal = JSON.parse(data);
+        if (retVal.code == "200"){
+            $('#div-modal-spinner').hide();
+            $('#modal-status-alert-title').html("CVLM 디스크 추가");
+            $("#modal-status-alert-body").html("CLVM 디스크 논리 볼륨을 구성했습니다.");
+            $('#div-modal-status-alert').show();
+        }else{
+            $('#div-modal-spinner').hide();
+            $('#modal-status-alert-title').html("CVLM 디스크 추가");
+            $("#modal-status-alert-body").html("CLVM 디스크 논리 볼륨을 실패했습니다.");
+            $('#div-modal-status-alert').show();
+        }
+    })
+});
+$('#div-modal-clvm-disk-add').on('change', 'input[type=checkbox][name="form-clvm-checkbox-disk-add"]', function() {
+    // 체크된 항목이 있는지 확인
+    var isChecked = $('input[type=checkbox][name="form-clvm-checkbox-disk-add"]:checked').length > 0;
+
+    // 체크되면 버튼 활성화, 아니면 비활성화
+    $('#button-execution-modal-clvm-disk-add').prop('disabled', !isChecked);
+});
+
+$('#menu-item-set-gfs-clvm-disk-delete').on('click',function(){
+    setDiskAction("clvm","delete")
+    $('#div-modal-clvm-disk-delete').show();
+});
+$('#button-close-modal-clvm-disk-delete, #button-cancel-modal-clvm-disk-delete').on('click',function(){
+    $('#div-modal-clvm-disk-delete').hide();
+});
+$('#button-execution-modal-clvm-disk-delete').on('click',function(){
+    $('#div-modal-clvm-disk-delete').hide();
+    $('#div-modal-spinner-header-txt').text("CLVM 디스크 논리 볼륨을 삭제 중입니다.")
+    $('#div-modal-spinner').show();
+
+    var vg_names = $('input[type=checkbox][name="form-clvm-disk-delete"]:checked')
+    .map(function () {
+        return $(this).data('vg'); // 체크된 값 가져오기
+    })
+    .get() // jQuery 객체를 배열로 변환
+    .join(','); // 쉼표로 연결
+
+    var pv_names = $('input[type=checkbox][name="form-clvm-disk-delete"]:checked')
+    .map(function () {
+        return $(this).data('pv'); // 체크된 값 가져오기
+    })
+    .get() // jQuery 객체를 배열로 변환
+    .join(','); // 쉼표로 연결
+    cmd = ['python3', pluginpath + '/python/clvm/disk_manage.py', '--delete-clvm', '--vg-names', vg_names, '--pv-names', pv_names];
+    console.log(cmd);
+    cockpit.spawn(cmd)
+    .then(function(data){
+        var retVal = JSON.parse(data);
+        if (retVal.code == "200"){
+            $('#div-modal-spinner').hide();
+            $('#modal-status-alert-title').html("CVLM 디스크 삭제");
+            $("#modal-status-alert-body").html("CLVM 디스크 논리 볼륨을 삭제했습니다.");
+            $('#div-modal-status-alert').show();
+        }else{
+            $('#div-modal-spinner').hide();
+            $('#modal-status-alert-title').html("CVLM 디스크 삭제");
+            $("#modal-status-alert-body").html("CLVM 디스크 논리 볼륨 삭제를 실패했습니다.");
+            $('#div-modal-status-alert').show();
+        }
+    })
+});
+$('#button-cancel-modal-clvm-disk-delete, #button-close-modal-clvm-disk-delete').on('click', function(){
+    $('#div-modal-clvm-disk-delete').hide();
+})
+$('#div-modal-clvm-disk-delete').on('change', 'input[type=checkbox][name="form-clvm-disk-delete"]', function() {
+    // 체크된 항목이 있는지 확인
+    var isChecked = $('input[type=checkbox][name="form-clvm-disk-delete"]:checked').length > 0;
+    // 체크되면 버튼 활성화, 아니면 비활성화
+    $('#button-execution-modal-clvm-disk-delete').prop('disabled', !isChecked);
+});
+$('#menu-item-set-gfs-clvm-disk-info').on('click',function(){
+    setDiskAction("clvm", "list")
+    $('#div-modal-clvm-disk-info').show();
+});
+$('#button-execution-modal-clvm-disk-info, #button-close-modal-clvm-disk-info').on('click',function(){
+    $('#div-modal-clvm-disk-info').hide();
+});
+$('#button-execution-modal-gfs-maintenance-setting').on('click', function(){
+    $('#div-modal-gfs-maintenance-setting').hide();
+    var stonith_status = sessionStorage.getItem('stonith_status');
+
+    if (stonith_status == "Started"){
+        $('#div-modal-spinner-header-txt').text('펜스 장치 유지보수 설정 중입니다.');
+        $('#div-modal-spinner').show();
+        cockpit.spawn(['python3', pluginpath + '/python/gfs/gfs_manage.py', '--check-stonith', '--control', 'disable'])
+        .then(function(data){
+            $('#div-modal-spinner').hide();
+            var retVal = JSON.parse(data);
+            if (retVal.code == "200"){
+                $("#modal-status-alert-title").html("펜스 장치 유지보수 설정 완료");
+                $("#modal-status-alert-body").html("펜스 장치 유지보수 설정을 완료하였습니다.");
+                $('#div-modal-status-alert').show();
+            }
+        }).catch(function(data){
+            $('#div-modal-spinner').hide();
+            $('#div-modal-status-alert').show();
+            createLoggerInfo("펜스 장치 유지보수 설정 실패 : " + data);
+        });
+    }else{
+        $('#div-modal-spinner-header-txt').text('펜스 장치 유지보수 해제 중입니다.');
+        $('#div-modal-spinner').show();
+        cockpit.spawn(['python3', pluginpath + '/python/gfs/gfs_manage.py', '--check-stonith', '--control', 'enable'])
+        .then(function(data){
+            var retVal = JSON.parse(data);
+            if (retVal.code == "200"){
+                $("#modal-status-alert-title").html("펜스 장치 유지보수 해제 완료");
+                $("#modal-status-alert-body").html("펜스 장치 유지보수 해제를 완료하였습니다.");
+                $('#div-modal-status-alert').show();
+            }
+        }).catch(function(data){
+            $('#div-modal-spinner').hide();
+            $('#div-modal-status-alert').show();
+            createLoggerInfo("펜스 장치 유지보수 해제 실패 : " + data);
+        });
+    }
+});
+$('#button-cancel-modal-gfs-maintenance-setting, #button-close-modal-cloud-vm-maintenance-setting').on('click', function(){
+    $('#div-modal-gfs-maintenance-setting').hide();
+})
+
+$('#button-gfs-qdevice-init').on('click', function(){
+    $('#div-modal-cloud-vm-qdevice-init').show();
+});
+$('#button-close-modal-cloud-vm-qdevice-init, #button-cancel-modal-cloud-vm-qdevice-init').on('click', function(){
+    $('#div-modal-cloud-vm-qdevice-init').hide();
+});
+$('#button-execution-modal-cloud-vm-qdevice-init').on('click', function(){
+    $('#div-modal-cloud-vm-qdevice-init').hide();
+
+    $('#div-modal-spinner-header-txt').text('쿼럼을 초기화하고 있습니다.');
+    $('#div-modal-spinner').show();
+
+    $("#modal-status-alert-title").html("쿼럼 초기화");
+    $("#modal-status-alert-body").html("쿼럼 초기화를 실패하였습니다.<br/>쿼럼 상태를 확인해주세요.");
+
+    cmd =["python3", pluginpath + "/python/gfs/gfs_manage.py", "--init-qdevice"];
+    console.log(cmd);
+    cockpit.spawn(cmd)
+    .then(function(data){
+        var retVal = JSON.parse(data);
+        if(retVal.code == "200"){
+            $('#div-modal-spinner').hide();
+            $("#modal-status-alert-title").html("쿼럼 초기화 완료");
+            $("#modal-status-alert-body").html("쿼럼 초기화를 완료하였습니다.");
+            $('#div-modal-status-alert').show();
+        }else{
+            $('#div-modal-spinner').hide();
+            $("#modal-status-alert-title").html("쿼럼 초기화 실패");
+            $("#modal-status-alert-body").html("쿼럼 초기화를 실패하였습니다.");
+            $('#div-modal-status-alert').show();
+        }
+    }).catch(function(data){
+        $('#div-modal-spinner').hide();
+        $('#div-modal-status-alert').show();
+        createLoggerInfo("쿼럼 초기화 실패 : " + data);
+    });
+
+});
+
+$('#button-gfs-multipath-sync').on("click",function(){
+    $('#div-modal-spinner-header-txt').text('멀티패스 장치 동기화하고 있습니다.');
+    $('#div-modal-spinner').show();
+
+    cockpit.spawn(["sh", pluginpath + "/shell/host/multipath_sync.sh"])
+    .then(function(data){
+        $('#div-modal-spinner').hide();
+    })
+});
+
+$('#menu-item-set-gfs-disk-add').on('click',function(){
+    setDiskAction("gfs","add")
+    $('#div-modal-gfs-disk-add').show();
+});
+$('#button-close-modal-gfs-disk-add, #button-cancel-modal-gfs-disk-add').on('click',function(){
+    $('#div-modal-gfs-disk-add').hide();
+});
+$('#button-execution-modal-gfs-disk-add').on('click', function() {
+    $('#div-modal-gfs-disk-add').hide();
+    $('#div-modal-spinner-header-txt').text('GFS 디스크를 추가 중입니다.');
+    $('#div-modal-spinner').show();
+
+    var gfs_disk_name = $('input[type=checkbox][name="form-gfs-checkbox-disk-add"]:checked')
+        .map(function () {
+            return $(this).val();
+        })
+        .get()
+        .join(',');
+    cockpit.file(pluginpath + '/tools/properties/cluster.json').read()
+        .then(function(data) {
+        var retVal = JSON.parse(data);
+
+        var journal_nums = String(retVal.clusterConfig.hosts.length + 1);
+        var list_ips = retVal.clusterConfig.hosts.map(function(host) {
+            return host.ablecube;
+        }).join(' ');
+        cmd = ['python3', pluginpath + '/python/clvm/disk_manage.py', '--list-gfs'];
+        console.log(cmd);
+        cockpit.spawn(cmd)
+            .then(function(data) {
+                var retVal = JSON.parse(data);
+
+                if (retVal.code == "200") {
+                    var vg_name = "";
+                    var lv_name = "";
+                    var mount_point = "";
+                    var gfs_name = "";
+                    for (var i = 0; i < retVal.val.length; i++) {
+                        vg_name = "vg_glue_" + String(i+1);
+                        lv_name = "lv_glue_" + String(i+1);
+                        mount_point = "/mnt/glue-gfs-" + String(i+1);
+                        gfs_name = "glue-gfs-" + String(i+1);
+                    }
+                    var cmd = ['python3', pluginpath + '/python/gfs/gfs_manage.py','--create-gfs','--disks', gfs_disk_name,
+                        '--vg-name', vg_name,'--lv-name', lv_name,'--gfs-name', gfs_name,'--mount-point', mount_point,
+                        '--cluster-name', 'cloudcenter_res','--journal-nums', journal_nums,'--list-ip', list_ips];
+                    console.log(cmd);
+
+                    cockpit.spawn(cmd).then(function(data) {
+
+                        var retVal = JSON.parse(data);
+                        if (retVal.code == "200"){
+                            $('#div-modal-spinner').hide();
+                            $("#modal-status-alert-title").html("GFS 디스크 추가");
+                            $("#modal-status-alert-body").html("GFS 디스크를 추가하였습니다.");
+                            $('#div-modal-status-alert').show();
+                        }else{
+                            $('#div-modal-spinner').hide();
+                            $("#modal-status-alert-title").html("GFS 디스크 추가");
+                            $("#modal-status-alert-body").html("GFS 디스크 추가를 실패하였습니다.");
+                            $('#div-modal-status-alert').show();
+                        }
+                    }).catch(function(error) {
+                        $('#div-modal-spinner').hide();
+                        $("#modal-status-alert-title").html("GFS 디스크 추가");
+                        $("#modal-status-alert-body").html("GFS 디스크 추가를 실패하였습니다.");
+                        $('#div-modal-status-alert').show();
+                        console.error("GFS 디스크 추가 실패:", error);
+                    });
+                }
+            }).catch(function(error) {
+                $('#div-modal-spinner').hide();
+                $("#modal-status-alert-title").html("GFS 디스크 추가");
+                $("#modal-status-alert-body").html("GFS 디스크 리스트 정보를 불러오지 못했습니다.");
+                $('#div-modal-status-alert').show();
+                console.error("디스크 목록 조회 실패:", error);
+            });
+    }).catch(function() {
+        $('#div-modal-spinner').hide();
+        $("#modal-status-alert-title").html("GFS 디스크 추가");
+        $("#modal-status-alert-body").html("Cluster.json 파일을 불러오지 못했습니다.");
+        $('#div-modal-status-alert').show();
+        console.error("클러스터 정보를 불러오지 못했습니다.");
+    });
+});
+$('#div-modal-gfs-disk-add').on('change', 'input[type=checkbox][name="form-gfs-checkbox-disk-add"]', function() {
+    // 체크된 항목이 있는지 확인
+    var isChecked = $('input[type=checkbox][name="form-gfs-checkbox-disk-add"]:checked').length > 0;
+
+    // 체크되면 버튼 활성화, 아니면 비활성화
+    $('#button-execution-modal-gfs-disk-add').prop('disabled', !isChecked);
+});
+$('#button-close-modal-gfs-disk-info,#button-cancel-modal-gfs-disk-info').on('click', function(){
+    $('#div-modal-gfs-disk-info').hide();
+});
+$('#menu-item-set-gfs-disk-delete').on('click', function(){
+    setDiskAction("gfs","delete")
+    $('#div-modal-gfs-disk-delete').show();
+});
+$('#button-cancel-modal-gfs-disk-delete , #button-close-modal-gfs-disk-delete').on('click', function(){
+    $('#div-modal-gfs-disk-delete').hide();
+});
+$('#div-modal-gfs-disk-delete').on('change', 'input[type=checkbox][name="form-gfs-checkbox-disk-delete"]', function() {
+    if (this.checked) {
+        // 다른 체크박스는 모두 해제
+        $('input[type=checkbox][name="form-gfs-checkbox-disk-delete"]').not(this).prop('checked', false);
+    }
+    // 체크된 항목이 있는지 확인
+    var isChecked = $('input[type=checkbox][name="form-gfs-checkbox-disk-delete"]:checked').length > 0;
+
+    // 체크되면 버튼 활성화, 아니면 비활성화
+    $('#button-execution-modal-gfs-disk-delete').prop('disabled', !isChecked);
+});
+$('#button-execution-modal-gfs-disk-delete').on('click', function() {
+    $('#div-modal-gfs-disk-delete').hide();
+    $('#div-modal-spinner-header-txt').text('GFS 디스크를 삭제 중입니다.');
+    $('#div-modal-spinner').show();
+    function extractData(selector, dataAttribute, regex) {
+        return $(selector)
+            .map(function() {
+                return $(this).data(dataAttribute);
+            })
+            .get()
+            .map(function(value) {
+                var match = value.match(regex);
+                return match ? match[1] : ''; // 정규식에서 첫 번째 캡처 그룹을 반환
+            });
+    }
+    var gfs_disk_name = $('input[type=checkbox][name="form-gfs-checkbox-disk-delete"]:checked')
+    .map(function () {
+        return $(this).data('multipaths');
+    })
+    .get()
+    .map(function(multipath) {
+        return multipath.replace(/1$/, '');  // 끝에 있는 '1'만 제거
+    })
+    .join(',');  // 다시 콤마로 구분된 문자열로 결합
+
+    var gfs_name = extractData('input[type=checkbox][name="form-gfs-checkbox-disk-delete"]:checked', 'mountpoint', /\/mnt\/(.*)/);
+    var vg_name = extractData('input[type=checkbox][name="form-gfs-checkbox-disk-delete"]:checked', 'lvm', /\/dev\/mapper\/([^\-]+)/);
+    var lv_name = extractData('input[type=checkbox][name="form-gfs-checkbox-disk-delete"]:checked', 'lvm', /\/dev\/mapper\/[^-]+-(.*)/);
+
+    cmd = ['python3', pluginpath + '/python/clvm/disk_manage.py', '--delete-gfs', '--disks', gfs_disk_name, '--gfs-name', gfs_name, '--vg-names', vg_name, '--lv-names', lv_name];
+    console.log(cmd);
+    cockpit.spawn(cmd)
+        .then(function(data) {
+            var retVal = JSON.parse(data);
+            if (retVal.code == "200") {
+                $('#div-modal-spinner').hide();
+                $("#modal-status-alert-title").html("GFS 디스크 삭제");
+                $("#modal-status-alert-body").html("GFS 디스크를 삭제하였습니다.");
+                $('#div-modal-status-alert').show();
+            }
+        }).catch(function() {
+            $('#div-modal-spinner').hide();
+            $("#modal-status-alert-title").html("GFS 디스크 삭제");
+            $("#modal-status-alert-body").html("GFS 디스크 삭제를 실패하였습니다.");
+            $('#div-modal-status-alert').show();
+        });
+});
+/**
+ * Meathod Name : gfsResourceStatus
+ * Date Created : 2025.01.06
+ * Writer  : 정민철
+ * Description : GFS 리소스 상태 카드란 처리
+ * Parameter : 없음
+ * Return  : 없음
+ * History  : 2025.01.06 최초 작성
+ */
+function gfsResourceStatus() {
+    return new Promise((resolve) => {
+        //초기 상태 체크 중 표시
+        $('#gfs-fence-status, #gfs-lock-status').html("상태 체크 중 &bull;&bull;&bull;&nbsp;&nbsp;&nbsp;<svg class='pf-c-spinner pf-m-md' role='progressbar' aria-valuetext='Loading...' viewBox='0 0 100 100' ><circle class='pf-c-spinner__path' cx='50' cy='50' r='45' fill='none'></circle></svg>");
+        $('#gfs-fence-back-color, #gfs-lock-back-color').attr('class','pf-c-label pf-m-orange');
+        $('#gfs-fence-icon, #gfs-lock-icon').attr('class','fas fa-fw fa-exclamation-triangle');
+
+        cockpit.spawn(['python3', pluginpath + '/python/gfs/gfs_resource_status.py'])
+        .then(function(data){
+            var retVal = JSON.parse(data);
+            if (retVal.code == "200"){
+                var gfs_fence_started_arr = [];
+                var gfs_fence_stopped_arr = [];
+                var gfs_fence_offline_arr = [];
+
+                var gfs_lvmlockd_arr = [];
+                var gfs_dlm_arr = [];
+                var gfs_file_system_arr_list = [];
+                var gfs_lvmlockd_start_arr = [];
+                var gfs_lvmlockd_stop_arr = [];
+                var gfs_dlm_start_arr = [];
+                var gfs_dlm_stop_arr = [];
+                var gfs_dlm_offline_arr = [];
+                var gfs_lvmlockd_offline_arr = [];
+                gfs_file_system_arr = [];
+                var num = 0;
+
+                for (var m = 0; m < retVal.val.nodes_info.length; m++){
+                    var node_name = retVal.val.nodes_info[m].name;
+                    var state = retVal.val.nodes_info[m].online;
+                    if (state == "false"){
+                        gfs_fence_offline_arr.push(node_name);
+                        gfs_lvmlockd_offline_arr.push(node_name);
+                        gfs_dlm_offline_arr.push(node_name);
+                        gfs_file_system_arr.push(["",node_name,"offline"]);
+                    }
+                }
+                for (var i = 0; i < retVal.val.resources.fence_resources.length; i++){
+                    var gfs_fence_host = retVal.val.resources.fence_resources[i].node_name;
+                    var gfs_fence_status = retVal.val.resources.fence_resources[i].role;
+
+                    if (gfs_fence_status == "Started"){
+                        gfs_fence_started_arr.push(gfs_fence_host);
+                    }else {
+                        gfs_fence_stopped_arr.push(gfs_fence_host);
+                    }
+                }
+
+                for (var j = 0; j < retVal.val.node_history.length; j++) {
+                    var node_name = retVal.val.node_history[j].node_name;
+
+                    for (var k = 0; k < retVal.val.node_history[j].resource_histories.length; k++) {
+                        var resource_name = retVal.val.node_history[j].resource_histories[k].resource_id;
+                        var resource_status;
+                        var start_error_occurred = false; // start에서 error 발생 여부를 추적
+
+                        for (var n = 0; n < retVal.val.node_history[j].resource_histories[k].operations.length; n++) {
+                            var operation = retVal.val.node_history[j].resource_histories[k].operations[n];
+                            var task = operation.task;
+                            var rc_text = operation.rc_text;
+
+                            if (task == "start" || task == "stop" || task == "probe") {
+                                if (resource_name === "glue-lvmlockd") {
+                                    resource_status = task;
+
+                                    if (task == "start" && rc_text == "error") {
+                                        resource_status = task + "(" + rc_text + ")"
+                                        start_error_occurred = true; // start에서 오류 발생
+                                    }
+
+                                    if (task == "stop" && start_error_occurred) {
+                                        // start에서 error가 발생했으므로 stop 추가하지 않음
+                                        continue;
+                                    }
+                                    gfs_lvmlockd_arr.push([node_name, resource_status]); //
+
+                                } else if (resource_name === "glue-dlm") {
+                                    resource_status = task;
+                                    if (task == "start" && rc_text == "error") {
+                                        resource_status = task + "(" + rc_text + ")"
+                                        start_error_occurred = true; // start에서 오류 발생
+                                    }
+
+                                    if (task == "stop" && start_error_occurred) {
+                                        // start에서 error가 발생했으므로 stop 추가하지 않음
+                                        continue;
+                                    }
+                                    gfs_dlm_arr.push([node_name, resource_status]); // 배열 추가
+
+                                } else if (/^glue-gfs(-\d+)?$/.test(resource_name)) {
+
+                                    gfs_file_system_arr_list[num] = [];
+                                    resource_status = task;
+                                    if (task == "start" && rc_text == "error") {
+                                        resource_status = task + "(" + rc_text + ")"
+                                        start_error_occurred = true; // start에서 오류 발생
+                                    }
+
+                                    if (task == "stop" && start_error_occurred) {
+                                        // start에서 error가 발생했으므로 stop 추가하지 않음
+                                        continue;
+                                    }
+                                    gfs_file_system_arr_list[num].push([resource_name,node_name, resource_status]); // 배열 추가
+                                    num++;
+                                }
+                            }
+                        }
+                    }
+                }
+                if (gfs_fence_offline_arr.length == 0){
+                    if (gfs_fence_stopped_arr.length == 0){
+                        $("#gfs-fence-back-color").attr('class','pf-c-label pf-m-green');
+                        $("#gfs-fence-icon").attr('class','fas fa-fw fa-check-circle');
+                        $('#gfs-fence-status').text("Health OK");
+                        $('#gfs-fence-text').text('Started ( ' + gfs_fence_started_arr.join(', ') + ' )');
+                    }else if (gfs_fence_started_arr.length == 0){
+                        $("#gfs-fence-back-color").attr('class','pf-c-label pf-m-orange');
+                        $('#gfs-fence-status').text("Health Warn");
+                        $('#gfs-fence-text').text('Stopped ( ' + gfs_fence_stopped_arr.join(', ') + ' )');
+                    }else{
+                        $("#gfs-fence-back-color").attr('class','pf-c-label pf-m-orange');
+                        $('#gfs-fence-status').text("Health Warn");
+                        $('#gfs-fence-text').text('Started ( ' + gfs_fence_started_arr.join(', ') + ' ), '+ 'Stopped ( ' + gfs_fence_stopped_arr.join(', ') + ' )');
+                    }
+                }else{
+                    if (gfs_fence_stopped_arr.length == 0){
+                        $("#gfs-fence-back-color").attr('class','pf-c-label pf-m-green');
+                        $("#gfs-fence-icon").attr('class','fas fa-fw fa-check-circle');
+                        $('#gfs-fence-status').text("Health OK");
+                        $('#gfs-fence-text').text('Started ( ' + gfs_fence_started_arr.join(', ') + ' ), Offline ( ' + gfs_fence_offline_arr.join(', ') + ' )');
+                    }else if (gfs_fence_started_arr.length == 0){
+                        $("#gfs-fence-back-color").attr('class','pf-c-label pf-m-orange');
+                        $('#gfs-fence-status').text("Health Warn");
+                        $('#gfs-fence-text').text('Stopped ( ' + gfs_fence_stopped_arr.join(', ') + ' ), Offline ( ' + gfs_fence_offline_arr.join(', ') + ' )');
+                    }else{
+                        $("#gfs-fence-back-color").attr('class','pf-c-label pf-m-orange');
+                        $('#gfs-fence-status').text("Health Warn");
+                        $('#gfs-fence-text').text('Started ( ' + gfs_fence_started_arr.join(', ') + ' ), '+ 'Stopped ( ' + gfs_fence_stopped_arr.join(', ') + ' ), Offline ( ' + gfs_fence_offline_arr.join(', ') + ' )');
+                    }
+                }
+                try {
+
+                    for (var l = 0; l < gfs_lvmlockd_arr.length; l++) {
+                        // gfs_lvmlockd 처리
+                        if (l < gfs_lvmlockd_arr.length && gfs_lvmlockd_arr[l][1] !== undefined) {
+                            if (gfs_lvmlockd_arr[l][1] == "stop") {
+                                gfs_lvmlockd_stop_arr.push(gfs_lvmlockd_arr[l][0]);
+                            }else if (gfs_lvmlockd_arr[l][1] == "start(error)") {
+                                $('#gfs-lock-status, #gfs-resource-status, #gfs-file-system-status').text("Health Err");
+                                $('#gfs-lock-back-color, #gfs-resource-back-color, #gfs-file-system-back-color').attr('class','pf-c-label pf-m-red');
+                                $('#gfs-lock-icon, #gfs-resource-icon, #gfs-file-system-icon').attr('class','fas fa-fw fa-exclamation-triangle');
+                                $('#gfs-low-info').attr("style", "color: var(--pf-global--danger-color--100)");
+                                $('#gfs-low-info').text("GFS 잠금 장치 구성 중 오류가 발생했습니다.");
+                                return;
+                            }else {
+                                gfs_lvmlockd_start_arr.push(gfs_lvmlockd_arr[l][0]);
+                            }
+                        } else {
+                            $('#gfs-lock-status, #gfs-resource-status, #gfs-file-system-status').text("Health Err");
+                            $('#gfs-lock-back-color, #gfs-resource-back-color, #gfs-file-system-back-color').attr('class','pf-c-label pf-m-red');
+                            $('#gfs-lock-icon, #gfs-resource-icon, #gfs-file-system-icon').attr('class','fas fa-fw fa-exclamation-triangle');
+                            $('#gfs-low-info').attr("style", "color: var(--pf-global--danger-color--100)");
+                            $('#gfs-low-info').text("GFS 잠금 장치 구성 중 오류가 발생했습니다.");
+                        }
+
+                        // gfs_dlm 처리
+                        if (l < gfs_dlm_arr.length && gfs_dlm_arr[l][1] !== undefined) {
+                            if (gfs_dlm_arr[l][1] == "stop") {
+                                gfs_dlm_stop_arr.push(gfs_dlm_arr[l][0]);
+                            } else if (gfs_dlm_arr[l][1] == "start(error)"){
+                                $('#gfs-lock-status, #gfs-resource-status, #gfs-file-system-status').text("Health Err");
+                                $('#gfs-lock-back-color, #gfs-resource-back-color, #gfs-file-system-back-color').attr('class','pf-c-label pf-m-red');
+                                $('#gfs-lock-icon, #gfs-resource-icon, #gfs-file-system-icon').attr('class','fas fa-fw fa-exclamation-triangle');
+                                $('#gfs-low-info').attr("style", "color: var(--pf-global--danger-color--100)");
+                                $('#gfs-low-info').text("GFS 잠금 장치 구성 중 오류가 발생했습니다.");
+                                return;
+                            }else {
+                                gfs_dlm_start_arr.push(gfs_dlm_arr[l][0]);
+                            }
+                        } else {
+                            $('#gfs-lock-status, #gfs-resource-status, #gfs-file-system-status').text("Health Err");
+                            $('#gfs-lock-back-color, #gfs-resource-back-color, #gfs-file-system-back-color').attr('class','pf-c-label pf-m-red');
+                            $('#gfs-lock-icon, #gfs-resource-icon, #gfs-file-system-icon').attr('class','fas fa-fw fa-exclamation-triangle');
+                            $('#gfs-low-info').attr("style", "color: var(--pf-global--danger-color--100)");
+                            $('#gfs-low-info').text("GFS 잠금 장치 구성 중 오류가 발생했습니다.");
+                        }
+                    }
+                    if (gfs_dlm_offline_arr.length == 0 && gfs_lvmlockd_offline_arr == 0){
+                        if (gfs_dlm_stop_arr.length == 0 && gfs_lvmlockd_stop_arr.length == 0) {
+                            $("#gfs-lock-back-color").attr('class', 'pf-c-label pf-m-green');
+                            $("#gfs-lock-icon").attr('class', 'fas fa-fw fa-check-circle');
+                            $('#gfs-lock-status').text("Health OK");
+                            $('#gfs-lock-text').html(
+                                'glue-dlm : Started ( ' + gfs_dlm_start_arr.join(', ') + ' )</br>' +
+                                'glue-lvmlockd : Started ( ' + gfs_lvmlockd_start_arr.join(', ') + ' )'
+                            );
+                        } else if (gfs_dlm_start_arr.length == 0 && gfs_lvmlockd_start_arr.length == 0) {
+                            $("#gfs-lock-back-color").attr('class', 'pf-c-label pf-m-orange');
+                            $('#gfs-lock-status').text("Health Warn");
+                            $('#gfs-lock-text').html(
+                                'glue-dlm : Stopped ( ' + gfs_dlm_stop_arr.join(', ') + ' )</br> ' +
+                                'glue-lvmlockd : Stopped ( ' + gfs_lvmlockd_stop_arr.join(', ') + ' )'
+                            );
+                        } else {
+                            $("#gfs-lock-back-color").attr('class', 'pf-c-label pf-m-orange');
+                            $('#gfs-lock-status').text("Health Warn");
+                            $('#gfs-lock-text').html(
+                                'glue-dlm : Started ( ' + gfs_dlm_start_arr.join(', ') + ' ),</br>' +
+                                           'Stopped ( ' + gfs_dlm_stop_arr.join(', ') + ' ) </br>' +
+                                'glue-lvmlockd : Started ( ' + gfs_lvmlockd_start_arr.join(', ') + ' ),</br> ' +
+                                                'Stopped ( ' + gfs_lvmlockd_stop_arr.join(', ') + ' )</br>'
+                            );
+                        }
+                    }else{
+                        if (gfs_dlm_stop_arr.length == 0 && gfs_lvmlockd_stop_arr.length == 0) {
+                            $("#gfs-lock-back-color").attr('class', 'pf-c-label pf-m-green');
+                            $("#gfs-lock-icon").attr('class', 'fas fa-fw fa-check-circle');
+                            $('#gfs-lock-status').text("Health OK");
+                            $('#gfs-lock-text').html(
+                                'glue-dlm : Started ( ' + gfs_dlm_start_arr.join(', ') + ' ), Offline ( ' + gfs_dlm_offline_arr.join(', ') + ' )</br>' +
+                                'glue-lvmlockd : Started ( ' + gfs_lvmlockd_start_arr.join(', ') + ' ), Offline ( ' + gfs_lvmlockd_offline_arr.join(', ') + ' )'
+                            );
+                        } else if (gfs_dlm_start_arr.length == 0 && gfs_lvmlockd_start_arr.length == 0) {
+                            $("#gfs-lock-back-color").attr('class', 'pf-c-label pf-m-orange');
+                            $('#gfs-lock-status').text("Health Warn");
+                            $('#gfs-lock-text').html(
+                                'glue-dlm : Stopped ( ' + gfs_dlm_stop_arr.join(', ') + ' ), Offline ( ' + gfs_dlm_offline_arr.join(', ') + ' )</br>' +
+                                'glue-lvmlockd : Stopped ( ' + gfs_lvmlockd_stop_arr.join(', ') + ' ), Offline ( ' + gfs_lvmlockd_offline_arr.join(', ') + ' )'
+                            );
+                        } else {
+                            $("#gfs-lock-back-color").attr('class', 'pf-c-label pf-m-orange');
+                            $('#gfs-lock-status').text("Health Warn");
+                            $('#gfs-lock-text').html(
+                                'glue-dlm : Started ( ' + gfs_dlm_start_arr.join(', ') + ' ), Offline ( ' + gfs_dlm_offline_arr.join(', ') + ' )</br>' +
+                                           'Stopped ( ' + gfs_dlm_stop_arr.join(', ') + ' ), Offline ( ' + gfs_lvmlockd_offline_arr.join(', ') + ' )</br>' +
+                                'glue-lvmlockd : Started ( ' + gfs_lvmlockd_start_arr.join(', ') + ' ), Offline ( ' + gfs_dlm_offline_arr.join(', ') + ' )</br>' +
+                                                'Stopped ( ' + gfs_lvmlockd_stop_arr.join(', ') + ' ), Offline ( ' + gfs_lvmlockd_offline_arr.join(', ') + ' )'
+                            );
+                        }
+                    }
+
+                    for (var l = 0; l < gfs_file_system_arr_list.length; l++) {
+                        // gfs_file_system 처리
+                        if (l < gfs_file_system_arr_list.length && gfs_file_system_arr_list[l][0][2] !== undefined) {
+                            gfs_file_system_arr.push([gfs_file_system_arr_list[l][0][0],gfs_file_system_arr_list[l][0][1], gfs_file_system_arr_list[l][0][2]]);
+                        }
+                    }
+
+                } catch (error) {
+                    $('#gfs-lock-status').text("Health Err");
+                    $('#gfs-lock-back-color').attr('class','pf-c-label pf-m-red');
+                    $('#gfs-lock-icon').attr('class','fas fa-fw fa-exclamation-triangle');
+                    // 오류 처리 추가 (필요 시 사용자 알림 등)
+                    $('#gfs-low-info').attr("style", "color: var(--pf-global--danger-color--100)");
+                    $('#gfs-low-info').text("GFS 리소스 구성 중 오류가 발생했습니다.");
+                    return;
+                }
+                $('#gfs-low-info').attr("style","color: var(--pf-global--success-color--100)");
+                $('#gfs-low-info').text("GFS 리소스가 구성되었습니다.");
+            }else{
+                $('#gfs-fence-status, #gfs-lock-status').text("Health Err");
+                $('#gfs-fence-back-color, #gfs-lock-back-color').attr('class','pf-c-label pf-m-red');
+                $('#gfs-fence-icon, #gfs-lock-icon').attr('class','fas fa-fw fa-exclamation-triangle');
+                $('#gfs-fence-text, #gfs-lock-text').text("N/A");
+            }
+            resolve();
+        })
+        cockpit.spawn(['python3', pluginpath + '/python/gfs/gfs_manage.py', '--check-stonith','--control', 'check'])
+        .then(function(data){
+            var retVal = JSON.parse(data);
+            sessionStorage.setItem("stonith_status", retVal.val);
+
+            if (retVal.val == "Started"){
+                $('#gfs-maintenance-update').html('<a class="pf-c-dropdown__menu-item" href="#" id="menu-item-gfs-maintenance" onclick="gfs_maintenance_run()">펜스 장치 유지보수 설정</a>');
+            }else if (retVal.val == "Stopped"){
+                $('#gfs-maintenance-update').html('<a class="pf-c-dropdown__menu-item" href="#" id="menu-item-gfs-maintenance" onclick="gfs_maintenance_run()">펜스 장치 유지보수 해제</a>');
+            }
+            else{
+                $('#gfs-maintenance-update').html('<a class="pf-c-dropdown__menu-item pf-m-disabled" href="#" id="menu-item-gfs-maintenance" onclick="gfs_maintenance_run()">펜스 장치 유지보수 설정</a>');
+            }
+            resolve();
+        })
+        cockpit.spawn(['python3', pluginpath + '/python/gfs/gfs_manage.py', '--check-qdevice'])
+        .then(function(data){
+            var retVal =JSON.parse(data);
+            if (retVal.code == "200"){
+                sessionStorage.setItem("qdevice_status","true");
+                $('#button-gfs-qdevice-init').removeClass("pf-m-disabled");
+            }else{
+                sessionStorage.setItem("qdevice_status","false");
+            }
+            resolve();
+        })
+})
 }

@@ -422,7 +422,7 @@ $('#button-execution-modal-mold-service-control').on('click', function(){
     $("#modal-status-alert-body").html("Mold 서비스 "+txtSelect+"을(를) 실패하였습니다. 클라우드센터VM 상태를 점검해주세요.");
 
     // Mold 서비스 작업
-    cockpit.spawn(['/usr/bin/python3', pluginpath + '/python/ccvm_service/ccvm_service_control.py', valSelect, '-sn', 'cloudstack-management.service'])
+    cockpit.spawn(['/usr/bin/python3', pluginpath + '/python/ccvm_service/ccvm_service_control.py', valSelect, '-sn', 'mold.service'])
     .then(function(data){
         $('#div-modal-spinner').hide();
         var retVal = JSON.parse(data);
@@ -541,85 +541,7 @@ $('#button-execution-modal-mold-secondary-size-expansion').on('click', function(
     }
 });
 
-$('#button-execution-modal-cloud-vm-maintenance-setting').on('click', function(){
-    $('#div-modal-cloud-vm-maintenance-setting').hide();
-    var stonith_status = sessionStorage.getItem('stonith_status');
 
-    if (stonith_status == "Started"){
-        $('#div-modal-spinner-header-txt').text('클러스터센터 유지보수 설정 중입니다.');
-        $('#div-modal-spinner').show();
-        cockpit.spawn(['python3', pluginpath + '/python/pcs/gfs-manage.py', '--check-stonith', '--control', 'disable'])
-        .then(function(data){
-            $('#div-modal-spinner').hide();
-            var retVal = JSON.parse(data);
-            if (retVal.code == "200"){
-                $("#modal-status-alert-title").html("클러스터센터 유지보수 설정 완료");
-                $("#modal-status-alert-body").html("클러스터센터 유지보수 설정을 완료하였습니다.");
-                $('#div-modal-status-alert').show();
-            }
-        }).catch(function(data){
-            $('#div-modal-spinner').hide();
-            $('#div-modal-status-alert').show();
-            createLoggerInfo("클러스터센터 유지보수 설정 실패 : " + data);
-        });
-    }else{
-        $('#div-modal-spinner-header-txt').text('클러스터센터 유지보수 해제 중입니다.');
-        $('#div-modal-spinner').show();
-        cockpit.spawn(['python3', pluginpath + '/python/pcs/gfs-manage.py', '--check-stonith', '--control', 'enable'])
-        .then(function(data){
-            var retVal = JSON.parse(data);
-            if (retVal.code == "200"){
-                $("#modal-status-alert-title").html("클러스터센터 유지보수 해제 완료");
-                $("#modal-status-alert-body").html("클러스터센터 유지보수 해제를 완료하였습니다.");
-                $('#div-modal-status-alert').show();
-            }
-        }).catch(function(data){
-            $('#div-modal-spinner').hide();
-            $('#div-modal-status-alert').show();
-            createLoggerInfo("클러스터센터 유지보수 해제 실패 : " + data);
-        });
-    }
-});
-$('#button-cancel-modal-cloud-vm-maintenance-setting, #button-close-modal-cloud-vm-maintenance-setting').on('click', function(){
-    $('#div-modal-cloud-vm-maintenance-setting').hide();
-})
-
-$('#button-cloud-qdevice-init').on('click', function(){
-    $('#div-modal-cloud-vm-qdevice-init').show();
-});
-$('#button-close-modal-cloud-vm-qdevice-init, #button-cancel-modal-cloud-vm-qdevice-init').on('click', function(){
-    $('#div-modal-cloud-vm-qdevice-init').hide();
-});
-$('#button-execution-modal-cloud-vm-qdevice-init').on('click', function(){
-    $('#div-modal-cloud-vm-qdevice-init').hide();
-
-    $('#div-modal-spinner-header-txt').text('클라우드센터 VM의 쿼럼을 초기화하고 있습니다.');
-    $('#div-modal-spinner').show();
-
-    $("#modal-status-alert-title").html("클라우드센터 VM 쿼럼 초기화");
-    $("#modal-status-alert-body").html("클라우드센터 VM 쿼럼 초기화를 실패하였습니다.<br/>클라우드센터 VM 쿼럼 상태를 확인해주세요.");
-
-    cockpit.spawn(["python3", pluginpath + "/python/pcs/gfs-manage.py", "--init-qdevice"])
-    .then(function(data){
-        var retVal = JSON.parse(data);
-        if(retVal.code == "200"){
-            $('#div-modal-spinner').hide();
-            $("#modal-status-alert-title").html("클러스터센터 쿼럼 초기화 완료");
-            $("#modal-status-alert-body").html("클러스터센터 쿼럼 초기화를 완료하였습니다.");
-            $('#div-modal-status-alert').show();
-        }else{
-            $('#div-modal-spinner').hide();
-            $("#modal-status-alert-title").html("클러스터센터 쿼럼 초기화 실패");
-            $("#modal-status-alert-body").html("클러스터센터 쿼럼 초기화를 실패하였습니다.");
-            $('#div-modal-status-alert').show();
-        }
-    }).catch(function(data){
-        $('#div-modal-spinner').hide();
-        $('#div-modal-status-alert').show();
-        createLoggerInfo("클러스터센터 쿼럼 초기화 실패 : " + data);
-    });
-
-});
 function secondarySizeExpansionCheck(){
     var validate_check = true;
     var addImageSize = $('#form-input-mold-secondary-size-expansion').val();
@@ -862,32 +784,6 @@ function CardCloudClusterStatus(){
                 createLoggerInfo("ClusterStatusInfo spawn error");
                 console.log('ClusterStatusInfo spawn error');
             }
-            if (os_type == "general-virtualization"){
-                cockpit.spawn(['python3', pluginpath + '/python/pcs/gfs-manage.py', '--check-stonith','--control', 'check'])
-                .then(function(data){
-                    var retVal = JSON.parse(data);
-                    sessionStorage.setItem("stonith_status", retVal.val);
-
-                    if (retVal.val == "Started"){
-                        $('#ccvm-gfs-maintenance-update').html('<a class="pf-c-dropdown__menu-item" href="#" id="menu-item-gfs-maintenance-ccvm" onclick="gfs_maintenance_run()">클라우드센터 유지보수 설정</a>');
-                    }else if (retVal.val == "Stopped"){
-                        $('#ccvm-gfs-maintenance-update').html('<a class="pf-c-dropdown__menu-item" href="#" id="menu-item-gfs-maintenance-ccvm" onclick="gfs_maintenance_run()">클라우드센터 유지보수 해제</a>');
-                    }
-                    else{
-                        $('#ccvm-gfs-maintenance-update').html('<a class="pf-c-dropdown__menu-item pf-m-disabled" href="#" id="menu-item-gfs-maintenance-ccvm" onclick="gfs_maintenance_run()">클라우드센터 유지보수 설정</a>');
-                    }
-                })
-                cockpit.spawn(['python3', pluginpath + '/python/pcs/gfs-manage.py', '--check-qdevice'])
-                .then(function(data){
-                    var retVal =JSON.parse(data);
-                    if (retVal.code == "200"){
-                        sessionStorage.setItem("qdevice_status","true");
-                        $('#button-cloud-qdevice-init').removeClass("pf-m-disabled");
-                    }else{
-                        sessionStorage.setItem("qdevice_status","false");
-                    }
-                })
-            }
             resolve();
         }).catch(function(data){
             createLoggerInfo("ClusterStatusInfo spawn error");
@@ -1044,25 +940,4 @@ function wall_link_go(){
         .catch(function(data){
             //console.log(":::Error:::");
         });
-}
-/**
- * Meathod Name : gfs_maintenance_run
- * Date Created : 2024.12.09
- * Writer  : 정민철
- * Description : GFS 유지보수 일 경우 Stonith Disable or Enable 설정
- * Parameter : 없음
- * Return  : 없음
- * History  : 2024.12.09 최초 작성
- */
-function gfs_maintenance_run(){
-    var stonith_status = sessionStorage.getItem("stonith_status");
-    if (stonith_status == "Started"){
-        $('#cloud-vm-maintenance-setting-head').text("클라우드센터 유지보수 설정");
-        $('#cloud-vm-maintenance-setting-body').text("클라우드센터 유지보수를 설정하시겠습니까?");
-        $('#div-modal-cloud-vm-maintenance-setting').show();
-    }else{
-        $('#cloud-vm-maintenance-setting-head').text("클라우드센터 유지보수 해제");
-        $('#cloud-vm-maintenance-setting-body').text("클라우드센터 유지보수를 해제하시겠습니까?");
-        $('#div-modal-cloud-vm-maintenance-setting').show();
-    }
 }

@@ -480,7 +480,7 @@ $('#button-next-step-modal-wizard-cluster-config-prepare').on('click', function 
                         .then(function(data){
                             var retVal = JSON.parse(data);
                             if(retVal.code == "200"){
-                                var pcs_config_setting_cmd = ['python3', pluginpath + '/python/pcs/gfs-manage.py', '--extend-pcs-cluster', '--password', 'password', '--stonith', ipmi_config, '--mount-point', gfs_mount_point, '--list-ip', all_host_name];
+                                var pcs_config_setting_cmd = ['python3', pluginpath + '/python/gfs/gfs_manage.py', '--extend-pcs-cluster', '--password', 'password', '--stonith', ipmi_config, '--mount-point', gfs_mount_point, '--list-ip', all_host_name];
                                 console.log(pcs_config_setting_cmd);
                                 cockpit.spawn(pcs_config_setting_cmd)
                                 .then(function(data){
