@@ -422,7 +422,7 @@ $('#button-execution-modal-mold-service-control').on('click', function(){
     $("#modal-status-alert-body").html("Mold 서비스 "+txtSelect+"을(를) 실패하였습니다. 클라우드센터VM 상태를 점검해주세요.");
 
     // Mold 서비스 작업
-    cockpit.spawn(['/usr/bin/python3', pluginpath + '/python/ccvm_service/ccvm_service_control.py', valSelect, '-sn', 'cloudstack-management.service'])
+    cockpit.spawn(['/usr/bin/python3', pluginpath + '/python/ccvm_service/ccvm_service_control.py', valSelect, '-sn', 'mold.service'])
     .then(function(data){
         $('#div-modal-spinner').hide();
         var retVal = JSON.parse(data);

@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 import argparse
 import re
+import sys
 import paramiko
 import subprocess
 import os
@@ -83,47 +84,63 @@ def connect_to_host(ip):
 def create_clvm(disks):
     try:
         # Prepare a list to store disk devices
-        num = 1
-        result = subprocess.run(["grep", "ablecube", "/etc/hosts"],stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True,check=True)
+        max_num = 0  # 가장 큰 vg_clvm 번호를 추적
+
+        # /etc/hosts 파일에서 클러스터 노드 IP 가져오기
+        result = subprocess.run(["grep", "ablecube", "/etc/hosts"],
+                                stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                                text=True, check=True)
         lines = result.stdout.strip().split("\n")
         list_ips = [line.split()[0] for line in lines if line.strip()]
 
-        result = subprocess.run(["vgs", "-o", "vg_name", "--reportformat", "json"],stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True)
+        # 기존 vg_clvm 볼륨 그룹 확인
+        result = subprocess.run(["vgs", "-o", "vg_name", "--reportformat", "json"],
+                                stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
         output = json.loads(result.stdout)
-        for i in range(len(output["report"][0]["vg"])):
-            vgs_name = output["report"][0]["vg"][i]["vg_name"]
+
+        # 기존 vg_clvm 번호 중 가장 큰 값을 찾음
+        for vg in output["report"][0]["vg"]:
+            vgs_name = vg["vg_name"]
             if "vg_clvm" in vgs_name:
-                num += 1
-        # Create a physical volume on each disk and add to the volume group
+                num = int(vgs_name.replace("vg_clvm", ""))
+                if num > max_num:
+                    max_num = num
+
+        # 새로운 vg_clvm 번호는 기존 최대값 + 1부터 시작
+        next_num = max_num + 1
+
+        # 디스크마다 물리 볼륨 및 볼륨 그룹 생성
         for disk in disks:
-            # 파티션 생성
-            if "mapper" in disk:
-                name = disk.split('/')[3]
-            else:
-                name = disk.split('/')[2]
+            # 디스크 이름 추출
+            name = disk.split('/')[-1]
 
-            vg_name = f"vg_clvm{num}"
-            run_command(f"parted -s {disk} mklabel gpt mkpart {name} 0% 100% set 1 lvm on ")
-            # 파티션 이름 확인
-            partition = f"{disk}1"
-            # 물리 볼륨 생성
-            run_command(f"pvcreate {partition}")
-            run_command(f"vgcreate {vg_name} {partition} ")
+            # 볼륨 그룹 이름 생성
+            vg_name = f"vg_clvm{next_num}"
 
-            num += 1
+            # 디스크에 파티션 생성 및 LVM 설정
+            run_command(f"parted -s {disk} mklabel gpt mkpart {name} 0% 100% set 1 lvm on")
+            partition = f"{disk}1"  # 파티션 이름
+            run_command(f"pvcreate -y {partition}")
+            run_command(f"vgcreate {vg_name} {partition}")
 
+            # 클러스터의 모든 노드에서 LVM 정보 갱신
             for ip in list_ips:
                 ssh_client = connect_to_host(ip)
-                # lvm.conf 초기화
-                run_command(f"partprobe {disk}",ssh_client,ignore_errors=True)
-                run_command(f"lvmdevices --adddev {partition}",ssh_client,ignore_errors=True)
+                run_command(f"partprobe {disk}", ssh_client, ignore_errors=True)
+                run_command(f"lvmdevices --adddev {partition}", ssh_client, ignore_errors=True)
                 ssh_client.close()
 
+            next_num += 1  # 다음 볼륨 그룹 번호 증가
+
+        # 성공 응답 반환
         ret = createReturn(code=200, val="Create CLVM Disk Success")
         return print(json.dumps(json.loads(ret), indent=4))
-    except Exception:
-        ret = createReturn(code=500, val="Create CLVM Disk Failure")
+
+    except Exception as e:
+        # 에러 발생 시 실패 응답 반환
+        ret = createReturn(code=500, val=f"Create CLVM Disk Failure: {str(e)}")
         return print(json.dumps(json.loads(ret), indent=4))
+
 
 def list_clvm():
     try:
@@ -177,7 +194,7 @@ def list_clvm():
                     "pv_size": pv_size,
                     "wwn": wwn,
                 })
-
+        clvm_pvs.sort(key=lambda x: int(x["vg_name"].replace("vg_clvm", "")))
         # 결과 반환
         ret = createReturn(code=200, val=clvm_pvs)
         return print(json.dumps(json.loads(ret), indent=4))
@@ -236,6 +253,34 @@ def delete_clvm(vg_names,pv_names):
     except Exception as e:
         ret = createReturn(code=500, val=f"Error: {str(e)}")
         return print(json.dumps(json.loads(ret), indent=4))
+def delete_gfs(disks, gfs_name, lv_name, vg_name):
+    try:
+        run_command(f"pcs resource disable {gfs_name}_res")
+        run_command(f"pcs resource delete {gfs_name} --force")
+        run_command(f"pcs resource delete {gfs_name}_res --force")
+
+        run_command("pcs resource cleanup")
+
+        run_command(f"vgchange --lock-type none --lock-opt force {vg_name} -y ")
+        run_command(f"vgchange -aey {vg_name}")
+        run_command(f"lvremove --lockopt skiplv /dev/{vg_name}/{lv_name} -y")
+        run_command(f"vgremove {vg_name}")
+        for disk in disks:
+            partition = f"{disk}1"
+            run_command(f"pvremove {partition}")
+            run_command(f"echo -e 'd\nw\n' | fdisk {disk} >/dev/null 2>&1")
+
+            for host in json_data["clusterConfig"]["hosts"]:
+                ssh_client = connect_to_host(host["ablecube"])
+                # lvm.conf 초기화
+                run_command(f"partprobe {disk}",ssh_client,ignore_errors=True)
+                ssh_client.close()
+
+        ret = createReturn(code=200, val="Success to gfs delete")
+        return print(json.dumps(json.loads(ret), indent=4))
+    except Exception as e:
+        ret = createReturn(code=500, val=f"Error: {str(e)}")
+        return print(json.dumps(json.loads(ret), indent=4))
 def main():
     parser = argparse.ArgumentParser(description="Cluster configuration script")
 
@@ -243,10 +288,17 @@ def main():
     parser.add_argument('--list-clvm', action='store_true', help='Comma separated list of CLVM Disk.')
     parser.add_argument('--list-gfs', action='store_true', help='List GFS Volume Groups.')
     parser.add_argument('--delete-clvm', action='store_true', help='Delete CLVM Volume Group.')
+    parser.add_argument('--delete-gfs', action='store_true', help='Delete GFS Disk.')
     parser.add_argument('--disks', help='Comma separated list of disks to use.')
+    parser.add_argument('--gfs-name', help='GFS Name')
+    parser.add_argument('--lv-names', help='Serveral LV Name.')
     parser.add_argument('--vg-names', help='Serveral VG Name.')
     parser.add_argument('--pv-names', help='Serveral PV Name.')
     args = parser.parse_args()
+
+    if len(sys.argv) == 1:
+        parser.print_help()
+        sys.exit(1)
 
     if args.create_clvm:
         if not all([args.disks]):
@@ -258,16 +310,26 @@ def main():
 
     if args.list_clvm:
         list_clvm()
+
     if args.list_gfs:
         list_gfs()
 
     if args.delete_clvm:
-        if not all ([args.vg_name, args.pv_name]):
-            print("Please provide both '--vg-name' and '--pv-name' when using '--delete-clvm'.")
+        if not all ([args.vg_names, args.pv_names]):
+            print("Please provide both '--vg-names' and '--pv-names' when using '--delete-clvm'.")
             parser.print_help()
         else:
             vg_names = args.vg_names.split(',')
             pv_names = args.pv_names.split(',')
         delete_clvm(vg_names, pv_names)
+
+    if args.delete_gfs:
+        if not all ([args.disks, args.gfs_name, args.lv_names, args.vg_names]):
+            print("Please provide both '--disks', '--gfs-name', '--vg-names' and '--lv-names' when using '--delete-gfs'.")
+            parser.print_help()
+        else:
+            disks = args.disks.split(',')
+            delete_gfs(disks, args.gfs_name, args.lv_names, args.vg_names)
+
 if __name__ == "__main__":
     main()
