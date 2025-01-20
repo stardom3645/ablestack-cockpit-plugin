@@ -82,7 +82,7 @@ def collect_vm_info(vm):
             echo "${output:-""}";
             output=$(/usr/bin/awk '/^nameserver/ {print $2}' /etc/resolv.conf);
             echo "${output:-""}";
-            output=$(systemctl is-active cloudstack-management.service);
+            output=$(systemctl is-active mold-management.service);
             echo "${output:-"inactive"}";
             output=$(systemctl is-active mysqld);
             echo "${output:-"inactive"}"

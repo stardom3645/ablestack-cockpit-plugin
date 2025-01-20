@@ -41,7 +41,7 @@ ssh -o StrictHostKeyChecking=no $scvm /usr/local/sbin/setCrushmap.sh
 
 ################# Setting Database
 mysqladmin -uroot password $DATABASE_PASSWD
-systemctl enable --now cloudstack-usage
+systemctl enable --now mold-usage
 cloudstack-setup-databases cloud:$DATABASE_PASSWD --deploy-as=root:$DATABASE_PASSWD  2>&1 | tee -a $LOGFILE
 
 for i in "${global_settings[@]}"
@@ -53,7 +53,7 @@ done
 
 cloudstack-setup-management  2>&1 | tee -a $LOGFILE
 
-systemctl enable --now cloudstack-management
+systemctl enable --now mold-management
 
 #UEFI 설정 파일 생성
 echo -e "guest.nvram.template.secure=/usr/share/edk2/ovmf/OVMF_VARS.secboot.fd
@@ -93,7 +93,7 @@ do
 done
 
 # 06시 Mold 서비스 재시작 스크립트 등록
-(crontab -l 2>/dev/null; echo "0 6 * * * /usr/bin/systemctl restart cloudstack-management") | crontab -
+(crontab -l 2>/dev/null; echo "0 6 * * * /usr/bin/systemctl restart mold-management") | crontab -
 
 # ccvm 로그 정리 스크립트 등록
 (crontab -l 2>/dev/null; echo "0 0 * * 7 /usr/local/sbin/ccvm_log_maintainer.sh") | crontab -
