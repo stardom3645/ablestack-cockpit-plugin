@@ -93,7 +93,7 @@ do
 done
 
 # 06시 Mold 서비스 재시작 스크립트 등록
-(crontab -l 2>/dev/null; echo "0 6 * * * /usr/bin/systemctl restart mode.service") | crontab -
+(crontab -l 2>/dev/null; echo "0 6 * * * /usr/bin/systemctl restart mold.service") | crontab -
 
 # ccvm 로그 정리 스크립트 등록
 (crontab -l 2>/dev/null; echo "0 0 * * 7 /usr/local/sbin/ccvm_log_maintainer.sh") | crontab -

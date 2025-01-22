@@ -46,8 +46,8 @@ cephadm --image "$image" bootstrap \
         --no-minimize-config \
         --skip-pull \
         --allow-overwrite \
-        --mon-ip "$(grep -w scvm$ /etc/hosts | awk {'print $1'})" \
-        --cluster-network $(grep scvm-cn /etc/hosts| awk {'print $1'}| cut -d '.' -f 1-3).0/24 \
+        --mon-ip "$(grep -w scvm$ /etc/hosts | awk '{print $1}' | head -n 1)" \
+        --cluster-network $(grep -E '\bcn-scvm\b' /etc/hosts| awk {'print $1'}| cut -d '.' -f 1-3).0/24 \
         --config "$conffile" && \
         ceph config set global container_image $image && \
         ceph config set global mgr/cephadm/container_image_base $image && \
@@ -91,14 +91,6 @@ ceph orch apply mon --placement=3
 for host in $scvms
 do
   ceph orch host add $(grep $host /etc/hosts | awk {'print $2'}) $host
-done
-
-for host in $scvms
-do
-  if [ $(ceph orch ps | grep $host) -ne 0 ]
-  then
-    sleep 1
-  fi
 done
 
 for mgr in $(ceph orch ps |grep mgr |awk {'print $1'} | sed 's/mgr\.//')
