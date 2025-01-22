@@ -36,8 +36,8 @@ mkdir /nfs/primary
 mkdir /nfs/secondary
 
 # Crushmap 설정 추가 (ceph autoscale)
-scvm=$(grep scvm-mngt /etc/hosts | awk {'print $1'})
-ssh -o StrictHostKeyChecking=no $scvm /usr/local/sbin/setCrushmap.sh
+#scvm=$(grep scvm-mngt /etc/hosts | awk {'print $1'})
+#ssh -o StrictHostKeyChecking=no $scvm /usr/local/sbin/setCrushmap.sh
 
 ################# Setting Database
 mysqladmin -uroot password $DATABASE_PASSWD
