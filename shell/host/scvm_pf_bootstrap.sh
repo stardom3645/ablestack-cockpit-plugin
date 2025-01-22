@@ -33,7 +33,7 @@ done
 ################ 모든 SCVM에 mdm 설치 (Primary, Secondary는 MDM_ROLE_IS_MANAGER=1, TB는 MDM_ROLE_IS_MANAGER=0) ##################
 for scvm in $scvms_name
 do
-  if [ $scvm == "scvm3-pn" ]
+  if [ $scvm == "pn-scvm3" ]
   then
      ssh -o StrictHostKeyChecking=no $scvm MDM_ROLE_IS_MANAGER=0 rpm -ivh /usr/share/ablestack/powerflex/EMC-ScaleIO-mdm-*
   else
@@ -49,10 +49,10 @@ python3 /opt/emc/scaleio/mdm/cfg/certificate_generator_MDM_USER.py --generate_md
 
 for scvm in $scvms_name
 do
-  if [ $scvm == "scvm1-pn" ]
+  if [ $scvm == "pn-scvm1" ]
   then
     scli --add_certificate --certificate_file /opt/emc/scaleio/mdm/cfg/mgmt_ca.pem
-  elif [ $scvm == "scvm2-pn" ]
+  elif [ $scvm == "pn-scvm2" ]
   then
 
     scp /opt/emc/scaleio/mdm/cfg/sec_mdm_certificate.pem $scvm:/opt/emc/scaleio/mdm/cfg/mdm_certificate.pem
@@ -75,13 +75,13 @@ scvm_name=$(grep $scvm /etc/hosts | awk '{split($2,a,"-"); print a[1]}')
 scvms_cn=$(grep $scvm_name /etc/hosts| grep -v mngt | grep cn | awk {'print $1'})
 scvms_pn=$(grep $scvm_name /etc/hosts| grep -v mngt | grep  -v cn | awk {'print $1'})
 
-  if [ $scvm == "scvm1-pn" ]
+  if [ $scvm == "pn-scvm1" ]
   then
     scli --create_mdm_cluster --primary_mdm_ip $scvms_pn,$scvms_cn --primary_mdm_management_ip $scvms_pn,$scvms_cn --primary_mdm_name MDM1 --cluster_virtual_ip $virtual_ip_pn,$virtual_ip_cn --primary_mdm_virtual_ip_interface $interface_pn,$interface_cn --accept_license --approve_certificate
     sleep 1
     scli --login --p12_path /opt/emc/scaleio/mdm/cfg/cli_certificate.p12 --p12_password Ablecloud1!
 
-  elif [ $scvm == "scvm2-pn" ]
+  elif [ $scvm == "pn-scvm2" ]
   then
     sleep 1
     scli --add_standby_mdm --new_mdm_ip $scvms_pn,$scvms_cn --mdm_role manager --new_mdm_management_ip $scvms_pn,$scvms_cn --new_mdm_virtual_ip_interface $interface_pn,$interface_cn --new_mdm_name MDM2 --i_am_sure
@@ -108,10 +108,10 @@ scvm_name=$(grep $scvm /etc/hosts | awk '{split($2,a,"-"); print a[1]}')
 scvms_cn=$(grep $scvm_name /etc/hosts| grep -v mngt | grep cn | awk {'print $1'})
 scvms_pn=$(grep $scvm_name /etc/hosts| grep -v mngt | grep  -v cn | awk {'print $1'})
 
-  if [ $scvm == "scvm1-pn" ]
+  if [ $scvm == "pn-scvm1" ]
   then
     scli --add_sds --sds_ip $scvms_pn,$scvms_cn --protection_domain_name PD1 --storage_pool_name SP1 --disable_rmcache --sds_name SDS1
-  elif [ $scvm == "scvm2-pn" ]
+  elif [ $scvm == "pn-scvm2" ]
   then
     scli --add_sds --sds_ip $scvms_pn,$scvms_cn --protection_domain_name PD1 --storage_pool_name SP1 --disable_rmcache --sds_name SDS2
   else
@@ -128,13 +128,13 @@ for scvm in $scvms_name
 do
 ssd_disk_name=$(ssh -o StrictHostKeyChecking=no $scvm lsblk -d -o name,rota,type | grep disk | awk '$2 == 0 {print $1}')
 
-  if [ $scvm == "scvm1-pn" ]
+  if [ $scvm == "pn-scvm1" ]
   then
     for disks in $ssd_disk_name
     do
         scli --add_sds_device --sds_name SDS1 --storage_pool_name SP1 --device_path /dev/$disks --force_device_takeover
     done
-  elif [ $scvm == "scvm2-pn" ]
+  elif [ $scvm == "pn-scvm2" ]
   then
     for disks in $ssd_disk_name
     do
