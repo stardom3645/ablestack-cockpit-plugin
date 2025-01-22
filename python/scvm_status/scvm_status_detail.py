@@ -208,9 +208,9 @@ def statusDeteil():
         rc = call(["cat /etc/hosts | grep scvm$"], universal_newlines=True, shell=True, env=env, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
         if rc == 0:
             if os_type == "PowerFlex":
-                output = check_output(["cat /etc/hosts | grep scvm-pn | awk '{print $1}'"], universal_newlines=True, shell=True, env=env)
+                output = check_output(["awk '$NF == \"scvm\" {print $1}' /etc/hosts"], universal_newlines=True, shell=True, env=env)
             else:
-                output = check_output(["cat /etc/hosts | grep scvm$ | awk '{print $1}'"], universal_newlines=True, shell=True, env=env)
+                output = check_output(["awk '$NF == \"scvm\" {print $1}' /etc/hosts"], universal_newlines=True, shell=True, env=env)
 
             storageServerNicIp = output.strip()
             rc = call(["virsh domifaddr --domain scvm --source agent --full | grep -w " + storageServerNicIp], universal_newlines=True, shell=True, env=env, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
@@ -236,9 +236,9 @@ def statusDeteil():
             storageServerNicType = 'N/A'
 
         '''scvm 복제용 nic 확인 시 리턴값 0이면 정상, 아니면 비정상'''
-        rc = call(["cat /etc/hosts | grep scvm-cn"], universal_newlines=True, shell=True, env=env, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
+        rc = call(["cat /etc/hosts | grep -w cn-scvm"], universal_newlines=True, shell=True, env=env, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
         if rc == 0:
-            output = check_output(["cat /etc/hosts | grep scvm-cn | awk '{print $1}'"], universal_newlines=True, shell=True, env=env)
+            output = check_output(["cat /etc/hosts | grep -w cn-scvm | awk '{print $1}'"], universal_newlines=True, shell=True, env=env)
             storageReplicationNicIp = output.strip()
             rc = call(["virsh domifaddr --domain scvm --source agent --full | grep -w " + storageReplicationNicIp], universal_newlines=True, shell=True, env=env, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
             if rc == 0:
