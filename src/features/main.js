@@ -2500,17 +2500,26 @@ $('#button-execution-modal-gfs-disk-add').on('click', function() {
         cockpit.spawn(cmd)
             .then(function(data) {
                 var retVal = JSON.parse(data);
-
+                var maxIndex = 0;
                 if (retVal.code == "200") {
                     var vg_name = "";
                     var lv_name = "";
                     var mount_point = "";
                     var gfs_name = "";
                     for (var i = 0; i < retVal.val.length; i++) {
-                        vg_name = "vg_glue_" + String(i+1);
-                        lv_name = "lv_glue_" + String(i+1);
-                        mount_point = "/mnt/glue-gfs-" + String(i+1);
-                        gfs_name = "glue-gfs-" + String(i+1);
+                        var match = retVal.val[i].vg_name.match(/vg_glue_(\d+)/);
+                        if (match) {
+                            var num = parseInt(match[1], 10);  // 숫자 부분만 가져와서 정수로 변환
+                            if (num > maxIndex) {
+                                maxIndex = num;
+                            }
+                        }
+
+                        newIndex = maxIndex > 0 ? maxIndex + 1 : 1;
+                        vg_name = "vg_glue_" + newIndex;
+                        lv_name = "lv_glue_" + newIndex;
+                        mount_point = "/mnt/glue-gfs-" + newIndex;
+                        gfs_name = "glue-gfs-" + newIndex;
                     }
                     var cmd = ['python3', pluginpath + '/python/gfs/gfs_manage.py','--create-gfs','--disks', gfs_disk_name,
                         '--vg-name', vg_name,'--lv-name', lv_name,'--gfs-name', gfs_name,'--mount-point', mount_point,
@@ -2594,18 +2603,25 @@ $('#button-execution-modal-gfs-disk-delete').on('click', function() {
             .get()
             .map(function(value) {
                 var match = value.match(regex);
-                return match ? match[1] : ''; // 정규식에서 첫 번째 캡처 그룹을 반환
-            });
+                return match ? match[1] : '';
+            })
+            .join(',');  // 배열을 콤마로 구분된 문자열로 변환
     }
+
     var gfs_disk_name = $('input[type=checkbox][name="form-gfs-checkbox-disk-delete"]:checked')
     .map(function () {
         return $(this).data('multipaths');
     })
     .get()
     .map(function(multipath) {
-        return multipath.replace(/1$/, '');  // 끝에 있는 '1'만 제거
+        return multipath
+            .split(',') // 콤마(,)로 분리
+            .map(function(path) {
+                return path.trim().replace(/1$/, ''); // 각 경로 끝의 1 제거
+            })
+            .join(','); // 다시 콤마로 합침
     })
-    .join(',');  // 다시 콤마로 구분된 문자열로 결합
+    .join(','); // 최종적으로 모든 결과를 콤마로 연결
 
     var gfs_name = extractData('input[type=checkbox][name="form-gfs-checkbox-disk-delete"]:checked', 'mountpoint', /\/mnt\/(.*)/);
     var vg_name = extractData('input[type=checkbox][name="form-gfs-checkbox-disk-delete"]:checked', 'lvm', /\/dev\/mapper\/([^\-]+)/);

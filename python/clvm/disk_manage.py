@@ -2,6 +2,7 @@
 import argparse
 import re
 import sys
+import time
 import paramiko
 import subprocess
 import os
@@ -255,8 +256,15 @@ def delete_clvm(vg_names,pv_names):
         return print(json.dumps(json.loads(ret), indent=4))
 def delete_gfs(disks, gfs_name, lv_name, vg_name):
     try:
+        run_command(f"pcs resource disable {gfs_name}")
         run_command(f"pcs resource disable {gfs_name}_res")
+
+        time.sleep(8)
+
         run_command(f"pcs resource delete {gfs_name} --force")
+
+        time.sleep(8)
+
         run_command(f"pcs resource delete {gfs_name}_res --force")
 
         run_command("pcs resource cleanup")
@@ -272,8 +280,14 @@ def delete_gfs(disks, gfs_name, lv_name, vg_name):
 
             for host in json_data["clusterConfig"]["hosts"]:
                 ssh_client = connect_to_host(host["ablecube"])
+                escaped_disk = disk.replace('/', '\\/')
+                escaped_partition = partition.replace('/', '\\/')
+                sed_cmd = f"sed -i '/partprobe {escaped_disk}/{{N; /lvmdevices --adddev {escaped_partition}/d;}}' /etc/rc.local /etc/rc.d/rc.local"
+
                 # lvm.conf 초기화
                 run_command(f"partprobe {disk}",ssh_client,ignore_errors=True)
+                run_command(sed_cmd, ssh_client, ignore_errors=True)
+
                 ssh_client.close()
 
         ret = createReturn(code=200, val="Success to gfs delete")
