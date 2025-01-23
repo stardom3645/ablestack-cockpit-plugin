@@ -275,7 +275,7 @@ $('#menu-item-set-auto-shutdown-step-two').on('click',function(){
 
 // 클라우드센터 VM DB 백업 드롭다운 버튼 클릭시
 $('#card-action-cloud-vm-db-dump').on('click', function(){
-    $('#div-modal-db-backup-cloud-vm-first').show();
+    $('#div-modal-db-backup-cloud-vm').show();
     $('#div-modal-wizard-cluster-config-finish-db-dump-file-download-empty-state').hide();
 });
 
@@ -306,10 +306,6 @@ $('.pf-c-dropdown').on('click', function(e){
     $('#'+ card_id_sting).show();
 })
 
-// 클라우드센터 VM DB 백업 드롭다운 메뉴 클릭 시
-$('#card-action-cloud-vm-db-dump').on('click', function(){
-
-});
 // 클라우드센터 VM DB 백업 실행 클릭 시
 $('#button-execution-modal-cloud-vm-db-dump').on('click', function () {
     $('#dbdump-prepare-status').html("<svg class='pf-c-spinner pf-m-xl' role='progressbar' aria-valuetext='Loading...' viewBox='0 0 100 100'><circle class='pf-c-spinner__path' cx='50' cy='50' r='45' fill='none'></circle></svg>" +

@@ -39,7 +39,7 @@ def parseArgs():
 def checkMount():
     try:
         #호스트 리스트 추출 (hosts 파일에서 특정 단어 "-pn"을 포함한 2열 값 출력)
-        output_host_list = subprocess.check_output("grep '\-pn' /etc/hosts | awk '{print $2}'", shell=True)
+        output_host_list = subprocess.check_output("grep 'pn' /etc/hosts | awk '{print $2}'", shell=True)
         data_host_list = output_host_list.decode('utf8')
         hosts = data_host_list.splitlines()
 
@@ -100,7 +100,7 @@ def checkMount():
 def stopStorageVMs():
     try:
         #호스트 리스트 추출 (hosts 파일에서 특정 단어 "-pn"을 포함한 2열 값 출력)
-        output_host_list = subprocess.check_output("grep '\-pn' /etc/hosts | awk '{print $2}'", shell=True)
+        output_host_list = subprocess.check_output("grep 'pn' /etc/hosts | awk '{print $2}'", shell=True)
         data_host_list = output_host_list.decode('utf8')
         hosts = data_host_list.splitlines()
 
@@ -143,7 +143,7 @@ def stopStorageVMs():
 def shutdownHosts():
     try:
         #호스트 리스트 추출 (hosts 파일에서 특정 단어 "-pn"을 포함한 2열 값 출력)
-        output_host_list = subprocess.check_output("grep '\-pn' /etc/hosts | awk '{print $2}'", shell=True)
+        output_host_list = subprocess.check_output("grep 'pn' /etc/hosts | awk '{print $2}'", shell=True)
         data_host_list = output_host_list.decode('utf8')
         hosts = data_host_list.splitlines()
 

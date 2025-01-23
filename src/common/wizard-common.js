@@ -916,7 +916,7 @@ function tableToHostsText(table_tr_obj, option, os_type){
         // eq(1) : 호스트 명
         // eq(2) : 호스트 IP (ablecube)
         // eq(3) : SCVM MNGT IP
-        // eq(4) : 호스트 PN IP (ablecube-pn)
+        // eq(4) : 호스트 PN IP (pn-ablecube)
         // eq(5) : SCVM PN IP
         // eq(6) : SCVM CN IP
 
@@ -1060,7 +1060,7 @@ function tableToClusterConfigJsonString(radio_value, option, os_type){
         // eq(1) : 호스트 명
         // eq(2) : 호스트 IP (ablecube)
         // eq(3) : SCVM MNGT IP
-        // eq(4) : 호스트 PN IP (ablecube-pn)
+        // eq(4) : 호스트 PN IP (pn-ablecube)
         // eq(5) : SCVM PN IP
         // eq(6) : SCVM CN IP
 
@@ -1132,7 +1132,7 @@ function tableToClusterConfigJsonString(radio_value, option, os_type){
         // eq(1) : 호스트 명
         // eq(2) : 호스트 IP (ablecube)
         // eq(3) : SCVM MNGT IP
-        // eq(4) : 호스트 PN IP (ablecube-pn)
+        // eq(4) : 호스트 PN IP (pn-ablecube)
         // eq(5) : SCVM PN IP
         // eq(6) : SCVM CN IP
 
@@ -1400,7 +1400,7 @@ function tableToClusterConfigJsonString(radio_value, option, os_type){
         // eq(1) : 호스트 명
         // eq(2) : 호스트 IP (ablecube)
         // eq(3) : SCVM MNGT IP
-        // eq(4) : 호스트 PN IP (ablecube-pn)
+        // eq(4) : 호스트 PN IP (pn-ablecube)
         // eq(5) : SCVM PN IP
         // eq(6) : SCVM CN IP
 
@@ -1506,7 +1506,7 @@ function pcsHostPnIpCheck(host_file_type, pcs_host_pn_ip, option){
         // eq(1) : 호스트 명
         // eq(2) : 호스트 IP (ablecube)
         // eq(3) : SCVM MNGT IP
-        // eq(4) : 호스트 PN IP (ablecube-pn)
+        // eq(4) : 호스트 PN IP (pn-ablecube)
         // eq(5) : SCVM PN IP
         // eq(6) : SCVM CN IP
 

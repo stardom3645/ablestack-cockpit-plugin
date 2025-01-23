@@ -1390,6 +1390,7 @@ function putTimeServerValueIntoTextarea(radio_value) {
     }
     $('#div-cluster-config-confirm-time-server-1').text($('#form-input-cluster-config-time-server-ip-1').val());
     $('#div-cluster-config-confirm-time-server-2').text($('#form-input-cluster-config-time-server-ip-2').val());
+    $('#div-cluster-config-confirm-extenal-time-server').text($('#form-input-cluster-config-external-time-server-ip').val());
 }
 
 

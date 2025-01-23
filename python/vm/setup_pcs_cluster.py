@@ -74,7 +74,9 @@ def setupPcsCluster(args):
         if check_err != 0 :
             return createReturn(code=500, val=host+" : systemctl restart crond.service failed")
 
-
+    #crushmap 및 rbd size 설정
+    os.system("/usr/local/sbin/setCrushmap.sh")
+        
     #=========== pcs cluster 구성 ===========
     # ceph 이미지 등록
     os.system("qemu-img convert -f qcow2 -O rbd /var/lib/libvirt/images/ablestack-template-back.qcow2 rbd:rbd/ccvm")
