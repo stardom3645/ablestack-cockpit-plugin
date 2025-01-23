@@ -1154,7 +1154,6 @@ function setReviewInfo(){
     //관리네트워크 3가지
     var mngt_ip = $('#form-input-storage-vm-mgmt-ip').val();
     var mngt_gw = $('#form-input-storage-vm-mgmt-gw').val();
-    var mngt_vlan = $('#form-input-storage-vm-mgmt-vlan').val();
     var dns = $('#form-input-storage-vm-dns').val();
 
     $('#span-storage-vm-mngt-ip-info').empty();
@@ -1172,9 +1171,6 @@ function setReviewInfo(){
         mngt_el += "Gateway : "+mngt_gw+"</br>";
     }
 
-    if(mngt_vlan != '') {
-        mngt_el += "Vlan : "+mngt_vlan+"</br>";
-    }
 
     if(dns == ''){
         mngt_el += "DNS : 미입력</br>";
@@ -1187,9 +1183,7 @@ function setReviewInfo(){
     //스토지리 네트워크 4가지
 
     var public_ip = $("#form-input-storage-vm-public-ip").val();
-    var public_vlan = $("#form-input-storage-vm-public-vlan").val();
     var cluster_ip = $("#form-input-storage-vm-cluster-ip").val();
-    var cluster_vlan = $("#form-input-storage-vm-cluster-vlan").val();
 
     $('#span-storage-vm-storage-traffic-ip-info').empty();
     var traffic_ip_el = "";
@@ -1200,19 +1194,12 @@ function setReviewInfo(){
         traffic_ip_el += "서버 IP Addr : "+public_ip+"</br>";
     }
 
-    if(public_vlan != '') {
-        traffic_ip_el += "서버 Vlan : "+public_vlan+"</br>";
-    }
-
     if(cluster_ip == '') {
         traffic_ip_el += "복제 IP Addr : 미입력</br>";
     } else {
         traffic_ip_el += "복제 IP Addr : "+cluster_ip+"</br>";
     }
 
-    if(cluster_vlan != '') {
-        traffic_ip_el += "복제 Vlan : "+cluster_vlan+"</br>";
-    }
 
     $('#span-storage-vm-storage-traffic-ip-info').append(traffic_ip_el);
 
@@ -1398,12 +1385,9 @@ function validateStorageVm(){
     // $("#form-input-storage-vm-hosts-file").val("");
     $("#form-input-storage-vm-hostname").val("");
     $("#form-input-storage-vm-mgmt-ip").val("");
-    $("#form-input-storage-vm-mgmt-vlan").val("");
     $("#form-input-storage-vm-mgmt-gw").val("");
     $("#form-input-storage-vm-public-ip").val("");
-    $("#form-input-storage-vm-public-vlan").val("");
     $("#form-input-storage-vm-cluster-ip").val("");
-    $("#form-input-storage-vm-cluster-vlan").val("");
     $("#form-input-ccvm-mngt-ip").val("");
     $("#form-input-stroage-vm-dns").val("");
 }

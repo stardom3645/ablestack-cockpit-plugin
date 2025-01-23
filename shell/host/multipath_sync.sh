@@ -6,7 +6,7 @@
 #최초작성자 : 정민철 주임
 #최초작성일 : 2025-01-08
 #########################################
-hosts=$(grep "ablecube" /etc/hosts | awk '{print $1}')
+hosts=$(grep "ablecube" /etc/hosts | grep -v pn | awk '{print $1}')
 
 for host in $hosts
 do

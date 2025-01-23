@@ -126,7 +126,12 @@ $('#nav-button-cloud-vm-appliance').on('click',function(){
 
     $('#div-modal-wizard-cloud-vm-cluster-sync-mechanism').show();
     $('#nav-button-cloud-vm-appliance').addClass('pf-m-current');
-    $('#nav-button-cloud-vm-cluster-sync-mechanism').addClass('pf-m-current');
+
+    if (os_type == "ABLESTACK-HCI"){
+        $('#nav-button-cloud-vm-compute').addClass('pf-m-current');
+    }else{
+        $('#nav-button-cloud-vm-cluster-sync-mechanism').addClass('pf-m-current');
+    }
 
     $('#button-next-step-modal-wizard-cloud-vm').attr('disabled', false);
     $('#button-before-step-modal-wizard-cloud-vm').attr('disabled', false);
@@ -158,8 +163,11 @@ $('#nav-button-cloud-vm-compute').on('click',function(){
     $('#button-next-step-modal-wizard-cloud-vm').attr('disabled', false);
     $('#button-before-step-modal-wizard-cloud-vm').attr('disabled', false);
     $('#button-cancel-config-modal-wizard-cloud-vm').attr('disabled', false);
-
-    cur_step_wizard_cloud_vm = "3";
+    if (os_type == "ABLESTACK-HCI"){
+        cur_step_wizard_cloud_vm = "2";
+    }else{
+        cur_step_wizard_cloud_vm = "3";
+    }
 });
 
 $('#nav-button-cloud-vm-network').on('click',function(){
@@ -172,8 +180,12 @@ $('#nav-button-cloud-vm-network').on('click',function(){
     $('#button-next-step-modal-wizard-cloud-vm').attr('disabled', false);
     $('#button-before-step-modal-wizard-cloud-vm').attr('disabled', false);
     $('#button-cancel-config-modal-wizard-cloud-vm').attr('disabled', false);
+    if (os_type == "ABLESTACK-HCI"){
+        cur_step_wizard_cloud_vm = "3";
+    }else{
+        cur_step_wizard_cloud_vm = "4";
+    }
 
-    cur_step_wizard_cloud_vm = "4";
 });
 
 $('#nav-button-cloud-vm-disk').on('click',function(){
@@ -186,8 +198,11 @@ $('#nav-button-cloud-vm-disk').on('click',function(){
     $('#button-next-step-modal-wizard-cloud-vm').attr('disabled', false);
     $('#button-before-step-modal-wizard-cloud-vm').attr('disabled', false);
     $('#button-cancel-config-modal-wizard-cloud-vm').attr('disabled', false);
-
-    cur_step_wizard_cloud_vm = "5";
+    if (os_type == "ABLESTACK-HCI"){
+        cur_step_wizard_cloud_vm = "4";
+    }else{
+        cur_step_wizard_cloud_vm = "5";
+    }
 });
 
 $('#nav-button-cloud-vm-additional').on('click',function(){
@@ -675,20 +690,8 @@ $('#button-next-step-modal-wizard-cloud-vm').on('click', function(){
             $('#div-modal-wizard-cloud-vm').hide();
         }
     }else{ // OS Type이 ABLESTACK-HCI 일 경우의 다음버튼의 행동 처리
+
         if (cur_step_wizard_cloud_vm == "1") {
-            resetCloudVMWizard();
-
-            $('#div-modal-wizard-cloud-vm-cluster-sync-mechanism').show();
-            $('#nav-button-cloud-vm-appliance').addClass('pf-m-current');
-            $('#nav-button-cloud-vm-cluster-sync-mechanism').addClass('pf-m-current');
-
-            $('#button-next-step-modal-wizard-cloud-vm').attr('disabled', false);
-            $('#button-before-step-modal-wizard-cloud-vm').attr('disabled', false);
-            $('#button-cancel-config-modal-wizard-cloud-vm').attr('disabled', false);
-
-            cur_step_wizard_cloud_vm = "2";
-        }
-        else if (cur_step_wizard_cloud_vm == "2") {
             resetCloudVMWizard();
 
             $('#div-modal-wizard-cloud-vm-compute').show();
@@ -699,9 +702,9 @@ $('#button-next-step-modal-wizard-cloud-vm').on('click', function(){
             $('#button-before-step-modal-wizard-cloud-vm').attr('disabled', false);
             $('#button-cancel-config-modal-wizard-cloud-vm').attr('disabled', false);
 
-            cur_step_wizard_cloud_vm = "3";
+            cur_step_wizard_cloud_vm = "2";
         }
-        else if (cur_step_wizard_cloud_vm == "3") {
+        else if (cur_step_wizard_cloud_vm == "2") {
             resetCloudVMWizard();
 
             $('#div-modal-wizard-cloud-vm-network').show();
@@ -712,13 +715,25 @@ $('#button-next-step-modal-wizard-cloud-vm').on('click', function(){
             $('#button-before-step-modal-wizard-cloud-vm').attr('disabled', false);
             $('#button-cancel-config-modal-wizard-cloud-vm').attr('disabled', false);
 
+            cur_step_wizard_cloud_vm = "3";
+        }
+        else if (cur_step_wizard_cloud_vm == "3") {
+            resetCloudVMWizard();
+
+            $('#div-modal-wizard-cloud-vm-additional').show();
+            $('#nav-button-cloud-vm-additional').addClass('pf-m-current');
+
+            $('#button-next-step-modal-wizard-cloud-vm').attr('disabled', false);
+            $('#button-before-step-modal-wizard-cloud-vm').attr('disabled', false);
+            $('#button-cancel-config-modal-wizard-cloud-vm').attr('disabled', false);
+
             cur_step_wizard_cloud_vm = "4";
         }
         else if (cur_step_wizard_cloud_vm == "4") {
             resetCloudVMWizard();
 
-            $('#div-modal-wizard-cloud-vm-additional').show();
-            $('#nav-button-cloud-vm-additional').addClass('pf-m-current');
+            $('#div-modal-wizard-cloud-vm-ssh-key').show();
+            $('#nav-button-cloud-vm-ssh-key').addClass('pf-m-current');
 
             $('#button-next-step-modal-wizard-cloud-vm').attr('disabled', false);
             $('#button-before-step-modal-wizard-cloud-vm').attr('disabled', false);
@@ -729,8 +744,8 @@ $('#button-next-step-modal-wizard-cloud-vm').on('click', function(){
         else if (cur_step_wizard_cloud_vm == "5") {
             resetCloudVMWizard();
 
-            $('#div-modal-wizard-cloud-vm-ssh-key').show();
-            $('#nav-button-cloud-vm-ssh-key').addClass('pf-m-current');
+            $('#div-modal-wizard-cloud-vm-failover-cluster').show();
+            $('#nav-button-cloud-vm-cluster').addClass('pf-m-current');
 
             $('#button-next-step-modal-wizard-cloud-vm').attr('disabled', false);
             $('#button-before-step-modal-wizard-cloud-vm').attr('disabled', false);
@@ -739,18 +754,6 @@ $('#button-next-step-modal-wizard-cloud-vm').on('click', function(){
             cur_step_wizard_cloud_vm = "6";
         }
         else if (cur_step_wizard_cloud_vm == "6") {
-            resetCloudVMWizard();
-
-            $('#div-modal-wizard-cloud-vm-failover-cluster').show();
-            $('#nav-button-cloud-vm-cluster').addClass('pf-m-current');
-
-            $('#button-next-step-modal-wizard-cloud-vm').attr('disabled', false);
-            $('#button-before-step-modal-wizard-cloud-vm').attr('disabled', false);
-            $('#button-cancel-config-modal-wizard-cloud-vm').attr('disabled', false);
-
-            cur_step_wizard_cloud_vm = "7";
-        }
-        else if (cur_step_wizard_cloud_vm == "7") {
             resetCloudVMWizard();
 
             setCcvmReviewInfo();
@@ -764,12 +767,12 @@ $('#button-next-step-modal-wizard-cloud-vm').on('click', function(){
             $('#button-before-step-modal-wizard-cloud-vm').attr('disabled', false);
             $('#button-cancel-config-modal-wizard-cloud-vm').attr('disabled', false);
 
-            cur_step_wizard_cloud_vm = "8";
+            cur_step_wizard_cloud_vm = "7";
         }
-        else if (cur_step_wizard_cloud_vm == "8") {
+        else if (cur_step_wizard_cloud_vm == "7") {
             $('#div-modal-cloud-wizard-confirm').show();
         }
-        else if (cur_step_wizard_cloud_vm == "9") {
+        else if (cur_step_wizard_cloud_vm == "8") {
             $('#div-modal-wizard-cloud-vm').hide();
         }
     }
@@ -1043,9 +1046,9 @@ $('#button-before-step-modal-wizard-cloud-vm').on('click', function(){
         else if (cur_step_wizard_cloud_vm == "3") {
             resetCloudVMWizard();
 
-            $('#div-modal-wizard-cloud-vm-cluster-sync-mechanism').show();
+            $('#div-modal-wizard-cloud-vm-compute').show();
             $('#nav-button-cloud-vm-appliance').addClass('pf-m-current');
-            $('#nav-button-cloud-vm-cluster-sync-mechanism').addClass('pf-m-current');
+            $('#nav-button-cloud-vm-compute').addClass('pf-m-current');
 
             $('#button-next-step-modal-wizard-cloud-vm').attr('disabled', false);
             $('#button-before-step-modal-wizard-cloud-vm').attr('disabled', false);
@@ -1056,9 +1059,9 @@ $('#button-before-step-modal-wizard-cloud-vm').on('click', function(){
         else if (cur_step_wizard_cloud_vm == "4") {
             resetCloudVMWizard();
 
-            $('#div-modal-wizard-cloud-vm-compute').show();
+            $('#div-modal-wizard-cloud-vm-network').show();
             $('#nav-button-cloud-vm-appliance').addClass('pf-m-current');
-            $('#nav-button-cloud-vm-compute').addClass('pf-m-current');
+            $('#nav-button-cloud-vm-network').addClass('pf-m-current');
 
             $('#button-next-step-modal-wizard-cloud-vm').attr('disabled', false);
             $('#button-before-step-modal-wizard-cloud-vm').attr('disabled', false);
@@ -1069,9 +1072,8 @@ $('#button-before-step-modal-wizard-cloud-vm').on('click', function(){
         else if (cur_step_wizard_cloud_vm == "5") {
             resetCloudVMWizard();
 
-            $('#div-modal-wizard-cloud-vm-network').show();
-            $('#nav-button-cloud-vm-appliance').addClass('pf-m-current');
-            $('#nav-button-cloud-vm-network').addClass('pf-m-current');
+            $('#div-modal-wizard-cloud-vm-additional').show();
+            $('#nav-button-cloud-vm-additional').addClass('pf-m-current');
 
             $('#button-next-step-modal-wizard-cloud-vm').attr('disabled', false);
             $('#button-before-step-modal-wizard-cloud-vm').attr('disabled', false);
@@ -1082,8 +1084,8 @@ $('#button-before-step-modal-wizard-cloud-vm').on('click', function(){
         else if (cur_step_wizard_cloud_vm == "6") {
             resetCloudVMWizard();
 
-            $('#div-modal-wizard-cloud-vm-additional').show();
-            $('#nav-button-cloud-vm-additional').addClass('pf-m-current');
+            $('#div-modal-wizard-cloud-vm-ssh-key').show();
+            $('#nav-button-cloud-vm-ssh-key').addClass('pf-m-current');
 
             $('#button-next-step-modal-wizard-cloud-vm').attr('disabled', false);
             $('#button-before-step-modal-wizard-cloud-vm').attr('disabled', false);
@@ -1094,8 +1096,8 @@ $('#button-before-step-modal-wizard-cloud-vm').on('click', function(){
         else if (cur_step_wizard_cloud_vm == "7") {
             resetCloudVMWizard();
 
-            $('#div-modal-wizard-cloud-vm-ssh-key').show();
-            $('#nav-button-cloud-vm-ssh-key').addClass('pf-m-current');
+            $('#div-modal-wizard-cloud-vm-failover-cluster').show();
+            $('#nav-button-cloud-vm-cluster').addClass('pf-m-current');
 
             $('#button-next-step-modal-wizard-cloud-vm').attr('disabled', false);
             $('#button-before-step-modal-wizard-cloud-vm').attr('disabled', false);
@@ -1106,18 +1108,6 @@ $('#button-before-step-modal-wizard-cloud-vm').on('click', function(){
         else if (cur_step_wizard_cloud_vm == "8") {
             resetCloudVMWizard();
 
-            $('#div-modal-wizard-cloud-vm-failover-cluster').show();
-            $('#nav-button-cloud-vm-cluster').addClass('pf-m-current');
-
-            $('#button-next-step-modal-wizard-cloud-vm').attr('disabled', false);
-            $('#button-before-step-modal-wizard-cloud-vm').attr('disabled', false);
-            $('#button-cancel-config-modal-wizard-cloud-vm').attr('disabled', false);
-
-            cur_step_wizard_cloud_vm = "7";
-        }
-        else if (cur_step_wizard_cloud_vm == "9") {
-            resetCloudVMWizard();
-
             $('#div-modal-wizard-cloud-vm-review').show();
             $('#nav-button-cloud-vm-review').addClass('pf-m-current');
             $('#nav-button-cloud-vm-finish').removeClass('pf-m-disabled');
@@ -1126,7 +1116,7 @@ $('#button-before-step-modal-wizard-cloud-vm').on('click', function(){
             $('#button-before-step-modal-wizard-cloud-vm').attr('disabled', false);
             $('#button-cancel-config-modal-wizard-cloud-vm').attr('disabled', false);
 
-            cur_step_wizard_cloud_vm = "8";
+            cur_step_wizard_cloud_vm = "7";
         }
     }
 
@@ -1237,7 +1227,6 @@ $('#form-checkbox-svc-network').on('change', function(){
 
         // 추가 네트워크 정보에서 서비스 NIC 정보를 입력할 수 있도록 활성화 해야 함
         $('#form-input-cloud-vm-svc-nic-ip').attr('disabled', false);
-        $('#form-input-cloud-vm-svc-vlan').attr('disabled', false);
         $('#form-input-cloud-vm-svc-gw').attr('disabled', false);
         $('#form-input-cloud-vm-svc-dns').attr('disabled', false);
     }
@@ -1247,7 +1236,6 @@ $('#form-checkbox-svc-network').on('change', function(){
 
         // 추가 네트워크 정보에서 서비스 NIC 정보를 입력할 수 없도록 비활성화 해야 함
         $('#form-input-cloud-vm-svc-nic-ip').attr('disabled', true);
-        $('#form-input-cloud-vm-svc-vlan').attr('disabled', true);
         $('#form-input-cloud-vm-svc-gw').attr('disabled', true);
         $('#form-input-cloud-vm-svc-dns').attr('disabled', true);
     }
@@ -2406,7 +2394,6 @@ function resetSvcNetworkValues(){
         $('select#form-select-cloud-vm-svc-parent').val("");
         //추가 네트워크 정보
         $("#form-input-cloud-vm-svc-nic-ip").val("");
-        $("#form-input-cloud-vm-svc-vlan").val("");
         $("#form-input-cloud-vm-svc-gw").val("");
         $("#form-input-cloud-vm-svc-dns").val("");
     }
@@ -2425,11 +2412,9 @@ function resetCcvmNetworkInfo(){
     //input 초기화
     // $("#form-input-cloud-vm-hostname").val("");
     $("#form-input-cloud-vm-mngt-nic-ip").val("");
-    $("#form-input-cloud-vm-mngt-vlan").val("");
     $("#form-input-cloud-vm-mngt-gw").val("");
     $("#form-input-cloud-vm-dns").val("");
     $("#form-input-cloud-vm-svc-nic-ip").val("");
-    $("#form-input-cloud-vm-svc-vlan").val("");
     $("#form-input-cloud-vm-svc-gw").val("");
     $("#form-input-cloud-vm-svc-dns").val("");
     $("#form-input-cloud-vm-failover-cluster-host1-name").val("");
@@ -2595,14 +2580,6 @@ function setCcvmReviewInfo(){
         $('#span-cloud-vm-additional-mgmt-ipaddr').text(ccvm_mngt_nic_ip);
     }
 
-    //관리 VLAN ID
-    var ccvm_mngt_vlan_id = $('#form-input-cloud-vm-mngt-vlan').val();
-    if(ccvm_mngt_vlan_id == '') {
-        $('#span-cloud-vm-additional-mgmt-vlan-id').text("N/A");
-    } else {
-        $('#span-cloud-vm-additional-mgmt-vlan-id').text(ccvm_mngt_vlan_id);
-    }
-
     //관리 NIC Gateway
     var ccvm_mngt_gateway = $('#form-input-cloud-vm-mngt-gw').val();
     if(ccvm_mngt_gateway == '') {
@@ -2627,14 +2604,6 @@ function setCcvmReviewInfo(){
             $('#span-cloud-vm-additional-svc-ipaddr').text(ccvm_svc_nic_ip);
         }
 
-        //서비스 VLAN ID
-        var ccvm_svc_vlan_id = $('#form-input-cloud-vm-svc-vlan').val();
-        if(ccvm_svc_vlan_id == '') {
-            $('#span-cloud-vm-additional-svc-vlan-id').text("N/A");
-        } else {
-            $('#span-cloud-vm-additional-svc-vlan-id').text(ccvm_svc_vlan_id);
-        }
-
         //서비스 NIC Gateway
         var ccvm_svc_gateway = $('#form-input-cloud-vm-svc-gw').val();
         if(ccvm_svc_gateway == '') {
@@ -2652,7 +2621,6 @@ function setCcvmReviewInfo(){
         }
     } else {
         $('#span-cloud-vm-additional-svc-ipaddr').text("N/A");
-        $('#span-cloud-vm-additional-svc-vlan-id').text("N/A");
         $('#span-cloud-vm-additional-svc-gateway').text("N/A");
         $('#span-cloud-vm-additional-svc-dns').text("N/A");
     }
@@ -3003,6 +2971,9 @@ function setTypeByChange(){
         $('#span-ccvm-progress-step1-text').text("클러스터 구성 HOST 네트워크 연결 및 초기화 작업");
         $('#gfs-li').show();
         $('#gfs-li').text("일반 가상화를 위한 각 호스트의 IPMI 정보");
+        // 클러스터 민감도 화면 처리
+        $('#nav-button-cloud-vm-cluster-sync-mechanism').show();
+        $('#div-modal-wizard-cloud-vm-cluster-sync-mechanism').show();
     }else if (os_type == "general-virtualization"){
         // gfs용 디스크
         $('#nav-button-cloud-vm-disk').show();
@@ -3016,6 +2987,9 @@ function setTypeByChange(){
         $('#span-ccvm-progress-step1-text').text("클러스터 구성 HOST 네트워크 연결 및 초기화 작업");
         $('#gfs-li').show();
         $('#gfs-li').text("일반 가상화를 위한 각 호스트의 IPMI 정보");
+        // 클러스터 민감도 화면 처리
+        $('#nav-button-cloud-vm-cluster-sync-mechanism').show();
+        $('#div-modal-wizard-cloud-vm-cluster-sync-mechanism').show();
     }
 }
 
