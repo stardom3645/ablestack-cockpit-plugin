@@ -209,10 +209,20 @@
                           </div>
                       </div>
                   </div>
-                  
               </form>
           <div class="pf-c-empty-state" id="div-modal-wizard-cluster-config-finish-db-dump-file-download-empty-state">
-              <div class="pf-c-empty-state__content" id="dbdump-prepare-status"></div>
+          </div>
+          <div class="pf-c-empty-state__content" id="dbdump-prepare-status">
+              <div class="pf-c-empty-state">
+                  <svg class="pf-c-spinner pf-m-xl" role="progressbar" aria-valuetext="Loading..." viewBox="0 0 100 100">
+                      <circle class="pf-c-spinner__path" cx="50" cy="50" r="45" fill="none"></circle>
+                  </svg>
+                  <h1 data-ouia-component-type="PF4/Title" data-ouia-safe="true"
+                      data-ouia-component-id="OUIA-Generated-Title-1" class="pf-c-title pf-m-lg">
+                      백업파일 준비 중...
+                  </h1>
+                  <div class="pf-c-empty-state__body"></div>
+              </div>
           </div>
           <div class="pf-c-content" id="div-modal-wizard-cluster-config-finish-db-dump-file-download" style="margin-top:30px;margin-left:30px;display:none">
             <span>

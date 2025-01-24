@@ -7,8 +7,9 @@ $('#button-execution-modal-cloud-vm-db-dump').on('click', function () {
     if (deativationDbBackup == false && radio_ccvm_backup != 'instantBackup') {
         deactiveDBBackupCronjob()
     }else {
-        $('#dbdump-prepare-status').html("<svg class='pf-c-spinner pf-m-xl' role='progressbar' aria-valuetext='Loading...' viewBox='0 0 100 100'><circle class='pf-c-spinner__path' cx='50' cy='50' r='45' fill='none'></circle></svg>" +
-        "<h1 data-ouia-component-type='PF4/Title' data-ouia-safe='true' data-ouia-component-id='OUIA-Generated-Title-1' class='pf-c-title pf-m-lg'>백업파일 준비 중...</h1><div class='pf-c-empty-state__body'></div>")
+        if(radio_ccvm_backup == "instantBackup") {
+            $('#dbdump-prepare-status').show();
+        }
         ccvmDbBackup();
         $('#div-db-backup').hide();
         $('#button-execution-modal-cloud-vm-db-dump').hide();
@@ -25,7 +26,7 @@ $('#span-modal-wizard-cluster-config-finish-db-dump-file-download').on('click', 
 })
 
 $('#button-close-modal-cloud-vm-db-dump').on('click', function(){
-    $('#dbdump-prepare-status').html("")
+    $('#dbdump-prepare-status').hide();
     $('#div-modal-db-backup-cloud-vm-first').hide();
     $('#div-modal-wizard-cluster-config-finish-db-dump-file-download').hide();
     $('#button-execution-modal-cloud-vm-db-dump').show();
@@ -33,7 +34,7 @@ $('#button-close-modal-cloud-vm-db-dump').on('click', function(){
     $('#div-db-backup').text("클라우드센터 가상머신의 데이터베이스를 백업하시겠습니까?");
 });
 $('#button-cancel-modal-cloud-vm-db-dump').on('click', function(){
-    $('#dbdump-prepare-status').html("")
+    $('#dbdump-prepare-status').hide();
     $('#div-modal-db-backup-cloud-vm-first').hide();
     $('#div-modal-wizard-cluster-config-finish-db-dump-file-download').hide();
     $('#button-execution-modal-cloud-vm-db-dump').show();
@@ -66,6 +67,7 @@ $('#button-cancel-modal-cloud-vm-db-dump').on('click', function(){
 
 // ccvm db backup 방식에 따라 html 구성 변경
 $('#radio-ccvm-instance-backup').on('click', function () {
+    $('#dbdump-prepare-status').hide();
     $('#div-db-backup-cloud-vm-manage').hide();
     $('#div-modal-db-backup-cloud-vm-regular-backup-activation').hide();
     $('#div-modal-db-backup-cloud-vm-regular-backup-option-repeat').hide();
@@ -75,6 +77,7 @@ $('#radio-ccvm-instance-backup').on('click', function () {
     $('#div-modal-wizard-cluster-config-finish-db-dump-file-download').hide();
 });
 $('#radio-ccvm-regular-backup').on('click', function () {
+    $('#dbdump-prepare-status').hide();
     $('#div-db-backup-cloud-vm-manage').hide();
     $('#div-modal-db-backup-cloud-vm-regular-backup-activation').show();
     $('#div-modal-db-backup-cloud-vm-regular-backup-option-repeat').show();
@@ -104,6 +107,7 @@ $('#radio-ccvm-regular-backup').on('click', function () {
     $('#form-input-db-backup-cloud-vm-number').val('');
     $('#span-ccvm-backup-kind').text('정기 백업 활성화');
     $('#span-ccvm-backup-check').text("최초 실행 일정 : ");
+    $('#dbdump-prepare-status').hide();
 
     checkDBBackupCronjob()
     
@@ -137,6 +141,7 @@ $('#radio-ccvm-manage-backup').on('click', function () {
     // $('#form-input-db-backup-cloud-vm-number-plus').attr('disabled', true);
     $('#span-ccvm-backup-kind').text('백업 삭제 활성화');
     $('#span-ccvm-backup-check').text("최초 실행 일정 : ");
+    $('#dbdump-prepare-status').hide();
 
     checkDBBackupCronjob()
 });
@@ -325,8 +330,13 @@ async function ccvmDbBackup() {
     }
 
     let regular_input_ccvm_backup_path = $('#dump-path').val();
-
-    await cockpit.spawn(['/usr/bin/python3', pluginpath+'/python/vm/dump_ccvm.py', radio_ccvm_backup, '--path', regular_input_ccvm_backup_path, '--repeat', 
+    console.log(radio_ccvm_backup);
+    console.log(regular_input_ccvm_backup_path);
+    console.log(regular_option_ccvm_backup);
+    console.log(regular_input_ccvm_backup_time_one);
+    console.log(regular_input_ccvm_backup_time_two);
+    console.log(form_input_db_backup_cloud_vm_number);
+    await cockpit.spawn(['/usr/bin/python3', pluginpath+'/python/vm/dump_ccvm.py', radio_ccvm_backup, '--path', regular_input_ccvm_backup_path, '--repeat',
     regular_option_ccvm_backup, '--timeone', regular_input_ccvm_backup_time_one, '--timetwo', regular_input_ccvm_backup_time_two, '--delete', form_input_db_backup_cloud_vm_number])
     .then(function(data){
         console.log(data);
@@ -340,7 +350,7 @@ async function ccvmDbBackup() {
         }else {
             $('#div-db-backup').show();
             $('#div-db-backup').text("클라우드센터 가상머신의 데이터베이스 백업이 실패하었습니다.");
-            $('#dbdump-prepare-status').html("")
+            $('#dbdump-prepare-status').hide();
             $('#div-modal-wizard-cluster-config-finish-db-dump-file-download').hide()
             $('#button-execution-modal-cloud-vm-db-dump').show();
             $('#button-cancel-modal-cloud-vm-db-dump').show();
@@ -353,7 +363,7 @@ async function ccvmDbBackup() {
     }).catch(function(data){
         $('#div-db-backup').show();
         $('#div-db-backup').text("클라우드센터 가상머신의 데이터베이스 백업이 실패하었습니다.");
-        $('#dbdump-prepare-status').html("")
+        $('#dbdump-prepare-status').hide();
         $('#div-modal-wizard-cluster-config-finish-db-dump-file-download').hide()
         $('#button-execution-modal-cloud-vm-db-dump').show();
         $('#button-cancel-modal-cloud-vm-db-dump').show();
@@ -376,7 +386,7 @@ async function ccvmDbBackup() {
             $('#div-modal-wizard-cluster-config-finish-db-dump-file-download-empty-state').hide();
             $('#div-db-backup').show();
             $('#div-db-backup').text("클라우드센터 가상머신의 데이터베이스 백업이 완료되었습니다.");
-            $('#dbdump-prepare-status').html("")
+            $('#dbdump-prepare-status').hide();
             $('#div-modal-wizard-cluster-config-finish-db-dump-file-download').show()
             $('#button-execution-modal-cloud-vm-db-dump').show();
             $('#button-cancel-modal-cloud-vm-db-dump').show();
@@ -386,7 +396,7 @@ async function ccvmDbBackup() {
         }).catch(function(tag){
             $('#div-db-backup').show();
             $('#div-db-backup').text("클라우드센터 가상머신의 데이터베이스 백업이 실패하었습니다.");
-            $('#dbdump-prepare-status').html("")
+            $('#dbdump-prepare-status').hide();
             $('#div-modal-wizard-cluster-config-finish-db-dump-file-download').hide()
             $('#button-execution-modal-cloud-vm-db-dump').show();
             $('#button-cancel-modal-cloud-vm-db-dump').show();
@@ -452,7 +462,7 @@ async function checkDBBackupCronjob(){
         }else {
             $('#div-db-backup').show();
             $('#div-db-backup').text("클라우드센터 가상머신의 데이터베이스 백업 체크가 실패하었습니다.");
-            $('#dbdump-prepare-status').html("")
+            $('#dbdump-prepare-status').hide();
             $('#div-modal-wizard-cluster-config-finish-db-dump-file-download').hide()
             $('#button-execution-modal-cloud-vm-db-dump').show();
             $('#button-cancel-modal-cloud-vm-db-dump').show();
@@ -468,7 +478,7 @@ async function checkDBBackupCronjob(){
     }).catch(function(data){
         $('#div-db-backup').show();
         $('#div-db-backup').text("클라우드센터 가상머신의 데이터베이스 백업 체크가 실패하었습니다.");
-        $('#dbdump-prepare-status').html("")
+        $('#dbdump-prepare-status').hide();
         $('#div-modal-wizard-cluster-config-finish-db-dump-file-download').hide()
         $('#button-execution-modal-cloud-vm-db-dump').show();
         $('#button-cancel-modal-cloud-vm-db-dump').show();
@@ -513,7 +523,7 @@ async function deactiveDBBackupCronjob(){
         }else {
             $('#div-db-backup').show();
             $('#div-db-backup').text("클라우드센터 가상머신의 데이터베이스 백업 비활성화 작업이 실패하었습니다.");
-            $('#dbdump-prepare-status').html("")
+            $('#dbdump-prepare-status').hide();
             $('#div-modal-wizard-cluster-config-finish-db-dump-file-download').hide()
             $('#button-execution-modal-cloud-vm-db-dump').show();
             $('#button-cancel-modal-cloud-vm-db-dump').show();
@@ -529,7 +539,7 @@ async function deactiveDBBackupCronjob(){
     }).catch(function(data){
         $('#div-db-backup').show();
         $('#div-db-backup').text("클라우드센터 가상머신의 데이터베이스 백업 비활성화 작업이 실패하었습니다.");
-        $('#dbdump-prepare-status').html("")
+        $('#dbdump-prepare-status').hide();
         $('#div-modal-wizard-cluster-config-finish-db-dump-file-download').hide()
         $('#button-execution-modal-cloud-vm-db-dump').show();
         $('#button-cancel-modal-cloud-vm-db-dump').show();

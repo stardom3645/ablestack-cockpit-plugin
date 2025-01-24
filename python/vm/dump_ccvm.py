@@ -23,7 +23,7 @@ env['LANGUAGE']="en"
 
 user_id = "root"
 passwd = "Ablecloud1!"
-database = "testdb"
+database = "cloud"
 enc = "utf8"
 
 
@@ -61,14 +61,14 @@ def deactiveBackup(checkOption):
     try:
         checkOption = str(checkOption[0])
         if checkOption == 'r':
-            subprocess.check_output("ssh root@ccvm2 \"grep -lrEZ 'mysqldump.*ccvm_dump' /var/spool/at/ | xargs -0 rm -f\"", universal_newlines=True, shell=True, env=env)
-            subprocess.run("ssh root@ccvm2 sed -i '/RegularBackup/d' /var/spool/cron/root 2> /dev/null", universal_newlines=True, shell=True, env=env)
-            subprocess.check_output("ssh root@ccvm2 \"crontab -u root -l | grep -Ev 'mysqldump.*ccvm_dump_|ccvm_dump_.*mysqldump' | crontab -u root -\"", universal_newlines=True, shell=True, env=env)
+            subprocess.check_output("ssh root@ccvm \"grep -lrEZ 'mysqldump.*ccvm_dump' /var/spool/at/ | xargs -0 rm -f\"", universal_newlines=True, shell=True, env=env)
+            subprocess.run("ssh root@ccvm sed -i '/RegularBackup/d' /var/spool/cron/root 2> /dev/null", universal_newlines=True, shell=True, env=env)
+            subprocess.check_output("ssh root@ccvm \"crontab -u root -l | grep -Ev 'mysqldump.*ccvm_dump_|ccvm_dump_.*mysqldump' | crontab -u root -\"", universal_newlines=True, shell=True, env=env)
 
         elif checkOption == 'd':
-            subprocess.check_output("ssh root@ccvm2 \"grep -lrEZ 'ccvm_dump.*delete' /var/spool/at/ | xargs -0 rm -f\"", universal_newlines=True, shell=True, env=env)
-            subprocess.run("ssh root@ccvm2 sed -i '/DeleteOldBackup/d' /var/spool/cron/root 2> /dev/null", universal_newlines=True, shell=True, env=env)
-            subprocess.check_output("ssh root@ccvm2 \"crontab -u root -l | grep -Ev 'delete.*ccvm_dump_|ccvm_dump_.*delete' | crontab -u root -\"", universal_newlines=True, shell=True, env=env)
+            subprocess.check_output("ssh root@ccvm \"grep -lrEZ 'ccvm_dump.*delete' /var/spool/at/ | xargs -0 rm -f\"", universal_newlines=True, shell=True, env=env)
+            subprocess.run("ssh root@ccvm sed -i '/DeleteOldBackup/d' /var/spool/cron/root 2> /dev/null", universal_newlines=True, shell=True, env=env)
+            subprocess.check_output("ssh root@ccvm \"crontab -u root -l | grep -Ev 'delete.*ccvm_dump_|ccvm_dump_.*delete' | crontab -u root -\"", universal_newlines=True, shell=True, env=env)
 
     except Exception as e:
         print(e)
@@ -85,28 +85,28 @@ def checkBackup(checkOption):
         deleteOption = ''
         checkOption = str(checkOption[0])
         if checkOption == 'r':
-            noRepeatOption = subprocess.check_output("ssh root@ccvm2 at -l | awk '{if ($7==\""+checkOption+"\") print ($2,$3,$4,$5,$6)}'", universal_newlines=True, shell=True, env=env).rstrip()
-            repeatOptionOne = subprocess.check_output("ssh root@ccvm2 crontab -u root -l | grep 'RegularBackup' | awk '{print $2}'", universal_newlines=True, shell=True, env=env).rstrip()
-            repeatOptionTwo = subprocess.check_output("ssh root@ccvm2 crontab -u root -l | grep 'RegularBackup' | awk '{print $5}'", universal_newlines=True, shell=True, env=env).rstrip()
+            noRepeatOption = subprocess.check_output("ssh root@ccvm at -l | awk '{if ($7==\""+checkOption+"\") print ($2,$3,$4,$5,$6)}'", universal_newlines=True, shell=True, env=env).rstrip()
+            repeatOptionOne = subprocess.check_output("ssh root@ccvm crontab -u root -l | grep 'RegularBackup' | awk '{print $2}'", universal_newlines=True, shell=True, env=env).rstrip()
+            repeatOptionTwo = subprocess.check_output("ssh root@ccvm crontab -u root -l | grep 'RegularBackup' | awk '{print $5}'", universal_newlines=True, shell=True, env=env).rstrip()
         elif checkOption == 'd':
-            noRepeatOption = subprocess.check_output("ssh root@ccvm2 at -l | awk '{if ($7==\""+checkOption+"\") print ($2,$3,$4,$5,$6)}'", universal_newlines=True, shell=True, env=env).rstrip()
-            repeatOptionOne = subprocess.check_output("ssh root@ccvm2 crontab -u root -l | grep 'DeleteOldBackup' | awk '{print $2}'", universal_newlines=True, shell=True, env=env).rstrip()
-            repeatOptionTwo = subprocess.check_output("ssh root@ccvm2 crontab -u root -l | grep 'DeleteOldBackup' | awk '{print $5}'", universal_newlines=True, shell=True, env=env).rstrip()
-            deleteOption = subprocess.check_output("ssh root@ccvm2 crontab -u root -l | grep 'DeleteOldBackup' | awk '{print $6}'", universal_newlines=True, shell=True, env=env).rstrip()
+            noRepeatOption = subprocess.check_output("ssh root@ccvm at -l | awk '{if ($7==\""+checkOption+"\") print ($2,$3,$4,$5,$6)}'", universal_newlines=True, shell=True, env=env).rstrip()
+            repeatOptionOne = subprocess.check_output("ssh root@ccvm crontab -u root -l | grep 'DeleteOldBackup' | awk '{print $2}'", universal_newlines=True, shell=True, env=env).rstrip()
+            repeatOptionTwo = subprocess.check_output("ssh root@ccvm crontab -u root -l | grep 'DeleteOldBackup' | awk '{print $5}'", universal_newlines=True, shell=True, env=env).rstrip()
+            deleteOption = subprocess.check_output("ssh root@ccvm crontab -u root -l | grep 'DeleteOldBackup' | awk '{print $6}'", universal_newlines=True, shell=True, env=env).rstrip()
 
         if noRepeatOption or repeatOptionOne or repeatOptionTwo != '':
             format = '%Y-%m-%d %H:%M'
             if noRepeatOption != '':
-                jobId = subprocess.check_output("ssh root@ccvm2 at -l | awk '{if ($7==\""+checkOption+"\") print ($1)}'", universal_newlines=True, shell=True, env=env).rstrip()
-                deleteOption = subprocess.check_output("ssh root@ccvm2 at -c "+jobId+" | grep 'ccvm_dump_*' | awk '{print $6}' | cut -c 2- ", universal_newlines=True, shell=True, env=env).rstrip()
+                jobId = subprocess.check_output("ssh root@ccvm at -l | awk '{if ($7==\""+checkOption+"\") print ($1)}'", universal_newlines=True, shell=True, env=env).rstrip()
+                deleteOption = subprocess.check_output("ssh root@ccvm at -c "+jobId+" | grep 'ccvm_dump_*' | awk '{print $6}' | cut -c 2- ", universal_newlines=True, shell=True, env=env).rstrip()
             elif repeatOptionOne == 'hourly':
                 repeatOptionOne = '한 시간 마다'
                 repeatOptionTwo = ''
-                deleteOption = subprocess.check_output("ssh root@ccvm2 crontab -u root -l | grep 'DeleteOldBackup' | awk '{print $5}'", universal_newlines=True, shell=True, env=env).rstrip()
+                deleteOption = subprocess.check_output("ssh root@ccvm crontab -u root -l | grep 'DeleteOldBackup' | awk '{print $5}'", universal_newlines=True, shell=True, env=env).rstrip()
             elif repeatOptionOne == 'daily':
                 repeatOptionOne = '매일'
                 repeatOptionTwo = ''
-                deleteOption = subprocess.check_output("ssh root@ccvm2 crontab -u root -l | grep 'DeleteOldBackup' | awk '{print $5}'", universal_newlines=True, shell=True, env=env).rstrip()
+                deleteOption = subprocess.check_output("ssh root@ccvm crontab -u root -l | grep 'DeleteOldBackup' | awk '{print $5}'", universal_newlines=True, shell=True, env=env).rstrip()
             elif repeatOptionOne == 'weekly':
                 repeatOptionOne = '매주'
             elif repeatOptionOne == 'monthly':
@@ -131,16 +131,16 @@ def checkBackup(checkOption):
                 repeatOptionTwo = " "+repeatOptionTwo
             elif repeatOptionOne == '매월':
                 if checkOption == 'r':
-                    repeatOptionTwo = subprocess.check_output("ssh root@ccvm2 crontab -u root -l | grep 'RegularBackup' | awk '{print $5}'", universal_newlines=True, shell=True, env=env).rstrip()
+                    repeatOptionTwo = subprocess.check_output("ssh root@ccvm crontab -u root -l | grep 'RegularBackup' | awk '{print $5}'", universal_newlines=True, shell=True, env=env).rstrip()
                 elif checkOption == 'd':
-                    repeatOptionTwo = subprocess.check_output("ssh root@ccvm2 crontab -u root -l | grep 'DeleteOldBackup' | awk '{print $5}'", universal_newlines=True, shell=True, env=env).rstrip()
+                    repeatOptionTwo = subprocess.check_output("ssh root@ccvm crontab -u root -l | grep 'DeleteOldBackup' | awk '{print $5}'", universal_newlines=True, shell=True, env=env).rstrip()
                 repeatOptionTwo_arr = repeatOptionTwo.split('-')
                 repeatOptionTwo = repeatOptionTwo_arr[0]+"개월 "+repeatOptionTwo_arr[1]+"일 마다"
                 repeatOptionTwo += " "
 
             # 백업일 경우, 한 번만 실행하는 경우와 반복하는 경우 체크
             if checkOption == 'r':
-                result = subprocess.check_output("ssh root@ccvm2 at -l | awk '{if ($7==\""+checkOption+"\") print ($2,$3,$4,$5,$6)}'", universal_newlines=True, shell=True, env=env).rstrip()
+                result = subprocess.check_output("ssh root@ccvm at -l | awk '{if ($7==\""+checkOption+"\") print ($2,$3,$4,$5,$6)}'", universal_newlines=True, shell=True, env=env).rstrip()
                 # 한 번만 실행
                 if result != '':
                     str_datetime = result.rstrip()
@@ -150,7 +150,7 @@ def checkBackup(checkOption):
                     resultDate += " (반복 없음)"
                 # 반복
                 else:
-                    result = subprocess.check_output("ssh root@ccvm2 crontab -u root -l | grep 'RegularBackup' | awk '{print $3, $4}'", universal_newlines=True, shell=True, env=env).rstrip()
+                    result = subprocess.check_output("ssh root@ccvm crontab -u root -l | grep 'RegularBackup' | awk '{print $3, $4}'", universal_newlines=True, shell=True, env=env).rstrip()
                     str_datetime = result.rstrip()
                     resultDate = datetime.datetime.strptime(str_datetime, format)
                     resultDate = resultDate.strftime('%Y-%m-%d %H:%M')
@@ -158,7 +158,7 @@ def checkBackup(checkOption):
 
             # 백업 삭제일 경우, 한 번만 실행하는 경우와 반복하는 경우 체크
             elif checkOption == 'd':
-                result = subprocess.check_output("ssh root@ccvm2 at -l | awk '{if ($7==\""+checkOption+"\") print ($2,$3,$4,$5,$6)}'", universal_newlines=True, shell=True, env=env).rstrip()
+                result = subprocess.check_output("ssh root@ccvm at -l | awk '{if ($7==\""+checkOption+"\") print ($2,$3,$4,$5,$6)}'", universal_newlines=True, shell=True, env=env).rstrip()
                 # 한 번만 실행
                 if result != '':
                     str_datetime = result.rstrip()
@@ -168,7 +168,7 @@ def checkBackup(checkOption):
                     resultDate += " (반복 없음, "+deleteOption.rstrip()+"일 지난 파일 삭제)"
                 # 반복
                 else:
-                    result = subprocess.check_output("ssh root@ccvm2 crontab -u root -l | grep 'DeleteOldBackup' | awk '{print $3, $4}'", universal_newlines=True, shell=True, env=env).rstrip()
+                    result = subprocess.check_output("ssh root@ccvm crontab -u root -l | grep 'DeleteOldBackup' | awk '{print $3, $4}'", universal_newlines=True, shell=True, env=env).rstrip()
                     str_datetime = result.rstrip()
                     resultDate = datetime.datetime.strptime(str_datetime,format)
                     resultDate = resultDate.strftime('%Y-%m-%d %H:%M')
@@ -190,13 +190,16 @@ def instantBackup(path):
     path = str(path[0])
     now = datetime.datetime.now().strftime('%Y-%m-%d-%H:%M:%S')
     mysqldumpFilePath = path+"/ccvm_dump_"+now+".sql"
+    cmd_dump_ccvm = "/usr/bin/mysqldump -u"+user_id+ " -p"+passwd+" --databases "+database+ " > "+path+"/ccvm_dump_"+now+".sql"
+    # 다운로드를 위한 로컬(cube)백업 폴더 생성 및 백업 실행
     os.system("mkdir -p "+path)
-
-    result = subprocess.check_output("ssh root@ccvm2 mysqldump -u"+user_id+ " -p"+passwd+" --databases "+database+ " > "+path+"/ccvm_dump_"+now+".sql", universal_newlines=True, shell=True, env=env)
-    # result = subprocess.check_output("scp -q -o StrictHostKeyChecking=no " + path+"/ccvm_dump_"+now+".sql" + " root@ccvm2:"+path, universal_newlines=True, shell=True, env=env)
+    result = subprocess.check_output("ssh root@ccvm mysqldump -u"+user_id+ " -p"+passwd+" --databases "+database+ " > "+path+"/ccvm_dump_"+now+".sql", universal_newlines=True, shell=True, env=env)
+    # ccvm에 백업폴더 생성 및 백업 실행
+    subprocess.run("ssh root@ccvm 'mkdir -p /home/db_backup' 2> /dev/null", universal_newlines=True, shell=True)
+    ssh_command = f"ssh root@ccvm \"{cmd_dump_ccvm}\""
+    subprocess.check_output(ssh_command, universal_newlines=True, shell=True, env=env)
 
     return mysqldumpFilePath
-
 
 # 함수명 : regularBackup
 # 주요 기능 : ccvm의 "cloud" database를 정기적으로 dump하는 함수
@@ -213,17 +216,18 @@ def regularBackup(path, repeat, timeone, timetwo):
     now_daily = datetime.datetime.now().strftime('%Y-%m-%d')
 
     # mysql dump command
-    cmd_dump_ccvm = "/usr/bin/mysqldump -u"+user_id+ " -p"+passwd+" --databases "+database+ " > "+path+"/ccvm_dump_\$(date +\%Y\%m\%d_\%H\%M\%S).sql"
+    cmd_dump_ccvm = "/usr/bin/mysqldump -u"+user_id+ " -p"+passwd+" --databases "+database+ " > "+path+"/ccvm_dump_\$(date +\\%Y\\%m\\%d_\\%H\\%M\\%S).sql"
 
     # 백업 폴더 생성
+    subprocess.run("ssh root@ccvm 'mkdir -p /home/db_backup' 2> /dev/null", universal_newlines=True, shell=True)
     # 크론잡 초기화 ("ccvm_dump_"이 포함되어있는 크론잡 삭제, "RegularBackup" 포함된 주석 삭제)
-    subprocess.check_output("ssh root@ccvm2 \"grep -lrEZ 'mysqldump.*ccvm_dump' /var/spool/at/ | xargs -0 rm -f\"", universal_newlines=True, shell=True, env=env)
-    subprocess.run("ssh root@ccvm2 sed -i '/RegularBackup/d' /var/spool/cron/root 2> /dev/null", universal_newlines=True, shell=True, env=env)
-    subprocess.check_output("ssh root@ccvm2 \"crontab -u root -l | grep -Ev 'mysqldump.*ccvm_dump_|ccvm_dump_.*mysqldump' | crontab -u root -\"", universal_newlines=True, shell=True, env=env)
+    subprocess.check_output("ssh root@ccvm \"grep -lrEZ 'mysqldump.*ccvm_dump' /var/spool/at/ | xargs -0 rm -f\"", universal_newlines=True, shell=True, env=env)
+    subprocess.run("ssh root@ccvm sed -i '/RegularBackup/d' /var/spool/cron/root 2> /dev/null", universal_newlines=True, shell=True, env=env)
+    subprocess.check_output("ssh root@ccvm \"crontab -u root -l | grep -Ev 'mysqldump.*ccvm_dump_|ccvm_dump_.*mysqldump' | crontab -u root -\"", universal_newlines=True, shell=True, env=env)
 
     # 반복 옵션에 따른 명령어 실행
     if (repeat) == 'no':
-        ssh_command = f"ssh root@ccvm2 'echo \"{cmd_dump_ccvm}\" | at {timeone} -q r'"
+        ssh_command = f"ssh root@ccvm 'echo \"{cmd_dump_ccvm}\" | at {timeone} -q r'"
         subprocess.check_output(ssh_command, universal_newlines=True, shell=True, env=env)
 
     elif(repeat) == 'hourly':
@@ -243,8 +247,8 @@ def regularBackup(path, repeat, timeone, timetwo):
         else:
             new_date_string = date_obj.strftime("%Y-%m-%d %H:%M")
 
-        subprocess.check_output("ssh root@ccvm2 \"echo -e '#RegularBackup hourly '"+new_date_string+" >> /var/spool/cron/root\"", universal_newlines=True, shell=True, env=env)
-        subprocess.check_output("ssh root@ccvm2 \"cat <(crontab -l) <(echo "+"'"+str(timeone_arr[1])+" */1 * * * "+cmd_dump_ccvm+"'"+") | crontab -\"", universal_newlines=True, shell=True, env=env)
+        subprocess.check_output("ssh root@ccvm \"echo -e '#RegularBackup hourly '"+new_date_string+" >> /var/spool/cron/root\"", universal_newlines=True, shell=True, env=env)
+        subprocess.check_output("ssh root@ccvm \"cat <(crontab -l) <(echo "+"'"+str(timeone_arr[1])+" */1 * * * "+cmd_dump_ccvm+"'"+") | crontab -\"", universal_newlines=True, shell=True, env=env)
 
     elif(repeat) == 'daily':
         timeone_arr = timeone.split(':')
@@ -263,8 +267,8 @@ def regularBackup(path, repeat, timeone, timetwo):
         else:
             new_date_string = date_obj.strftime("%Y-%m-%d %H:%M")
 
-        subprocess.check_output("ssh root@ccvm2 \"echo -e '#RegularBackup daily '"+new_date_string+" >> /var/spool/cron/root\"", universal_newlines=True, shell=True, env=env)
-        subprocess.check_output("ssh root@ccvm2 \"cat <(crontab -l) <(echo "+"'"+str(timeone_arr[1])+" "+str(timeone_arr[0])+" * * * "+cmd_dump_ccvm+"'"+") | crontab -\"", universal_newlines=True, shell=True, env=env)
+        subprocess.check_output("ssh root@ccvm \"echo -e '#RegularBackup daily '"+new_date_string+" >> /var/spool/cron/root\"", universal_newlines=True, shell=True, env=env)
+        subprocess.check_output("ssh root@ccvm \"cat <(crontab -l) <(echo "+"'"+str(timeone_arr[1])+" "+str(timeone_arr[0])+" * * * "+cmd_dump_ccvm+"'"+") | crontab -\"", universal_newlines=True, shell=True, env=env)
 
     elif(repeat) == 'weekly':
         timeone_arr = timeone.split(':')
@@ -300,8 +304,8 @@ def regularBackup(path, repeat, timeone, timetwo):
             new_date_obj = date_obj
             new_date_string = new_date_obj.strftime("%Y-%m-%d")
 
-        subprocess.check_output("ssh root@ccvm2 \"echo -e '#RegularBackup weekly '"+new_date_string+" "+timeone+" "+timetwo+" >> /var/spool/cron/root\"", universal_newlines=True, shell=True, env=env)
-        subprocess.check_output("ssh root@ccvm2 \"cat <(crontab -l) <(echo "+"'"+str(timeone_arr[1])+" "+str(timeone_arr[0])+" * * "+timetwo+" "+cmd_dump_ccvm+"'"+") | crontab -\"", universal_newlines=True, shell=True, env=env)
+        subprocess.check_output("ssh root@ccvm \"echo -e '#RegularBackup weekly '"+new_date_string+" "+timeone+" "+timetwo+" >> /var/spool/cron/root\"", universal_newlines=True, shell=True, env=env)
+        subprocess.check_output("ssh root@ccvm \"cat <(crontab -l) <(echo "+"'"+str(timeone_arr[1])+" "+str(timeone_arr[0])+" * * "+timetwo+" "+cmd_dump_ccvm+"'"+") | crontab -\"", universal_newlines=True, shell=True, env=env)
 
     elif(repeat) == 'monthly':
         timeone_arr = timeone.split(':')
@@ -345,8 +349,8 @@ def regularBackup(path, repeat, timeone, timetwo):
             date_obj = date_obj.strftime("%Y-%m-%d")
             new_date_string = date_obj
 
-        subprocess.check_output("ssh root@ccvm2 \"echo -e '#RegularBackup monthly '"+new_date_string+" "+timeone+" "+timetwo+" >> /var/spool/cron/root\"", universal_newlines=True, shell=True, env=env)
-        subprocess.check_output("ssh root@ccvm2 \"cat <(crontab -l) <(echo "+"'"+str(timeone_arr[1])+" "+str(timeone_arr[0])+" "+str(timetwo_arr[1])+" */"+str(timetwo_arr[0])+" * "+cmd_dump_ccvm+"'"+") | crontab -\"", universal_newlines=True, shell=True, env=env)
+        subprocess.check_output("ssh root@ccvm \"echo -e '#RegularBackup monthly '"+new_date_string+" "+timeone+" "+timetwo+" >> /var/spool/cron/root\"", universal_newlines=True, shell=True, env=env)
+        subprocess.check_output("ssh root@ccvm \"cat <(crontab -l) <(echo "+"'"+str(timeone_arr[1])+" "+str(timeone_arr[0])+" "+str(timetwo_arr[1])+" */"+str(timetwo_arr[0])+" * "+cmd_dump_ccvm+"'"+") | crontab -\"", universal_newlines=True, shell=True, env=env)
     
 # 함수명 : deleteOldBackup
 # 주요 기능 : ccvm의 "cloud" database를 dump한 파일 중, 정해진 기간보다 오래된 파일을 삭제하는 함수
@@ -364,12 +368,12 @@ def deleteOldBackup(path, repeat, timeone, timetwo, delete):
     now_daily = datetime.datetime.now().strftime('%Y-%m-%d')
 
     # 크론잡 초기화 ("delete"와 "sql"이 포함되어있는 크론잡 삭제)
-    subprocess.check_output("ssh root@ccvm2 \"grep -lrEZ 'ccvm_dump.*delete' /var/spool/at/ | xargs -0 rm -f\"", universal_newlines=True, shell=True, env=env)
-    subprocess.run("ssh root@ccvm2 sed -i '/DeleteOldBackup/d' /var/spool/cron/root 2> /dev/null", universal_newlines=True, shell=True, env=env)
-    subprocess.check_output("ssh root@ccvm2 \"crontab -u root -l | grep -Ev 'delete.*ccvm_dump_|ccvm_dump_.*delete' | crontab -u root -\"", universal_newlines=True, shell=True, env=env)
+    subprocess.check_output("ssh root@ccvm \"grep -lrEZ 'ccvm_dump.*delete' /var/spool/at/ | xargs -0 rm -f\"", universal_newlines=True, shell=True, env=env)
+    subprocess.run("ssh root@ccvm sed -i '/DeleteOldBackup/d' /var/spool/cron/root 2> /dev/null", universal_newlines=True, shell=True, env=env)
+    subprocess.check_output("ssh root@ccvm \"crontab -u root -l | grep -Ev 'delete.*ccvm_dump_|ccvm_dump_.*delete' | crontab -u root -\"", universal_newlines=True, shell=True, env=env)
 
     if (repeat) == 'no':
-        subprocess.check_output("ssh root@ccvm2 \"echo find "+path+" -name "'"ccvm_dump_*.sql"'" -ctime -"+delete+" delete | at "+timeone+" -q d\"", universal_newlines=True, shell=True, env=env)
+        subprocess.check_output("ssh root@ccvm \"echo find "+path+" -name "'"ccvm_dump_*.sql"'" -ctime -"+delete+" delete | at "+timeone+" -q d\"", universal_newlines=True, shell=True, env=env)
     elif(repeat) == 'hourly':
         timeone_arr = timeone.split(':')
 
@@ -387,8 +391,8 @@ def deleteOldBackup(path, repeat, timeone, timetwo, delete):
         else:
             new_date_string = date_obj.strftime("%Y-%m-%d %H:%M")
 
-        subprocess.check_output("ssh root@ccvm2 \"echo -e '#DeleteOldBackup hourly '"+new_date_string+" "+delete+" >> /var/spool/cron/root\"", universal_newlines=True, shell=True, env=env)
-        subprocess.check_output("ssh root@ccvm2 \"cat <(crontab -l) <(echo "+"'"+str(timeone_arr[1])+" */1 * * * find "+path+" -name "'"ccvm_dump_*.sql"'" -ctime -"+ delete+"'"+" -delete) | crontab -\"", universal_newlines=True, shell=True, env=env)
+        subprocess.check_output("ssh root@ccvm \"echo -e '#DeleteOldBackup hourly '"+new_date_string+" "+delete+" >> /var/spool/cron/root\"", universal_newlines=True, shell=True, env=env)
+        subprocess.check_output("ssh root@ccvm \"cat <(crontab -l) <(echo "+"'"+str(timeone_arr[1])+" */1 * * * find "+path+" -name "'"ccvm_dump_*.sql"'" -ctime -"+ delete+"'"+" -delete) | crontab -\"", universal_newlines=True, shell=True, env=env)
 
     elif(repeat) == 'daily':
         timeone_arr = timeone.split(':')
@@ -406,8 +410,8 @@ def deleteOldBackup(path, repeat, timeone, timetwo, delete):
         else:
             new_date_string = date_obj.strftime("%Y-%m-%d %H:%M")
 
-        result = subprocess.check_output("ssh root@ccvm2 \"echo -e '#DeleteOldBackup daily '"+new_date_string+" "+delete+" >> /var/spool/cron/root\"", universal_newlines=True, shell=True, env=env)
-        result = subprocess.check_output("ssh root@ccvm2 \"cat <(crontab -l) <(echo "+"'"+str(timeone_arr[1])+" "+str(timeone_arr[0])+" * * * find "+path+" -name "'"ccvm_dump_*.sql"'" -ctime -"+ delete+"'"+" -delete) | crontab -\"", universal_newlines=True, shell=True, env=env)
+        result = subprocess.check_output("ssh root@ccvm \"echo -e '#DeleteOldBackup daily '"+new_date_string+" "+delete+" >> /var/spool/cron/root\"", universal_newlines=True, shell=True, env=env)
+        result = subprocess.check_output("ssh root@ccvm \"cat <(crontab -l) <(echo "+"'"+str(timeone_arr[1])+" "+str(timeone_arr[0])+" * * * find "+path+" -name "'"ccvm_dump_*.sql"'" -ctime -"+ delete+"'"+" -delete) | crontab -\"", universal_newlines=True, shell=True, env=env)
     elif(repeat) == 'weekly':
         timeone_arr = timeone.split(':')
         # 백업 예정 날짜가 현재보다 과거일 경우 7일 경과된 날짜를 첫 백업 일정으로 지정
@@ -444,8 +448,8 @@ def deleteOldBackup(path, repeat, timeone, timetwo, delete):
             new_date_obj = date_obj
             new_date_string = new_date_obj.strftime("%Y-%m-%d")
 
-        result = subprocess.check_output("ssh root@ccvm2 \"echo -e '#DeleteOldBackup weekly '"+new_date_string+" "+timeone+" "+timetwo+" "+delete+" >> /var/spool/cron/root\"", universal_newlines=True, shell=True, env=env)
-        result = subprocess.check_output("ssh root@ccvm2 \"cat <(crontab -l) <(echo "+"'"+str(timeone_arr[1])+" "+str(timeone_arr[0])+" * * "+timetwo+" find "+path+" -name "'"ccvm_dump_*.sql"'" -ctime -"+ delete+"'"+" -delete) | crontab -\"", universal_newlines=True, shell=True, env=env)
+        result = subprocess.check_output("ssh root@ccvm \"echo -e '#DeleteOldBackup weekly '"+new_date_string+" "+timeone+" "+timetwo+" "+delete+" >> /var/spool/cron/root\"", universal_newlines=True, shell=True, env=env)
+        result = subprocess.check_output("ssh root@ccvm \"cat <(crontab -l) <(echo "+"'"+str(timeone_arr[1])+" "+str(timeone_arr[0])+" * * "+timetwo+" find "+path+" -name "'"ccvm_dump_*.sql"'" -ctime -"+ delete+"'"+" -delete) | crontab -\"", universal_newlines=True, shell=True, env=env)
 
     elif(repeat) == 'monthly':
         timeone_arr = timeone.split(':')
@@ -488,8 +492,8 @@ def deleteOldBackup(path, repeat, timeone, timetwo, delete):
             date_obj = date_obj.strftime("%Y-%m-%d")
             new_date_string = date_obj
 
-        result = subprocess.check_output("ssh root@ccvm2 \"echo -e '#DeleteOldBackup monthly '"+new_date_string+" "+timeone+" "+timetwo+" "+delete+" >> /var/spool/cron/root\"", universal_newlines=True, shell=True, env=env)
-        result = subprocess.check_output("ssh root@ccvm2 \"cat <(crontab -l) <(echo "+"'"+str(timeone_arr[1])+" "+str(timeone_arr[0])+" "+str(timetwo_arr[1])+" */"+str(timetwo_arr[0])+" * find "+path+" -name "'"ccvm_dump_*.sql"'" -ctime -"+ delete+"'"+" -delete) | crontab -\"", universal_newlines=True, shell=True, env=env)
+        result = subprocess.check_output("ssh root@ccvm \"echo -e '#DeleteOldBackup monthly '"+new_date_string+" "+timeone+" "+timetwo+" "+delete+" >> /var/spool/cron/root\"", universal_newlines=True, shell=True, env=env)
+        result = subprocess.check_output("ssh root@ccvm \"cat <(crontab -l) <(echo "+"'"+str(timeone_arr[1])+" "+str(timeone_arr[0])+" "+str(timetwo_arr[1])+" */"+str(timetwo_arr[0])+" * find "+path+" -name "'"ccvm_dump_*.sql"'" -ctime -"+ delete+"'"+" -delete) | crontab -\"", universal_newlines=True, shell=True, env=env)
 
 def main():
     args = parseArgs()

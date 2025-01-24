@@ -275,8 +275,9 @@ $('#menu-item-set-auto-shutdown-step-two').on('click',function(){
 
 // 클라우드센터 VM DB 백업 드롭다운 버튼 클릭시
 $('#card-action-cloud-vm-db-dump').on('click', function(){
-    $('#div-modal-db-backup-cloud-vm').show();
+    $('#div-modal-db-backup-cloud-vm-first').show();
     $('#div-modal-wizard-cluster-config-finish-db-dump-file-download-empty-state').hide();
+    $('#dbdump-prepare-status').hide();
 });
 
 //div-modal-status-alert modal 닫기
@@ -304,24 +305,6 @@ $('.pf-c-dropdown').on('click', function(e){
     $('.pf-c-dropdown__menu, .pf-m-align-right').hide();
     var card_id_sting = $(this).find('ul').attr('id');
     $('#'+ card_id_sting).show();
-})
-
-// 클라우드센터 VM DB 백업 실행 클릭 시
-$('#button-execution-modal-cloud-vm-db-dump').on('click', function () {
-    $('#dbdump-prepare-status').html("<svg class='pf-c-spinner pf-m-xl' role='progressbar' aria-valuetext='Loading...' viewBox='0 0 100 100'><circle class='pf-c-spinner__path' cx='50' cy='50' r='45' fill='none'></circle></svg>" +
-    "<h1 data-ouia-component-type='PF4/Title' data-ouia-safe='true' data-ouia-component-id='OUIA-Generated-Title-1' class='pf-c-title pf-m-lg'>백업파일 준비 중...</h1><div class='pf-c-empty-state__body'></div>")
-    let dump_sql_file_path = "/root/db_dump/ccvm_dump_cloud.sql"
-    readFile(dump_sql_file_path);
-    $('#div-db-backup').hide();
-    $('#button-execution-modal-cloud-vm-db-dump').hide();
-    $('#button-cancel-modal-cloud-vm-db-dump').hide();
-    $('#button-close-modal-cloud-vm-db-dump').hide();
-    $('#div-modal-wizard-cluster-config-finish-db-dump-file-download').hide();
-})
-
-// 클라우드센터 VM DB 백업파일 다운로드 링크 클릭 시
-$('#span-modal-wizard-cluster-config-finish-db-dump-file-download').on('click', function () {
-
 })
 
 /**
@@ -1601,94 +1584,6 @@ function ribbonWorker() {
                 scanHostKey();
                 checkDeployStatus();
         });
-    }
-}
-
-/**
- * Meathod Name : readFile
- * Date Created : 2021.10.21
- * Writer  : 류홍욱
- * Description : DB Dump 파일을 로컬 저장소에 저장하고 다운로드 링크를 생성하는 함수
- * Parameter : file_path
- * Return  : 없음
- * History  : 2021.10.26 수정
- */
- async function readFile(file_path) {
-    // 파일명에 날짜 출력을 위한 코드
-    let today = new Date();
-    let year = today.getFullYear();
-    let month = ('0' + (today.getMonth() + 1)).slice(-2);
-    let day = ('0' + today.getDate()).slice(-2);
-    let date_string = year+month+day;
-    let hours = ('0' + today.getHours()).slice(-2);
-    let minutes = ('0' + today.getMinutes()).slice(-2);
-    let seconds = ('0' + today.getSeconds()).slice(-2);
-    let time_string = hours+ minutes+seconds;
-
-    // ccvm에서 mysqldump 파일을 생성하는 파이썬 파일 실행
-    let result="";
-    await cockpit.spawn(['/usr/bin/python3', pluginpath+'/python/vm/dump_ccvm.py'])
-    .then(function(data){
-        let retVal = JSON.parse(data);
-        if (retVal.code == 200) {
-            createLoggerInfo("Creation of mysqldump of ccvm is completed");
-            console.log("Creation of mysqldump of ccvm is completed");
-            result="200";
-        }else {
-            $('#div-db-backup').show();
-            $('#div-db-backup').text("클라우드센터 가상머신의 데이터베이스 백업이 실패하었습니다.");
-            $('#dbdump-prepare-status').html("")
-            $('#div-modal-wizard-cluster-config-finish-db-dump-file-download').hide()
-            $('#button-execution-modal-cloud-vm-db-dump').show();
-            $('#button-cancel-modal-cloud-vm-db-dump').show();
-            $('#button-close-modal-cloud-vm-db-dump').show();
-            createLoggerInfo("Creation of mysqldump of ccvm is failed");
-            console.log("Creation of mysqldump of ccvm is failed");
-            result="500";
-        }
-    }).catch(function(data){
-        $('#div-db-backup').show();
-        $('#div-db-backup').text("클라우드센터 가상머신의 데이터베이스 백업이 실패하었습니다.");
-        $('#dbdump-prepare-status').html("")
-        $('#div-modal-wizard-cluster-config-finish-db-dump-file-download').hide()
-        $('#button-execution-modal-cloud-vm-db-dump').show();
-        $('#button-cancel-modal-cloud-vm-db-dump').show();
-        $('#button-close-modal-cloud-vm-db-dump').show();
-        createLoggerInfo("Creation of mysqldump of ccvm is failed");
-        console.log("Creation of mysqldump of ccvm is failed");
-        result="500";
-    });
-
-    // 파이썬 파일 실행 결과에 따라 다운로드 링크 생성
-    if (result == "200") {
-        await cockpit.file(file_path).read()
-        .done(function (tag) {
-            $('#span-modal-wizard-cluster-config-finish-db-dump-file-download').attr({
-                target: '_blank',
-                href: 'data:Application/octet-stream;application/x-xz;attachment;/,' + encodeURIComponent(tag),
-                download: "dump_ccvm_cloud_" +date_string+time_string+ ".sql"
-            });
-            $('#div-db-backup').show();
-            $('#div-db-backup').text("클라우드센터 가상머신의 데이터베이스 백업이 완료되었습니다.");
-            $('#dbdump-prepare-status').html("")
-            $('#div-modal-wizard-cluster-config-finish-db-dump-file-download').show()
-            $('#button-execution-modal-cloud-vm-db-dump').show();
-            $('#button-cancel-modal-cloud-vm-db-dump').show();
-            $('#button-close-modal-cloud-vm-db-dump').show();
-            createLoggerInfo("Creation of download link of ccvm_mysqldump is completed");
-            console.log("Creation of download link of ccvm_mysqldump is completed");
-        }).catch(function(tag){
-            $('#div-db-backup').show();
-            $('#div-db-backup').text("클라우드센터 가상머신의 데이터베이스 백업이 실패하었습니다.");
-            $('#dbdump-prepare-status').html("")
-            $('#div-modal-wizard-cluster-config-finish-db-dump-file-download').hide()
-            $('#button-execution-modal-cloud-vm-db-dump').show();
-            $('#button-cancel-modal-cloud-vm-db-dump').show();
-            $('#button-close-modal-cloud-vm-db-dump').show();
-            createLoggerInfo("Creation download link of ccvm_mysqldump is failed");
-            console.log("Creation download link of ccvm_mysqldump is failed");
-        });
-        cockpit.file().close()
     }
 }
 
