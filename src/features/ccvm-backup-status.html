@@ -1,0 +1,176 @@
+<!--
+ * File Name : ccvm-backup-status.html
+ * Date Created : 2026.03.19
+ * Writer : 정민철
+ * Description : CCVM 백업 상태 modal html
+-->
+<div id="ccvm-vm-backup-status-div-modal" class="pf-v6-c-backdrop">
+  <style>
+    .ccvm-backup-status-summary-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--pf-t--global--background--color--primary--default);
+    }
+    .ccvm-backup-status-summary-table th,
+    .ccvm-backup-status-summary-table td {
+      padding: 8px 10px;
+      border-bottom: 1px solid var(--pf-t--global--border--color--default);
+      text-align: left;
+      vertical-align: middle;
+    }
+    .ccvm-backup-status-summary-table td + td {
+      border-left: 1px solid var(--pf-t--global--border--color--default);
+    }
+    .ccvm-backup-status-summary-table th {
+      width: 30%;
+      background: var(--pf-t--global--background--color--secondary--default);
+      font-weight: 600;
+    }
+    .ccvm-backup-status-file-table {
+      width: 100%;
+      table-layout: fixed;
+      border-collapse: collapse;
+      background: var(--pf-t--global--background--color--primary--default);
+    }
+    .ccvm-backup-status-file-table th,
+    .ccvm-backup-status-file-table td {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--pf-t--global--border--color--default);
+      vertical-align: middle;
+    }
+    .ccvm-backup-status-file-table th + th,
+    .ccvm-backup-status-file-table td + td {
+      border-left: 1px solid var(--pf-t--global--border--color--default);
+    }
+    .ccvm-backup-status-file-table thead th {
+      background: var(--pf-t--global--background--color--secondary--default);
+      font-weight: 600;
+    }
+    .ccvm-backup-status-file-table tbody tr:hover {
+      background: var(--pf-t--global--background--color--secondary--default);
+    }
+    .ccvm-backup-status-file-table tbody tr:nth-child(even) {
+      background: var(--pf-t--global--background--color--secondary--hover);
+    }
+    .ccvm-backup-status-cell {
+      display: inline-block;
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      vertical-align: middle;
+    }
+    .ccvm-backup-status-cell-wrap {
+      display: block;
+      white-space: normal;
+      word-break: break-all;
+    }
+    .ccvm-backup-status-time {
+      display: block;
+      white-space: normal;
+      overflow: visible;
+      text-overflow: clip;
+      line-height: 1.35;
+    }
+  </style>
+  <div class="pf-v6-l-bullseye">
+    <div class="pf-v6-c-modal-box pf-m-md" role="dialog" aria-modal="true" aria-label="Cloud VM Backup Status" style="width: 900px;">
+      <button id="ccvm-vm-backup-status-button-close" aria-disabled="false" aria-label="Close" class="pf-v6-c-button pf-m-plain" type="button">
+        <i class="fas fa-times" aria-hidden="true"></i>
+      </button>
+      <header class="pf-v6-c-modal-box__header">
+        <h1 class="pf-v6-c-modal-box__title"><span class="pf-v6-c-modal-box__title-text">클라우드센터 백업 상태</span></h1>
+      </header>
+      <div class="pf-v6-c-modal-box__body">
+        <div id="ccvm-vm-backup-status-loading" class="pf-v6-c-content pf-m-sm" style="display: none;">상태를 불러오는 중입니다...</div>
+        <div id="ccvm-vm-backup-status-content" class="pf-v6-l-stack pf-m-gutter">
+          <div class="pf-v6-c-card">
+            <div class="pf-v6-c-card__header">
+              <div class="pf-v6-l-flex pf-m-align-items-center pf-m-gap-sm">
+                <span class="pf-v6-c-icon pf-m-lg" style="color: var(--pf-t--global--icon--color--brand--default);">
+                  <i class="fas fa-calendar-alt" aria-hidden="true"></i>
+                </span>
+                <div>
+                  <div class="pf-v6-c-title pf-m-md">정기 백업 설정</div>
+                  <div class="pf-v6-c-content pf-m-sm">정기 백업의 활성 상태와 실행 조건을 확인합니다.</div>
+                </div>
+              </div>
+            </div>
+            <div class="pf-v6-c-card__body">
+              <div id="ccvm-vm-backup-status-schedule-message" class="pf-v6-c-content pf-m-sm"></div>
+              <table class="pf-v6-c-table pf-m-compact ccvm-backup-status-summary-table" role="grid" aria-label="정기 백업 설정">
+                <tbody id="ccvm-vm-backup-status-schedule-body"></tbody>
+              </table>
+            </div>
+          </div>
+          <div class="pf-v6-c-card">
+            <div class="pf-v6-c-card__header">
+              <div class="pf-v6-l-flex pf-m-align-items-center pf-m-gap-sm">
+                <span class="pf-v6-c-icon pf-m-lg" style="color: var(--pf-t--global--icon--color--brand--default);">
+                  <i class="fas fa-trash-alt" aria-hidden="true"></i>
+                </span>
+                <div>
+                  <div class="pf-v6-c-title pf-m-md">백업 파일 삭제 관리</div>
+                  <div class="pf-v6-c-content pf-m-sm">보관 기간과 삭제 주기 정보를 확인합니다.</div>
+                </div>
+              </div>
+            </div>
+            <div class="pf-v6-c-card__body">
+              <div id="ccvm-vm-backup-status-delete-message" class="pf-v6-c-content pf-m-sm"></div>
+              <table class="pf-v6-c-table pf-m-compact ccvm-backup-status-summary-table" role="grid" aria-label="백업 삭제 설정">
+                <tbody id="ccvm-vm-backup-status-delete-body"></tbody>
+              </table>
+            </div>
+          </div>
+          <div class="pf-v6-c-card">
+            <div class="pf-v6-c-card__header">
+              <div class="pf-v6-l-flex pf-m-align-items-center pf-m-gap-sm">
+                <span class="pf-v6-c-icon pf-m-lg" style="color: var(--pf-t--global--icon--color--brand--default);">
+                  <i class="fas fa-folder-open" aria-hidden="true"></i>
+                </span>
+                <div>
+                  <div class="pf-v6-c-title pf-m-md">백업된 파일</div>
+                  <div class="pf-v6-c-content pf-m-sm">현재 저장된 백업 파일 목록을 확인합니다.</div>
+                </div>
+              </div>
+            </div>
+            <div class="pf-v6-c-card__body">
+              <div id="ccvm-vm-backup-status-target-dir" class="pf-v6-c-content pf-m-sm" style="margin-bottom: 8px;"></div>
+              <div id="ccvm-vm-backup-status-files-empty" class="pf-v6-c-empty-state" style="display: none;">
+                <div class="pf-v6-c-empty-state__content">
+                  <h1 class="pf-v6-c-title pf-m-md" id="ccvm-vm-backup-status-files-empty-text">백업 파일이 없습니다.</h1>
+                  <div class="pf-v6-c-empty-state__body">백업이 생성되면 목록에 표시됩니다.</div>
+                </div>
+              </div>
+              <div id="ccvm-vm-backup-status-files-table-wrapper" style="max-height: 260px; overflow: auto; border: 1px solid var(--pf-t--global--border--color--default); border-radius: 6px;">
+                <table class="pf-v6-c-table pf-m-compact ccvm-backup-status-file-table" role="grid" aria-label="백업 파일 목록">
+                  <colgroup>
+                    <col style="width: 40%;">
+                    <col style="width: 22%;">
+                    <col style="width: 22%;">
+                    <col style="width: 16%;">
+                  </colgroup>
+                  <thead>
+                    <tr>
+                      <th>파일명</th>
+                      <th>생성 시각</th>
+                      <th>완료 시각</th>
+                      <th>크기</th>
+                    </tr>
+                  </thead>
+                  <tbody id="ccvm-vm-backup-status-files-body"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <footer class="pf-v6-c-modal-box__footer">
+        <button id="ccvm-vm-backup-status-button-cancel" aria-disabled="false" class="pf-v6-c-button pf-m-primary" type="button" data-ouia-safe="true">확인</button>
+      </footer>
+    </div>
+  </div>
+</div>
+<!-- 해당 페이지에 필요한 javascript 파일 추가 영역 시작 -->
+<script src="./src/features/ccvm-backup-status.js"></script>
+<!-- 해당 페이지에 필요한 javascript 파일 추가 영역 끝 -->

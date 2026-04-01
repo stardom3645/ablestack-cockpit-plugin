@@ -641,11 +641,28 @@ def check_stonith(control):
                 run_command(f"pcs stonith enable {host}")
             ret = createReturn(code=200, val="Stonith Enable Pcs Cluster Success")
             return print(json.dumps(json.loads(ret), indent=4))
+
         elif control == "disable":
             hosts = run_command("pcs stonith status | awk '{print $2}'").split()
             for host in hosts:
                 run_command(f"pcs stonith disable {host}")
             ret = createReturn(code=200, val="Stonith Disable Pcs Cluster Success")
+            return print(json.dumps(json.loads(ret), indent=4))
+
+        elif control == "security-disable":
+            hosts = run_command("pcs stonith status | awk '{print $2}'").split()
+            for host in hosts:
+                run_command(f"pcs stonith disable {host}")
+            run_command("pcs property set maintenance-mode=true")
+            ret = createReturn(code=200, val="Stonith Security Pcs Cluster Success")
+            return print(json.dumps(json.loads(ret), indent=4))
+
+        elif control == "security-enable":
+            hosts = run_command("pcs stonith status | awk '{print $2}'").split()
+            for host in hosts:
+                run_command(f"pcs stonith enable {host}")
+            run_command("pcs property set maintenance-mode=false")
+            ret = createReturn(code=200, val="Stonith Security Success Pcs Cluster Success")
             return print(json.dumps(json.loads(ret), indent=4))
 
     except Exception:

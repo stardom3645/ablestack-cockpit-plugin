@@ -22,6 +22,13 @@ env['LANGUAGE'] = "en"
 virsh_cmd = sh.Command('/usr/bin/virsh')
 ssh_cmd = sh.Command('/usr/bin/ssh')
 
+SSH_OPTS = [
+    '-o', 'BatchMode=yes',
+    '-o', 'StrictHostKeyChecking=no',
+    '-o', 'ConnectTimeout=2',
+    '-o', 'ConnectionAttempts=1'
+]
+
 cluster_json_file_path = pluginpath + "/tools/properties/cluster.json"
 def openClusterJson():
     try:
@@ -48,7 +55,7 @@ def collect_vm_info(vm):
 
     try:
         # Collect basic VM information
-        ret = virsh_cmd('dominfo', domain=vm['Name'], _env=env).splitlines()
+        ret = virsh_cmd('dominfo', domain=vm['Name'], _env=env, _timeout=2).splitlines()
         for line in ret:
             items = line.split(":", maxsplit=1)
             if len(items) == 2:
@@ -56,44 +63,58 @@ def collect_vm_info(vm):
                 vm[k] = v
 
         if vm['State'] == "running":
-            # Collect IP and network details
-            ret = virsh_cmd('domifaddr', domain=vm['Name'], source='agent', interface='enp0s20',full=True).splitlines()
-            for line in ret:
-                if 'ipv4' in line:
-                    items = line.split(maxsplit=4)
-                    vm['ip'] = items[3].split('/')[0]
-                    vm['prefix'] = items[3].split('/')[1]
-                    vm['mac'] = items[1]
+            vm['prefix'] = "N/A"
+            vm['DISK_CAP'] = "N/A"
+            vm['DISK_ALLOC'] = "N/A"
+            vm['DISK_PHY'] = "N/A"
+            vm['DISK_USAGE_RATE'] = "N/A"
+            vm['SECOND_DISK_CAP'] = "N/A"
+            vm['SECOND_DISK_ALLOC'] = "N/A"
+            vm['SECOND_DISK_PHY'] = "N/A"
+            vm['SECOND_DISK_USAGE_RATE'] = "N/A"
+            vm['GW'] = "N/A"
+            vm['DNS'] = "N/A"
+            vm['MOLD_SERVICE_STATUE'] = "N/A"
+            vm['MOLD_DB_STATUE'] = "N/A"
 
-            ret = virsh_cmd('domiflist', domain=vm['Name']).splitlines()
-            for line in ret:
-                if vm['mac'] in line:
-                    items = line.split()
-                    vm['nictype'], vm['nicbridge'] = items[1], items[2]
+            # Collect IP and network details
+            try:
+                ret = virsh_cmd('domifaddr', domain=vm['Name'], source='agent', interface='enp0s20', full=True, _env=env, _timeout=2).splitlines()
+                for line in ret:
+                    if 'ipv4' in line:
+                        items = line.split(maxsplit=4)
+                        vm['ip'] = items[3].split('/')[0]
+                        vm['prefix'] = items[3].split('/')[1]
+                        vm['mac'] = items[1]
+            except Exception:
+                pass
+
+            if vm['ip'] == "Unknown":
+                try:
+                    ret = virsh_cmd('domifaddr', domain=vm['Name'], source='lease', full=True, _env=env, _timeout=1).splitlines()
+                    for line in ret:
+                        if 'ipv4' in line:
+                            items = line.split(maxsplit=4)
+                            vm['ip'] = items[3].split('/')[0]
+                            vm['prefix'] = items[3].split('/')[1]
+                            vm['mac'] = items[1]
+                except Exception:
+                    pass
+
+            try:
+                if vm['mac'] != "Unknown":
+                    ret = virsh_cmd('domiflist', domain=vm['Name'], _env=env, _timeout=2).splitlines()
+                    for line in ret:
+                        if vm['mac'] in line:
+                            items = line.split()
+                            vm['nictype'], vm['nicbridge'] = items[1], items[2]
+            except Exception:
+                pass
 
             # Run SSH commands in one go
             command = '''
             /usr/bin/df -h;
-            '''
-            ret = ssh_cmd('-o', 'StrictHostKeyChecking=no', '-o', 'ConnectTimeout=3', 'ccvm-mngt', command).splitlines()
-
-            # Parse disk usage
-            vm['blk'] = ret[:]
-            for line in ret:
-                if 'rl-root' in line:
-                    items = line.split(maxsplit=5)
-                    vm['DISK_CAP'] = items[1]
-                    vm['DISK_ALLOC'] = items[2]
-                    vm['DISK_PHY'] = items[3]
-                    vm['DISK_USAGE_RATE'] = items[4]
-                if 'rl-nfs' in line:
-                    items = line.split(maxsplit=5)
-                    vm['SECOND_DISK_CAP'] = items[1]
-                    vm['SECOND_DISK_ALLOC'] = items[2]
-                    vm['SECOND_DISK_PHY'] = items[3]
-                    vm['SECOND_DISK_USAGE_RATE'] = items[4]
-
-            command = '''
+            echo "__END_DF__";
             output=$(/usr/sbin/route -n | grep -P "^0.0.0.0|UG" | awk '{print $2}');
             echo "${output:-""}";
             output=$(/usr/bin/awk '/^nameserver/ {print $2}' /etc/resolv.conf | head -n 1);
@@ -103,18 +124,38 @@ def collect_vm_info(vm):
             output=$(systemctl is-active mysqld);
             echo "${output:-"inactive"}"
             '''
-            ret = ssh_cmd('-o', 'StrictHostKeyChecking=no', '-o', 'ConnectTimeout=3', 'ccvm-mngt', command).splitlines()
+            try:
+                ret = ssh_cmd(*SSH_OPTS, 'ccvm-mngt', command, _timeout=5).splitlines()
 
-            # Parse gateway
-            vm['GW'] = ret[0]
-            # Parse DNS
-            if ret[1] != "":
-                vm['DNS'] = ret[1]
-            else:
-                vm['DNS'] = "N/A"
-            # Parse service status
-            vm['MOLD_SERVICE_STATUE'] = ret[2]
-            vm['MOLD_DB_STATUE'] = ret[3]
+                # Split SSH output by marker
+                marker = "__END_DF__"
+                marker_index = ret.index(marker) if marker in ret else len(ret)
+                df_lines = ret[:marker_index]
+                tail = ret[marker_index + 1:]
+
+                # Parse disk usage
+                vm['blk'] = df_lines[:]
+                for line in df_lines:
+                    if 'rl-root' in line:
+                        items = line.split(maxsplit=5)
+                        vm['DISK_CAP'] = items[1]
+                        vm['DISK_ALLOC'] = items[2]
+                        vm['DISK_PHY'] = items[3]
+                        vm['DISK_USAGE_RATE'] = items[4]
+                    if 'rl-nfs' in line:
+                        items = line.split(maxsplit=5)
+                        vm['SECOND_DISK_CAP'] = items[1]
+                        vm['SECOND_DISK_ALLOC'] = items[2]
+                        vm['SECOND_DISK_PHY'] = items[3]
+                        vm['SECOND_DISK_USAGE_RATE'] = items[4]
+
+                # Parse gateway, DNS, service status
+                vm['GW'] = tail[0] if len(tail) > 0 else "N/A"
+                vm['DNS'] = tail[1] if len(tail) > 1 and tail[1] != "" else "N/A"
+                vm['MOLD_SERVICE_STATUE'] = tail[2] if len(tail) > 2 else "N/A"
+                vm['MOLD_DB_STATUE'] = tail[3] if len(tail) > 3 else "N/A"
+            except Exception:
+                pass
         else:
             vm['ip'] = "N/A"
             vm['mac'] = "N/A"

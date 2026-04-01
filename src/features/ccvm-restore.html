@@ -1,0 +1,146 @@
+<!--
+ * File Name : ccvm-restore.html
+ * Date Created : 2026.03.19
+ * Writer : 정민철
+ * Description : CCVM 복구 modal html
+-->
+<div id="ccvm-vm-restore-div-modal-cloud-vm-restore" class="pf-v6-c-backdrop">
+  <style>
+    .ccvm-restore-table {
+      width: 100%;
+      table-layout: fixed;
+      border-collapse: collapse;
+      background: var(--pf-t--global--background--color--primary--default);
+    }
+    .ccvm-restore-cell {
+      display: inline-block;
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      vertical-align: middle;
+    }
+    .ccvm-restore-table td:nth-child(2) .ccvm-restore-cell {
+      display: block;
+      white-space: normal;
+      word-break: break-all;
+    }
+    .ccvm-restore-table th,
+    .ccvm-restore-table td {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--pf-t--global--border--color--default);
+      vertical-align: middle;
+    }
+    .ccvm-restore-table th + th,
+    .ccvm-restore-table td + td {
+      border-left: 1px solid var(--pf-t--global--border--color--default);
+    }
+    .ccvm-restore-table thead th {
+      background: var(--pf-t--global--background--color--secondary--default);
+      font-weight: 600;
+    }
+    .ccvm-restore-table tbody tr:hover {
+      background: var(--pf-t--global--background--color--secondary--default);
+    }
+    .ccvm-restore-table tbody tr:nth-child(even) {
+      background: var(--pf-t--global--background--color--secondary--hover);
+    }
+    .ccvm-restore-table th:first-child,
+    .ccvm-restore-table td:first-child {
+      text-align: center;
+      width: 56px;
+    }
+    .ccvm-restore-time {
+      display: block;
+      white-space: normal;
+      overflow: visible;
+      text-overflow: clip;
+      line-height: 1.35;
+    }
+  </style>
+  <div class="pf-v6-l-bullseye">
+    <div class="pf-v6-c-modal-box pf-m-md" role="dialog" aria-modal="true" aria-label="Cloud VM Restore" style="width: 900px;">
+      <button id="ccvm-vm-restore-button-close-modal-cloud-vm-restore" aria-disabled="false" aria-label="Close" class="pf-v6-c-button pf-m-plain" type="button">
+        <i class="fas fa-times" aria-hidden="true"></i>
+      </button>
+      <header class="pf-v6-c-modal-box__header">
+        <h1 class="pf-v6-c-modal-box__title"><span class="pf-v6-c-modal-box__title-text">클라우드센터 복구</span></h1>
+      </header>
+      <div class="pf-v6-c-modal-box__body">
+        <div class="pf-v6-l-stack pf-m-gutter">
+          <div class="pf-v6-c-card pf-m-compact" style="background: var(--pf-t--global--background--color--secondary--default); border: 1px solid var(--pf-t--global--border--color--default);">
+            <div class="pf-v6-c-card__body">
+              <div class="pf-v6-l-flex pf-m-align-items-center pf-m-gap-md">
+                <span class="pf-v6-c-icon pf-m-lg" style="color: var(--pf-t--global--icon--color--brand--default);">
+                  <i class="fas fa-history" aria-hidden="true"></i>
+                </span>
+                <div>
+                  <div class="pf-v6-c-title pf-m-md">복구 개요</div>
+                  <div id="ccvm-vm-restore-div-overview" class="pf-v6-c-content">클라우드센터 복구를 확인합니다.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="pf-v6-c-card">
+            <div class="pf-v6-c-card__header">
+              <div class="pf-v6-l-flex pf-m-align-items-center pf-m-gap-sm">
+                <span class="pf-v6-c-icon pf-m-lg" style="color: var(--pf-t--global--icon--color--brand--default);">
+                  <i class="fas fa-list" aria-hidden="true"></i>
+                </span>
+                <div>
+                  <div class="pf-v6-c-title pf-m-md">백업 파일 목록</div>
+                  <div class="pf-v6-c-content pf-m-sm">복구에 사용할 백업 파일을 선택합니다.</div>
+                </div>
+              </div>
+              <div class="pf-v6-c-card__actions">
+                <button id="ccvm-vm-restore-button-refresh" class="pf-v6-c-button pf-m-secondary pf-m-small" type="button">새로고침</button>
+              </div>
+            </div>
+            <div class="pf-v6-c-card__body">
+              <div id="ccvm-vm-restore-list-loading" class="pf-v6-c-content pf-m-sm" style="display: none;">백업 목록을 불러오는 중입니다...</div>
+              <div id="ccvm-vm-restore-list-empty" class="pf-v6-c-empty-state" style="display: none;">
+                <div class="pf-v6-c-empty-state__content">
+                  <h1 class="pf-v6-c-title pf-m-md" id="ccvm-vm-restore-empty-text">백업 파일이 없습니다.</h1>
+                  <div class="pf-v6-c-empty-state__body">백업이 생성되면 목록에 표시됩니다.</div>
+                </div>
+              </div>
+              <div id="ccvm-vm-restore-table-wrapper" style="max-height: 320px; overflow: auto; border: 1px solid var(--pf-t--global--border--color--default); border-radius: 6px;">
+                <table class="pf-v6-c-table pf-m-compact ccvm-restore-table" role="grid" aria-label="백업 파일 목록">
+                  <colgroup>
+                    <col style="width: 56px;">
+                    <col style="width: 32%;">
+                    <col style="width: 22%;">
+                    <col style="width: 22%;">
+                    <col style="width: 14%;">
+                  </colgroup>
+                  <thead>
+                    <tr>
+                      <th>선택</th>
+                      <th>파일명</th>
+                      <th>생성 시각</th>
+                      <th>완료 시각</th>
+                      <th>크기</th>
+                    </tr>
+                  </thead>
+                  <tbody id="ccvm-vm-restore-table-body"></tbody>
+                </table>
+              </div>
+              <div class="pf-v6-c-helper-text pf-m-static" style="margin-top: 8px;">
+                <div class="pf-v6-c-helper-text__item">
+                  <span class="pf-v6-c-helper-text__item-text">복구 실행 시 ccvm을 중지한 뒤 파일을 교체하고 다시 시작합니다.</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <footer class="pf-v6-c-modal-box__footer">
+        <button id="ccvm-vm-restore-button-execution" aria-disabled="true" class="pf-v6-c-button pf-m-primary" type="button" data-ouia-safe="true" disabled>복구 실행</button>
+        <button id="ccvm-vm-restore-button-cancel-modal-cloud-vm-restore" aria-disabled="false" class="pf-v6-c-button pf-m-link" type="button" data-ouia-safe="true">닫기</button>
+      </footer>
+    </div>
+  </div>
+</div>
+<!-- 해당 페이지에 필요한 javascript 파일 추가 영역 시작 -->
+<script src="./src/features/ccvm-restore.js"></script>
+<!-- 해당 페이지에 필요한 javascript 파일 추가 영역 끝 -->

@@ -8,7 +8,7 @@
 #########################################
 set -x
 
-hosts=$(grep "ablecube" /etc/hosts | grep -v pn | awk '{print $1}')
+hosts=$(grep -w "hostname" /usr/share/cockpit/ablestack/tools/properties/cluster.json | awk '{print $2}' | tr -d '",')
 
 if [ $1 = "sync" ]
 then

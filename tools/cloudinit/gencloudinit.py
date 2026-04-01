@@ -466,7 +466,7 @@ def ccvmGen(sn_nic:str, sn_ip:str, sn_prefix: int, sn_gw:str, sn_dns:str):
                 'content': base64.encodebytes(cluster_json.encode()),
                 'owner': 'root:root',
                 'path': '/etc/cluster.json',
-                'permissions': '0777'
+                'permissions': '0600'
             }
         )
     with open(f'{tmpdir}/user-data', 'wt') as f:
