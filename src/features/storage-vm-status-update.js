@@ -68,42 +68,88 @@ $('#button-storage-vm-status-update').on('click', function(){
           createLoggerInfo("Error in initializing ablestackJson's scvm setting to false");
           console.log("Error in initializing ablestackJson's scvm setting to false : " + err);
         });
-        console.log(data);
-        location.reload();
-      }else{
-        createLoggerInfo(":::scvm delete Error:::");
-        console.log(":::scvm delete Error::: "+ data);
-      }
-    })
-    .catch(function(data){
-      createLoggerInfo(":::scvm delete Error:::");
-      console.log(":::scvm delete Error:::"+data);
-    });
-  }else if(cmd == "bootstrap"){//SCC bootstrap실행 버튼 클릭시
-    $('#div-modal-spinner-header-txt').text('스토리지센터를 구성하고 있습니다.');
-    // /root/bootstrap.sh 파일을 실행함.
-    cockpit.spawn(["sh", pluginpath+"/shell/host/bootstrap_run.sh","scvm"])
-    .then(function(data){
-      console.log(data);
-      location.reload();
-    })
-    .catch(function(data){
-      createLoggerInfo("bootstrap_run_check() Error");
-      console.log("bootstrap_run_check() Error : " + data);
-    });
-  }else if(cmd == "bootstrap_ccvm"){//CCC bootstrap실행 버튼 클릭시
-    $('#div-modal-spinner-header-txt').text('클라우드센터를 구성하고 있습니다.');
-    // /root/bootstrap.sh 파일을 실행함.
-    var license_type = sessionStorage.getItem("license_type");
-    cockpit.spawn(["sh", pluginpath+"/shell/host/bootstrap_run.sh","ccvm", license_type])
-      .then(function(data){
-        console.log(data);
-        location.reload();
-      })
-      .catch(function(data){
-        createLoggerInfo("bootstrap_run_check() Error");
-        console.log("bootstrap_run_check() Error : " + data);
-      });
-  }
-  $('#scvm-status-update-cmd').val("");
+    }else if(cmd == "start"){//스토리지센터VM 시작 버튼 클릭시
+        cockpit.spawn(["python3", pluginpath+"/python/scvm_status/scvm_status_update.py", "start" ])
+        .then(function(data){
+            //console.log(data);
+            var retVal = JSON.parse(data);
+            if(retVal.code == "200"){
+                console.log(data);
+                location.reload();
+            }else{
+                createLoggerInfo(":::scvm start Error:::");
+                console.log(":::scvm start Error::: "+ data);
+            }
+        })
+        .catch(function(data){
+            createLoggerInfo(":::scvm delete Error:::");
+            console.log(":::scvm delete Error::: "+data);
+        });
+    }else if(cmd == "delete"){//스토리지센터VM 삭제 버튼 클릭시
+        cockpit.spawn(["python3", pluginpath+"/python/scvm_status/scvm_status_update.py", "delete" ])
+        .then(function(data){
+            //console.log(data);
+            var retVal = JSON.parse(data);
+            if(retVal.code == "200"){
+                //scvm bootstrap 프로퍼티 초기화
+                cockpit.spawn(["python3", pluginpath+"/python/ablestack_json/ablestackJson.py", "update", "--depth1", "bootstrap", "--depth2", "scvm", "--value", "false"])
+                .then(function(data){
+                    createLoggerInfo("Success in initializing ablestackJson's scvm setting to false");
+                    console.log("Success in initializing ablestackJson's scvm setting to false");
+                })
+                .catch(function(err){
+                    createLoggerInfo("Error in initializing ablestackJson's scvm setting to false");
+                    console.log("Error in initializing ablestackJson's scvm setting to false : " + err);
+                });
+                console.log(data);
+                location.reload();
+            }else{
+                createLoggerInfo(":::scvm delete Error:::");
+                console.log(":::scvm delete Error::: "+ data);
+            }
+        })
+        .catch(function(data){
+            createLoggerInfo(":::scvm delete Error:::");
+            console.log(":::scvm delete Error:::"+data);
+        });
+    }else if(cmd == "bootstrap"){//SCC bootstrap실행 버튼 클릭시
+        $('#div-modal-spinner-header-txt').text('스토리지센터를 구성하고 있습니다.');
+        // /root/bootstrap.sh 파일을 실행함.
+        cockpit.spawn(["sh", pluginpath+"/shell/host/bootstrap_run.sh","scvm"])
+        .then(function(data){
+            console.log(data);
+            location.reload();
+        })
+        .catch(function(data){
+            createLoggerInfo("bootstrap_run_check() Error");
+            console.log("bootstrap_run_check() Error : " + data);
+        });
+    }else if(cmd == "bootstrap_ccvm"){//CCC bootstrap실행 버튼 클릭시
+        $('#div-modal-spinner-header-txt').text('클라우드센터를 구성하고 있습니다.');
+        // /root/bootstrap.sh 파일을 실행함.
+        var license_type = sessionStorage.getItem("license_type");
+        cockpit.spawn(["sh", pluginpath+"/shell/host/bootstrap_run.sh","ccvm", license_type])
+            .then(function(data){
+                console.log(data);
+                $('#div-modal-spinner-header-txt').text('Cube Cockpit HTTPS 인증서를 적용하고 있습니다.');
+                cockpit.spawn(["python3", "/usr/share/ablestack/bootstrap/deploy_cockpit_https_all.py"], { host: "ccvm" })
+                    .then(function(httpsData){
+                        console.log(httpsData);
+                        location.reload();
+                    })
+                    .catch(function(httpsError){
+                        $('#div-modal-spinner').hide();
+                        $("#modal-status-alert-title").html("Cube Cockpit HTTPS 적용");
+                        $("#modal-status-alert-body").html("클라우드센터 구성은 완료되었지만 Cube Cockpit HTTPS 인증서 적용에 실패했습니다.<br/>ccvm에서 deploy_cockpit_https_all.py 실행 로그를 확인해주세요.");
+                        $('#div-modal-status-alert').show();
+                        createLoggerInfo("deploy_cockpit_https_all.py Error");
+                        console.log("deploy_cockpit_https_all.py Error : " + httpsError);
+                    });
+            })
+            .catch(function(data){
+                createLoggerInfo("bootstrap_run_check() Error");
+                console.log("bootstrap_run_check() Error : " + data);
+            });
+    }
+    $('#scvm-status-update-cmd').val("");
 });

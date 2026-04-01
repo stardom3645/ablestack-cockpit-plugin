@@ -878,7 +878,7 @@ function license_check(){
   });
 }
 /**
- * Meathod Name : scvm_bootstrap_run
+ * Meathod Name : ccvm_bootstrap_run
  * Date Created : 2021.04.13
  * Writer : 이석민
  * Description : ccvm /root/bootstrap.sh 파일 실행
@@ -887,26 +887,35 @@ function license_check(){
  * History : 2021.04.13 최초 작성
  */
 function ccvm_bootstrap_run(){
-  $("#modal-status-alert-title").html("클라우드 센터 가상머신 상태 체크");
-  $("#modal-status-alert-body").html("클라우드센터 가상머신이 구성되지 않아<br>클라우드센터를 구성할 수 없습니다.<br><br>잠시 후 다시 실행해 주세요.");
-  createLoggerInfo("ccvm_bootstrap_run() start");
-  //scvm ping 체크
-  cockpit.spawn(["python3", pluginpath+"/python/cloudinit_status/cloudinit_status.py", "ping", "--target", "ccvm"])
-    .then(function(data){
-      var retVal = JSON.parse(data);
-      if(retVal.code == 200){
-        //scvm 의 cloudinit 실행이 완료되었는지 확인하기 위한 명렁
-        cockpit.spawn(["python3", pluginpath+"/python/cloudinit_status/cloudinit_status.py", "status", "--target", "ccvm"])
-          .then(function(data){
+    $("#modal-status-alert-title").html("클라우드 센터 가상머신 상태 체크");
+    $("#modal-status-alert-body").html("클라우드센터 가상머신이 구성되지 않아<br>클라우드센터를 구성할 수 없습니다.<br><br>잠시 후 다시 실행해 주세요.");
+    createLoggerInfo("ccvm_bootstrap_run() start");
+    //ccvm ping 체크
+    cockpit.spawn(["python3", pluginpath+"/python/cloudinit_status/cloudinit_status.py", "ping", "--target",  "ccvm"])
+        .then(function(data){
             var retVal = JSON.parse(data);
-            console.log('cloudinit-status : '+retVal.val);
-            //cloudinit status: done 일때
-            if(retVal.code == 200 && retVal.val == "status: done"){
-              $('#modal-title-scvm-status').text("클라우드센터 구성하기");
-              $('#modal-description-scvm-status').html("<p>클라우드센터를 구성하시겠습니까?</p>");
-              $('#button-storage-vm-status-update').html("실행");
-              $('#scvm-status-update-cmd').val("bootstrap_ccvm");
-              $('#div-modal-storage-vm-status-update').show();
+            if(retVal.code == 200){
+                //ccvm 의 cloudinit 실행이 완료되었는지 확인하기 위한 명렁
+                cockpit.spawn(["python3", pluginpath+"/python/cloudinit_status/cloudinit_status.py", "status", "--target",  "ccvm"])
+                    .then(function(data){
+                        var retVal = JSON.parse(data);
+                        console.log('cloudinit-status : '+retVal.val);
+                        //cloudinit status: done 일때
+                        if(retVal.code == 200 && retVal.val == "status: done"){
+                            $('#modal-title-scvm-status').text("클라우드센터 구성하기");
+                            $('#modal-description-scvm-status').html("<p>클라우드센터를 구성하시겠습니까?</p>");
+                            $('#button-storage-vm-status-update').html("실행");
+                            $('#scvm-status-update-cmd').val("bootstrap_ccvm");
+                            $('#div-modal-storage-vm-status-update').show();
+                        }else{
+                            $('#div-modal-status-alert').show();
+                        }
+                    })
+                    .catch(function(data){
+                        createLoggerInfo(":::ccvm_bootstrap_run() Error ::: error");
+                        $('#div-modal-status-alert').show();
+                        console.log(":::ccvm_bootstrap_run() Error :::" + data);
+                    });
             }else{
               $('#div-modal-status-alert').show();
             }
