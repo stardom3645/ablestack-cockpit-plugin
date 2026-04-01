@@ -1,217 +1,245 @@
 <!--
 * File Name : local-storage-configure-wizard.html
 * Date Created : 2025.08.06
-* Writer  : 정민철
+* Writer : 정민철
 * Description : ABLESTACK 로컬용 스토리지 구성을 위한 절차를 진행하는 마법사 Modal 대화상자
 -->
 
-<div class="pf-l-bullseye" >
-    <div class="pf-c-modal-box pf-m-lg" role="dialog" aria-modal="true" aria-label="Basic wizard">
-        <div class="pf-c-wizard">
-            <div class="pf-c-wizard__header">
-                <button class="pf-c-button pf-m-plain pf-c-wizard__close" type="button" aria-label="Close" id="button-close-modal-wizard-local">
-                    <i class="fas fa-times" aria-hidden="true"></i>
+<div class="pf-v6-l-bullseye" >
+  <div class="pf-v6-c-modal-box pf-m-lg" role="dialog" aria-modal="true" aria-label="Basic wizard">
+    <div class="pf-v6-c-wizard">
+      <div class="pf-v6-c-wizard__header">
+        <button class="pf-v6-c-button pf-m-plain pf-v6-c-wizard__close" type="button" aria-label="Close" id="button-close-modal-wizard-local">
+          <i class="fas fa-times" aria-hidden="true"></i>
+        </button>
+        <h1 class="pf-v6-c-title pf-m-3xl pf-v6-c-wizard__title">로컬 스토리지 구성 마법사</h1>
+        <p class="pf-v6-c-wizard__description">로컬 스토리지를 모든 호스트에 구성하기 위해, 스토리지 배포를 단계별로 체계적으로 진행합니다.</p>
+      </div>
+      <div class="pf-v6-c-wizard__outer-wrap">
+        <div class="pf-v6-c-wizard__inner-wrap">
+          <nav class="pf-v6-c-wizard__nav" aria-label="Steps">
+            <ol class="pf-v6-c-wizard__nav-list" role="list">
+              <li class="pf-v6-c-wizard__nav-item">
+                <button class="pf-v6-c-wizard__nav-link pf-m-current" id="nav-button-local-overview" type="button" aria-current="page">
+                  <span class="pf-v6-c-wizard__nav-link-main">
+                    <span class="pf-v6-c-wizard__nav-link-text">개요</span>
+                  </span>
                 </button>
-                <h1 class="pf-c-title pf-m-3xl pf-c-wizard__title">로컬 스토리지 구성 마법사</h1>
-                <p class="pf-c-wizard__description">로컬 스토리지를 모든 호스트에 구성하기 위해, 스토리지 배포를 단계별로 체계적으로 진행합니다.</p>
+              </li>
+              <li class="pf-v6-c-wizard__nav-item">
+                <button class="pf-v6-c-wizard__nav-link" id="nav-button-local-disk-configure" type="button">
+                  <span class="pf-v6-c-wizard__nav-link-main">
+                    <span class="pf-v6-c-wizard__nav-link-text">로컬 디스크 구성</span>
+                  </span>
+                </button>
+              </li>
+
+              <li class="pf-v6-c-wizard__nav-item">
+                <button class="pf-v6-c-wizard__nav-link" id="nav-button-local-review" type="button">
+                  <span class="pf-v6-c-wizard__nav-link-main">
+                    <span class="pf-v6-c-wizard__nav-link-text">설정확인</span>
+                  </span>
+                </button>
+              </li>
+              <li class="pf-v6-c-wizard__nav-item">
+                <button class="pf-v6-c-wizard__nav-link" id="nav-button-local-finish" type="button">
+                  <span class="pf-v6-c-wizard__nav-link-main">
+                    <span class="pf-v6-c-wizard__nav-link-text">완료</span>
+                  </span>
+                </button>
+              </li>
+            </ol>
+          </nav>
+          <main class="pf-v6-c-wizard__main">
+            <div class="pf-v6-c-wizard__main-body" id="div-modal-wizard-local-overview">
+              <div class="pf-v6-c-content">
+                <p>
+                  로컬 스토리지 구성 마법사는 단일 서버의 로컬 스토리지를 활용하여 운영에 필요한 설정을 자동화 하는 도구입니다. 로컬 스토리지를 구성하기 위해서는 다음과 같은 정보가 필요합니다.
+                </p>
+                <ul>
+                  <li>가상화 영역 디스크의 RAID 구성(초기 BIOS에서 설정) - 환경에 따라 적절한 RAID 타입 설정</li>
+                  <li>운영 안정성을 뒷받침하는 적정 디스크 용량 마련</li>
+                </ul>
+                <p>
+                  위 정보를 미리 준비한 후, "다음" 버튼을 눌러 로컬 스토리지 구성을 시작하십시오.
+                </p>
+              </div>
             </div>
-            <div class="pf-c-wizard__outer-wrap">
-                <div class="pf-c-wizard__inner-wrap">
-                    <nav class="pf-c-wizard__nav" aria-label="Steps">
-                        <ol class="pf-c-wizard__nav-list">
-                            <li class="pf-c-wizard__nav-item">
-                                <button class="pf-c-wizard__nav-link pf-m-current" id="nav-button-local-overview">개요</button>
-                            </li>
-                            <li class="pf-c-wizard__nav-item">
-                                <button class="pf-c-wizard__nav-link" id="nav-button-local-disk-configure">로컬 디스크 구성</button>
-                            </li>
-
-                            <li class="pf-c-wizard__nav-item">
-                                <button class="pf-c-wizard__nav-link" id="nav-button-local-review">설정확인</button>
-                            </li>
-                            <li class="pf-c-wizard__nav-item">
-                                <button class="pf-c-wizard__nav-link" id="nav-button-local-finish">완료</button>
-                            </li>
-                        </ol>
-                    </nav>
-                    <main class="pf-c-wizard__main">
-                        <div class="pf-c-wizard__main-body" id="div-modal-wizard-local-overview">
-                            <div class="pf-c-content">
-                                <p>
-                                    로컬 스토리지 구성 마법사는 단일 서버의 로컬 스토리지를 활용하여 운영에 필요한 설정을 자동화 하는 도구입니다. 로컬 스토리지를 구성하기 위해서는 다음과 같은 정보가 필요합니다.
-                                </p>
-                                <ul>
-                                    <li>가상화 영역 디스크의 RAID 구성(초기 BIOS에서 설정) - 환경에 따라 적절한 RAID 타입 설정</li>
-                                    <li>운영 안정성을 뒷받침하는 적정 디스크 용량 마련</li>
-                                </ul>
-                                <p>
-                                    위 정보를 미리 준비한 후, "다음" 버튼을 눌러 로컬 스토리지 구성을 시작하십시오.
-                                </p>
-                            </div>
-                        </div>
-                        <div class="pf-c-wizard__main-body" id="div-modal-wizard-local-disk-configure">
-                            <p>
-                                로컬 스토리지 구성 시, 서버에서 물리적으로 인식된 디스크를 선택하여 관리 대상으로 지정해야 합니다.
-                            </p>
-                            <form novalidate class="pf-c-form pf-m-horizontal" style="margin-left:15px;margin-top:32px">
-                                <section class="pf-c-form__section">
-                                    <div class="pf-c-form__group" style="display: block;">
-                                        <div class="pf-c-form__group-label">
-                                            <label class="pf-c-form__label" for="form-list-local-disk">
-                                                <span class="pf-c-form__label-text">로컬용 디스크 구성 대상 장치</span>
-                                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
-                                            </label>
-                                        </div>
-                                        <div class="pf-c-form__group-control pf-m-stack" id="disk-local-storage-pci-list" style="margin-top:8px;max-height: 300px;overflow-y: auto;">
-                                        </div>
-                                    </div>
-                                </section>
-                            </form>
-                            <br/>
-                            <div class="pf-c-alert pf-m-info pf-m-inline" aria-label="로컬 Disk Info" style="margin-left:15px;margin-top:32px">
-                                <div class="pf-c-alert__icon">
-                                    <i class="fas fa-fw fa-info-circle" aria-hidden="true"></i>
-                                </div>
-                                <p class="pf-c-alert__title pf-m-truncate">
-                                    <strong><span class="pf-screen-reader">Info alert:</span>로컬용 디스크 자원 구성 필수 준수사항</strong>
-                                </p>
-                                <div class="pf-c-alert__description">
-                                    <p>
-                                       로컬 스토리지는 서버 내부의 직접 연결 디스크를 기반으로 동작하며, 운영 환경에 따라 안정성과 성능에 큰 영향을 미칩니다.
-
-                                       구성 화면에 여러 물리 디스크가 보일 경우 개별 디스크를 직접 선택해 구성하지 말고, 먼저 BIOS/RAID 컨트롤러에서 필요한 수준의 RAID를 **사전에 구성하여 하나의 논리 디스크(가상 드라이브)**로 만든 뒤 그 논리 디스크만 선택해 설치를 진행해야 합니다.
-
-                                       또한 구성 시에는 디스크의 종류(SSD/HDD), 총 용량, 인터페이스와 경로를 반드시 확인하여 오선택을 방지하시기 바랍니다.
-                                    </p>
-                                </div>
-                            </div>
-                            <br/>
-                        </div>
-                        <div class="pf-c-wizard__main-body" id="div-modal-wizard-local-review">
-                            <div class="pf-c-content">
-                                <p>
-                                    로컬 스토리지 구성을 위해 입력한 설정 정보는 다음과 같습니다.
-                                    입력한 정보를 수정하고자 하는 경우, 해당 탭으로 이동하여 정보를 수정하십시오.
-                                    <br/>
-                                    <br/>
-                                    모든 정보를 확인한 후 "배포"를 시작합니다.
-                                </p>
-                            </div>
-                            <div class="pf-c-accordion" style="margin-top:32px;margin-left:10px">
-                                <h3>
-                                    <button class="pf-c-accordion__toggle" aria-expanded="false" id="button-accordion-local-disk">
-                                        <span class="pf-c-accordion__toggle-text">로컬 디스크 구성</span>
-                                        <span class="pf-c-accordion__toggle-icon">
-                                            <i class="fas fa-angle-right" aria-hidden="true"></i>
-                                        </span>
-                                    </button>
-                                </h3>
-                                <div class="pf-c-accordion__expanded-content" id="div-accordion-local-disk">
-                                    <div class="pf-c-accordion__expanded-content-body">
-                                        <dl class="pf-c-description-list pf-m-horizontal" style="--pf-c-description-list--RowGap: 10px;margin-left: 10px;">
-                                            <div class="pf-c-description-list__group">
-                                                <dt class="pf-c-description-list__term">
-                                                    <span class="pf-c-description-list__text">로컬 디스크</span>
-                                                </dt>
-                                                <dd class="pf-c-description-list__description">
-                                                    <div class="pf-c-description-list__text">
-                                                        <span id="span-local-disk"></span>
-                                                    </div>
-                                                </dd>
-                                            </div>
-                                        </dl>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="pf-c-wizard__main-body" id="div-modal-wizard-local-deploy">
-                            <p id='local-progress-step-text'>
-                                로컬 스토리지를 구성 중입니다. 전체 2단계 중 1단계 진행 중입니다.
-                            </p>
-                            <div class="pf-c-content" style="margin-top:30px;margin-left:15px">
-                                <span class="pf-c-label pf-m-blue" id="span-local-progress-step1">
-                                    <span class="pf-c-label__content">
-                                        <span class="pf-c-label__icon">
-                                            <i class="fas fa-fw fa-info-circle" aria-hidden="true"></i>
-                                        </span><p>준비중</p>
-                                    </span>
-                                </span>
-                                <span class="pf-c-label__content" style="margin-left:4px">로컬 스토리지 초기화</span>
-                            </div>
-                            <div class="pf-c-content" style="margin-top:30px;margin-left:15px">
-                                <span class="pf-c-label pf-m-blue" id="span-local-progress-step2">
-                                    <span class="pf-c-label__content">
-                                        <span class="pf-c-label__icon">
-                                            <i class="fas fa-fw fa-info-circle" aria-hidden="true"></i>
-                                        </span><p>준비중</p>
-                                    </span>
-                                </span>
-                                <span class="pf-c-label__content" style="margin-left:4px">스토리지 구성 설정</span>
-                            </div>
-                        </div>
-                        <div class="pf-c-wizard__main-body" id="div-modal-wizard-local-finish">
-                            <p>
-                                로컬 스토리지 구성을 완료하였습니다. 아래 내용을 참고하여 로컬 디스크가 정상적으로 설정되어 작동하는지 확인한 후,<br/> 다음 단계로 진행하시기 바랍니다.
-                            </p>
-                            <div class="pf-c-content" style="margin-top:30px;margin-left:15px">
-                                <span class="pf-c-label__content" style="margin-top:8px">모든 호스트에 로컬 구성이 완료 했는지 확인합니다.</span>
-                                <br/>
-                                <span class="pf-c-label__content" style="margin-top:8px">- 확인 명령어 : lsblk, lvs, vgs, pvs</span>
-                                <br/>
-                            </div>
-                            <p style="margin-top:50px">
-                                확인 결과 이상이 없다면, 클라우드센터 VM 배포를 진행해 주세요.<br/>마법사를 종료하려면 화면 상단의 닫기 버튼을 클릭하십시오.
-                            </p>
-                        </div>
-                    </main>
-                </div>
-                <footer class="pf-c-wizard__footer" style="box-shadow:var(--pf-global--BoxShadow--sm-top)">
-                <button class="pf-c-button pf-m-primary" type="submit" id="button-next-step-modal-local-storage-wizard-config">다음</button>
-                <button class="pf-c-button pf-m-secondary" type="button" id="button-before-step-modal-local-storage-wizard-config">이전</button>
-                <div class="pf-c-wizard__footer-cancel">
-                    <button class="pf-c-button pf-m-link" type="button" id="button-cancel-config-modal-local-storage-wizard-config">취소</button>
-                </div>
-                </footer>
-            </div>
-            <!-- 로컬 스토리지 구성 마법사 진행: Modal 영역 시작 -->
-            <div id="div-modal-local-storage-wizard-confirm" class="pf-c-backdrop" style="display:none" >
-                <div class="pf-l-bullseye">
-                    <div class="pf-c-modal-box pf-m-sm" role="dialog" aria-modal="true" aria-label="local storage wizard confirm">
-                        <button id="button-close-modal-local-storage-wizard-confirm" aria-disabled="false" aria-label="Close" class="pf-c-button pf-m-plain" type="button">
-                            <i class="fas fa-times" aria-hidden="true"></i>
-                        </button>
-                        <header class="pf-c-modal-box__header"><h1 class="pf-c-modal-box__title"><span class="pf-c-modal-box__title-text">로컬 스토리지 구성 진행</span></h1></header>
-                        <div class="pf-c-modal-box__body">
-                            <div>로컬 스토리지 구성을 진행하시겠습니까?</div>
-                        </div>
-                        <footer class="pf-c-modal-box__footer">
-                            <button id="button-execution-modal-local-storage-wizard-confirm" aria-disabled="false" class="pf-c-button pf-m-primary" type="button" data-ouia-safe="true">실행</button>
-                            <button id="button-cancel-modal-local-storage-wizard-confirm" aria-disabled="false" class="pf-c-button pf-m-link" type="button" data-ouia-safe="true">아니요</button>
-                        </footer>
+            <div class="pf-v6-c-wizard__main-body" id="div-modal-wizard-local-disk-configure">
+              <p>
+                로컬 스토리지 구성 시, 서버에서 물리적으로 인식된 디스크를 선택하여 관리 대상으로 지정해야 합니다.
+              </p>
+              <form novalidate class="pf-v6-c-form pf-m-horizontal" style="margin-left:15px;margin-top:32px">
+                <section class="pf-v6-c-form__section">
+                  <div class="pf-v6-c-form__group" style="display: block;">
+                    <div class="pf-v6-c-form__group-label">
+                      <label class="pf-v6-c-form__label" for="form-list-local-disk">
+                        <span class="pf-v6-c-form__label-text">로컬용 디스크 구성 대상 장치</span>
+                        <span class="pf-v6-c-form__label-required" aria-hidden="true">&#42;</span>
+                      </label>
                     </div>
-                </div>
-            </div>
-            <!-- 로컬 스토리지 구성 마법사 진행: Modal 영역 끝 -->
-
-            <!-- 로컬 스토리지 구성 마법사 취소: Modal 영역 시작 -->
-            <div id="div-modal-cancel-local-storage-wizard-cancel" class="pf-c-backdrop" style="display:none" >
-                <div class="pf-l-bullseye">
-                    <div class="pf-c-modal-box pf-m-sm" role="dialog" aria-modal="true" aria-label="local storage wizard cancel">
-                        <button id="button-close-modal-local-storage-wizard-cancel" aria-disabled="false" aria-label="Close" class="pf-c-button pf-m-plain" type="button">
-                            <i class="fas fa-times" aria-hidden="true"></i>
-                        </button>
-                        <header class="pf-c-modal-box__header"><h1 class="pf-c-modal-box__title"><span class="pf-c-modal-box__title-text">로컬 스토리지 구성 취소</span></h1></header>
-                        <div class="pf-c-modal-box__body">
-                            <div>로컬 스토리지 구성을 취소하시겠습니까? 입력된 데이터는 초기화 됩니다.</div>
-                        </div>
-                        <footer class="pf-c-modal-box__footer">
-                            <button id="button-execution-modal-local-storage-wizard-cancel" aria-disabled="false" class="pf-c-button pf-m-primary" type="button" data-ouia-safe="true">실행</button>
-                            <button id="button-cancel-modal-local-storage-wizard-cancel" aria-disabled="false" class="pf-c-button pf-m-link" type="button" data-ouia-safe="true">아니요</button>
-                        </footer>
+                    <div class="pf-v6-c-form__group-control pf-m-stack" id="disk-local-storage-pci-list" style="margin-top:8px;max-height: 300px;overflow-y: auto;">
                     </div>
+                  </div>
+                </section>
+              </form>
+              <br/>
+              <div class="pf-v6-c-alert pf-m-info pf-m-inline" aria-label="로컬 Disk Info" style="margin-left:15px;margin-top:32px">
+                <div class="pf-v6-c-alert__icon">
+                  <i class="fas fa-fw fa-info-circle" aria-hidden="true"></i>
                 </div>
+                <p class="pf-v6-c-alert__title pf-m-truncate">
+                  <strong><span class="pf-v6-screen-reader">Info alert:</span>로컬용 디스크 자원 구성 필수 준수사항</strong>
+                </p>
+                <div class="pf-v6-c-alert__description">
+                  <p>
+                    로컬 스토리지는 서버 내부의 직접 연결 디스크를 기반으로 동작하며, 운영 환경에 따라 안정성과 성능에 큰 영향을 미칩니다.
+
+                    구성 화면에 여러 물리 디스크가 보일 경우 개별 디스크를 직접 선택해 구성하지 말고, 먼저 BIOS/RAID 컨트롤러에서 필요한 수준의 RAID를 **사전에 구성하여 하나의 논리 디스크(가상 드라이브)**로 만든 뒤 그 논리 디스크만 선택해 설치를 진행해야 합니다.
+
+                    또한 구성 시에는 디스크의 종류(SSD/HDD), 총 용량, 인터페이스와 경로를 반드시 확인하여 오선택을 방지하시기 바랍니다.
+                  </p>
+                </div>
+              </div>
+              <br/>
             </div>
-            <!-- 로컬 스토리지 구성 마법사 취소: Modal 영역 끝 -->
+            <div class="pf-v6-c-wizard__main-body" id="div-modal-wizard-local-review">
+              <div class="pf-v6-c-content">
+                <p>
+                  로컬 스토리지 구성을 위해 입력한 설정 정보는 다음과 같습니다.
+                  입력한 정보를 수정하고자 하는 경우, 해당 탭으로 이동하여 정보를 수정하십시오.
+                  <br/>
+                  <br/>
+                  모든 정보를 확인한 후 "배포"를 시작합니다.
+                </p>
+              </div>
+              <div class="pf-v6-c-accordion" style="margin-top:32px;margin-left:10px">
+                <div class="pf-v6-c-accordion__item">
+                <h3>
+                  <button type="button" class="pf-v6-c-accordion__toggle" aria-expanded="false" id="button-accordion-local-disk">
+                    <span class="pf-v6-c-accordion__toggle-text">로컬 디스크 구성</span>
+                    <span class="pf-v6-c-accordion__toggle-icon">
+                      <i class="fas fa-angle-right" aria-hidden="true"></i>
+                    </span>
+                  </button>
+                </h3>
+                <div class="pf-v6-c-accordion__expandable-content" id="div-accordion-local-disk" hidden>
+                  <div class="pf-v6-c-accordion__expandable-content-body">
+                    <dl class="pf-v6-c-description-list pf-m-horizontal" style="--pf-v6-c-description-list--RowGap: 10px;margin-left: 10px;">
+                      <div class="pf-v6-c-description-list__group">
+                        <dt class="pf-v6-c-description-list__term">
+                          <span class="pf-v6-c-description-list__text">로컬 디스크</span>
+                        </dt>
+                        <dd class="pf-v6-c-description-list__description">
+                          <div class="pf-v6-c-description-list__text">
+                            <span id="span-local-disk"></span>
+                          </div>
+                        </dd>
+                      </div>
+                    </dl>
+                  </div>
+                </div>
+                </div>
+              </div>
+            </div>
+            <div class="pf-v6-c-wizard__main-body" id="div-modal-wizard-local-deploy">
+              <p id='local-progress-step-text'>
+                로컬 스토리지를 구성 중입니다. 전체 2단계 중 1단계 진행 중입니다.
+              </p>
+              <div class="pf-v6-c-content" style="margin-top:30px;margin-left:15px">
+                <span class="pf-v6-c-label pf-m-blue" id="span-local-progress-step1">
+                  <span class="pf-v6-c-label__content">
+                    <span class="pf-v6-c-label__icon">
+                      <i class="fas fa-fw fa-info-circle" aria-hidden="true"></i>
+                    </span><p>준비중</p>
+                  </span>
+                </span>
+                <span class="pf-v6-c-label__content" style="margin-left:4px">로컬 스토리지 초기화</span>
+              </div>
+              <div class="pf-v6-c-content" style="margin-top:30px;margin-left:15px">
+                <span class="pf-v6-c-label pf-m-blue" id="span-local-progress-step2">
+                  <span class="pf-v6-c-label__content">
+                    <span class="pf-v6-c-label__icon">
+                      <i class="fas fa-fw fa-info-circle" aria-hidden="true"></i>
+                    </span><p>준비중</p>
+                  </span>
+                </span>
+                <span class="pf-v6-c-label__content" style="margin-left:4px">스토리지 구성 설정</span>
+              </div>
+            </div>
+            <div class="pf-v6-c-wizard__main-body" id="div-modal-wizard-local-finish">
+              <p>
+                로컬 스토리지 구성을 완료하였습니다. 아래 내용을 참고하여 로컬 디스크가 정상적으로 설정되어 작동하는지 확인한 후,<br/> 다음 단계로 진행하시기 바랍니다.
+              </p>
+              <div class="pf-v6-c-content" style="margin-top:30px;margin-left:15px">
+                <span class="pf-v6-c-label__content" style="margin-top:8px">모든 호스트에 로컬 구성이 완료 했는지 확인합니다.</span>
+                <br/>
+                <span class="pf-v6-c-label__content" style="margin-top:8px">- 확인 명령어 : lsblk, lvs, vgs, pvs</span>
+                <br/>
+              </div>
+              <p style="margin-top:50px">
+                확인 결과 이상이 없다면, 클라우드센터 VM 배포를 진행해 주세요.<br/>마법사를 종료하려면 화면 상단의 닫기 버튼을 클릭하십시오.
+              </p>
+            </div>
+          </main>
+        </div>
+        <footer class="pf-v6-c-wizard__footer">
+          <div class="pf-v6-c-action-list">
+            <div class="pf-v6-c-action-list__group">
+              <div class="pf-v6-c-action-list__item">
+                <button class="pf-v6-c-button pf-m-primary" type="submit" id="button-next-step-modal-local-storage-wizard-config">다음</button>
+              </div>
+              <div class="pf-v6-c-action-list__item">
+                <button class="pf-v6-c-button pf-m-secondary" type="button" id="button-before-step-modal-local-storage-wizard-config">이전</button>
+              </div>
+            </div>
+            <div class="pf-v6-c-action-list__group">
+              <div class="pf-v6-c-action-list__item">
+                <button class="pf-v6-c-button pf-m-link" type="button" id="button-cancel-config-modal-local-storage-wizard-config">취소</button>
+              </div>
+            </div>
+          </div>
+        </footer>
+      </div>
+      <!-- 로컬 스토리지 구성 마법사 진행: Modal 영역 시작 -->
+      <div id="div-modal-local-storage-wizard-confirm" class="pf-v6-c-backdrop" style="display:none" >
+        <div class="pf-v6-l-bullseye">
+          <div class="pf-v6-c-modal-box pf-m-sm" role="dialog" aria-modal="true" aria-label="local storage wizard confirm">
+            <button id="button-close-modal-local-storage-wizard-confirm" aria-disabled="false" aria-label="Close" class="pf-v6-c-button pf-m-plain" type="button">
+              <i class="fas fa-times" aria-hidden="true"></i>
+            </button>
+            <header class="pf-v6-c-modal-box__header"><h1 class="pf-v6-c-modal-box__title"><span class="pf-v6-c-modal-box__title-text">로컬 스토리지 구성 진행</span></h1></header>
+            <div class="pf-v6-c-modal-box__body">
+              <div>로컬 스토리지 구성을 진행하시겠습니까?</div>
+            </div>
+            <footer class="pf-v6-c-modal-box__footer">
+              <button id="button-execution-modal-local-storage-wizard-confirm" aria-disabled="false" class="pf-v6-c-button pf-m-primary" type="button" data-ouia-safe="true">실행</button>
+              <button id="button-cancel-modal-local-storage-wizard-confirm" aria-disabled="false" class="pf-v6-c-button pf-m-link" type="button" data-ouia-safe="true">아니요</button>
+            </footer>
+          </div>
+        </div>
+      </div>
+      <!-- 로컬 스토리지 구성 마법사 진행: Modal 영역 끝 -->
+
+      <!-- 로컬 스토리지 구성 마법사 취소: Modal 영역 시작 -->
+      <div id="div-modal-cancel-local-storage-wizard-cancel" class="pf-v6-c-backdrop" style="display:none" >
+        <div class="pf-v6-l-bullseye">
+          <div class="pf-v6-c-modal-box pf-m-sm" role="dialog" aria-modal="true" aria-label="local storage wizard cancel">
+            <button id="button-close-modal-local-storage-wizard-cancel" aria-disabled="false" aria-label="Close" class="pf-v6-c-button pf-m-plain" type="button">
+              <i class="fas fa-times" aria-hidden="true"></i>
+            </button>
+            <header class="pf-v6-c-modal-box__header"><h1 class="pf-v6-c-modal-box__title"><span class="pf-v6-c-modal-box__title-text">로컬 스토리지 구성 취소</span></h1></header>
+            <div class="pf-v6-c-modal-box__body">
+              <div>로컬 스토리지 구성을 취소하시겠습니까? 입력된 데이터는 초기화 됩니다.</div>
+            </div>
+            <footer class="pf-v6-c-modal-box__footer">
+              <button id="button-execution-modal-local-storage-wizard-cancel" aria-disabled="false" class="pf-v6-c-button pf-m-primary" type="button" data-ouia-safe="true">실행</button>
+              <button id="button-cancel-modal-local-storage-wizard-cancel" aria-disabled="false" class="pf-v6-c-button pf-m-link" type="button" data-ouia-safe="true">아니요</button>
+            </footer>
+          </div>
+        </div>
+      </div>
+      <!-- 로컬 스토리지 구성 마법사 취소: Modal 영역 끝 -->
 <!-- 해당 페이지에 필요한 javascript 파일 추가 영역 시작 -->
 <script src="./src/common/wizard-common.js"></script>
 <script src="./src/common/validation.js"></script>

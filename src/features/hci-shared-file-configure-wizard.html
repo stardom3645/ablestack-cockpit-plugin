@@ -1,309 +1,345 @@
 <!--
 * File Name : hci-shared-file-configure-wizard.html
 * Date Created : 2026.01.14
-* Writer  : 정민철
+* Writer : 정민철
 * Description : ABLESTACK HCI용 공유 파일 구성을 위한 절차를 진행하는 마법사 Modal 대화상자
 -->
 
-<div class="pf-l-bullseye" >
-    <div class="pf-c-modal-box pf-m-lg" role="dialog" aria-modal="true" aria-label="Basic wizard">
-        <div class="pf-c-wizard">
-            <div class="pf-c-wizard__header">
-                <button class="pf-c-button pf-m-plain pf-c-wizard__close" type="button" aria-label="Close" id="button-close-modal-hci-shared-file-wizard">
-                    <i class="fas fa-times" aria-hidden="true"></i>
+<div class="pf-v6-l-bullseye" >
+  <div class="pf-v6-c-modal-box pf-m-lg" role="dialog" aria-modal="true" aria-label="Basic wizard">
+    <div class="pf-v6-c-wizard">
+      <div class="pf-v6-c-wizard__header">
+        <button class="pf-v6-c-button pf-m-plain pf-v6-c-wizard__close" type="button" aria-label="Close" id="button-close-modal-hci-shared-file-wizard">
+          <i class="fas fa-times" aria-hidden="true"></i>
+        </button>
+        <h1 class="pf-v6-c-title pf-m-3xl pf-v6-c-wizard__title">HCI 공유 파일 구성 마법사</h1>
+        <p class="pf-v6-c-wizard__description">HCI 공유 파일을 모든 호스트에 구성하기 위해, 공유 파일 배포를 단계별로 체계적으로 진행합니다.</p>
+      </div>
+      <div class="pf-v6-c-wizard__outer-wrap">
+        <div class="pf-v6-c-wizard__inner-wrap">
+          <nav class="pf-v6-c-wizard__nav" aria-label="Steps">
+            <ol class="pf-v6-c-wizard__nav-list" role="list">
+              <li class="pf-v6-c-wizard__nav-item">
+                <button class="pf-v6-c-wizard__nav-link pf-m-current" id="nav-button-hci-shared-file-overview" type="button" aria-current="page">
+                  <span class="pf-v6-c-wizard__nav-link-main">
+                    <span class="pf-v6-c-wizard__nav-link-text">개요</span>
+                  </span>
                 </button>
-                <h1 class="pf-c-title pf-m-3xl pf-c-wizard__title">HCI 공유 파일 구성 마법사</h1>
-                <p class="pf-c-wizard__description">HCI 공유 파일을 모든 호스트에 구성하기 위해, 공유 파일 배포를 단계별로 체계적으로 진행합니다.</p>
+              </li>
+              <li class="pf-v6-c-wizard__nav-item">
+                <button class="pf-v6-c-wizard__nav-link" id="nav-button-hci-shared-file-volume" type="button">
+                  <span class="pf-v6-c-wizard__nav-link-main">
+                    <span class="pf-v6-c-wizard__nav-link-text">공유 파일 이미지 생성</span>
+                  </span>
+                </button>
+              </li>
+              <li class="pf-v6-c-wizard__nav-item">
+                <button class="pf-v6-c-wizard__nav-link" id="nav-button-hci-shared-file-disk-configure" type="button">
+                  <span class="pf-v6-c-wizard__nav-link-main">
+                    <span class="pf-v6-c-wizard__nav-link-text">공유 파일 디스크 구성</span>
+                  </span>
+                </button>
+              </li>
+              <li class="pf-v6-c-wizard__nav-item">
+                <button class="pf-v6-c-wizard__nav-link" id="nav-button-hci-shared-file-ipmi-info" type="button">
+                  <span class="pf-v6-c-wizard__nav-link-main">
+                    <span class="pf-v6-c-wizard__nav-link-text">IPMI 정보</span>
+                  </span>
+                </button>
+              </li>
+              <li class="pf-v6-c-wizard__nav-item">
+                <button class="pf-v6-c-wizard__nav-link" id="nav-button-hci-shared-file-review" type="button">
+                  <span class="pf-v6-c-wizard__nav-link-main">
+                    <span class="pf-v6-c-wizard__nav-link-text">설정확인</span>
+                  </span>
+                </button>
+              </li>
+              <li class="pf-v6-c-wizard__nav-item">
+                <button class="pf-v6-c-wizard__nav-link" id="nav-button-hci-shared-file-finish" type="button">
+                  <span class="pf-v6-c-wizard__nav-link-main">
+                    <span class="pf-v6-c-wizard__nav-link-text">완료</span>
+                  </span>
+                </button>
+              </li>
+            </ol>
+          </nav>
+          <main class="pf-v6-c-wizard__main">
+            <div class="pf-v6-c-wizard__main-body" id="div-modal-wizard-hci-shared-file-overview">
+              <div class="pf-v6-c-content">
+                <p>
+                  HCI 공유 파일 구성 마법사는 내부 Glue 스토리지를 기반으로 RBD 이미지를 생성하고, 이를 하나의 공유 파일 환경으로 구성하며, 구성에 필요한 설정을 자동으로 생성하는 도구입니다. HCI 공유 파일 구성을 위해서는 다음 정보가 필요합니다.
+                </p>
+                <ul>
+                  <li>RBD 이미지 생성에 필요한 용량 설정</li>
+                  <li>공유 파일로 구성할 생성된 RBD 이미지 선택</li>
+                  <li>호스트별 원격 관리(IPMI) 정보</li>
+                </ul>
+                <p>
+                  필요한 정보를 먼저 준비하십시오. 정보가 준비되었다면 "다음" 버튼을 눌러 HCI 공유 파일 구성을 시작합니다.
+                </p>
+              </div>
             </div>
-            <div class="pf-c-wizard__outer-wrap">
-                <div class="pf-c-wizard__inner-wrap">
-                    <nav class="pf-c-wizard__nav" aria-label="Steps">
-                        <ol class="pf-c-wizard__nav-list">
-                            <li class="pf-c-wizard__nav-item">
-                                <button class="pf-c-wizard__nav-link pf-m-current" id="nav-button-hci-shared-file-overview">개요</button>
-                            </li>
-                            <li class="pf-c-wizard__nav-item">
-                                <button class="pf-c-wizard__nav-link" id="nav-button-hci-shared-file-volume">공유 파일 이미지 생성</button>
-                            </li>
-                            <li class="pf-c-wizard__nav-item">
-                                <button class="pf-c-wizard__nav-link" id="nav-button-hci-shared-file-disk-configure">공유 파일 디스크 구성</button>
-                            </li>
-                            <li class="pf-c-wizard__nav-item">
-                                <button class="pf-c-wizard__nav-link" id="nav-button-hci-shared-file-ipmi-info">IPMI 정보</button>
-                            </li>
-                            <li class="pf-c-wizard__nav-item">
-                                <button class="pf-c-wizard__nav-link" id="nav-button-hci-shared-file-review">설정확인</button>
-                            </li>
-                            <li class="pf-c-wizard__nav-item">
-                                <button class="pf-c-wizard__nav-link" id="nav-button-hci-shared-file-finish">완료</button>
-                            </li>
-                        </ol>
-                    </nav>
-                    <main class="pf-c-wizard__main">
-                        <div class="pf-c-wizard__main-body" id="div-modal-wizard-hci-shared-file-overview">
-                            <div class="pf-c-content">
-                                <p>
-                                    HCI 공유 파일 구성 마법사는 내부 Glue 스토리지를 기반으로 RBD 이미지를 생성하고, 이를 하나의 공유 파일 환경으로 구성하며, 구성에 필요한 설정을 자동으로 생성하는 도구입니다. HCI 공유 파일 구성을 위해서는 다음 정보가 필요합니다.
-                                </p>
-                                <ul>
-                                    <li>RBD 이미지 생성에 필요한 용량 설정</li>
-                                    <li>공유 파일로 구성할 생성된 RBD 이미지 선택</li>
-                                    <li>호스트별 원격 관리(IPMI) 정보</li>
-                                </ul>
-                                <p>
-                                    필요한 정보를 먼저 준비하십시오. 정보가 준비되었다면 "다음" 버튼을 눌러 HCI 공유 파일 구성을 시작합니다.
-                                </p>
-                            </div>
-                        </div>
-                        <div class="pf-c-wizard__main-body" id="div-modal-wizard-hci-shared-file-volume">
-                            <p>
-                                HCI 공유 파일을 구성하기 전, 먼저 공유 파일로 사용할 이미지에 필요한 용량을 설정합니다.
-                            </p>
-                            <form novalidate class="pf-c-form pf-m-horizontal" style="margin-left:15px;margin-top:32px">
-                                <section class="pf-c-form__section">
-                                    <div class="pf-c-form__group" style="--pf-c-form--m-horizontal__group-label--md--GridColumnWidth:10rem;--pf-global--spacer--md:1.5rem;align-items:center;">
-                                        <div class="pf-c-form__group-label">
-                                            <label class="pf-c-form__label" for="form-volume">
-                                                <span class="pf-c-form__label-text">공유 파일 용량(GB)</span>
-                                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
-                                            </label>
-                                        </div>
-                                        <div class="pf-c-form__group-control pf-m-inline" style="margin-top:10px">
-                                            <div class="pf-c-form__group-control">
-                                                <div style="display: inline-flex; align-items: center; max-width: 200px; width: 110%; flex-wrap: nowrap; white-space: nowrap; gap: 6px;">
-                                                  <input class="pf-c-form-control" type="number" min="1" max="999999" id="form-input-hci-file-volume" name="form-input-hci-file-volume" style="flex: 1; min-width: 0;"/>
-                                                  <span style="white-space: nowrap;">GB</span>
-                                                </div>
-                                              </div>
-                                            <div id="div-hci-shared-file-volume" style="margin-left:60px;">
-                                                <button class="pf-c-button pf-m-secondary" type="button" id="button-hci-shared-file-create">공유 파일 생성</button>
-                                            </div>
-                                        </div>
-                                </section>
-                            </form>
-                            <br/>
-                            <div class="pf-c-alert pf-m-info pf-m-inline" aria-label="HCI 공유 파일 구성 시 참고사항" style="margin-left:15px;margin-top:32px">
-                                <div class="pf-c-alert__icon">
-                                    <i class="fas fa-fw fa-info-circle" aria-hidden="true"></i>
-                                </div>
-                                <p class="pf-c-alert__title pf-m-truncate">
-                                    <strong><span class="pf-screen-reader">Info alert:</span>HCI 공유 파일 구성 시 참고사항</strong>
-                                </p>
-                                <div class="pf-c-alert__description">
-                                    <p>공유 파일 구성을 진행하기 전에, 내부 Glue 스토리지에서 공유 파일로 사용할 RBD 이미지를 먼저 생성해야 합니다.</p>
-                                    <p>설정한 공유 파일 용량을 기준으로 RBD 이미지를 생성하며, 생성이 완료된 후 다음 단계로 진행해 주시기 바랍니다.</p>
-                                    <p>RBD 이미지는 이미지 1개당 최대 2TB까지 생성되며, 공유 파일 용량이 2TB를 초과하는 경우 용량에 맞게 여러 개의 RBD 이미지로 분할되어 생성됩니다.</p>
-                                    <p>2TB를 초과하는 용량을 설정하신 경우에는 분할 생성된 RBD 이미지가 모두 준비되었는지 확인한 후 다음 단계로 진행해 주시기 바랍니다.</p>
-                                    <p>이미 RBD 이미지가 생성되어 있는 환경에서 다시 구성을 진행하는 경우, 기존에 생성된 RBD 이미지를 선택하거나 필요 시 새로 생성한 뒤 다음 단계로 진행해 주시기 바랍니다.</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="pf-c-wizard__main-body" id="div-modal-wizard-hci-shared-file-disk-configure">
-                            <p>
-                                HCI 공유 파일 전용 디스크로 관리할 'RBD 이미지'를 선택해야 합니다.
-                            </p>
-                            <form novalidate class="pf-c-form pf-m-horizontal" style="margin-left:15px;margin-top:32px">
-                                <section class="pf-c-form__section">
-                                    <div class="pf-c-form__group" style="display: block;">
-                                        <div class="pf-c-form__group-label">
-                                            <label class="pf-c-form__label" for="form-list-hci-shared-file-disk">
-                                                <span class="pf-c-form__label-text">HCI 공유 파일 전용 디스크 구성 대상 장치</span>
-                                                <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
-                                            </label>
-                                        </div>
-                                        <div class="pf-c-form__group-control pf-m-stack" id="disk-hci-shared-file-pci-list" style="margin-top:8px;max-height: 300px;overflow-y: auto;white-space: pre;font-family: monospace">
-                                        </div>
-                                    </div>
-                                </section>
-                            </form>
-                            <br/>
-                            <div class="pf-c-alert pf-m-info pf-m-inline" aria-label="hci-shared-file Disk Info" style="margin-left:15px;margin-top:32px">
-                                <div class="pf-c-alert__icon">
-                                    <i class="fas fa-fw fa-info-circle" aria-hidden="true"></i>
-                                </div>
-                                <p class="pf-c-alert__title pf-m-truncate">
-                                    <strong><span class="pf-screen-reader">Info alert:</span>HCI 공유 파일 전용 디스크 자원 구성 시 참고사항</strong>
-                                </p>
-                                <div class="pf-c-alert__description">
-                                    <p>
-                                        HCI 공유 파일 시스템은 내부 Glue 스토리지를 기반으로 생성한 RBD 이미지를 공유 파일로 구성하여, 여러 호스트가 동일 데이터를 함께 사용할 수 있도록 제공하는 파일 시스템 환경입니다.
-
-                                        공유 파일로 사용할 HCI 공유 파일 전용 RBD 이미지가 알맞은지 용량과 대상, 그리고 연결 정보(예: 경로)를 정확히 확인하시기 바랍니다.
-                                    </p>
-                                </div>
-                            </div>
-                            <br/>
-                        </div>
-                        <div class="pf-c-wizard__main-body" id="div-modal-wizard-hci-shared-file-ipmi">
-                            <div class="pf-c-content">
-                                <p>
-                                    클러스터를 구성하기 위한 각 호스트의 IPMI 정보를 설정합니다. 아래의 항목에 값을 입력하십시오.
-                                </p>
-                                <form novalidate class="pf-c-form pf-m-horizontal" style="margin-left:15px;margin-top:32px">
-                                    <section class="pf-c-form__section">
-                                        <div class="pf-c-form__group">
-                                            <div class="pf-c-form__group-label">
-                                                <label class="pf-c-form__label">
-                                                    <span class="pf-c-form__label-text">IPMI 구성 준비</span>
-                                                    <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
-                                                </label>
-                                            </div>
-                                            <div class="pf-c-form__group-control pf-m-inline" style="margin-top:10px">
-                                                <div class="pf-c-radio">
-                                                    <input class="pf-c-radio__input" type="radio" name="radio-hci-shared-file-ipmi" value="common" checked/>
-                                                    <label class="pf-c-radio__label">공통 자격 증명</label>
-                                                </div>
-                                                <div class="pf-c-radio">
-                                                    <input class="pf-c-radio__input" type="radio" name="radio-hci-shared-file-ipmi" value="individual"/>
-                                                    <label class="pf-c-radio__label">개별 자격 증명</label>
-                                                </div>
-                                            </div>
-                                        </div>
-                                            <div id="div-hci-shared-file-ipmi-credentials" style="border-top-width: thin; border-top-style: groove; border-top-color: #d2d2d2;"></div>
-                                    </section>
-                                </form>
-                            </div>
-                        </div>
-                        <div class="pf-c-wizard__main-body" id="div-modal-wizard-hci-shared-file-review">
-                            <div class="pf-c-content">
-                                <p>
-                                    HCI 공유 파일 구성을 위해 입력한 설정 정보는 다음과 같습니다.
-                                    입력한 정보를 수정하고자 하는 경우, 해당 탭으로 이동하여 정보를 수정하십시오.
-                                    <br/>
-                                    <br/>
-                                    모든 정보를 확인한 후 "배포"를 시작합니다.
-                                </p>
-                            </div>
-                            <div class="pf-c-accordion" style="margin-top:32px;margin-left:10px">
-                                <h3>
-                                    <button class="pf-c-accordion__toggle" aria-expanded="false" id="button-accordion-hci-shared-file-disk">
-                                        <span class="pf-c-accordion__toggle-text">HCI 공유 파일 전용 디스크 구성</span>
-                                        <span class="pf-c-accordion__toggle-icon">
-                                            <i class="fas fa-angle-right" aria-hidden="true"></i>
-                                        </span>
-                                    </button>
-                                </h3>
-                                <div class="pf-c-accordion__expanded-content" id="div-accordion-hci-shared-file-disk">
-                                    <div class="pf-c-accordion__expanded-content-body">
-                                        <dl class="pf-c-description-list pf-m-horizontal" style="--pf-c-description-list--RowGap: 10px;margin-left: 10px;">
-                                            <div class="pf-c-description-list__group">
-                                                <dt class="pf-c-description-list__term">
-                                                    <span class="pf-c-description-list__text">HCI 공유 파일 전용 디스크</span>
-                                                </dt>
-                                                <dd class="pf-c-description-list__description">
-                                                    <div class="pf-c-description-list__text">
-                                                        <span id="span-hci-shared-file-disk"></span>
-                                                    </div>
-                                                </dd>
-                                            </div>
-                                        </dl>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="pf-c-accordion" style="margin-top:32px;margin-left:10px;" id="div-accordion-hci-shared-file-ipmi"></div>
-                        </div>
-                        <div class="pf-c-wizard__main-body" id="div-modal-wizard-hci-shared-file-deploy">
-                            <p id='hci-shared-file-progress-step-text'>
-                                HCI 공유 파일을 구성 중입니다. 전체 3단계 중 1단계 진행 중입니다.
-                            </p>
-
-                            <div class="pf-c-content" style="margin-top:30px;margin-left:15px">
-                                <span class="pf-c-label pf-m-blue" id="span-hci-shared-file-progress-step1">
-                                    <span class="pf-c-label__content">
-                                        <span class="pf-c-label__icon">
-                                            <i class="fas fa-fw fa-info-circle" aria-hidden="true"></i>
-                                        </span><p>준비중</p>
-                                    </span>
-                                </span>
-                                <span class="pf-c-label__content" style="margin-left:4px">클러스터 구성 HOST 간 연결 상태 확인</span>
-                            </div>
-                            <div class="pf-c-content" style="margin-top:30px;margin-left:15px">
-                                <span class="pf-c-label pf-m-blue" id="span-hci-shared-file-progress-step2">
-                                    <span class="pf-c-label__content">
-                                        <span class="pf-c-label__icon">
-                                            <i class="fas fa-fw fa-info-circle" aria-hidden="true"></i>
-                                        </span><p>준비중</p>
-                                    </span>
-                                </span>
-                                <span class="pf-c-label__content" style="margin-left:4px">클러스터 구성 설정 초기화 작업</span>
-                            </div>
-                            <div class="pf-c-content" style="margin-top:30px;margin-left:15px">
-                                <span class="pf-c-label pf-m-blue" id="span-hci-shared-file-progress-step3">
-                                    <span class="pf-c-label__content">
-                                        <span class="pf-c-label__icon">
-                                            <i class="fas fa-fw fa-info-circle" aria-hidden="true"></i>
-                                        </span><p>준비중</p>
-                                    </span>
-                                </span>
-                                <span class="pf-c-label__content" style="margin-left:4px">HCI 공유 파일 구성 설정 및 PCS 구성 설정</span>
-                            </div>
-                        </div>
-                        <div class="pf-c-wizard__main-body" id="div-modal-wizard-hci-shared-file-finish">
-                            <p>
-                                HCI 공유 파일 구성을 완료하였습니다. 아래 내용을 참고하여 HCI 공유 파일 전용 디스크와 PCS가 정상적으로 설정되어 작동하는지 확인한 후,<br/> 다음 단계로 진행하시기 바랍니다.
-                            </p>
-                            <div class="pf-c-content" style="margin-top:30px;margin-left:15px">
-                                <span class="pf-c-label__content" style="margin-top:8px">모든 호스트에 HCI 공유 파일 구성이 완료 했는지 확인합니다.</span>
-                                <br/>
-                                <span class="pf-c-label__content" style="margin-top:8px">- 확인 명령어 : lsblk, lvs, vgs, pvs</span>
-                                <br/><br/>
-                                <span class="pf-c-label__content" style="margin-top:8px;">선택한 하나의 호스트에서 PCS 설정이 올바르게 완료되었는지 확인합니다.</span>
-                                <br/>
-                                <span class="pf-c-label__content" style="margin-top:8px">- 확인 명령어 : pcs status</span>
-                            </div>
-                            <p style="margin-top:50px">
-                                확인 결과 이상이 없다면, 클라우드센터 VM 배포를 진행해 주세요.<br/>마법사를 종료하려면 화면 상단의 닫기 버튼을 클릭하십시오.
-                            </p>
-                        </div>
-                    </main>
-                </div>
-                <footer class="pf-c-wizard__footer" style="box-shadow:var(--pf-global--BoxShadow--sm-top)">
-                <button class="pf-c-button pf-m-primary" type="submit" id="button-next-step-modal-hci-shared-file-wizard-config">다음</button>
-                <button class="pf-c-button pf-m-secondary" type="button" id="button-before-step-modal-hci-shared-file-wizard-config">이전</button>
-                <div class="pf-c-wizard__footer-cancel">
-                    <button class="pf-c-button pf-m-link" type="button" id="button-cancel-config-modal-hci-shared-file-wizard-config">취소</button>
-                </div>
-                </footer>
-            </div>
-            <!-- HCI 공유 파일 구성 마법사 진행: Modal 영역 시작 -->
-            <div id="div-modal-hci-shared-file-wizard-confirm" class="pf-c-backdrop" style="display:none" >
-                <div class="pf-l-bullseye">
-                    <div class="pf-c-modal-box pf-m-sm" role="dialog" aria-modal="true" aria-label="hci-shared-file  wizard confirm">
-                        <button id="button-close-modal-hci-shared-file-wizard-confirm" aria-disabled="false" aria-label="Close" class="pf-c-button pf-m-plain" type="button">
-                            <i class="fas fa-times" aria-hidden="true"></i>
-                        </button>
-                        <header class="pf-c-modal-box__header"><h1 class="pf-c-modal-box__title"><span class="pf-c-modal-box__title-text">HCI 공유 파일 구성 진행</span></h1></header>
-                        <div class="pf-c-modal-box__body">
-                            <div>HCI 공유 파일 구성을 진행하시겠습니까?</div>
-                        </div>
-                        <footer class="pf-c-modal-box__footer">
-                            <button id="button-execution-modal-hci-shared-file-wizard-confirm" aria-disabled="false" class="pf-c-button pf-m-primary" type="button" data-ouia-safe="true">실행</button>
-                            <button id="button-cancel-modal-hci-shared-file-wizard-confirm" aria-disabled="false" class="pf-c-button pf-m-link" type="button" data-ouia-safe="true">아니요</button>
-                        </footer>
+            <div class="pf-v6-c-wizard__main-body" id="div-modal-wizard-hci-shared-file-volume">
+              <p>
+                HCI 공유 파일을 구성하기 전, 먼저 공유 파일로 사용할 이미지에 필요한 용량을 설정합니다.
+              </p>
+              <form novalidate class="pf-v6-c-form pf-m-horizontal" style="margin-left:15px;margin-top:32px">
+                <section class="pf-v6-c-form__section">
+                  <div class="pf-v6-c-form__group" style="--pf-v6-c-form--m-horizontal__group-label--md--GridColumnWidth:10rem;--pf-v6-global--spacer--md:1.5rem;align-items:center;">
+                    <div class="pf-v6-c-form__group-label">
+                      <label class="pf-v6-c-form__label" for="form-volume">
+                        <span class="pf-v6-c-form__label-text">공유 파일 용량(GB)</span>
+                        <span class="pf-v6-c-form__label-required" aria-hidden="true">&#42;</span>
+                      </label>
                     </div>
-                </div>
-            </div>
-            <!-- HCI 공유 파일 구성 마법사 진행: Modal 영역 끝 -->
-
-            <!-- HCI 공유 파일 구성 마법사 취소: Modal 영역 시작 -->
-            <div id="div-modal-cancel-hci-shared-file-wizard-cancel" class="pf-c-backdrop" style="display:none" >
-                <div class="pf-l-bullseye">
-                    <div class="pf-c-modal-box pf-m-sm" role="dialog" aria-modal="true" aria-label="hci-shared-file  wizard cancel">
-                        <button id="button-close-modal-hci-shared-file-wizard-cancel" aria-disabled="false" aria-label="Close" class="pf-c-button pf-m-plain" type="button">
-                            <i class="fas fa-times" aria-hidden="true"></i>
-                        </button>
-                        <header class="pf-c-modal-box__header"><h1 class="pf-c-modal-box__title"><span class="pf-c-modal-box__title-text">HCI 공유 파일 구성 취소</span></h1></header>
-                        <div class="pf-c-modal-box__body">
-                            <div>HCI 공유 파일 구성을 취소하시겠습니까? 입력된 데이터는 초기화 됩니다.</div>
+                    <div class="pf-v6-c-form__group-control pf-m-inline" style="margin-top:10px">
+                      <div class="pf-v6-c-form__group-control">
+                        <div style="display: inline-flex; align-items: center; max-width: 200px; width: 110%; flex-wrap: nowrap; white-space: nowrap; gap: 6px;">
+                         <input class="pf-v6-c-form-control" type="number" min="1" max="999999" id="form-input-hci-file-volume" name="form-input-hci-file-volume" style="flex: 1; min-width: 0;"/>
+                         <span style="white-space: nowrap;">GB</span>
                         </div>
-                        <footer class="pf-c-modal-box__footer">
-                            <button id="button-execution-modal-hci-shared-file-wizard-cancel" aria-disabled="false" class="pf-c-button pf-m-primary" type="button" data-ouia-safe="true">실행</button>
-                            <button id="button-cancel-modal-hci-shared-file-wizard-cancel" aria-disabled="false" class="pf-c-button pf-m-link" type="button" data-ouia-safe="true">아니요</button>
-                        </footer>
+                       </div>
+                      <div id="div-hci-shared-file-volume" style="margin-left:60px;">
+                        <button class="pf-v6-c-button pf-m-secondary" type="button" id="button-hci-shared-file-create">공유 파일 생성</button>
+                      </div>
                     </div>
+                </section>
+              </form>
+              <br/>
+              <div class="pf-v6-c-alert pf-m-info pf-m-inline" aria-label="HCI 공유 파일 구성 시 참고사항" style="margin-left:15px;margin-top:32px">
+                <div class="pf-v6-c-alert__icon">
+                  <i class="fas fa-fw fa-info-circle" aria-hidden="true"></i>
                 </div>
+                <p class="pf-v6-c-alert__title pf-m-truncate">
+                  <strong><span class="pf-v6-screen-reader">Info alert:</span>HCI 공유 파일 구성 시 참고사항</strong>
+                </p>
+                <div class="pf-v6-c-alert__description">
+                  <p>공유 파일 구성을 진행하기 전에, 내부 Glue 스토리지에서 공유 파일로 사용할 RBD 이미지를 먼저 생성해야 합니다.</p>
+                  <p>설정한 공유 파일 용량을 기준으로 RBD 이미지를 생성하며, 생성이 완료된 후 다음 단계로 진행해 주시기 바랍니다.</p>
+                  <p>RBD 이미지는 이미지 1개당 최대 2TB까지 생성되며, 공유 파일 용량이 2TB를 초과하는 경우 용량에 맞게 여러 개의 RBD 이미지로 분할되어 생성됩니다.</p>
+                  <p>2TB를 초과하는 용량을 설정하신 경우에는 분할 생성된 RBD 이미지가 모두 준비되었는지 확인한 후 다음 단계로 진행해 주시기 바랍니다.</p>
+                  <p>이미 RBD 이미지가 생성되어 있는 환경에서 다시 구성을 진행하는 경우, 기존에 생성된 RBD 이미지를 선택하거나 필요 시 새로 생성한 뒤 다음 단계로 진행해 주시기 바랍니다.</p>
+                </div>
+              </div>
             </div>
-            <!-- HCI 공유 파일 구성 마법사 취소: Modal 영역 끝 -->
+            <div class="pf-v6-c-wizard__main-body" id="div-modal-wizard-hci-shared-file-disk-configure">
+              <p>
+                HCI 공유 파일 전용 디스크로 관리할 'RBD 이미지'를 선택해야 합니다.
+              </p>
+              <form novalidate class="pf-v6-c-form pf-m-horizontal" style="margin-left:15px;margin-top:32px">
+                <section class="pf-v6-c-form__section">
+                  <div class="pf-v6-c-form__group" style="display: block;">
+                    <div class="pf-v6-c-form__group-label">
+                      <label class="pf-v6-c-form__label" for="form-list-hci-shared-file-disk">
+                        <span class="pf-v6-c-form__label-text">HCI 공유 파일 전용 디스크 구성 대상 장치</span>
+                        <span class="pf-v6-c-form__label-required" aria-hidden="true">&#42;</span>
+                      </label>
+                    </div>
+                    <div class="pf-v6-c-form__group-control pf-m-stack" id="disk-hci-shared-file-pci-list" style="margin-top:8px;max-height: 300px;overflow-y: auto;white-space: pre;font-family: monospace">
+                    </div>
+                  </div>
+                </section>
+              </form>
+              <br/>
+              <div class="pf-v6-c-alert pf-m-info pf-m-inline" aria-label="hci-shared-file Disk Info" style="margin-left:15px;margin-top:32px">
+                <div class="pf-v6-c-alert__icon">
+                  <i class="fas fa-fw fa-info-circle" aria-hidden="true"></i>
+                </div>
+                <p class="pf-v6-c-alert__title pf-m-truncate">
+                  <strong><span class="pf-v6-screen-reader">Info alert:</span>HCI 공유 파일 전용 디스크 자원 구성 시 참고사항</strong>
+                </p>
+                <div class="pf-v6-c-alert__description">
+                  <p>
+                    HCI 공유 파일 시스템은 내부 Glue 스토리지를 기반으로 생성한 RBD 이미지를 공유 파일로 구성하여, 여러 호스트가 동일 데이터를 함께 사용할 수 있도록 제공하는 파일 시스템 환경입니다.
+
+                    공유 파일로 사용할 HCI 공유 파일 전용 RBD 이미지가 알맞은지 용량과 대상, 그리고 연결 정보(예: 경로)를 정확히 확인하시기 바랍니다.
+                  </p>
+                </div>
+              </div>
+              <br/>
+            </div>
+            <div class="pf-v6-c-wizard__main-body" id="div-modal-wizard-hci-shared-file-ipmi">
+              <div class="pf-v6-c-content">
+                <p>
+                  클러스터를 구성하기 위한 각 호스트의 IPMI 정보를 설정합니다. 아래의 항목에 값을 입력하십시오.
+                </p>
+                <form novalidate class="pf-v6-c-form pf-m-horizontal" style="margin-left:15px;margin-top:32px">
+                  <section class="pf-v6-c-form__section">
+                    <div class="pf-v6-c-form__group">
+                      <div class="pf-v6-c-form__group-label">
+                        <label class="pf-v6-c-form__label">
+                          <span class="pf-v6-c-form__label-text">IPMI 구성 준비</span>
+                          <span class="pf-v6-c-form__label-required" aria-hidden="true">&#42;</span>
+                        </label>
+                      </div>
+                      <div class="pf-v6-c-form__group-control pf-m-inline" style="margin-top:10px">
+                        <div class="pf-v6-c-radio">
+                          <input class="pf-v6-c-radio__input" type="radio" name="radio-hci-shared-file-ipmi" value="common" checked/>
+                          <label class="pf-v6-c-radio__label">공통 자격 증명</label>
+                        </div>
+                        <div class="pf-v6-c-radio">
+                          <input class="pf-v6-c-radio__input" type="radio" name="radio-hci-shared-file-ipmi" value="individual"/>
+                          <label class="pf-v6-c-radio__label">개별 자격 증명</label>
+                        </div>
+                      </div>
+                    </div>
+                      <div id="div-hci-shared-file-ipmi-credentials" style="border-top-width: thin; border-top-style: groove; border-top-color: #d2d2d2;"></div>
+                  </section>
+                </form>
+              </div>
+            </div>
+            <div class="pf-v6-c-wizard__main-body" id="div-modal-wizard-hci-shared-file-review">
+              <div class="pf-v6-c-content">
+                <p>
+                  HCI 공유 파일 구성을 위해 입력한 설정 정보는 다음과 같습니다.
+                  입력한 정보를 수정하고자 하는 경우, 해당 탭으로 이동하여 정보를 수정하십시오.
+                  <br/>
+                  <br/>
+                  모든 정보를 확인한 후 "배포"를 시작합니다.
+                </p>
+              </div>
+              <div class="pf-v6-c-accordion" style="margin-top:32px;margin-left:10px">
+                <div class="pf-v6-c-accordion__item">
+                <h3>
+                  <button type="button" class="pf-v6-c-accordion__toggle" aria-expanded="false" id="button-accordion-hci-shared-file-disk">
+                    <span class="pf-v6-c-accordion__toggle-text">HCI 공유 파일 전용 디스크 구성</span>
+                    <span class="pf-v6-c-accordion__toggle-icon">
+                      <i class="fas fa-angle-right" aria-hidden="true"></i>
+                    </span>
+                  </button>
+                </h3>
+                <div class="pf-v6-c-accordion__expandable-content" id="div-accordion-hci-shared-file-disk" hidden>
+                  <div class="pf-v6-c-accordion__expandable-content-body">
+                    <dl class="pf-v6-c-description-list pf-m-horizontal" style="--pf-v6-c-description-list--RowGap: 10px;margin-left: 10px;">
+                      <div class="pf-v6-c-description-list__group">
+                        <dt class="pf-v6-c-description-list__term">
+                          <span class="pf-v6-c-description-list__text">HCI 공유 파일 전용 디스크</span>
+                        </dt>
+                        <dd class="pf-v6-c-description-list__description">
+                          <div class="pf-v6-c-description-list__text">
+                            <span id="span-hci-shared-file-disk"></span>
+                          </div>
+                        </dd>
+                      </div>
+                    </dl>
+                  </div>
+                </div>
+                </div>
+              </div>
+              <div class="pf-v6-c-accordion" style="margin-top:32px;margin-left:10px;" id="div-accordion-hci-shared-file-ipmi"></div>
+            </div>
+            <div class="pf-v6-c-wizard__main-body" id="div-modal-wizard-hci-shared-file-deploy">
+              <p id='hci-shared-file-progress-step-text'>
+                HCI 공유 파일을 구성 중입니다. 전체 3단계 중 1단계 진행 중입니다.
+              </p>
+
+              <div class="pf-v6-c-content" style="margin-top:30px;margin-left:15px">
+                <span class="pf-v6-c-label pf-m-blue" id="span-hci-shared-file-progress-step1">
+                  <span class="pf-v6-c-label__content">
+                    <span class="pf-v6-c-label__icon">
+                      <i class="fas fa-fw fa-info-circle" aria-hidden="true"></i>
+                    </span><p>준비중</p>
+                  </span>
+                </span>
+                <span class="pf-v6-c-label__content" style="margin-left:4px">클러스터 구성 HOST 간 연결 상태 확인</span>
+              </div>
+              <div class="pf-v6-c-content" style="margin-top:30px;margin-left:15px">
+                <span class="pf-v6-c-label pf-m-blue" id="span-hci-shared-file-progress-step2">
+                  <span class="pf-v6-c-label__content">
+                    <span class="pf-v6-c-label__icon">
+                      <i class="fas fa-fw fa-info-circle" aria-hidden="true"></i>
+                    </span><p>준비중</p>
+                  </span>
+                </span>
+                <span class="pf-v6-c-label__content" style="margin-left:4px">클러스터 구성 설정 초기화 작업</span>
+              </div>
+              <div class="pf-v6-c-content" style="margin-top:30px;margin-left:15px">
+                <span class="pf-v6-c-label pf-m-blue" id="span-hci-shared-file-progress-step3">
+                  <span class="pf-v6-c-label__content">
+                    <span class="pf-v6-c-label__icon">
+                      <i class="fas fa-fw fa-info-circle" aria-hidden="true"></i>
+                    </span><p>준비중</p>
+                  </span>
+                </span>
+                <span class="pf-v6-c-label__content" style="margin-left:4px">HCI 공유 파일 구성 설정 및 PCS 구성 설정</span>
+              </div>
+            </div>
+            <div class="pf-v6-c-wizard__main-body" id="div-modal-wizard-hci-shared-file-finish">
+              <p>
+                HCI 공유 파일 구성을 완료하였습니다. 아래 내용을 참고하여 HCI 공유 파일 전용 디스크와 PCS가 정상적으로 설정되어 작동하는지 확인한 후,<br/> 다음 단계로 진행하시기 바랍니다.
+              </p>
+              <div class="pf-v6-c-content" style="margin-top:30px;margin-left:15px">
+                <span class="pf-v6-c-label__content" style="margin-top:8px">모든 호스트에 HCI 공유 파일 구성이 완료 했는지 확인합니다.</span>
+                <br/>
+                <span class="pf-v6-c-label__content" style="margin-top:8px">- 확인 명령어 : lsblk, lvs, vgs, pvs</span>
+                <br/><br/>
+                <span class="pf-v6-c-label__content" style="margin-top:8px;">선택한 하나의 호스트에서 PCS 설정이 올바르게 완료되었는지 확인합니다.</span>
+                <br/>
+                <span class="pf-v6-c-label__content" style="margin-top:8px">- 확인 명령어 : pcs status</span>
+              </div>
+              <p style="margin-top:50px">
+                확인 결과 이상이 없다면, 클라우드센터 VM 배포를 진행해 주세요.<br/>마법사를 종료하려면 화면 상단의 닫기 버튼을 클릭하십시오.
+              </p>
+            </div>
+          </main>
+        </div>
+        <footer class="pf-v6-c-wizard__footer">
+          <div class="pf-v6-c-action-list">
+            <div class="pf-v6-c-action-list__group">
+              <div class="pf-v6-c-action-list__item">
+                <button class="pf-v6-c-button pf-m-primary" type="submit" id="button-next-step-modal-hci-shared-file-wizard-config">다음</button>
+              </div>
+              <div class="pf-v6-c-action-list__item">
+                <button class="pf-v6-c-button pf-m-secondary" type="button" id="button-before-step-modal-hci-shared-file-wizard-config">이전</button>
+              </div>
+            </div>
+            <div class="pf-v6-c-action-list__group">
+              <div class="pf-v6-c-action-list__item">
+                <button class="pf-v6-c-button pf-m-link" type="button" id="button-cancel-config-modal-hci-shared-file-wizard-config">취소</button>
+              </div>
+            </div>
+          </div>
+        </footer>
+      </div>
+      <!-- HCI 공유 파일 구성 마법사 진행: Modal 영역 시작 -->
+      <div id="div-modal-hci-shared-file-wizard-confirm" class="pf-v6-c-backdrop" style="display:none" >
+        <div class="pf-v6-l-bullseye">
+          <div class="pf-v6-c-modal-box pf-m-sm" role="dialog" aria-modal="true" aria-label="hci-shared-file wizard confirm">
+            <button id="button-close-modal-hci-shared-file-wizard-confirm" aria-disabled="false" aria-label="Close" class="pf-v6-c-button pf-m-plain" type="button">
+              <i class="fas fa-times" aria-hidden="true"></i>
+            </button>
+            <header class="pf-v6-c-modal-box__header"><h1 class="pf-v6-c-modal-box__title"><span class="pf-v6-c-modal-box__title-text">HCI 공유 파일 구성 진행</span></h1></header>
+            <div class="pf-v6-c-modal-box__body">
+              <div>HCI 공유 파일 구성을 진행하시겠습니까?</div>
+            </div>
+            <footer class="pf-v6-c-modal-box__footer">
+              <button id="button-execution-modal-hci-shared-file-wizard-confirm" aria-disabled="false" class="pf-v6-c-button pf-m-primary" type="button" data-ouia-safe="true">실행</button>
+              <button id="button-cancel-modal-hci-shared-file-wizard-confirm" aria-disabled="false" class="pf-v6-c-button pf-m-link" type="button" data-ouia-safe="true">아니요</button>
+            </footer>
+          </div>
+        </div>
+      </div>
+      <!-- HCI 공유 파일 구성 마법사 진행: Modal 영역 끝 -->
+
+      <!-- HCI 공유 파일 구성 마법사 취소: Modal 영역 시작 -->
+      <div id="div-modal-cancel-hci-shared-file-wizard-cancel" class="pf-v6-c-backdrop" style="display:none" >
+        <div class="pf-v6-l-bullseye">
+          <div class="pf-v6-c-modal-box pf-m-sm" role="dialog" aria-modal="true" aria-label="hci-shared-file wizard cancel">
+            <button id="button-close-modal-hci-shared-file-wizard-cancel" aria-disabled="false" aria-label="Close" class="pf-v6-c-button pf-m-plain" type="button">
+              <i class="fas fa-times" aria-hidden="true"></i>
+            </button>
+            <header class="pf-v6-c-modal-box__header"><h1 class="pf-v6-c-modal-box__title"><span class="pf-v6-c-modal-box__title-text">HCI 공유 파일 구성 취소</span></h1></header>
+            <div class="pf-v6-c-modal-box__body">
+              <div>HCI 공유 파일 구성을 취소하시겠습니까? 입력된 데이터는 초기화 됩니다.</div>
+            </div>
+            <footer class="pf-v6-c-modal-box__footer">
+              <button id="button-execution-modal-hci-shared-file-wizard-cancel" aria-disabled="false" class="pf-v6-c-button pf-m-primary" type="button" data-ouia-safe="true">실행</button>
+              <button id="button-cancel-modal-hci-shared-file-wizard-cancel" aria-disabled="false" class="pf-v6-c-button pf-m-link" type="button" data-ouia-safe="true">아니요</button>
+            </footer>
+          </div>
+        </div>
+      </div>
+      <!-- HCI 공유 파일 구성 마법사 취소: Modal 영역 끝 -->
 <!-- 해당 페이지에 필요한 javascript 파일 추가 영역 시작 -->
 <script src="./src/common/wizard-common.js"></script>
 <script src="./src/common/validation.js"></script>

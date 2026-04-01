@@ -1,0 +1,327 @@
+<!--
+ * File Name : ccvm-backup.html
+ * Date Created : 2026.03.18
+ * Writer : 정민철
+ * Description : CCVM 백업 modal html
+-->
+<div id="ccvm-vm-backup-div-modal-backup-cloud-vm" class="pf-v6-c-backdrop">
+ <div class="pf-v6-l-bullseye">
+   <div class="pf-v6-c-modal-box pf-m-md" role="dialog" aria-modal="true" aria-label="Cloud VM Backup" style="width: 900px;">
+     <button id="ccvm-vm-backup-button-close-modal-cloud-vm-dump" aria-disabled="false" aria-label="Close" class="pf-v6-c-button pf-m-plain" type="button">
+     <i class="fas fa-times" aria-hidden="true"></i>
+     </button>
+     <header class="pf-v6-c-modal-box__header">
+     <h1 class="pf-v6-c-modal-box__title"><span class="pf-v6-c-modal-box__title-text">클라우드센터 백업</span></h1>
+     </header>
+     <div class="pf-v6-c-modal-box__body">
+       <div class="pf-v6-l-stack pf-m-gutter">
+        <div class="pf-v6-c-card pf-m-compact" style="background: var(--pf-t--global--background--color--secondary--default); border: 1px solid var(--pf-t--global--border--color--default);">
+          <div class="pf-v6-c-card__body">
+            <div class="pf-v6-l-flex pf-m-align-items-center pf-m-gap-md">
+              <span class="pf-v6-c-icon pf-m-lg" style="color: var(--pf-t--global--icon--color--brand--default);">
+                <i class="fas fa-database" aria-hidden="true"></i>
+              </span>
+              <div>
+                <div class="pf-v6-c-title pf-m-md">백업 개요</div>
+                <div id="ccvm-vm-backup-div-backup" class="pf-v6-c-content">
+                  클라우드센터 백업을 확인합니다.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="pf-v6-c-card">
+          <div class="pf-v6-c-card__header">
+             <div class="pf-v6-l-flex pf-m-align-items-center pf-m-gap-sm">
+               <span class="pf-v6-c-icon pf-m-lg" style="color: var(--pf-t--global--icon--color--brand--default);">
+                 <i class="fas fa-hdd" aria-hidden="true"></i>
+               </span>
+               <div>
+                 <div class="pf-v6-c-title pf-m-md">백업 실행</div>
+                 <div class="pf-v6-c-content pf-m-sm">클라우드센터 가상머신을 즉시 백업합니다.</div>
+               </div>
+             </div>
+           </div>
+           <div class="pf-v6-c-card__body">
+             <div class="pf-v6-l-stack pf-m-gutter">
+               <form novalidate="" class="pf-v6-c-form pf-m-horizontal">
+                 <div class="pf-v6-c-form__group">
+                   <div class="pf-v6-c-form__group-label">
+                     <label class="pf-v6-c-form__label" for="ccvm-vm-backup-target-dir">
+                       <span class="pf-v6-c-form__label-text">백업 경로</span>
+                     </label>
+                   </div>
+                   <div class="pf-v6-c-form__group-control">
+                     <input id="ccvm-vm-backup-target-dir" class="pf-v6-c-form-control" type="text" aria-invalid="false" value="/mnt/glue-gfs/backup/ccvm">
+                     <div class="pf-v6-c-helper-text pf-m-static">
+                       <div class="pf-v6-c-helper-text__item">
+                         <span class="pf-v6-c-helper-text__item-text">파일명 규칙: ccvm.qcow2-YYYYMMDD_HHMMSS</span>
+                       </div>
+                     </div>
+                   </div>
+                 </div>
+               </form>
+             </div>
+          </div>
+        </div>
+        <div class="pf-v6-c-card">
+          <div class="pf-v6-c-card__header">
+            <div class="pf-v6-l-flex pf-m-align-items-center pf-m-gap-sm">
+              <span class="pf-v6-c-icon pf-m-lg" style="color: var(--pf-t--global--icon--color--brand--default);">
+                <i class="fas fa-calendar-alt" aria-hidden="true"></i>
+              </span>
+              <div>
+                <div class="pf-v6-c-title pf-m-md">정기 백업</div>
+                <div class="pf-v6-c-content pf-m-sm">반복 주기와 실행 시점을 설정합니다.</div>
+              </div>
+            </div>
+          </div>
+          <div class="pf-v6-c-card__body">
+            <div class="pf-v6-l-stack pf-m-gutter">
+              <div class="pf-v6-l-flex pf-m-align-items-center pf-m-gap-sm">
+                <label class="pf-v6-c-switch pf-v6-c-form-control" for="ccvm-vm-backup-switch-schedule" style="width: fit-content;border: none;">
+                  <input id="ccvm-vm-backup-switch-schedule" class="pf-v6-c-switch__input" type="checkbox" aria-label="정기 백업 활성화">
+                  <span class="pf-v6-c-switch__toggle">
+                    <div class="pf-v6-c-switch__toggle-icon" aria-hidden="true">
+                      <svg fill="currentColor" height="1em" width="1em" viewbox="0 0 512 512" aria-hidden="true" role="img">
+                        <path d="M173.898 439.404l-166.4-166.4c-9.997-9.997-9.997-26.206 0-36.204l36.203-36.204c9.997-9.998 26.207-9.998 36.204 0L192 312.69 432.095 72.596c9.997-9.997 26.207-9.997 36.204 0l36.203 36.204c9.997 9.997 9.997 26.206 0 36.204l-294.4 294.401c-9.998 9.997-26.207 9.997-36.204-.001z"></path>
+                      </svg>
+                    </div>
+                  </span>
+                </label>
+                <span class="pf-v6-c-content pf-m-sm">정기 백업 활성화</span>
+              </div>
+              <form novalidate="" class="pf-v6-c-form pf-m-horizontal">
+                <div class="pf-v6-c-form__group">
+                  <div class="pf-v6-c-form__group-label">
+                    <label class="pf-v6-c-form__label" for="ccvm-vm-backup-select-repeat">
+                      <span class="pf-v6-c-form__label-text">반복</span>
+                    </label>
+                  </div>
+                  <div class="pf-v6-c-form__group-control">
+                    <select id="ccvm-vm-backup-select-repeat" aria-label="반복" class="pf-v6-c-form-control" disabled>
+                      <option value="hourly">시간</option>
+                      <option value="daily">매일</option>
+                      <option value="monthly">매월</option>
+                      <option value="yearly">월별</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="pf-v6-c-form__group" id="ccvm-vm-backup-schedule-time-group">
+                  <div class="pf-v6-c-form__group-label">
+                    <label class="pf-v6-c-form__label" for="ccvm-vm-backup-input-schedule-time">
+                      <span class="pf-v6-c-form__label-text">다음에서 실행</span>
+                    </label>
+                  </div>
+                  <div class="pf-v6-c-form__group-control">
+                    <input type="text" autocomplete="off" id="ccvm-vm-backup-input-schedule-time" class="pf-v6-c-form-control" value="00:00" disabled>
+                    <input type="number" min="0" max="59" autocomplete="off" id="ccvm-vm-backup-input-schedule-minute" class="pf-v6-c-form-control" value="0" style="display:none" disabled>
+                    <p class="pf-v6-c-form__helper-text" id="ccvm-vm-backup-schedule-time-help"></p>
+                  </div>
+                </div>
+                <div class="pf-v6-c-form__group" id="ccvm-vm-backup-schedule-month-group" style="display:none">
+                  <div class="pf-v6-c-form__group-label">
+                    <label class="pf-v6-c-form__label" for="ccvm-vm-backup-select-schedule-month">
+                      <span class="pf-v6-c-form__label-text">월</span>
+                    </label>
+                  </div>
+                  <div class="pf-v6-c-form__group-control">
+                    <select id="ccvm-vm-backup-select-schedule-month" class="pf-v6-c-form-control" disabled>
+                      <option value="1">1월</option>
+                      <option value="2">2월</option>
+                      <option value="3">3월</option>
+                      <option value="4">4월</option>
+                      <option value="5">5월</option>
+                      <option value="6">6월</option>
+                      <option value="7">7월</option>
+                      <option value="8">8월</option>
+                      <option value="9">9월</option>
+                      <option value="10">10월</option>
+                      <option value="11">11월</option>
+                      <option value="12">12월</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="pf-v6-c-form__group" id="ccvm-vm-backup-schedule-day-group" style="display:none">
+                  <div class="pf-v6-c-form__group-label">
+                    <label class="pf-v6-c-form__label" for="ccvm-vm-backup-select-schedule-day">
+                      <span class="pf-v6-c-form__label-text">일자</span>
+                    </label>
+                  </div>
+                  <div class="pf-v6-c-form__group-control">
+                    <select id="ccvm-vm-backup-select-schedule-day" class="pf-v6-c-form-control" disabled>
+                      <option value="1">1일</option>
+                      <option value="2">2일</option>
+                      <option value="3">3일</option>
+                      <option value="4">4일</option>
+                      <option value="5">5일</option>
+                      <option value="6">6일</option>
+                      <option value="7">7일</option>
+                      <option value="8">8일</option>
+                      <option value="9">9일</option>
+                      <option value="10">10일</option>
+                      <option value="11">11일</option>
+                      <option value="12">12일</option>
+                      <option value="13">13일</option>
+                      <option value="14">14일</option>
+                      <option value="15">15일</option>
+                      <option value="16">16일</option>
+                      <option value="17">17일</option>
+                      <option value="18">18일</option>
+                      <option value="19">19일</option>
+                      <option value="20">20일</option>
+                      <option value="21">21일</option>
+                      <option value="22">22일</option>
+                      <option value="23">23일</option>
+                      <option value="24">24일</option>
+                      <option value="25">25일</option>
+                      <option value="26">26일</option>
+                      <option value="27">27일</option>
+                      <option value="28">28일</option>
+                      <option value="29">29일</option>
+                      <option value="30">30일</option>
+                      <option value="31">31일</option>
+                    </select>
+                  </div>
+                </div>
+              </form>
+              <div class="pf-v6-l-flex pf-m-align-items-center pf-m-justify-content-space-between pf-m-gap-md">
+                <div id="ccvm-vm-backup-schedule-message" class="pf-v6-c-content pf-m-sm"></div>
+                <button id="ccvm-vm-backup-button-apply-schedule" class="pf-v6-c-button pf-m-secondary" type="button">정기 백업 적용</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="pf-v6-c-card">
+          <div class="pf-v6-c-card__header">
+            <div class="pf-v6-l-flex pf-m-align-items-center pf-m-gap-sm">
+              <span class="pf-v6-c-icon pf-m-lg" style="color: var(--pf-t--global--icon--color--brand--default);">
+                <i class="fas fa-trash-alt" aria-hidden="true"></i>
+              </span>
+              <div>
+                <div class="pf-v6-c-title pf-m-md">백업 파일 삭제 관리</div>
+                <div class="pf-v6-c-content pf-m-sm">보관 기간 이후의 파일을 자동 삭제합니다.</div>
+              </div>
+            </div>
+          </div>
+          <div class="pf-v6-c-card__body">
+            <div class="pf-v6-l-stack pf-m-gutter">
+              <div class="pf-v6-l-flex pf-m-align-items-center pf-m-gap-sm">
+                <label class="pf-v6-c-switch pf-v6-c-form-control" for="ccvm-vm-backup-switch-delete" style="width: fit-content;border: none;">
+                  <input id="ccvm-vm-backup-switch-delete" class="pf-v6-c-switch__input" type="checkbox" aria-label="삭제 관리 활성화">
+                  <span class="pf-v6-c-switch__toggle">
+                    <div class="pf-v6-c-switch__toggle-icon" aria-hidden="true">
+                      <svg fill="currentColor" height="1em" width="1em" viewbox="0 0 512 512" aria-hidden="true" role="img">
+                        <path d="M173.898 439.404l-166.4-166.4c-9.997-9.997-9.997-26.206 0-36.204l36.203-36.204c9.997-9.998 26.207-9.998 36.204 0L192 312.69 432.095 72.596c9.997-9.997 26.207-9.997 36.204 0l36.203 36.204c9.997 9.997 9.997 26.206 0 36.204l-294.4 294.401c-9.998 9.997-26.207 9.997-36.204-.001z"></path>
+                      </svg>
+                    </div>
+                  </span>
+                </label>
+                <span class="pf-v6-c-content pf-m-sm">삭제 관리 활성화</span>
+              </div>
+              <form novalidate="" class="pf-v6-c-form pf-m-horizontal">
+                <div class="pf-v6-c-form__group">
+                  <div class="pf-v6-c-form__group-label">
+                    <label class="pf-v6-c-form__label" for="ccvm-vm-backup-input-retention-months">
+                      <span class="pf-v6-c-form__label-text">보관 기간(개월)</span>
+                    </label>
+                  </div>
+                  <div class="pf-v6-c-form__group-control">
+                    <input id="ccvm-vm-backup-input-retention-months" class="pf-v6-c-form-control" type="number" min="1" value="3" disabled>
+                  </div>
+                </div>
+                <div class="pf-v6-c-form__group">
+                  <div class="pf-v6-c-form__group-label">
+                    <label class="pf-v6-c-form__label" for="ccvm-vm-backup-select-delete-repeat">
+                      <span class="pf-v6-c-form__label-text">삭제 주기</span>
+                    </label>
+                  </div>
+                  <div class="pf-v6-c-form__group-control">
+                    <select id="ccvm-vm-backup-select-delete-repeat" class="pf-v6-c-form-control" disabled>
+                      <option value="daily">매일</option>
+                      <option value="monthly">매월</option>
+                    </select>
+                    <div class="pf-v6-c-helper-text pf-m-static">
+                      <div class="pf-v6-c-helper-text__item">
+                        <span class="pf-v6-c-helper-text__item-text">매일: 매일 지정된 시간에 실행, 매월: 선택한 일자/시간에 매월 실행</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="pf-v6-c-form__group" id="ccvm-vm-backup-delete-day-group" style="display:none">
+                  <div class="pf-v6-c-form__group-label">
+                    <label class="pf-v6-c-form__label" for="ccvm-vm-backup-select-delete-day">
+                      <span class="pf-v6-c-form__label-text">일자</span>
+                    </label>
+                  </div>
+                  <div class="pf-v6-c-form__group-control">
+                    <select id="ccvm-vm-backup-select-delete-day" class="pf-v6-c-form-control" disabled>
+                      <option value="1">1일</option>
+                      <option value="2">2일</option>
+                      <option value="3">3일</option>
+                      <option value="4">4일</option>
+                      <option value="5">5일</option>
+                      <option value="6">6일</option>
+                      <option value="7">7일</option>
+                      <option value="8">8일</option>
+                      <option value="9">9일</option>
+                      <option value="10">10일</option>
+                      <option value="11">11일</option>
+                      <option value="12">12일</option>
+                      <option value="13">13일</option>
+                      <option value="14">14일</option>
+                      <option value="15">15일</option>
+                      <option value="16">16일</option>
+                      <option value="17">17일</option>
+                      <option value="18">18일</option>
+                      <option value="19">19일</option>
+                      <option value="20">20일</option>
+                      <option value="21">21일</option>
+                      <option value="22">22일</option>
+                      <option value="23">23일</option>
+                      <option value="24">24일</option>
+                      <option value="25">25일</option>
+                      <option value="26">26일</option>
+                      <option value="27">27일</option>
+                      <option value="28">28일</option>
+                      <option value="29">29일</option>
+                      <option value="30">30일</option>
+                      <option value="31">31일</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="pf-v6-c-form__group" id="ccvm-vm-backup-delete-time-group">
+                  <div class="pf-v6-c-form__group-label">
+                    <label class="pf-v6-c-form__label" for="ccvm-vm-backup-input-delete-time">
+                      <span class="pf-v6-c-form__label-text">실행 시간</span>
+                    </label>
+                  </div>
+                  <div class="pf-v6-c-form__group-control">
+                    <input type="text" autocomplete="off" id="ccvm-vm-backup-input-delete-time" class="pf-v6-c-form-control" value="00:00" disabled>
+                  </div>
+                </div>
+              </form>
+              <div class="pf-v6-l-flex pf-m-align-items-center pf-m-justify-content-space-between pf-m-gap-md">
+                <div id="ccvm-vm-backup-delete-message" class="pf-v6-c-content pf-m-sm"></div>
+                <button id="ccvm-vm-backup-button-apply-delete" class="pf-v6-c-button pf-m-secondary" type="button">삭제 관리 적용</button>
+              </div>
+            </div>
+          </div>
+        </div>
+       </div>
+     <footer class="pf-v6-c-modal-box__footer">
+       <div class="pf-v6-c-helper-text pf-m-static" style="margin-right:auto;">
+         <div class="pf-v6-c-helper-text__item">
+           <span class="pf-v6-c-helper-text__item-text">백업 경로는 저장 위치, 정기 백업은 반복 주기/시간 설정, 삭제 관리는 보관 기간 이후 자동 삭제입니다.</span>
+         </div>
+       </div>
+       <button id="ccvm-vm-backup-button-execution-modal-cloud-vm-dump" aria-disabled="false" class="pf-v6-c-button pf-m-primary" type="button" data-ouia-safe="true">백업 시작</button>
+       <button id="ccvm-vm-backup-button-open-status" aria-disabled="false" class="pf-v6-c-button pf-m-secondary" type="button" data-ouia-safe="true">상태 확인</button>
+       <button id="ccvm-vm-backup-button-cancel-modal-cloud-vm-dump" aria-disabled="false" class="pf-v6-c-button pf-m-link" type="button" data-ouia-safe="true">취소</button>
+     </footer>
+   </div>
+ </div>
+</div>
+<!-- 해당 페이지에 필요한 javascript 파일 추가 영역 시작 -->
+<script src="./src/features/ccvm-backup.js"></script>
+<!-- 해당 페이지에 필요한 javascript 파일 추가 영역 끝 -->

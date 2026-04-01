@@ -56,6 +56,39 @@ is_valid_port() {
   [[ "$1" =~ ^[0-9]+$ ]] && (( 1 <= $1 && $1 <= 65535 ))
 }
 
+#====================[ firewalld 서비스 보장 ]====================#
+ensure_firewalld() {
+  # firewall-cmd가 없으면 firewalld도 없다고 보고 스킵
+  if ! command -v firewall-cmd >/dev/null 2>&1; then
+    return 0
+  fi
+
+  if ! command -v systemctl >/dev/null 2>&1; then
+    echo "[WARN] systemctl 미존재: firewalld 상태를 확인/시작할 수 없습니다."
+    return 0
+  fi
+
+  if ! systemctl is-active --quiet firewalld 2>/dev/null; then
+    echo "[INFO] firewalld 서비스가 비활성화되어 있어 시작합니다."
+    if systemctl start firewalld 2>/dev/null; then
+      echo "[INFO] firewalld 시작 완료"
+    else
+      echo "[WARN] firewalld 시작 실패 또는 서비스 없음. 계속 진행합니다."
+      return 0
+    fi
+  fi
+
+  if ! systemctl is-enabled --quiet firewalld 2>/dev/null; then
+    if systemctl enable firewalld >/dev/null 2>&1; then
+      echo "[INFO] firewalld enable 완료"
+    else
+      echo "[WARN] firewalld enable 실패. 계속 진행합니다."
+    fi
+  fi
+}
+
+ensure_firewalld
+
 #====================[ Ceph SSH 설정만 수행하는 모드 ]====================#
 #  - 용도: 이미 호스트 SSH 포트는 바꾼 뒤, ceph cephadm ssh-config만 따로 맞추고 싶을 때
 #  - 호출 예: security_update.sh -P 10022 --ceph-ssh-change
@@ -482,6 +515,56 @@ else
     echo "/etc/rsyslog.conf 파일의 소유자와 권한이 이미 올바릅니다."
 fi
 
+### U-66 로그정책 수립
+# /etc/rsyslog.conf 에서 kern.* /dev/console 규칙을 *.alert /dev/console 로 변경/보장
+if [ -f "$RSYSLOG_CONF" ]; then
+    if grep -qE '^[[:space:]]*#?[[:space:]]*kern\.\*[[:space:]]+/dev/console' "$RSYSLOG_CONF"; then
+        sed -i 's|^[[:space:]]*#\?[[:space:]]*kern\.\*[[:space:]]\+/dev/console|*.alert /dev/console|' "$RSYSLOG_CONF"
+        echo "/etc/rsyslog.conf 파일의 kern.* /dev/console 규칙을 *.alert /dev/console 로 변경했습니다."
+    fi
+
+    if grep -qE '^[[:space:]]*\*\.alert[[:space:]]+/dev/console' "$RSYSLOG_CONF"; then
+        echo "/etc/rsyslog.conf 파일에 *.alert /dev/console 규칙이 이미 존재합니다."
+    else
+        echo "*.alert /dev/console" >> "$RSYSLOG_CONF"
+        echo "/etc/rsyslog.conf 파일에 *.alert /dev/console 규칙을 추가했습니다."
+    fi
+
+    if command -v systemctl >/dev/null 2>&1; then
+        if systemctl restart rsyslog >/dev/null 2>&1; then
+            echo "rsyslog 서비스가 재시작되었습니다."
+        else
+            echo "[WARN] rsyslog 재시작 실패 또는 서비스 없음. 계속 진행합니다."
+        fi
+    else
+        echo "[WARN] systemctl 미존재: rsyslog 재시작을 건너뜁니다."
+    fi
+else
+    echo "/etc/rsyslog.conf 파일이 존재하지 않습니다."
+fi
+
+### U-67 로그파일 권한 644 이하
+# wtmp/lastlog 은 644, btmp 및 btmp-* 는 640 으로 보수적으로 설정
+for file in /var/log/wtmp /var/log/lastlog; do
+    if [ -e "$file" ]; then
+        chmod 644 "$file"
+        echo "$file 파일의 권한을 644로 설정했습니다."
+    else
+        echo "$file 파일이 존재하지 않습니다."
+    fi
+done
+
+shopt -s nullglob
+for file in /var/log/btmp /var/log/btmp-*; do
+    if [ -e "$file" ]; then
+        chmod 640 "$file"
+        echo "$file 파일의 권한을 640으로 설정했습니다."
+    else
+        echo "$file 파일이 존재하지 않습니다."
+    fi
+done
+shopt -u nullglob
+
 ###/etc/services 파일 소유자 및 권한 설정
 # /etc/services 파일 경로
 SERVICES_FILE="/etc/services"
@@ -703,6 +786,14 @@ else
 fi
 
 ### SUID, SGID 설정 및 권한 설정
+# U-23 불필요한 SGID/SUID 제거
+if [ -e "/usr/bin/newgrp" ]; then
+  chmod -s /usr/bin/newgrp || true
+  echo "/usr/bin/newgrp 파일의 SGID/SUID 비트를 제거했습니다."
+else
+  echo "/usr/bin/newgrp 파일이 존재하지 않습니다."
+fi
+
 files=(
   "/sbin/dump"
   "/sbin/restore"
@@ -714,7 +805,6 @@ files=(
   "/usr/bin/lpr-lpd"
   "/usr/bin/lprm"
   "/usr/bin/lprm-lpd"
-  "/usr/bin/newgrp"
   "/usr/sbin/lpc"
   "/usr/sbin/lpc-lpd"
   "/usr/sbin/traceroute"
@@ -729,10 +819,66 @@ for file in "${files[@]}"; do
 done
 
 ### 로그온 시 경고 메시지 출력
-warning_message="** WARNING ** Unauthorized access to this system is prohibited. ** WARNING **\n\nPlease ensure you have proper authorization to access this system."
-# sudo 불필요, 루트로 실행 가정
-printf "%b\n" "$warning_message" > /etc/motd || true
-echo "MOTD 파일에 경고 메시지를 추가했습니다."
+# 통일된 경고 문구를 /etc/motd, /etc/issue, /etc/issue.net 에 기록
+write_login_banner() {
+  local target="$1"
+  cat <<'EOF' > "$target"
+=================================================================
+
+** WARNING ** Unauthorized access to this system is prohibited. ** WARNING **
+
+Please ensure you have proper authorization to access this system.
+=================================================================
+EOF
+}
+
+write_login_banner /etc/motd
+write_login_banner /etc/issue
+write_login_banner /etc/issue.net
+echo "MOTD/issue/issue.net 파일에 경고 메시지를 추가했습니다."
+
+# sshd Banner 설정 반영 및 재시작
+BANNER_LINE="Banner /etc/issue.net"
+SSHD_BANNER_CONF="/etc/ssh/sshd_config.d/99-banner.conf"
+
+# Include 기반 설정이면 drop-in으로 강제, 아니면 sshd_config에 직접 반영
+if grep -qE '^[[:space:]]*Include[[:space:]]+/etc/ssh/sshd_config\.d/\*\.conf' "$SSHD_CONFIG" \
+  && [ -d /etc/ssh/sshd_config.d ]; then
+  printf '%s\n' "$BANNER_LINE" > "$SSHD_BANNER_CONF"
+  chmod 644 "$SSHD_BANNER_CONF" || true
+  echo "$SSHD_BANNER_CONF 파일에 배너 설정을 반영했습니다."
+else
+  if grep -qE '^[[:space:]]*Match[[:space:]]+' "$SSHD_CONFIG"; then
+    tmp_file="$(mktemp /tmp/sshd_config.XXXXXX)"
+    awk -v bl="$BANNER_LINE" '
+      BEGIN { done=0 }
+      {
+        if ($0 ~ /^[[:space:]]*#?[[:space:]]*Banner[[:space:]]+/) next
+        if (!done && $0 ~ /^[[:space:]]*Match[[:space:]]+/) {
+          print bl
+          done=1
+        }
+        print
+      }
+      END { if (!done) print bl }
+    ' "$SSHD_CONFIG" > "$tmp_file"
+    cat "$tmp_file" > "$SSHD_CONFIG"
+    rm -f "$tmp_file"
+    echo "$SSHD_CONFIG 파일에 배너 설정을 반영했습니다."
+  else
+    sed -i '/^[[:space:]]*#\?[[:space:]]*Banner[[:space:]]\+/d' "$SSHD_CONFIG"
+    echo "$BANNER_LINE" >> "$SSHD_CONFIG"
+    echo "$SSHD_CONFIG 파일에 배너 설정을 추가했습니다."
+  fi
+fi
+
+if sshd -t 2>/dev/null; then
+  systemctl restart sshd
+  echo "[INFO] sshd 재시작 완료(Banner=/etc/issue.net)"
+else
+  echo "[ERROR] sshd 설정 문법 오류로 재시작 중단"
+  exit 1
+fi
 
 ### 불필요한 사용자 삭제 (멱등/내결함성)
 USERS_TO_REMOVE=("ftp" "lp")

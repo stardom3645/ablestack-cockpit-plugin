@@ -1,6 +1,7 @@
 {
     "clusterConfig": {
         "type": "",
+        "backup_path": "/mnt/glue-gfs/backup/ccvm",
         "ccvm": {
             "ip": ""
         },
