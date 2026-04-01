@@ -74,7 +74,7 @@ def wallCenter(action, H=False):
     if action == 'wallCenter':
         try:
             # 모니터링센터
-            value = "https://"+ip+":8081/login"
+            value = "https://"+ip+":19400/login"
             request = requests.get(value, verify=False, timeout=3)
 
         except:
@@ -83,7 +83,7 @@ def wallCenter(action, H=False):
 
     else:
         # 클라우드센터 가상머신
-        value = 'https://'+ip+':8081/login'
+        value = 'https://'+ip+':19400/login'
 
     if H:
         return json.dumps(json.loads(createReturn(code=200, val=value, retname=action)), indent=4)

@@ -98,7 +98,20 @@ $('#button-storage-vm-status-update').on('click', function(){
         cockpit.spawn(["sh", pluginpath+"/shell/host/bootstrap_run.sh","ccvm", license_type])
             .then(function(data){
                 console.log(data);
-                location.reload();
+                $('#div-modal-spinner-header-txt').text('Cube Cockpit HTTPS 인증서를 적용하고 있습니다.');
+                cockpit.spawn(["python3", "/usr/share/ablestack/bootstrap/deploy_cockpit_https_all.py"], { host: "ccvm" })
+                    .then(function(httpsData){
+                        console.log(httpsData);
+                        location.reload();
+                    })
+                    .catch(function(httpsError){
+                        $('#div-modal-spinner').hide();
+                        $("#modal-status-alert-title").html("Cube Cockpit HTTPS 적용");
+                        $("#modal-status-alert-body").html("클라우드센터 구성은 완료되었지만 Cube Cockpit HTTPS 인증서 적용에 실패했습니다.<br/>ccvm에서 deploy_cockpit_https_all.py 실행 로그를 확인해주세요.");
+                        $('#div-modal-status-alert').show();
+                        createLoggerInfo("deploy_cockpit_https_all.py Error");
+                        console.log("deploy_cockpit_https_all.py Error : " + httpsError);
+                    });
             })
             .catch(function(data){
                 createLoggerInfo("bootstrap_run_check() Error");
