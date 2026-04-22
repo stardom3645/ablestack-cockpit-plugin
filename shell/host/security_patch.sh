@@ -56,6 +56,16 @@ is_valid_port() {
   [[ "$1" =~ ^[0-9]+$ ]] && (( 1 <= $1 && $1 <= 65535 ))
 }
 
+ensure_permit_root_login() {
+  local target="$1"
+
+  if grep -qE '^[[:space:]#]*PermitRootLogin[[:space:]]+' "$target" 2>/dev/null; then
+    sed -i 's/^[[:space:]#]*PermitRootLogin[[:space:]].*/PermitRootLogin prohibit-password/' "$target"
+  else
+    echo 'PermitRootLogin prohibit-password' >> "$target"
+  fi
+}
+
 #====================[ firewalld 서비스 보장 ]====================#
 ensure_firewalld() {
   # firewall-cmd가 없으면 firewalld도 없다고 보고 스킵
@@ -139,9 +149,7 @@ if [[ -n "$SSH_PORT" ]]; then
   grep -qE '^[#]*Port[[:space:]]+[0-9]+' "$SSHD_CONFIG" || echo "Port ${SSH_PORT}" >> "$SSHD_CONFIG"
 
   # PermitRootLogin/ClientAlive 통일
-  grep -q '^PermitRootLogin' "$SSHD_CONFIG" \
-    && sed -i 's/^PermitRootLogin .*/PermitRootLogin prohibit-password/' "$SSHD_CONFIG" \
-    || echo 'PermitRootLogin prohibit-password' >> "$SSHD_CONFIG"
+  ensure_permit_root_login "$SSHD_CONFIG"
 
   grep -q '^ClientAliveInterval' "$SSHD_CONFIG" \
     && sed -i 's/^ClientAliveInterval .*/ClientAliveInterval 0/' "$SSHD_CONFIG" \
@@ -151,9 +159,7 @@ if [[ -n "$SSH_PORT" ]]; then
     && sed -i 's/^ClientAliveCountMax .*/ClientAliveCountMax 3/' "$SSHD_CONFIG" \
     || echo 'ClientAliveCountMax 3' >> "$SSHD_CONFIG"
 
-  grep -q '^PermitRootLogin' "$PERMITROOTLOGIN_CONF" \
-    && sed -i 's/^PermitRootLogin .*/PermitRootLogin prohibit-password/' "$PERMITROOTLOGIN_CONF" \
-    || echo 'PermitRootLogin prohibit-password' >> "$PERMITROOTLOGIN_CONF"
+  ensure_permit_root_login "$PERMITROOTLOGIN_CONF"
 
   # /root/.ssh/config 갱신
   cat > /root/.ssh/config <<EOF
@@ -223,6 +229,8 @@ else
     echo "[ERROR] --port-change 옵션을 사용하려면 -P <포트>를 함께 지정해야 합니다."
     exit 1
   fi
+  ensure_permit_root_login "$SSHD_CONFIG"
+  ensure_permit_root_login "$PERMITROOTLOGIN_CONF"
   echo "[INFO] -P 미지정: SSH/cephadm 포트 관련 변경을 모두 생략합니다."
 fi
 

@@ -229,6 +229,9 @@ $('#button-execution-modal-local-storage-wizard-confirm').on('click', function (
 });
 
 // 마법사 "취소 버튼 모달창" show, hide
+$('#button-cancel-config-modal-local-storage-wizard-config').on('click', function () {
+  $('#div-modal-cancel-local-storage-wizard-cancel').show();
+});
 $('#button-cancel-modal-local-storage-wizard-confirm').on('click', function () {
   $('#div-modal-cancel-local-storage-wizard-cancel').show();
 });

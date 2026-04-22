@@ -52,6 +52,8 @@ BACKUP_CRON_MARKER = "CCVM_BACKUP_SCHEDULE"
 DELETE_CRON_MARKER = "CCVM_BACKUP_DELETE"
 PCS_RESOURCE = "cloudcenter_res"
 CCVM_IMAGE_PATH = "/mnt/glue-gfs/ccvm.qcow2"
+STANDALONE_CCVM_IMAGE_PATH = "/mnt/glue/ccvm.qcow2"
+STANDALONE_CCVM_XML_PATH = "/mnt/glue/ccvm.xml"
 RESTORE_TIMEOUT_SEC = 600
 RESTORE_POLL_SEC = 5
 
@@ -242,7 +244,11 @@ def run_local_command(cmd):
 
 
 def is_pcs_available():
-    return shutil.which("pcs") is not None
+    if shutil.which("pcs") is None:
+        return False
+    if is_standalone():
+        return False
+    return True
 
 def run_pcs(action):
     cmd = ["/usr/bin/python3", os.path.join(pluginpath, "python", "pcs", "main.py"), action, "--resource", PCS_RESOURCE]
@@ -532,6 +538,21 @@ def load_cluster_json():
             return json.load(fp)
     except Exception:
         return {}
+
+
+def get_cluster_type():
+    data = load_cluster_json()
+    if isinstance(data, dict):
+        if isinstance(data.get("type"), str) and data.get("type").strip():
+            return data.get("type")
+        cluster_cfg = data.get("clusterConfig")
+        if isinstance(cluster_cfg, dict) and isinstance(cluster_cfg.get("type"), str):
+            return cluster_cfg.get("type")
+    return ""
+
+
+def is_standalone():
+    return get_cluster_type().strip().lower() == "ablestack-standalone"
 
 
 def get_backup_path_from_cluster():
@@ -1001,6 +1022,35 @@ def restore_ccvm(target_file):
             return createReturn(code=500, val="복구 대상 파일은 절대 경로여야 합니다.")
         if not os.path.isfile(target_file):
             return createReturn(code=500, val="복구 대상 파일이 존재하지 않습니다.")
+
+        if is_standalone():
+            shutdown_result = run_local_command(["virsh", "shutdown", DOMAIN_NAME])
+            if shutdown_result.returncode != 0:
+                err = (shutdown_result.stderr or shutdown_result.stdout or "").strip()
+                err_lower = err.lower()
+                if "domain is not running" not in err_lower:
+                    return createReturn(code=500, val=err or "virsh shutdown failed.")
+
+            deadline = time.monotonic() + 120
+            while time.monotonic() < deadline:
+                state_result = run_local_command(["virsh", "domstate", DOMAIN_NAME])
+                state = (state_result.stdout or "").strip().lower()
+                if "shut off" in state or "shutoff" in state:
+                    break
+                time.sleep(2)
+
+            os.makedirs(os.path.dirname(STANDALONE_CCVM_IMAGE_PATH), exist_ok=True)
+            shutil.copy2(target_file, STANDALONE_CCVM_IMAGE_PATH)
+
+            start_result = run_local_command(["virsh", "start", DOMAIN_NAME])
+            if start_result.returncode != 0:
+                err = (start_result.stderr or start_result.stdout or "").strip()
+                return createReturn(code=500, val=err or "virsh start failed.")
+
+            return createReturn(
+                code=200,
+                val={"disk_path": STANDALONE_CCVM_IMAGE_PATH, "source": target_file},
+            )
 
         pcs_json, err = run_pcs("disable")
         if not pcs_json or pcs_json.get("code") != 200:

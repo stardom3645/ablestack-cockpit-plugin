@@ -444,10 +444,10 @@ def reset_cluster_config():
     clusterConfig["gwvm"]["ip"] = ""
     clusterConfig["gwvm"]["pn"] = ""
     clusterConfig["pfmp"]["ingress_ip"] = ""
-    clusterConfig["mngtNic"]["cidr"] = ""
-    clusterConfig["mngtNic"]["gw"] = ""
-    clusterConfig["mngtNic"]["dns"] = ""
-    clusterConfig["extenal_timeserver"] = ""
+    # clusterConfig["mngtNic"]["cidr"] = ""
+    # clusterConfig["mngtNic"]["gw"] = ""
+    # clusterConfig["mngtNic"]["dns"] = ""
+    # clusterConfig["extenal_timeserver"] = ""
     for i in range(len(clusterConfig["pcsCluster"])):
         clusterConfig["pcsCluster"]["hostname"+str(i+1)] = ""
     clusterConfig["hosts"] = []

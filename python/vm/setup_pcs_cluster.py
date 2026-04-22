@@ -89,6 +89,17 @@ def setupPcsCluster(args):
             return createReturn(code=500, val=host+" : systemctl restart crond.service failed")
 
     #=========== pcs cluster 구성 ===========
+    # ablestack-hci-filesystem 타입인 경우 glue 이미지 초기화 및 cloudcenter_res 리소스 초기화
+    if os_type == "ablestack-hci-filesystem":
+        result = os.system("rbd ls -p rbd | grep ccvm > /dev/null")
+        if result == 0:
+            os.system("rbd rm --no-progress rbd/ccvm")
+            result = json.loads(python3(pluginpath+'/python/pcs/main.py', 'remove', '--resource', 'cloudcenter_res'))
+            if result['code'] not in [200]:
+                success_bool = False
+            else :
+                os.system("pcs constraint order start glue-gfs-clone then cloudcenter_res")
+
     # ceph 이미지 등록
     os.system("qemu-img convert -f qcow2 -O rbd /var/lib/libvirt/images/ablestack-template-back.qcow2 rbd:rbd/ccvm")
     # ccvm image resize

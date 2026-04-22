@@ -776,19 +776,20 @@ function CardCloudClusterStatus(){
           $("#menu-item-set-auto-shutdown-step-two").addClass('pf-m-disabled');
         }
         $('#cccs-low-info').text('클라우드센터 클러스터가 구성되었습니다.');
-        $('#cccs-low-info').attr('style','color: green')
+        applyCardStatusTone($('#cccs-low-info'), "ok");
       }else if(retVal.code == '400' && retVal.val == 'cluster is not configured.'){
         $('#cccs-status').text('Health Err');
         $('#cccs-back-color').attr('class','pf-v6-c-label pf-m-red');
         $('#cccs-cluster-icon').attr('class','fas fa-fw fa-exclamation-triangle');
-        $('#cccs-low-info').attr('style','color: red')
         $('#cccs-low-info').text('클라우드센터 클러스터가 구성되지 않았습니다.');
+        applyCardStatusTone($('#cccs-low-info'), "danger");
         sessionStorage.setItem("cc_status", "HEALTH_ERR1");
       }else if(retVal.code == '400' && retVal.val == 'resource not found.'){
         $('#cccs-status').text('Health Err');
         $('#cccs-back-color').attr('class','pf-v6-c-label pf-m-red');
         $('#cccs-cluster-icon').attr('class','fas fa-fw fa-exclamation-triangle');
         $('#cccs-low-info').text('클라우드센터 클러스터는 구성되었으나 리소스 구성이 되지 않았습니다.');
+        applyCardStatusTone($('#cccs-low-info'), "warn");
         sessionStorage.setItem("cc_status", "HEALTH_ERR2");
       }else{
         createLoggerInfo("ClusterStatusInfo spawn error");
@@ -811,6 +812,22 @@ function CardCloudClusterStatus(){
  * Return : 없음
  * History : 2025.05.19 최초 작성
  */
+
+function applyCardStatusTone($target, tone) {
+  if (typeof setStatusTone === "function") {
+    setStatusTone($target, tone);
+    return;
+  }
+  if (!$target || !$target.length) {
+    return;
+  }
+  $target.removeClass("ablestack-status-ok ablestack-status-warn ablestack-status-danger");
+  $target.addClass("ablestack-status-text");
+  if (tone) {
+    $target.addClass(`ablestack-status-${tone}`);
+  }
+  $target.removeAttr("style");
+}
 function license_check(){
   cmd = ["curl", "-s", "-k", "https://localhost:8080/api/v1/license"];
   cockpit.spawn(cmd).then(function(data){

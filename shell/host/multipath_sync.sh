@@ -21,14 +21,14 @@ then
 
         sleep 1
         # 처음 셋팅된 mpath 삭제
-        /usr/bin/ssh -o StrictHostKeyChecking=no $host systemctl stop multipathd
+        /usr/bin/ssh -o StrictHostKeyChecking=no $host systemctl stop multipathd.socket
         /usr/bin/ssh -o StrictHostKeyChecking=no $host multipath -F
 
         sleep 1
         # 1번에 있는 binding, wwn 을 나머지 노드에 복사
         /usr/bin/scp /etc/multipath/bindings /etc/multipath/wwids $host:/etc/multipath/
 
-        /usr/bin/ssh -o StrictHostKeyChecking=no $host systemctl start multipathd
+        /usr/bin/ssh -o StrictHostKeyChecking=no $host systemctl restart multipathd
     done
 elif [ $1 = "rescan" ]
 then

@@ -56,7 +56,7 @@ $('[name="cluster-config-cluster-type-card"]').click(function() {
 
     // 클릭한 버튼을 선택하세요
     $clickedButton.addClass('is-selected');
-    $clickedButton.find('i').addClass('fa-check').css('color', 'green');
+    $clickedButton.find('i').addClass('fa-check');
 
     // 선택된 값을 숨겨진 입력으로 설정
     var selectedValue = $clickedButton.val();
