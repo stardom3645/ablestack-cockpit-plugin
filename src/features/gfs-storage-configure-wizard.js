@@ -407,6 +407,9 @@ $('#button-execution-modal-gfs-storage-wizard-confirm').on('click', function () 
 });
 
 // 마법사 "취소 버튼 모달창" show, hide
+$('#button-cancel-config-modal-gfs-storage-wizard-config').on('click', function () {
+  $('#div-modal-cancel-gfs-storage-wizard-cancel').show();
+});
 $('#button-cancel-modal-gfs-storage-wizard-confirm').on('click', function () {
   $('#div-modal-cancel-gfs-storage-wizard-cancel').show();
 });

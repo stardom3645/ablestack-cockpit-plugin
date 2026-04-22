@@ -1,4 +1,4 @@
-<div class="pf-v6-c-page ablestack-page" id="main-page-ablestack" style="margin-left:24px;">
+<div class="pf-v6-c-page ablestack-page" id="main-page-ablestack">
     <div class="pf-v6-c-page__main-container" tabindex="-1">
         <main class="pf-v6-c-page__main" tabindex="-1" id="main-content-card-view">
         <!-- ui 영역 시작 -->
@@ -43,7 +43,7 @@
                         id="button-config-file-download" aria-disabled="false" type="button" data-ouia-safe="true">설정파일
                         다운로드</button>
                     <button class="pf-v6-c-button pf-m-link" type="button" id="button-open-modal-license-register">라이센스 관리</button>
-                    <button style="display: none; "class="pf-v6-c-button pf-m-link" type="button" id="button-open-modal-security-update">보안 패치</button>
+                    <button style="display: none; "class="pf-v6-c-button pf-m-link" type="button" id="button-open-modal-security-update">보안 업데이트</button>
                 </div>
             </div>
         </section>
@@ -55,7 +55,7 @@
                     <div class="pf-v6-l-grid pf-m-gutter">
                         <div class="pf-v6-l-grid__item pf-m-6-col" id="div-card-gfs-cluster-status" style="display: none;">
                             <!-- GFS 리소스 상태 카드 영역 시작-->
-                            <div class="pf-v6-c-card pf-m-hoverable pf-m-compact" id="card-gfs-cluster-status">
+                            <div class="pf-v6-c-card pf-m-hoverable pf-m-compact" id="card-gfs-cluster-status" style="overflow: visible;">
                                 <div class="pf-v6-c-card__header">
                                     <div class="pf-v6-c-card__header-main">
                                         <i class="pf-v6-pficon pf-v6-pficon-network"
@@ -181,14 +181,13 @@
                                     </section>
                                 </div>
                                 <div class="pf-v6-c-divider" role="separator"></div>
-                                <div id="gfs-low-info" class="pf-v6-c-card__footer"
-                                    style="color: red;">GFS 통합이 구성되지 않았습니다.</div>
+                                <div id="gfs-low-info" class="pf-v6-c-card__footer ablestack-status-text ablestack-status-danger">GFS 통합이 구성되지 않았습니다.</div>
                             </div>
                             <!-- GFS 리소스 상태 카드 영역 끝 -->
                         </div>
                         <div class="pf-v6-l-grid__item pf-m-6-col" id="div-card-storage-cluster-status">
                             <!-- 스토리지 센터 클러스터 상태 카드 영역 시작-->
-                            <div class="pf-v6-c-card pf-m-hoverable pf-m-compact" id="card-storage-cluster-status">
+                            <div class="pf-v6-c-card pf-m-hoverable pf-m-compact" id="card-storage-cluster-status" style="overflow: visible;">
                                 <div class="pf-v6-c-card__header">
                                     <div class="pf-v6-c-card__header-main">
                                         <i class="pf-v6-pficon pf-v6-pficon-registry"
@@ -343,14 +342,14 @@
                                     </section>
                                 </div>
                                 <div class="pf-v6-c-divider" role="separator"></div>
-                                <div class="pf-v6-c-card__footer" style="color: red;"
+                                <div class="pf-v6-c-card__footer ablestack-status-text ablestack-status-danger"
                                     id="scc-status-check">스토리지센터 클러스터가 구성되지 않았습니다.</div>
                             </div>
                             <!-- 스토리지 클러스터 상태 카드 영역 끝 -->
                         </div>
                         <div class="pf-v6-l-grid__item pf-m-6-col" id="div-card-gfs-integration-status" style="display: none;">
                             <!-- GFS 통합 상태 카드 영역 시작-->
-                            <div class="pf-v6-c-card pf-m-hoverable pf-m-compact" id="card-gfs-integration-status">
+                            <div class="pf-v6-c-card pf-m-hoverable pf-m-compact" id="card-gfs-integration-status" style="overflow: visible;">
                                 <div class="pf-v6-c-card__header">
                                     <div class="pf-v6-c-card__header-main">
                                         <i class="pf-v6-pficon pf-v6-pficon-bundle"
@@ -458,14 +457,13 @@
                                     </section>
                                 </div>
                                 <div class="pf-v6-c-divider" role="separator"></div>
-                                <div id="gfs-integration-low-info" class="pf-v6-c-card__footer"
-                                    style="color: red;">GFS 통합이 구성되지 않았습니다.</div>
+                                <div id="gfs-integration-low-info" class="pf-v6-c-card__footer ablestack-status-text ablestack-status-danger">GFS 통합이 구성되지 않았습니다.</div>
                             </div>
                             <!-- 클라우드센터 클러스터 상태 카드 영역 끝 -->
                         </div>
                         <div class="pf-v6-l-grid__item pf-m-6-col" id="div-card-cloud-cluster-status">
                             <!-- 클라우드센터 클러스터 상태 카드 영역 시작-->
-                            <div class="pf-v6-c-card pf-m-hoverable pf-m-compact" id="card-cloud-cluster-status">
+                            <div class="pf-v6-c-card pf-m-hoverable pf-m-compact" id="card-cloud-cluster-status" style="overflow: visible;">
                                 <div class="pf-v6-c-card__header">
                                     <div class="pf-v6-c-card__header-main">
                                         <i class="pf-v6-pficon pf-v6-pficon-network"
@@ -598,14 +596,13 @@
                                     </section>
                                 </div>
                                 <div class="pf-v6-c-divider" role="separator"></div>
-                                <div id="cccs-low-info" class="pf-v6-c-card__footer"
-                                    style="color: red;">클라우드센터 클러스터가 구성되지 않았습니다.</div>
+                                <div id="cccs-low-info" class="pf-v6-c-card__footer ablestack-status-text ablestack-status-danger">클라우드센터 클러스터가 구성되지 않았습니다.</div>
                             </div>
                             <!-- 클라우드센터 클러스터 상태 카드 영역 끝 -->
                         </div>
                         <div class="pf-v6-l-grid__item pf-m-6-col" id="div-card-storage-vm-status">
                             <!-- 스토리지센터VM 상태 카드 영역 시작-->
-                            <div class="pf-v6-c-card pf-m-hoverable pf-m-compact" id="card-storage-vm-status">
+                            <div class="pf-v6-c-card pf-m-hoverable pf-m-compact" id="card-storage-vm-status" style="overflow: visible;">
                                 <div class="pf-v6-c-card__header">
                                     <div class="pf-v6-c-card__header-main">
                                         <i class="pf-v6-pficon pf-v6-pficon-virtual-machine"
@@ -644,8 +641,7 @@
                                                 </li>
                                                 <li class="pf-v6-c-divider" role="separator"></li>
                                                 <li>
-                                                    <a class="pf-v6-c-menu__item pf-m-disabled" href="#"
-                                                        aria-disabled="true" tabindex="-1"
+                                                    <a class="pf-v6-c-menu__item" href="#" tabindex="-1"
                                                         id="menu-item-linkto-storage-center-vm">스토리지센터VM 연결</a>
                                                 </li>
                                             </ul>
@@ -796,14 +792,14 @@
                                     </section>
                                 </div>
                                 <div class="pf-v6-c-divider" role="separator"></div>
-                                <div class="pf-v6-c-card__footer" style="color: red;"
+                                <div class="pf-v6-c-card__footer ablestack-status-text ablestack-status-danger"
                                     id="scvm-deploy-status-check">스토리지센터 가상머신이 배포되지 않았습니다.</div>
                             </div>
                             <!-- 스토리지센터VM 상태 카드 영역 끝 -->
                         </div>
                         <div class="pf-v6-l-grid__item pf-m-6-col" id="div-card-gfs-disk-status" style="display:none">
                             <!-- GFS 디스크 상태 카드 영역 시작-->
-                            <div class="pf-v6-c-card pf-m-hoverable pf-m-compact" id="card-gfs-disk-status">
+                            <div class="pf-v6-c-card pf-m-hoverable pf-m-compact" id="card-gfs-disk-status" style="overflow: visible;">
                                 <div class="pf-v6-c-card__header">
                                     <div class="pf-v6-c-card__header-main">
                                         <i class="pf-v6-pficon pf-v6-pficon-virtual-machine"
@@ -882,14 +878,14 @@
                                     </section>
                                 </div>
                                 <div class="pf-v6-c-divider" role="separator"></div>
-                                <div class="pf-v6-c-card__footer" style="color: red;"
+                                <div class="pf-v6-c-card__footer ablestack-status-text ablestack-status-danger"
                                     id="gfs-disk-deploy-status-check">GFS 디스크가 생성되지 않았습니다.</div>
                             </div>
                             <!-- GFS 디스크 상태 카드 영역 끝 -->
                         </div>
                         <!-- 로컬 디스크 상태 카드 영역 시작-->
                         <div class="pf-v6-l-grid__item pf-m-12-col" id="div-card-local-disk-status" style="display:none">
-                            <div class="pf-v6-c-card pf-m-hoverable pf-m-compact" id="card-local-disk-status">
+                            <div class="pf-v6-c-card pf-m-hoverable pf-m-compact" id="card-local-disk-status" style="overflow: visible;">
                                 <div class="pf-v6-c-card__header">
                                     <div class="pf-v6-c-card__header-main">
                                         <i class="pf-v6-pficon pf-v6-pficon-virtual-machine"
@@ -983,7 +979,7 @@
                                     </section>
                                 </div>
                                 <div class="pf-v6-c-divider" role="separator"></div>
-                                <div class="pf-v6-c-card__footer" style="color: red;"
+                                <div class="pf-v6-c-card__footer ablestack-status-text ablestack-status-danger"
                                     id="local-disk-low-info">로컬 디스크가 생성되지 않았습니다.</div>
                             </div>
                         </div>
@@ -1012,7 +1008,7 @@
 <!-- HCI 공유 파일 구성 마법사 : ./src/features/hci-shared-file-configure-wizard.html을 내용으로 load -->
 <div class="pf-v6-c-backdrop" id="div-modal-wizard-hci-shared-file-configure"></div>
 
-<!-- 로컬 스토리지 구성 마법사 : ./src/features/gfs-storage-configure-wizard.html을 내용으로 load -->
+<!-- 로컬 스토리지 구성 마법사 : ./src/features/local-storage-configure-wizard.html을 내용으로 load -->
 <div class="pf-v6-c-backdrop" id="div-modal-wizard-local-storage-configure"></div>
 
 <!-- 클라우드센터VM 배포 마법사 : ./src/features/cloud-vm-wizard.html을 내용으로 load -->
@@ -1477,9 +1473,9 @@
                         </div>
                     </section>
                 </form>
-                <label class="pf-v6-c-check pf-v6-c-menu__item" style="margin-top: 10px;" id="label-checkbox-mold-secondary-size-expansion">
+                <label class="pf-v6-c-check" style="margin-top: 10px;" id="label-checkbox-mold-secondary-size-expansion">
                     <input class="pf-v6-c-check__input" type="checkbox" id="input-checkbox-mold-secondary-size-expansion" value="resize"/>
-                    <span class="pf-v6-c-check__label" style="color: #c9190b;"><i class="fas fa-fw fa-exclamation-circle" aria-hidden="true"></i>용량 추가 작업시 클라우드센터 가상머신 스냅샷이 모두 삭제되고,<br/>&nbsp;&emsp;클라우드센터 가상머신을 재시작합니다. 그래도 진행하시겠습니까?</span>
+                    <span class="pf-v6-c-check__label" style="color: #c9190b;"><i class="fas fa-fw fa-exclamation-circle" aria-hidden="true"></i>작업 전 Mold DB 백업하여 데이터 보호를 권장합니다.<br/>&nbsp;&emsp;용량 추가 작업시 클라우드센터 가상머신 스냅샷이 모두 삭제되고,<br/>&nbsp;&emsp;클라우드센터 가상머신을 재시작합니다. 그래도 진행하시겠습니까?</span>
                 </label>
             </div>
             <footer class="pf-v6-c-modal-box__footer">
@@ -1896,7 +1892,7 @@
                     <!-- 새로고침은 그대로: 디스크 선택 목록 갱신 -->
                     <button id="button-refresh-modal-gfs-disk-add" class="pf-v6-c-button pf-m-plain" type="button"
                             aria-label="새로고침" title="새로고침"
-                            style="padding:8px 17px; border:2px solid #d2d2d2; border-radius:30px; background:#fff; line-height:1;">
+                            style="padding:8px 17px; border:2px solid var(--pf-t--global--border--color--default); border-radius:30px; background:var(--pf-t--global--background--color--primary--default); line-height:1;">
                       <i class="fas fa-sync-alt" aria-hidden="true"></i>
                     </button>
                   </div>
@@ -1991,18 +1987,14 @@
                   <span class="pf-v6-c-form__label-text" style="font-weight: 600;font-size:large">2. 확장 방식 선택</span>
                 </label>
                 <div class="pf-v6-c-form__group-control" style="margin-top: 8px;">
-                  <label style="display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 6px; transition: background 0.2s;"
-                    onmouseover="this.style.backgroundColor='#f3f4f6'" onmouseout="this.style.backgroundColor='transparent'">
-                    <input type="radio" name="extend-method" id="method-resize" value="resize" checked
-                      style="appearance: none; width: 18px; height: 18px; border: 2px solid #007BBA; border-radius: 50%; position: relative; cursor: pointer;">
-                    <span style="font-size: 15px;">기존 디스크 사이즈만 확장</span>
+                  <label class="ablestack-extend-method-option">
+                    <input class="ablestack-extend-method-radio" type="radio" name="extend-method" id="method-resize" value="resize" checked>
+                    <span class="ablestack-extend-method-text">기존 디스크 사이즈만 확장</span>
                   </label>
 
-                  <label style="display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 6px; transition: background 0.2s;"
-                    onmouseover="this.style.backgroundColor='#f3f4f6'" onmouseout="this.style.backgroundColor='transparent'">
-                    <input type="radio" name="extend-method" id="method-add-lun" value="add-lun"
-                      style="appearance: none; width: 18px; height: 18px; border: 2px solid #007BBA; border-radius: 50%; position: relative; cursor: pointer;">
-                    <span style="font-size: 15px;">새로운 LUN 디스크 추가</span>
+                  <label class="ablestack-extend-method-option">
+                    <input class="ablestack-extend-method-radio" type="radio" name="extend-method" id="method-add-lun" value="add-lun">
+                    <span class="ablestack-extend-method-text">새로운 LUN 디스크 추가</span>
                   </label>
                 </div>
               </div>
@@ -2021,7 +2013,7 @@
                 <!-- 새로고침은 그대로: 디스크 선택 목록 갱신 -->
                 <button id="button-refresh-modal-gfs-disk-extend" class="pf-v6-c-button pf-m-plain" type="button"
                         aria-label="새로고침" title="새로고침"
-                        style="padding:8px 17px; border:2px solid #d2d2d2; border-radius:30px; background:#fff; line-height:1;">
+                        style="padding:8px 17px; border:2px solid var(--pf-t--global--border--color--default); border-radius:30px; background:var(--pf-t--global--background--color--primary--default); line-height:1;">
                     <i class="fas fa-sync-alt" aria-hidden="true"></i>
                 </button>
               <div class="pf-v6-c-form__group-control pf-m-stack" id="gfs-disk-extend-add-list"
@@ -2339,7 +2331,7 @@
 </div>
 <!-- 라이센스 관리 : Modal 영역 끝 -->
 
-<!-- 보안 패치  : Modal 영역 시작 -->
+<!-- 보안 업데이트 : Modal 영역 시작 -->
 <div id="div-modal-security-update" class="pf-v6-c-backdrop" style="display: none;">
     <div class="pf-v6-l-bullseye">
         <div class="pf-v6-c-modal-box pf-m-sm" role="dialog" aria-modal="true" aria-label="Security Update">
@@ -2348,11 +2340,11 @@
                 <i class="fas fa-times" aria-hidden="true"></i>
             </button>
             <header class="pf-v6-c-modal-box__header">
-                <h1 class="pf-v6-c-modal-box__title"><span class="pf-v6-c-modal-box__title-text">보안 패치</span>
+                <h1 class="pf-v6-c-modal-box__title"><span class="pf-v6-c-modal-box__title-text">보안 업데이트</span>
                 </h1>
             </header>
             <div class="pf-v6-c-modal-box__body">
-                <div> 보안 패치를 진행하시겠습니까?<br/></div>
+                <div> 보안 업데이트를 진행하시겠습니까?<br/></div>
             </div>
             <div id="modal-div-ssh-port" class="pf-v6-c-modal-box__body is-hidden">
                 <label for="modal-input-ssh-port" class="pf-v6-c-form__label">
@@ -2371,19 +2363,35 @@
                     </span>
                 </label>
             </div>
-            <div id="modal-div-add-host-security-update-run" class="pf-v6-c-modal-box__body pf-v6-l-flex pf-m-align-items-center">
-                <p>추가된 호스트 보안 패치 실행</p>
-                <label class="pf-v6-c-switch">
-                    <input id="modal-input-add-host-security-update-run" class="pf-v6-c-switch__input" type="checkbox" aria-label="추가된 호스트 보안 패치 실행">
-                    <span class="pf-v6-c-switch__toggle">
-                        <div id="modal-switch-add-host-security-update-run" class="pf-v6-c-switch__toggle-icon" aria-hidden="true"></div>
-                    </span>
-                </label>
+            <div id="modal-div-add-host-security-update-run" class="pf-v6-c-modal-box__body">
+                <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+                    <p style="margin:0;">새로 추가한 호스트 보안 업데이트 실행</p>
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <label class="pf-v6-c-switch">
+                            <input id="modal-input-add-host-security-update-run" class="pf-v6-c-switch__input" type="checkbox" aria-label="추가된 호스트 보안 업데이트 실행">
+                            <span class="pf-v6-c-switch__toggle">
+                                <div id="modal-switch-add-host-security-update-run" class="pf-v6-c-switch__toggle-icon" aria-hidden="true"></div>
+                            </span>
+                        </label>
+                        <span class="pf-v6-c-label pf-m-red" style="align-self:center;">
+                            <span class="pf-v6-c-label__content">
+                                <span class="pf-v6-c-label__icon">
+                                    <i class="fas fa-fw fa-exclamation-triangle" aria-hidden="true"></i>
+                                </span>
+                                신규 호스트 전용
+                            </span>
+                        </span>
+                    </div>
+                </div>
+                <div class="pf-v6-c-form__helper-text" style="display:flex; align-items:center; gap:6px; margin-top:4px; color:#c9190b;">
+                    <i class="fas fa-exclamation-triangle" aria-hidden="true"></i>
+                    <span>기존에 운영 중인 호스트에는 적용되지 않습니다.</span>
+                </div>
             </div>
             <div id="modal-div-security-update-check" class="pf-v6-c-modal-box__body pf-v6-l-flex pf-m-align-items-center">
-                <p>보안 패치 확인</p>
+                <p>보안 업데이트 확인</p>
                 <label class="pf-v6-c-switch">
-                    <input id="modal-input-security-update-check" class="pf-v6-c-switch__input" type="checkbox" aria-label="보안 패치 체크">
+                    <input id="modal-input-security-update-check" class="pf-v6-c-switch__input" type="checkbox" aria-label="보안 업데이트 체크">
                     <span class="pf-v6-c-switch__toggle">
                         <div id="modal-switch-security-update-check" class="pf-v6-c-switch__toggle-icon" aria-hidden="true"></div>
                     </span>
@@ -2398,7 +2406,7 @@
         </div>
     </div>
 </div>
-<!-- 보안 패치 : Modal 영역 끝 -->
+<!-- 보안 업데이트 : Modal 영역 끝 -->
 <!-- ssh port 변경  : Modal 영역 시작 -->
 <div id="div-modal-ssh-port-change" class="pf-v6-c-backdrop" style="display: none;">
     <div class="pf-v6-l-bullseye">
@@ -2523,7 +2531,7 @@
                            inputmode="numeric"
                            pattern="[0-9]*"
                            aria-label="디스크 이미지 용량(GB)" />
-                    <span class="pf-v6-c-input-group__text">GB</span>
+                    <span class="pf-v6-c-input-group__text" style="width: 30px;">GB</span>
                   </div>
                   <div style="margin-top:6px; color:#6a6e73;">
                     예) 500, 1000, 2000

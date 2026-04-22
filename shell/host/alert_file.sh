@@ -156,33 +156,34 @@ case $CRM_alert_kind in
 
         sleep 7
 
+        echo "${tstamp}Fencing ${CRM_alert_desc}" >> "${CRM_alert_recipient}"
         # /etc/hosts 에서 fence 리소스 이름에 사용할 hostname 추출
-        hostname=$(grep -w "$CRM_alert_node" /etc/hosts | awk '{print $2}')
-        [ -z "$hostname" ] && hostname="$CRM_alert_node"
+        # hostname=$(grep -w "$CRM_alert_node" /etc/hosts | awk '{print $2}')
+        # [ -z "$hostname" ] && hostname="$CRM_alert_node"
 
         # 이미 네트워크 분리로 인해 block 상태면 confirm 을 수행하지 않음
-        if is_confirm_blocked; then
-            echo "${tstamp}Confirm is blocked by $BLOCK_FILE, skipping confirm for $CRM_alert_node" >> "${CRM_alert_recipient}"
-            exit 0
-        fi
+        # if is_confirm_blocked; then
+        #     echo "${tstamp}Confirm is blocked by $BLOCK_FILE, skipping confirm for $CRM_alert_node" >> "${CRM_alert_recipient}"
+        #     exit 0
+        # fi
 
-        echo "${tstamp}Checking reachability to PCS management IP $CRM_alert_node for 60 seconds" >> "${CRM_alert_recipient}"
+        # echo "${tstamp}Checking reachability to PCS management IP $CRM_alert_node for 60 seconds" >> "${CRM_alert_recipient}"
 
         # 60초 동안 ping 이 계속 실패하면 block 파일을 만들고 confirm 중단
-        if ! check_ping_60s "$CRM_alert_node"; then
-            echo "${tstamp}PCS management IP $CRM_alert_node unreachable for 60 seconds, creating $BLOCK_FILE and skipping pcs stonith confirm" >> "${CRM_alert_recipient}"
-            set_confirm_block
-            exit 0
-        fi
+        # if ! check_ping_60s "$CRM_alert_node"; then
+        #     echo "${tstamp}PCS management IP $CRM_alert_node unreachable for 60 seconds, creating $BLOCK_FILE and skipping pcs stonith confirm" >> "${CRM_alert_recipient}"
+        #     set_confirm_block
+        #     exit 0
+        # fi
 
         # ping 성공 시에만 confirm 진행
-        echo "${tstamp}Confirming stonith for $CRM_alert_node" >> "${CRM_alert_recipient}"
-        pcs stonith confirm "$CRM_alert_node" --force >> "${CRM_alert_recipient}" 2>&1
+        # echo "${tstamp}Confirming stonith for $CRM_alert_node" >> "${CRM_alert_recipient}"
+        # pcs stonith confirm "$CRM_alert_node" --force >> "${CRM_alert_recipient}" 2>&1
 
-        echo "${tstamp}Disabling fence-$hostname" >> "${CRM_alert_recipient}"
-        pcs stonith disable "fence-$hostname" >> "${CRM_alert_recipient}" 2>&1
+        # echo "${tstamp}Disabling fence-$hostname" >> "${CRM_alert_recipient}"
+        # pcs stonith disable "fence-$hostname" >> "${CRM_alert_recipient}" 2>&1
 
-        echo "${tstamp}Executing stonith for $CRM_alert_node ($hostname)" >> "${CRM_alert_recipient}"
+        # echo "${tstamp}Executing stonith for $CRM_alert_node ($hostname)" >> "${CRM_alert_recipient}"
         ;;
     resource)
         if [ "${CRM_alert_interval}" = "0" ]; then

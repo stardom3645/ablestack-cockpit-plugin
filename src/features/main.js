@@ -17,6 +17,18 @@ var os_type = sessionStorage.getItem("os_type");
 let interval;
 var gfs_file_system_arr = [];
 
+function setStatusTone($target, tone) {
+  if (!$target || !$target.length) {
+    return;
+  }
+  $target.removeClass("ablestack-status-ok ablestack-status-warn ablestack-status-danger");
+  $target.addClass("ablestack-status-text");
+  if (tone) {
+    $target.addClass(`ablestack-status-${tone}`);
+  }
+  $target.removeAttr("style");
+}
+
 $(document).ready(function () {
   // 타입별 클라우드센터 가상머신 상태 변경
   insertCloudVmCard(os_type);
@@ -988,7 +1000,7 @@ function checkStorageClusterStatus() {
                         sc_status = "Health Ok";
                         sessionStorage.setItem("sc_status", "HEALTH_OK");
                         $('#scc-status-check').text("스토리지센터 클러스터가 구성되었습니다.");
-                        $('#scc-status-check').attr("style", "color: green");
+                        setStatusTone($('#scc-status-check'), "ok");
                         $("#menu-item-linkto-storage-center").removeClass('pf-m-disabled');
                         $("#menu-item-update-glue-config").removeClass('pf-m-disabled');
                         $("#scc-css").attr('class', 'pf-v6-c-label pf-m-green');
@@ -997,7 +1009,7 @@ function checkStorageClusterStatus() {
                         sc_status = "Health Warn";
                         sessionStorage.setItem("sc_status", "HEALTH_WARN");
                         $('#scc-status-check').text("스토리지센터 클러스터가 구성되었습니다.");
-                        $('#scc-status-check').attr("style", "color: green");
+                        setStatusTone($('#scc-status-check'), "ok");
                         $("#menu-item-linkto-storage-center").removeClass('pf-m-disabled');
                         $("#menu-item-update-glue-config").removeClass('pf-m-disabled');
                         $("#scc-css").attr('class', 'pf-v6-c-label pf-m-orange');
@@ -1010,7 +1022,7 @@ function checkStorageClusterStatus() {
                         $("#menu-item-set-maintenance-mode").addClass('pf-m-disabled');
                         $("#menu-item-unset-maintenance-mode").addClass('pf-m-disabled');
                         $('#scc-status-check').text("스토리지센터 클러스터가 구성되지 않았습니다.");
-                        $('#scc-status-check').attr("style", "color: red");
+                        setStatusTone($('#scc-status-check'), "danger");
                         $("#menu-item-linkto-storage-center").addClass('pf-m-disabled');
                         $("#menu-item-update-glue-config").addClass('pf-m-disabled');
                       }
@@ -1046,7 +1058,7 @@ function checkStorageClusterStatus() {
                       $("#menu-item-set-maintenance-mode").addClass('pf-m-disabled');
                       $("#menu-item-unset-maintenance-mode").addClass('pf-m-disabled');
                       $('#scc-status-check').text("스토리지센터 클러스터가 구성되지 않았습니다.");
-                      $('#scc-status-check').attr("style", "color: red");
+                      setStatusTone($('#scc-status-check'), "danger");
                       $("#menu-item-linkto-storage-center").addClass('pf-m-disabled');
                       $("#menu-item-update-glue-config").addClass('pf-m-disabled');
                       $('#protect-domain').show();
@@ -1060,7 +1072,7 @@ function checkStorageClusterStatus() {
                     createLoggerInfo(":::checkStorageClusterStatus() Error:::");
                     console.log(":::checkStorageClusterStatus() Error::: " + data);
                     $('#scc-status-check').text("스토리지센터 클러스터가 구성되지 않았습니다.");
-                    $('#scc-status-check').attr("style", "color: red");
+                    setStatusTone($('#scc-status-check'), "danger");
                     $("#menu-item-set-maintenance-mode").addClass('pf-m-disabled');
                     $("#menu-item-unset-maintenance-mode").addClass('pf-m-disabled');
                     $("#menu-item-linkto-storage-center").addClass('pf-m-disabled');
@@ -1076,7 +1088,7 @@ function checkStorageClusterStatus() {
                 $("#menu-item-set-maintenance-mode").addClass('pf-m-disabled');
                 $("#menu-item-unset-maintenance-mode").addClass('pf-m-disabled');
                 $('#scc-status-check').text("스토리지센터 클러스터가 구성되지 않았습니다.");
-                $('#scc-status-check').attr("style", "color: red");
+                setStatusTone($('#scc-status-check'), "danger");
                 $("#menu-item-linkto-storage-center").addClass('pf-m-disabled');
                 $("#menu-item-update-glue-config").addClass('pf-m-disabled');
                 $('#protect-domain').show();
@@ -1089,7 +1101,7 @@ function checkStorageClusterStatus() {
               createLoggerInfo(":::checkStorageClusterStatus() Error:::");
               console.log(":::checkStorageClusterStatus() Error::: " + data);
               $('#scc-status-check').text("스토리지센터 클러스터가 구성되지 않았습니다.");
-              $('#scc-status-check').attr("style", "color: red");
+              setStatusTone($('#scc-status-check'), "danger");
               $("#menu-item-set-maintenance-mode").addClass('pf-m-disabled');
               $("#menu-item-unset-maintenance-mode").addClass('pf-m-disabled');
               $("#menu-item-linkto-storage-center").addClass('pf-m-disabled');
@@ -1139,7 +1151,7 @@ function checkStorageClusterStatus() {
               if (retVal.val.cluster_status == "HEALTH_OK") {
                 sc_status = "Health Ok";
                 $('#scc-status-check').text("스토리지센터 클러스터가 구성되었습니다.");
-                $('#scc-status-check').attr("style", "color: green");
+                setStatusTone($('#scc-status-check'), "ok");
                 $("#menu-item-linkto-storage-center").removeClass('pf-m-disabled');
                 $("#menu-item-update-glue-config").removeClass('pf-m-disabled');
                 $('#menu-item-set-disk-image-add').removeClass('pf-m-disabled');
@@ -1150,7 +1162,7 @@ function checkStorageClusterStatus() {
               } else if (retVal.val.cluster_status == "HEALTH_WARN") {
                 sc_status = "Health Warn";
                 $('#scc-status-check').text("스토리지센터 클러스터가 구성되었습니다.");
-                $('#scc-status-check').attr("style", "color: green");
+                setStatusTone($('#scc-status-check'), "ok");
                 $("#menu-item-linkto-storage-center").removeClass('pf-m-disabled');
                 $("#menu-item-update-glue-config").removeClass('pf-m-disabled');
                 $("#scc-css").attr('class', 'pf-v6-c-label pf-m-orange');
@@ -1162,7 +1174,7 @@ function checkStorageClusterStatus() {
                 $("#menu-item-set-maintenance-mode").addClass('pf-m-disabled');
                 $("#menu-item-unset-maintenance-mode").addClass('pf-m-disabled');
                 $('#scc-status-check').text("스토리지센터 클러스터가 구성되지 않았습니다.");
-                $('#scc-status-check').attr("style", "color: red");
+                setStatusTone($('#scc-status-check'), "danger");
                 $("#menu-item-linkto-storage-center").addClass('pf-m-disabled');
                 $("#menu-item-update-glue-config").addClass('pf-m-disabled');
                 $('#menu-item-set-disk-image-add').addClass('pf-m-disabled');
@@ -1218,7 +1230,7 @@ function checkStorageClusterStatus() {
               createLoggerInfo(":::checkStorageClusterStatus() Error:::");
               console.log(":::checkStorageClusterStatus() Error::: " + data);
               $('#scc-status-check').text("스토리지센터 클러스터가 구성되지 않았습니다.");
-              $('#scc-status-check').attr("style", "color: red");
+              setStatusTone($('#scc-status-check'), "danger");
               $("#menu-item-set-maintenance-mode").addClass('pf-m-disabled');
               $("#menu-item-unset-maintenance-mode").addClass('pf-m-disabled');
               $("#menu-item-linkto-storage-center").addClass('pf-m-disabled');
@@ -1320,10 +1332,10 @@ function checkStorageVmStatus() {
           $("#scvm-css").attr('class', 'pf-v6-c-label pf-m-green');
           $("#scvm-icon").attr('class', 'fas fa-fw fa-check-circle');
           $('#scvm-deploy-status-check').text("스토리지센터 가상머신이 배포되었습니다.");
-          $('#scvm-deploy-status-check').attr("style", "color: green");
+          setStatusTone($('#scvm-deploy-status-check'), "ok");
           $("#menu-item-set-storage-center-vm-start").addClass('pf-m-disabled');
           $("#menu-item-set-storage-center-vm-resource-update").addClass('pf-m-disabled');
-          $("#menu-item-linkto-storage-center-vm").removeClass('pf-m-disabled');
+          // $("#menu-item-linkto-storage-center-vm").removeClass('pf-m-disabled');
           if (sessionStorage.getItem("sc_status") == "HEALTH_ERR") { //가상머신 상태 running && sc상태 Error 일때
             $("#menu-item-set-storage-center-vm-delete").removeClass('pf-m-disabled');
           } else { //가상머신 상태 running && sc상태 ok, warn 일때
@@ -1342,7 +1354,7 @@ function checkStorageVmStatus() {
           $("#scvm-css").attr('class', 'pf-v6-c-label pf-m-red');
           $("#scvm-icon").attr('class', 'fas fa-fw fa-exclamation-triangle');
           $('#scvm-deploy-status-check').text("스토리지센터 가상머신이 배포되었습니다.");
-          $('#scvm-deploy-status-check').attr("style", "color: green");
+          setStatusTone($('#scvm-deploy-status-check'), "ok");
           $("#menu-item-set-storage-center-vm-start").removeClass('pf-m-disabled');
           $("#menu-item-set-storage-center-vm-stop").addClass('pf-m-disabled');
           $("#menu-item-set-storage-center-vm-delete").removeClass('pf-m-disabled');
@@ -1352,7 +1364,7 @@ function checkStorageVmStatus() {
           $("#scvm-css").attr('class', 'pf-v6-c-label pf-m-red');
           $("#scvm-icon").attr('class', 'fas fa-fw fa-exclamation-triangle');
           $('#scvm-deploy-status-check').text("스토리지센터 가상머신이 배포되지 않았습니다.");
-          $('#scvm-deploy-status-check').attr("style", "color: red");
+          setStatusTone($('#scvm-deploy-status-check'), "danger");
           $("#menu-item-set-storage-center-vm-start").addClass('pf-m-disabled');
           $("#menu-item-set-storage-center-vm-stop").addClass('pf-m-disabled');
           $("#menu-item-set-storage-center-vm-delete").addClass('pf-m-disabled');
@@ -1371,7 +1383,7 @@ function checkStorageVmStatus() {
         $("#menu-item-set-storage-center-vm-resource-update").addClass('pf-m-disabled');
         $("#menu-item-linkto-storage-center-vm").addClass('pf-m-disabled');
         $('#scvm-deploy-status-check').text("스토리지센터 가상머신이 배포되지 않았습니다.");
-        $('#scvm-deploy-status-check').attr("style", "color: red");
+        setStatusTone($('#scvm-deploy-status-check'), "danger");
         resolve();
       });
     //스토리지 클러스터 배포 여부 확인 후 스토리지센터 가상머신 삭제 버튼 disabled 여부 세팅
@@ -2280,7 +2292,7 @@ function gfsDiskStatus() {
           }
           $('#page-gfs-disk-mount-info, #page-gfs-integration-disk-mount-info').html("");
           $('#gfs-disk-deploy-status-check').text("GFS 디스크가 생성되었습니다.");
-          $('#gfs-disk-deploy-status-check').attr("style", "color: green");
+          setStatusTone($('#gfs-disk-deploy-status-check'), "ok");
           $('#gfs-disk-status').text("Health OK");
           $('#gfs-disk-icon').attr('class', 'fas fa-fw fa-check-circle');
           $('#gfs-disk-css').attr('class', 'pf-v6-c-label pf-m-green');
@@ -2347,7 +2359,7 @@ function gfsDiskStatus() {
           sessionStorage.setItem("gfs_configure", "true");
         } else {
           $('#gfs-disk-deploy-status-check').text("GFS 디스크가 생성되지 않았습니다.");
-          $('#gfs-disk-deploy-status-check').attr("style", "color: red");
+          setStatusTone($('#gfs-disk-deploy-status-check'), "danger");
           $('#page-gfs-disk-mount-info, #page-gfs-integration-disk-mount-info').html("");
           $('#page-gfs-disk-mount-info, #page-gfs-integration-disk-mount-info').text("N/A");
           $('#page-gfs-disk-mode').text("N/A");
@@ -2673,7 +2685,7 @@ function setDiskAction(type, action, extend) {
           if (mode == "single") {
             var disk_id = gfs_disk.devices;
           } else {
-            var disk_id = gfs_disk.disk_id.join(',');
+            var disk_id = Array.isArray(gfs_disk.disk_id) ? gfs_disk.disk_id.join(',') : (gfs_disk.disk_id || '');
           }
 
           // 각 데이터 길이에 따라 너비 조정
@@ -2743,7 +2755,7 @@ function setDiskAction(type, action, extend) {
           if (mode == "single") {
             var disk_id = gfs_disk.devices;
           } else {
-            var disk_id = gfs_disk.disk_id.join(',');
+            var disk_id = Array.isArray(gfs_disk.disk_id) ? gfs_disk.disk_id.join(',') : (gfs_disk.disk_id || '');
           }
           var [vg_name, lv_name] = gfs_disk.lvm.split("/").pop().split(/-(.+)/);
           var gfs_name = gfs_disk.mountpoint.split("/").pop();
@@ -2807,11 +2819,11 @@ function setDiskAction(type, action, extend) {
 
       // 테이블 생성
       var output = `
-        <table border="1" style="width: 100%; border-collapse: collapse; text-align: left;">
+        <table class="pf-v6-c-table pf-m-compact ablestack-grid-table" style="width: 100%; text-align: left;">
           <thead>
             <tr>
-              <th style="padding: 8px; background-color: #f2f2f2;">호스트명</th>
-              <th style="padding: 8px; background-color: #f2f2f2;">WWN</th>
+              <th style="padding: 8px;">호스트명</th>
+              <th style="padding: 8px;">WWN</th>
             </tr>
           </thead>
           <tbody>
@@ -2823,8 +2835,8 @@ function setDiskAction(type, action, extend) {
           var wwn = wwnList[i];
           output += `
             <tr>
-              <td style="padding: 8px; border-bottom: 1px solid #ddd;">${wwn.hostname}</td>
-              <td style="padding: 8px; border-bottom: 1px solid #ddd;">
+              <td style="padding: 8px;">${wwn.hostname}</td>
+              <td style="padding: 8px;">
                 ${wwn.wwn.join('<br>')}
               </td>
             </tr>
@@ -2864,13 +2876,13 @@ function setDiskAction(type, action, extend) {
       if (result.type == "multipath") {
         // 테이블 헤더 작성
         var output = `
-        <table border="1" style="width: 100%; border-collapse: collapse; text-align: left;">
+        <table class="pf-v6-c-table pf-m-compact ablestack-grid-table" style="width: 100%; text-align: left;">
           <thead>
             <tr>
-              <th style="padding: 8px; background-color: #f2f2f2;">멀티패스 이름</th>
-              <th style="padding: 8px; background-color: #f2f2f2;">멀티패스 UUID 경로</th>
-              <th style="padding: 8px; background-color: #f2f2f2;">싱글패스 SCSI 이름</th>
-              <th style="padding: 8px; background-color: #f2f2f2;">싱글패스 WWN 이름</th>
+              <th style="padding: 8px;">멀티패스 이름</th>
+              <th style="padding: 8px;">멀티패스 UUID 경로</th>
+              <th style="padding: 8px;">싱글패스 SCSI 이름</th>
+              <th style="padding: 8px;">싱글패스 WWN 이름</th>
             </tr>
           </thead>
           <tbody>
@@ -2885,16 +2897,16 @@ function setDiskAction(type, action, extend) {
 
           output += `
           <tr>
-            <td style="padding: 8px; border-bottom: 1px solid #ddd;">${mpathName}</td>
-            <td style="padding: 8px; border-bottom: 1px solid #ddd;">
+            <td style="padding: 8px;">${mpathName}</td>
+            <td style="padding: 8px;">
               <a href="#" onclick="copyToClipboard('${mpathUUID}'); return false;"
-              style="color: black; text-decoration: underline; margin-left: 10px; cursor: pointer;">
+              style="color: var(--pf-t--global--text--color--link--default); text-decoration: underline; margin-left: 10px; cursor: pointer;">
               ${mpathUUID}
               </a>
 
             </td>
-            <td style="padding: 8px; border-bottom: 1px solid #ddd;">${scsi}</td>
-            <td style="padding: 8px; border-bottom: 1px solid #ddd;">${wwn}</td>
+            <td style="padding: 8px;">${scsi}</td>
+            <td style="padding: 8px;">${wwn}</td>
           </tr>
         `;
         });
@@ -2906,13 +2918,13 @@ function setDiskAction(type, action, extend) {
       } else {
         // 테이블 헤더 작성
         var output = `
-      <table border="1" style="width: 100%; border-collapse: collapse; text-align: left;">
+      <table class="pf-v6-c-table pf-m-compact ablestack-grid-table" style="width: 100%; text-align: left;">
         <thead>
           <tr>
-            <th style="padding: 8px; background-color: #f2f2f2;">싱글패스 이름</th>
-            <th style="padding: 8px; background-color: #f2f2f2;">싱글패스 UUID 경로</th>
-            <th style="padding: 8px; background-color: #f2f2f2;">싱글패스 SCSI 이름</th>
-            <th style="padding: 8px; background-color: #f2f2f2;">싱글패스 WWN 이름</th>
+            <th style="padding: 8px;">싱글패스 이름</th>
+            <th style="padding: 8px;">싱글패스 UUID 경로</th>
+            <th style="padding: 8px;">싱글패스 SCSI 이름</th>
+            <th style="padding: 8px;">싱글패스 WWN 이름</th>
           </tr>
         </thead>
         <tbody>
@@ -2927,16 +2939,16 @@ function setDiskAction(type, action, extend) {
 
           output += `
         <tr>
-          <td style="padding: 8px; border-bottom: 1px solid #ddd;">${singleName}</td>
-          <td style="padding: 8px; border-bottom: 1px solid #ddd;">
+          <td style="padding: 8px;">${singleName}</td>
+          <td style="padding: 8px;">
             <a href="#" onclick="copyToClipboard('${singleUUID}'); return false;"
-            style="color: black; text-decoration: underline; margin-left: 10px; cursor: pointer;">
+            style="color: var(--pf-t--global--text--color--link--default); text-decoration: underline; margin-left: 10px; cursor: pointer;">
             ${singleUUID}
             </a>
 
           </td>
-          <td style="padding: 8px; border-bottom: 1px solid #ddd;">${scsi}</td>
-          <td style="padding: 8px; border-bottom: 1px solid #ddd;">${wwn}</td>
+          <td style="padding: 8px;">${scsi}</td>
+          <td style="padding: 8px;">${wwn}</td>
         </tr>
       `;
         });
@@ -3082,30 +3094,37 @@ function setDiskAction(type, action, extend) {
       if (blockdevices.length > 0) {
         for (var i = 0; i < blockdevices.length; i++) {
           var disk_id = blockdevices[i].rbd_path;
+          var partition_text = '';
+          var check_disable = '';
 
           // 각 데이터 길이에 따라 너비 조정
-          var sizeWidth = Math.max(blockdevices[i].size.length * 10, 160);   // 최소 200px
-          var pathWidth = Math.max(blockdevices[i].path.length * 10, 200);      // 최소 300px
-          var rbaPathWidth = Math.max(blockdevices[i].rbd_path.length * 10, 200); // 최소 300px
+          var sizeWidth = Math.max(blockdevices[i].size.length * 10, 50);   // 최소 50px
+          var maxSizeWidth = Math.max(blockdevices[i].size.length * 10, 100);   // 최대 100
+          var pathWidth = Math.max(blockdevices[i].path.length * 10, 200);      // 최소 200px
+          var rbaPathWidth = Math.max(blockdevices[i].rbd_path.length * 10, 200); // 최소 200px
+
+          if (blockdevices[i].children != undefined) {
+            partition_text = '( Partition exists count : ' + blockdevices[i].children.length + ' )';
+            check_disable = 'disabled';
+          }
 
           output += `
             <div style="margin-bottom: 8px; display: flex; align-items: center; font-family: monospace;">
               <input type="checkbox" class="disk-image-delete-checkbox" id="disk-image-checkbox-delete-${i}"
                 name="form-disk-image-checkbox-delete" data-size="${blockdevices[i].size}"
-                data-disk_id="${disk_id}" style="margin-left:5px; transform: scale(1.3); margin-right:10px;">
+                data-disk_id="${disk_id}" style="margin-left:5px; transform: scale(1.3); margin-right:10px;" ${check_disable}>
               <label for="disk-image-checkbox-delete-${i}"
-                style="display: inline-block; min-width:${sizeWidth}px; flex-grow: 2; overflow: hidden; text-overflow: ellipsis;">
+                style="display: inline-block; min-width:${sizeWidth}px; max-width:${maxSizeWidth}px; flex-grow: 2; overflow: hidden; text-overflow: ellipsis;">
                 ${blockdevices[i].path}
               </label>
               <label for="disk-image-checkbox-delete-${i}"
-                style="display: inline-block; min-width:${sizeWidth}px; flex-grow: 1; overflow: hidden; text-overflow: ellipsis;">
+                style="display: inline-block; min-width:${sizeWidth}px; max-width:${maxSizeWidth}px; flex-grow: 1; overflow: hidden; text-overflow: ellipsis;">
                 ${blockdevices[i].size}
               </label>
               <label for="disk-image-checkbox-delete-${i}"
                 style="display: inline-block; min-width:${rbaPathWidth}px; flex-grow: 2; overflow: hidden; text-overflow: ellipsis;">
-                ${blockdevices[i].rbd_path}
+                ${blockdevices[i].rbd_path} ${partition_text}
               </label>
-
             </div>
           `;
         }
@@ -3172,16 +3191,15 @@ function applyExtendMethodStyles() {
     diskImageCreate.style.display = checkedRadio.value === 'add-lun' ? 'flex' : 'none';
   }
 
-  // 모든 라디오 버튼 초기화
-  document.querySelectorAll('input[name="extend-method"]').forEach((r) => {
-    r.style.backgroundColor = 'transparent';
-    r.style.boxShadow = 'none';
+  // 선택된 옵션 스타일 토글
+  document.querySelectorAll('.ablestack-extend-method-option').forEach((label) => {
+    label.classList.remove('is-selected');
   });
-
-  // 선택된 라디오 버튼 강조
   if (checkedRadio) {
-    checkedRadio.style.backgroundColor = '#007BBA';
-    checkedRadio.style.boxShadow = 'inset 0 0 0 3px white';
+    const selectedLabel = checkedRadio.closest('.ablestack-extend-method-option');
+    if (selectedLabel) {
+      selectedLabel.classList.add('is-selected');
+    }
   }
 }
 
@@ -4107,7 +4125,7 @@ function gfsResourceStatus() {
                   $('#gfs-lock-status, #gfs-integration-lock-status').text("Health Err");
                   $('#gfs-lock-back-color, #gfs-integration-lock-back-color').attr('class', 'pf-v6-c-label pf-m-red');
                   $('#gfs-lock-icon, #gfs-integration-lock-icon').attr('class', 'fas fa-fw fa-exclamation-triangle');
-                  $('#gfs-low-info, #gfs-integration-low-info').attr("style", "color: red");
+                  setStatusTone($('#gfs-low-info, #gfs-integration-low-info'), "danger");
                   $('#gfs-low-info, #gfs-integration-low-info').text("GFS 잠금 장치 구성 중 오류가 발생했습니다.");
 
                   return;
@@ -4118,7 +4136,7 @@ function gfsResourceStatus() {
                 $('#gfs-lock-status, #gfs-integration-lock-status').text("Health Err");
                 $('#gfs-lock-back-color, #gfs-integration-lock-back-color').attr('class', 'pf-v6-c-label pf-m-red');
                 $('#gfs-lock-icon, #gfs-integration-lock-icon').attr('class', 'fas fa-fw fa-exclamation-triangle');
-                $('#gfs-low-info, #gfs-integration-low-info').attr("style", "color: red");
+                setStatusTone($('#gfs-low-info, #gfs-integration-low-info'), "danger");
                 $('#gfs-low-info, #gfs-integration-low-info').text("GFS 잠금 장치 구성 중 오류가 발생했습니다.");
               }
 
@@ -4130,7 +4148,7 @@ function gfsResourceStatus() {
                   $('#gfs-lock-status, #gfs-integration-lock-status').text("Health Err");
                   $('#gfs-lock-back-color, #gfs-integration-lock-back-color').attr('class', 'pf-v6-c-label pf-m-red');
                   $('#gfs-lock-icon, #gfs-integration-lock-icon').attr('class', 'fas fa-fw fa-exclamation-triangle');
-                  $('#gfs-low-info, #gfs-integration-low-info').attr("style", "color: red");
+                  setStatusTone($('#gfs-low-info, #gfs-integration-low-info'), "danger");
                   $('#gfs-low-info, #gfs-integration-low-info').text("GFS 잠금 장치 구성 중 오류가 발생했습니다.");
                   return;
                 } else {
@@ -4140,7 +4158,7 @@ function gfsResourceStatus() {
                 $('#gfs-lock-status, #gfs-integration-lock-status').text("Health Err");
                 $('#gfs-lock-back-color, #gfs-integration-lock-back-color').attr('class', 'pf-v6-c-label pf-m-red');
                 $('#gfs-lock-icon, #gfs-integration-lock-icon').attr('class', 'fas fa-fw fa-exclamation-triangle');
-                $('#gfs-low-info, #gfs-integration-low-info').attr("style", "color: red");
+                setStatusTone($('#gfs-low-info, #gfs-integration-low-info'), "danger");
                 $('#gfs-low-info, #gfs-integration-low-info').text("GFS 잠금 장치 구성 중 오류가 발생했습니다.");
               }
             }
@@ -4201,12 +4219,12 @@ function gfsResourceStatus() {
             $('#gfs-lock-back-color, #gfs-integration-lock-back-color').attr('class', 'pf-v6-c-label pf-m-red');
             $('#gfs-lock-icon, #gfs-integration-lock-icon').attr('class', 'fas fa-fw fa-exclamation-triangle');
             // 오류 처리 추가 (필요 시 사용자 알림 등)
-            $('#gfs-low-info, #gfs-integration-low-info').attr("style", "color: red");
+            setStatusTone($('#gfs-low-info, #gfs-integration-low-info'), "danger");
             $('#gfs-low-info').text("GFS 리소스 구성 중 오류가 발생했습니다.");
             $('#gfs-integration-low-info').text("GFS 통합 구성 중 오류가 발생했습니다.");
             return;
           }
-          $('#gfs-low-info, #gfs-integration-low-info').attr("style", "color: green");
+          setStatusTone($('#gfs-low-info, #gfs-integration-low-info'), "ok");
           $('#gfs-low-info').text("GFS 리소스가 구성되었습니다.");
           $('#gfs-integration-low-info').text("GFS 통합이 구성되었습니다.");
         } else {
@@ -4214,7 +4232,7 @@ function gfsResourceStatus() {
           $('#gfs-fence-back-color, #gfs-lock-back-color, #gfs-integration-fence-back-color, #gfs-integration-lock-back-color').attr('class', 'pf-v6-c-label pf-m-red');
           $('#gfs-fence-icon, #gfs-lock-icon, #gfs-integration-fence-icon, #gfs-integration-lock-icon').attr('class', 'fas fa-fw fa-exclamation-triangle');
           $('#gfs-fence-text, #gfs-lock-text, #gfs-integration-fence-text, #gfs-integration-lock-text').text("N/A");
-          $('#gfs-low-info, #gfs-integration-low-info').attr("style", "color: red");
+          setStatusTone($('#gfs-low-info, #gfs-integration-low-info'), "danger");
           $('#gfs-low-info').text("GFS 리소스가 구성되지 않았습니다.");
           $('#gfs-integration-low-info').text("GFS 통합이 구성되지 않았습니다.");
         }
@@ -4499,7 +4517,7 @@ function LocalDiskStatus() {
           $('#page-local-disk-physical-volume').text(retVal.val.pv);
           $('#page-local-disk-volume-group').text(retVal.val.vg);
           $('#page-local-disk-size').text(retVal.val.size + "B");
-          $('#local-disk-low-info').attr("style", "color: green");
+          setStatusTone($('#local-disk-low-info'), "ok");
           $('#local-disk-low-info').text("로컬 디스크가 생성되었습니다.");
           sessionStorage.setItem("local_configure", "true");
 
@@ -4512,7 +4530,7 @@ function LocalDiskStatus() {
           $('#page-local-disk-physical-volume').text(retVal.val.pv);
           $('#page-local-disk-volume-group').text(retVal.val.vg);
           $('#page-local-disk-size').text(retVal.val.size);
-          $('#local-disk-low-info').attr("style", "color: red");
+          setStatusTone($('#local-disk-low-info'), "danger");
           $('#local-disk-low-info').text("로컬 디스크가 생성되지 않았습니다.");
           sessionStorage.setItem("local_configure", "false");
 
@@ -4527,7 +4545,7 @@ function LocalDiskStatus() {
         $('#page-local-disk-physical-volume').text(retVal.val.pv);
         $('#page-local-disk-volume-group').text(retVal.val.vg);
         $('#page-local-disk-size').text(retVal.val.size);
-        $('#local-disk-low-info').attr("style", "color: red");
+        setStatusTone($('#local-disk-low-info'), "danger");
         $('#local-disk-low-info').text("로컬 디스크가 생성되지 않았습니다.");
         sessionStorage.setItem("local_configure", "false");
 
@@ -4681,8 +4699,7 @@ function insertCloudVmCard(os_type) {
       <div class="pf-v6-c-divider" role="separator"></div>
 
       <!-- 📢 상태 메시지 -->
-      <div id="ccvm-low-info" class="pf-v6-c-card__footer"
-         style="color: red;">
+      <div id="ccvm-low-info" class="pf-v6-c-card__footer ablestack-status-text ablestack-status-danger">
         클라우드센터 가상머신이 배포되지 않았습니다.
       </div>
     </div>
@@ -4953,7 +4970,7 @@ $(document).on('click', '#button-cloud-vm-snap-rollback', function () {
 });
 /** 스냅샷 복구 제어 관련 action end */
 
-/** 보안 패치 제어 관련 action start */
+/** 보안 업데이트 제어 관련 action start */
 $('#button-open-modal-security-update').on('click', function () {
   $('#div-modal-security-update').show();
 });
@@ -5075,7 +5092,7 @@ $(function () {
   // 페이지 로드시 즉시 초기 상태로 만들어 둠(처음 열 때 disabled 보장)
   resetModalState();
 
-  // 외부 버튼에서 호출해 여세요(예: “보안 패치” 버튼)
+  // 외부 버튼에서 호출해 여세요(예: “보안 업데이트” 버튼)
   // $('#button-open-modal-security-update').on('click', openSecurityUpdateModal);
   // 필요 시 전역으로 노출
   window.openSecurityUpdateModal = openSecurityUpdateModal;
@@ -5193,13 +5210,13 @@ $('#button-execution-modal-security-update').on('click', function () {
       cockpit.spawn(cmd).then(function (data) {
         var retVal = JSON.parse(data);
         if (retVal.code == 200) {
-          $('#div-modal-spinner-header-txt').text('보안 패치 진행');
+          $('#div-modal-spinner-header-txt').text('보안 업데이트 진행');
           cmd = ['python3', '/usr/share/cockpit/ablestack/python/security_patch/security_patch.py', '--add-host', '-P', port];
           console.log(cmd);
           cockpit.spawn(cmd).then(function (data) {
             var retVal = JSON.parse(data);
             if (retVal.code == 200) {
-              $('#div-modal-spinner-header-txt').text('보안 패치 파일 동기화');
+              $('#div-modal-spinner-header-txt').text('보안 업데이트 파일 동기화');
               cmd = ['python3', '/usr/share/cockpit/ablestack/python/security_patch/security_patch.py', '--update-json-file', '--local'];
               console.log(cmd);
               cockpit.spawn(cmd).then(function (data) {
@@ -5212,54 +5229,54 @@ $('#button-execution-modal-security-update').on('click', function () {
                     var retVal = JSON.parse(data);
                     if (retVal.code == 200) {
                       $('#div-modal-spinner').hide();
-                      $("#modal-status-alert-title").html("보안 패치 적용");
-                      $("#modal-status-alert-body").html("보안 패치 적용이 완료되었습니다.");
+                      $("#modal-status-alert-title").html("보안 업데이트 적용");
+                      $("#modal-status-alert-body").html("보안 업데이트 적용이 완료되었습니다.");
                       $('#div-modal-status-alert').show();
                     } else {
                       $('#div-modal-spinner').hide();
-                      $("#modal-status-alert-title").html("보안 패치 적용");
+                      $("#modal-status-alert-title").html("보안 업데이트 적용");
                       $("#modal-status-alert-body").html("클러스터 유지보수 모드를 비활성화하는 과정에서 오류가 발생했습니다.");
                       $('#div-modal-status-alert').show();
                     }
                   }).catch(function () {
                     $('#div-modal-spinner').hide();
-                    $("#modal-status-alert-title").html("보안 패치 적용");
+                    $("#modal-status-alert-title").html("보안 업데이트 적용");
                     $("#modal-status-alert-body").html("클러스터 유지보수 모드를 비활성화하는 과정에서 오류가 발생했습니다.");
                     $('#div-modal-status-alert').show();
                   })
                 } else {
                   $('#div-modal-spinner').hide();
-                  $("#modal-status-alert-title").html("보안 패치 적용");
-                  $("#modal-status-alert-body").html("보안 패치 파일 동기화 과정에서 오류가 발생했습니다.");
+                  $("#modal-status-alert-title").html("보안 업데이트 적용");
+                  $("#modal-status-alert-body").html("보안 업데이트 파일 동기화 과정에서 오류가 발생했습니다.");
                   $('#div-modal-status-alert').show();
                 }
               }).catch(function () {
                 $('#div-modal-spinner').hide();
-                $("#modal-status-alert-title").html("보안 패치 적용");
-                $("#modal-status-alert-body").html("보안 패치 파일 동기화 과정에서 오류가 발생했습니다.");
+                $("#modal-status-alert-title").html("보안 업데이트 적용");
+                $("#modal-status-alert-body").html("보안 업데이트 파일 동기화 과정에서 오류가 발생했습니다.");
                 $('#div-modal-status-alert').show();
               })
             } else {
               $('#div-modal-spinner').hide();
-              $("#modal-status-alert-title").html("보안 패치 적용");
-              $("#modal-status-alert-body").html("보안 패치를 적용하는 중 오류가 발생했습니다.");
+              $("#modal-status-alert-title").html("보안 업데이트 적용");
+              $("#modal-status-alert-body").html("보안 업데이트를 적용하는 중 오류가 발생했습니다.");
               $('#div-modal-status-alert').show();
             }
           }).catch(function () {
             $('#div-modal-spinner').hide();
-            $("#modal-status-alert-title").html("보안 패치 적용");
-            $("#modal-status-alert-body").html("보안 패치를 적용하는 중 오류가 발생했습니다.");
+            $("#modal-status-alert-title").html("보안 업데이트 적용");
+            $("#modal-status-alert-body").html("보안 업데이트를 적용하는 중 오류가 발생했습니다.");
             $('#div-modal-status-alert').show();
           })
         } else {
           $('#div-modal-spinner').hide();
-          $("#modal-status-alert-title").html("보안 패치 적용");
+          $("#modal-status-alert-title").html("보안 업데이트 적용");
           $("#modal-status-alert-body").html("클러스터 유지보수 모드를 활성화하는 과정에서 오류가 발생했습니다.");
           $('#div-modal-status-alert').show();
         }
       }).catch(function () {
         $('#div-modal-spinner').hide();
-        $("#modal-status-alert-title").html("보안 패치 적용");
+        $("#modal-status-alert-title").html("보안 업데이트 적용");
         $("#modal-status-alert-body").html("클러스터 유지보수 모드를 활성화하는 과정에서 오류가 발생했습니다.");
         $('#div-modal-status-alert').show();
       })
@@ -5269,13 +5286,13 @@ $('#button-execution-modal-security-update').on('click', function () {
       cockpit.spawn(cmd).then(function (data) {
         var retVal = JSON.parse(data);
         if (retVal.code == 200) {
-          $('#div-modal-spinner-header-txt').text('보안 패치 진행');
+          $('#div-modal-spinner-header-txt').text('보안 업데이트 진행');
           cmd = ['python3', '/usr/share/cockpit/ablestack/python/security_patch/security_patch.py', '-P', port];
           console.log(cmd);
           cockpit.spawn(cmd).then(function (data) {
             var retVal = JSON.parse(data);
             if (retVal.code == 200) {
-              $('#div-modal-spinner-header-txt').text('보안 패치 파일 동기화');
+              $('#div-modal-spinner-header-txt').text('보안 업데이트 파일 동기화');
               cmd = ['python3', '/usr/share/cockpit/ablestack/python/security_patch/security_patch.py', '--update-json-file'];
               console.log(cmd);
               cockpit.spawn(cmd).then(function (data) {
@@ -5295,30 +5312,30 @@ $('#button-execution-modal-security-update').on('click', function () {
                           var retVal = JSON.parse(data);
                           if (retVal.code == 200) {
                             $('#div-modal-spinner').hide();
-                            $("#modal-status-alert-title").html("보안 패치 적용");
-                            $("#modal-status-alert-body").html("보안 패치 적용이 완료되었습니다.");
+                            $("#modal-status-alert-title").html("보안 업데이트 적용");
+                            $("#modal-status-alert-body").html("보안 업데이트 적용이 완료되었습니다.");
                             $('#div-modal-status-alert').show();
                           } else {
                             $('#div-modal-spinner').hide();
-                            $("#modal-status-alert-title").html("보안 패치 적용");
+                            $("#modal-status-alert-title").html("보안 업데이트 적용");
                             $("#modal-status-alert-body").html("클러스터 유지보수 모드를 비활성화하는 과정에서 오류가 발생했습니다.");
                             $('#div-modal-status-alert').show();
                           }
                         }).catch(function () {
                           $('#div-modal-spinner').hide();
-                          $("#modal-status-alert-title").html("보안 패치 적용");
+                          $("#modal-status-alert-title").html("보안 업데이트 적용");
                           $("#modal-status-alert-body").html("클러스터 유지보수 모드를 비활성화하는 과정에서 오류가 발생했습니다.");
                           $('#div-modal-status-alert').show();
                         })
                       } else {
                         $('#div-modal-spinner').hide();
-                        $("#modal-status-alert-title").html("보안 패치 적용");
+                        $("#modal-status-alert-title").html("보안 업데이트 적용");
                         $("#modal-status-alert-body").html("Glue 전용 SSH 포트 변경하는 과정에서 오류가 발생했습니다.");
                         $('#div-modal-status-alert').show();
                       }
                     }).catch(function () {
                       $('#div-modal-spinner').hide();
-                      $("#modal-status-alert-title").html("보안 패치 적용");
+                      $("#modal-status-alert-title").html("보안 업데이트 적용");
                       $("#modal-status-alert-body").html("Glue 전용 SSH 포트 변경하는 과정에서 오류가 발생했습니다.");
                       $('#div-modal-status-alert').show();
                     })
@@ -5330,55 +5347,55 @@ $('#button-execution-modal-security-update').on('click', function () {
                       var retVal = JSON.parse(data);
                       if (retVal.code == 200) {
                         $('#div-modal-spinner').hide();
-                        $("#modal-status-alert-title").html("보안 패치 적용");
-                        $("#modal-status-alert-body").html("보안 패치 적용이 완료되었습니다.");
+                        $("#modal-status-alert-title").html("보안 업데이트 적용");
+                        $("#modal-status-alert-body").html("보안 업데이트 적용이 완료되었습니다.");
                         $('#div-modal-status-alert').show();
                       } else {
                         $('#div-modal-spinner').hide();
-                        $("#modal-status-alert-title").html("보안 패치 적용");
+                        $("#modal-status-alert-title").html("보안 업데이트 적용");
                         $("#modal-status-alert-body").html("클러스터 유지보수 모드를 비활성화하는 과정에서 오류가 발생했습니다.");
                         $('#div-modal-status-alert').show();
                       }
                     }).catch(function () {
                       $('#div-modal-spinner').hide();
-                      $("#modal-status-alert-title").html("보안 패치 적용");
+                      $("#modal-status-alert-title").html("보안 업데이트 적용");
                       $("#modal-status-alert-body").html("클러스터 유지보수 모드를 비활성화하는 과정에서 오류가 발생했습니다.");
                       $('#div-modal-status-alert').show();
                     })
                   }
                 } else {
                   $('#div-modal-spinner').hide();
-                  $("#modal-status-alert-title").html("보안 패치 적용");
-                  $("#modal-status-alert-body").html("보안 패치 파일 동기화 과정에서 오류가 발생했습니다.");
+                  $("#modal-status-alert-title").html("보안 업데이트 적용");
+                  $("#modal-status-alert-body").html("보안 업데이트 파일 동기화 과정에서 오류가 발생했습니다.");
                   $('#div-modal-status-alert').show();
                 }
               }).catch(function () {
                 $('#div-modal-spinner').hide();
-                $("#modal-status-alert-title").html("보안 패치 적용");
-                $("#modal-status-alert-body").html("보안 패치 파일 동기화 과정에서 오류가 발생했습니다.");
+                $("#modal-status-alert-title").html("보안 업데이트 적용");
+                $("#modal-status-alert-body").html("보안 업데이트 파일 동기화 과정에서 오류가 발생했습니다.");
                 $('#div-modal-status-alert').show();
               })
             } else {
               $('#div-modal-spinner').hide();
-              $("#modal-status-alert-title").html("보안 패치 적용");
-              $("#modal-status-alert-body").html("보안 패치를 적용하는 중 오류가 발생했습니다.");
+              $("#modal-status-alert-title").html("보안 업데이트 적용");
+              $("#modal-status-alert-body").html("보안 업데이트를 적용하는 중 오류가 발생했습니다.");
               $('#div-modal-status-alert').show();
             }
           }).catch(function () {
             $('#div-modal-spinner').hide();
-            $("#modal-status-alert-title").html("보안 패치 적용");
-            $("#modal-status-alert-body").html("보안 패치를 적용하는 중 오류가 발생했습니다.");
+            $("#modal-status-alert-title").html("보안 업데이트 적용");
+            $("#modal-status-alert-body").html("보안 업데이트를 적용하는 중 오류가 발생했습니다.");
             $('#div-modal-status-alert').show();
           })
         } else {
           $('#div-modal-spinner').hide();
-          $("#modal-status-alert-title").html("보안 패치 적용");
+          $("#modal-status-alert-title").html("보안 업데이트 적용");
           $("#modal-status-alert-body").html("클러스터 유지보수 모드를 활성화하는 과정에서 오류가 발생했습니다.");
           $('#div-modal-status-alert').show();
         }
       }).catch(function () {
         $('#div-modal-spinner').hide();
-        $("#modal-status-alert-title").html("보안 패치 적용");
+        $("#modal-status-alert-title").html("보안 업데이트 적용");
         $("#modal-status-alert-body").html("클러스터 유지보수 모드를 활성화하는 과정에서 오류가 발생했습니다.");
         $('#div-modal-status-alert').show();
       })
@@ -5390,13 +5407,13 @@ $('#button-execution-modal-security-update').on('click', function () {
       cockpit.spawn(cmd).then(function (data) {
         var retVal = JSON.parse(data);
         if (retVal.code == 200) {
-          $('#div-modal-spinner-header-txt').text('보안 패치 진행');
+          $('#div-modal-spinner-header-txt').text('보안 업데이트 진행');
           cmd = ['python3', '/usr/share/cockpit/ablestack/python/security_patch/security_patch.py', '--add-host'];
           console.log(cmd);
           cockpit.spawn(cmd).then(function (data) {
             var retVal = JSON.parse(data);
             if (retVal.code == 200) {
-              $('#div-modal-spinner-header-txt').text('보안 패치 파일 동기화');
+              $('#div-modal-spinner-header-txt').text('보안 업데이트 파일 동기화');
               cmd = ['python3', '/usr/share/cockpit/ablestack/python/security_patch/security_patch.py', '--update-json-file', '--local'];
               console.log(cmd);
               cockpit.spawn(cmd).then(function (data) {
@@ -5409,59 +5426,59 @@ $('#button-execution-modal-security-update').on('click', function () {
                     var retVal = JSON.parse(data);
                     if (retVal.code == 200) {
                       $('#div-modal-spinner').hide();
-                      $("#modal-status-alert-title").html("보안 패치 적용");
-                      $("#modal-status-alert-body").html("보안 패치 적용이 완료되었습니다.");
+                      $("#modal-status-alert-title").html("보안 업데이트 적용");
+                      $("#modal-status-alert-body").html("보안 업데이트 적용이 완료되었습니다.");
                       $('#div-modal-status-alert').show();
                     } else {
                       $('#div-modal-spinner').hide();
-                      $("#modal-status-alert-title").html("보안 패치 적용");
+                      $("#modal-status-alert-title").html("보안 업데이트 적용");
                       $("#modal-status-alert-body").html("클러스터 유지보수 모드를 비활성화하는 과정에서 오류가 발생했습니다.");
                       $('#div-modal-status-alert').show();
                     }
                   }).catch(function () {
                     $('#div-modal-spinner').hide();
-                    $("#modal-status-alert-title").html("보안 패치 적용");
+                    $("#modal-status-alert-title").html("보안 업데이트 적용");
                     $("#modal-status-alert-body").html("클러스터 유지보수 모드를 비활성화하는 과정에서 오류가 발생했습니다.");
                     $('#div-modal-status-alert').show();
                   })
                   $('#div-modal-spinner').hide();
-                  $("#modal-status-alert-title").html("보안 패치 적용");
-                  $("#modal-status-alert-body").html("보안 패치 적용이 완료되었습니다.");
+                  $("#modal-status-alert-title").html("보안 업데이트 적용");
+                  $("#modal-status-alert-body").html("보안 업데이트 적용이 완료되었습니다.");
                   $('#div-modal-status-alert').show();
                 } else {
                   $('#div-modal-spinner').hide();
-                  $("#modal-status-alert-title").html("보안 패치 적용");
-                  $("#modal-status-alert-body").html("보안 패치 파일 동기화 과정에서 오류가 발생했습니다.");
+                  $("#modal-status-alert-title").html("보안 업데이트 적용");
+                  $("#modal-status-alert-body").html("보안 업데이트 파일 동기화 과정에서 오류가 발생했습니다.");
                   $('#div-modal-status-alert').show();
                 }
               }).catch(function () {
                 $('#div-modal-spinner').hide();
-                $("#modal-status-alert-title").html("보안 패치 적용");
-                $("#modal-status-alert-body").html("보안 패치 파일 동기화 과정에서 오류가 발생했습니다.");
+                $("#modal-status-alert-title").html("보안 업데이트 적용");
+                $("#modal-status-alert-body").html("보안 업데이트 파일 동기화 과정에서 오류가 발생했습니다.");
                 $('#div-modal-status-alert').show();
               })
 
             } else {
               $('#div-modal-spinner').hide();
-              $("#modal-status-alert-title").html("보안 패치 적용");
-              $("#modal-status-alert-body").html("보안 패치를 적용하는 중 오류가 발생했습니다.");
+              $("#modal-status-alert-title").html("보안 업데이트 적용");
+              $("#modal-status-alert-body").html("보안 업데이트를 적용하는 중 오류가 발생했습니다.");
               $('#div-modal-status-alert').show();
             }
           }).catch(function () {
             $('#div-modal-spinner').hide();
-            $("#modal-status-alert-title").html("보안 패치 적용");
-            $("#modal-status-alert-body").html("보안 패치를 적용하는 중 오류가 발생했습니다.");
+            $("#modal-status-alert-title").html("보안 업데이트 적용");
+            $("#modal-status-alert-body").html("보안 업데이트를 적용하는 중 오류가 발생했습니다.");
             $('#div-modal-status-alert').show();
           })
         } else {
           $('#div-modal-spinner').hide();
-          $("#modal-status-alert-title").html("보안 패치 적용");
+          $("#modal-status-alert-title").html("보안 업데이트 적용");
           $("#modal-status-alert-body").html("클러스터 유지보수 모드를 활성화하는 과정에서 오류가 발생했습니다.");
           $('#div-modal-status-alert').show();
         }
       }).catch(function () {
         $('#div-modal-spinner').hide();
-        $("#modal-status-alert-title").html("보안 패치 적용");
+        $("#modal-status-alert-title").html("보안 업데이트 적용");
         $("#modal-status-alert-body").html("클러스터 유지보수 모드를 활성화하는 과정에서 오류가 발생했습니다.");
         $('#div-modal-status-alert').show();
       })
@@ -5472,13 +5489,13 @@ $('#button-execution-modal-security-update').on('click', function () {
       cockpit.spawn(cmd).then(function (data) {
         var retVal = JSON.parse(data);
         if (retVal.code == 200) {
-          $('#div-modal-spinner-header-txt').text('보안 패치 진행');
+          $('#div-modal-spinner-header-txt').text('보안 업데이트 진행');
           cmd = ['python3', '/usr/share/cockpit/ablestack/python/security_patch/security_patch.py'];
           console.log(cmd);
           cockpit.spawn(cmd).then(function (data) {
             var retVal = JSON.parse(data);
             if (retVal.code == 200) {
-              $('#div-modal-spinner-header-txt').text('보안 패치 파일 동기화');
+              $('#div-modal-spinner-header-txt').text('보안 업데이트 파일 동기화');
               cmd = ['python3', '/usr/share/cockpit/ablestack/python/security_patch/security_patch.py', '--update-json-file'];
               console.log(cmd);
               cockpit.spawn(cmd).then(function (data) {
@@ -5491,54 +5508,54 @@ $('#button-execution-modal-security-update').on('click', function () {
                     var retVal = JSON.parse(data);
                     if (retVal.code == 200) {
                       $('#div-modal-spinner').hide();
-                      $("#modal-status-alert-title").html("보안 패치 적용");
-                      $("#modal-status-alert-body").html("보안 패치 적용이 완료되었습니다.");
+                      $("#modal-status-alert-title").html("보안 업데이트 적용");
+                      $("#modal-status-alert-body").html("보안 업데이트 적용이 완료되었습니다.");
                       $('#div-modal-status-alert').show();
                     } else {
                       $('#div-modal-spinner').hide();
-                      $("#modal-status-alert-title").html("보안 패치 적용");
+                      $("#modal-status-alert-title").html("보안 업데이트 적용");
                       $("#modal-status-alert-body").html("클러스터 유지보수 모드를 비활성화하는 과정에서 오류가 발생했습니다.");
                       $('#div-modal-status-alert').show();
                     }
                   }).catch(function () {
                     $('#div-modal-spinner').hide();
-                    $("#modal-status-alert-title").html("보안 패치 적용");
+                    $("#modal-status-alert-title").html("보안 업데이트 적용");
                     $("#modal-status-alert-body").html("클러스터 유지보수 모드를 비활성화하는 과정에서 오류가 발생했습니다.");
                     $('#div-modal-status-alert').show();
                   })
                 } else {
                   $('#div-modal-spinner').hide();
-                  $("#modal-status-alert-title").html("보안 패치 적용");
-                  $("#modal-status-alert-body").html("보안 패치 파일 동기화 과정에서 오류가 발생했습니다.");
+                  $("#modal-status-alert-title").html("보안 업데이트 적용");
+                  $("#modal-status-alert-body").html("보안 업데이트 파일 동기화 과정에서 오류가 발생했습니다.");
                   $('#div-modal-status-alert').show();
                 }
               }).catch(function () {
                 $('#div-modal-spinner').hide();
-                $("#modal-status-alert-title").html("보안 패치 적용");
-                $("#modal-status-alert-body").html("보안 패치 파일 동기화 과정에서 오류가 발생했습니다.");
+                $("#modal-status-alert-title").html("보안 업데이트 적용");
+                $("#modal-status-alert-body").html("보안 업데이트 파일 동기화 과정에서 오류가 발생했습니다.");
                 $('#div-modal-status-alert').show();
               })
             } else {
               $('#div-modal-spinner').hide();
-              $("#modal-status-alert-title").html("보안 패치 적용");
-              $("#modal-status-alert-body").html("보안 패치를 적용하는 중 오류가 발생했습니다.");
+              $("#modal-status-alert-title").html("보안 업데이트 적용");
+              $("#modal-status-alert-body").html("보안 업데이트를 적용하는 중 오류가 발생했습니다.");
               $('#div-modal-status-alert').show();
             }
           }).catch(function () {
             $('#div-modal-spinner').hide();
-            $("#modal-status-alert-title").html("보안 패치 적용");
-            $("#modal-status-alert-body").html("보안 패치를 적용하는 중 오류가 발생했습니다.");
+            $("#modal-status-alert-title").html("보안 업데이트 적용");
+            $("#modal-status-alert-body").html("보안 업데이트를 적용하는 중 오류가 발생했습니다.");
             $('#div-modal-status-alert').show();
           })
         } else {
           $('#div-modal-spinner').hide();
-          $("#modal-status-alert-title").html("보안 패치 적용");
+          $("#modal-status-alert-title").html("보안 업데이트 적용");
           $("#modal-status-alert-body").html("클러스터 유지보수 모드를 활성화하는 과정에서 오류가 발생했습니다.");
           $('#div-modal-status-alert').show();
         }
       }).catch(function () {
         $('#div-modal-spinner').hide();
-        $("#modal-status-alert-title").html("보안 패치 적용");
+        $("#modal-status-alert-title").html("보안 업데이트 적용");
         $("#modal-status-alert-body").html("클러스터 유지보수 모드를 활성화하는 과정에서 오류가 발생했습니다.");
         $('#div-modal-status-alert').show();
       })
@@ -5577,14 +5594,14 @@ $('#button-execution-modal-ssh-port-change').on('click', function () {
             $('#div-modal-status-alert').show();
           } else {
             $('#div-modal-spinner').hide();
-            $("#modal-status-alert-title").html("보안 패치 적용");
-            $("#modal-status-alert-body").html("보안 패치를 적용하는 중 오류가 발생했습니다.");
+            $("#modal-status-alert-title").html("보안 업데이트 적용");
+            $("#modal-status-alert-body").html("보안 업데이트를 적용하는 중 오류가 발생했습니다.");
             $('#div-modal-status-alert').show();
           }
         }).catch(function () {
           $('#div-modal-spinner').hide();
-          $("#modal-status-alert-title").html("보안 패치 적용");
-          $("#modal-status-alert-body").html("보안 패치를 적용하는 중 오류가 발생했습니다.");
+          $("#modal-status-alert-title").html("보안 업데이트 적용");
+          $("#modal-status-alert-body").html("보안 업데이트를 적용하는 중 오류가 발생했습니다.");
           $('#div-modal-status-alert').show();
         })
       }
@@ -5673,6 +5690,9 @@ $(' #button-refresh-modal-gfs-disk-extend').on('click', function () {
 });
 // 디스크 이미지 생성 버튼에 대한 액션 정의
 $('#div-disk-image-create, #div-disk-image-create-extend').on('click', function () {
+  $('#form-input-disk-image-size').val('');
+  $('input[type=checkbox][id="modal-input-disk-image-create-confirm"]').prop("checked", false);
+  $('#button-execution-modal-disk-image-create').attr('disabled', true);
   $('#div-modal-disk-image-create').show();
 });
 $('#button-cancel-modal-disk-image-create, #button-close-modal-disk-image-create').on('click', function () {
@@ -5727,6 +5747,9 @@ $('#button-execution-modal-disk-image-create').on('click', function () {
 });
 
 $('#menu-item-set-disk-image-add').on('click', function () {
+  $('#form-input-disk-image-size').val('');
+  $('input[type=checkbox][id="modal-input-disk-image-create-confirm"]').prop("checked", false);
+  $('#button-execution-modal-disk-image-create').attr('disabled', true);
   $('#div-modal-disk-image-create').show();
 });
 $('#menu-item-set-disk-image-delete').on('click', function () {
@@ -5799,6 +5822,4 @@ $('#button-execution-modal-disk-image-delete').on('click', function () {
       $('#div-modal-status-alert').detach().appendTo('body').show();
     })
   })
-
-
 });
