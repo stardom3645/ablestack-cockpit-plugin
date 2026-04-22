@@ -934,23 +934,14 @@ function ccvm_bootstrap_run(){
                         console.log(":::ccvm_bootstrap_run() Error :::" + data);
                     });
             }else{
-              $('#div-modal-status-alert').show();
+                $('#div-modal-status-alert').show();
             }
-          })
-          .catch(function(data){
+        })
+        .catch(function(data){
             createLoggerInfo(":::ccvm_bootstrap_run() Error ::: error");
             $('#div-modal-status-alert').show();
             console.log(":::ccvm_bootstrap_run() Error :::" + data);
-          });
-      }else{
-        $('#div-modal-status-alert').show();
-      }
-    })
-    .catch(function(data){
-      createLoggerInfo(":::scvm_bootstrap_run() Error ::: error");
-      $('#div-modal-status-alert').show();
-      console.log(":::scvm_bootstrap_run() Error :::" + data);
-    });
+        });
 }
 
 function cccc_link_go(){
