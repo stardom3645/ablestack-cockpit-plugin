@@ -34,39 +34,6 @@ $('#button-storage-vm-status-update').on('click', function(){
     .catch(function(data){
       createLoggerInfo(":::scvm stop Error:::");
       console.log(":::scvm stop Error::: " + data);
-    });
-  }else if(cmd == "start"){//스토리지센터VM 시작 버튼 클릭시
-    cockpit.spawn(["python3", pluginpath+"/python/scvm_status/scvm_status_update.py", "start" ])
-    .then(function(data){
-      //console.log(data);
-      var retVal = JSON.parse(data);
-      if(retVal.code == "200"){
-        console.log(data);
-        location.reload();
-      }else{
-        createLoggerInfo(":::scvm start Error:::");
-        console.log(":::scvm start Error::: "+ data);
-      }
-    })
-    .catch(function(data){
-      createLoggerInfo(":::scvm delete Error:::");
-      console.log(":::scvm delete Error::: "+data);
-    });
-  }else if(cmd == "delete"){//스토리지센터VM 삭제 버튼 클릭시
-    cockpit.spawn(["python3", pluginpath+"/python/scvm_status/scvm_status_update.py", "delete" ])
-    .then(function(data){
-      //console.log(data);
-      var retVal = JSON.parse(data);
-      if(retVal.code == "200"){
-        //scvm bootstrap 프로퍼티 초기화
-        cockpit.spawn(["python3", pluginpath+"/python/ablestack_json/ablestackJson.py", "update", "--depth1", "bootstrap", "--depth2", "scvm", "--value", "false"])
-        .then(function(data){
-          createLoggerInfo("Success in initializing ablestackJson's scvm setting to false");
-          console.log("Success in initializing ablestackJson's scvm setting to false");
-        })
-        .catch(function(err){
-          createLoggerInfo("Error in initializing ablestackJson's scvm setting to false");
-          console.log("Error in initializing ablestackJson's scvm setting to false : " + err);
         });
     }else if(cmd == "start"){//스토리지센터VM 시작 버튼 클릭시
         cockpit.spawn(["python3", pluginpath+"/python/scvm_status/scvm_status_update.py", "start" ])
@@ -132,7 +99,7 @@ $('#button-storage-vm-status-update').on('click', function(){
             .then(function(data){
                 console.log(data);
                 $('#div-modal-spinner-header-txt').text('Cube Cockpit HTTPS 인증서를 적용하고 있습니다.');
-                cockpit.spawn(["python3", "/usr/share/ablestack/bootstrap/deploy_cockpit_https_all.py"], { host: "ccvm" })
+                cockpit.spawn(["python3", "/usr/share/cockpit/ablestack/python/deploy_https/deploy_cockpit_https_all.py"], { host: "ccvm" })
                     .then(function(httpsData){
                         console.log(httpsData);
                         location.reload();

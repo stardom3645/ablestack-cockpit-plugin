@@ -401,49 +401,49 @@ function resetWallMonitoringWizard() {
   .then(function (data) {
     var host_ping_test_result = JSON.parse(data);
     if(host_ping_test_result.code=="200") { //정상
-      //=========== 1-2. netdive 구성 ===========
-      var netdive_config_cmd = ['python3', pythonPath + 'config_netdive.py', 'config', '--ccvm', ccvm_ip];
-      netdive_config_cmd.push('--cube');
-      for(var i = 1 ; i <= host_count ; i ++ ){
-        var cubehost_ip = $('#form-input-wall-monitoring-cubehost'+i+'-ip').val();
-        netdive_config_cmd.push(cubehost_ip);
-      }
-
-      if (console_log) { console.log(netdive_config_cmd); }
-      cockpit.spawn(netdive_config_cmd, { host: ccvm_ip })
+      //=========== 1-2. 모니터링 서비스 전체 종료 ===========
+      var wall_service_stop_cmd = ['python3', pythonPath + 'start_services.py', 'stop', '--service', 'blackbox-exporter', 'node-exporter', 'grafana-server', 'process-exporter', 'prometheus'];
+      if (console_log) { console.log(wall_service_stop_cmd); }
+      cockpit.spawn(wall_service_stop_cmd, { host: ccvm_ip })
       .then(function (data) {
-        var netdive_config_result = JSON.parse(data);
-        if(netdive_config_result.code=="200") { //정상
-          //=========== 1-3. 모니터링 서비스 전체 종료 ===========
-          var wall_service_stop_cmd = ['python3', pythonPath + 'start_services.py', 'stop', '--service', 'blackbox-exporter', 'node-exporter', 'grafana-server', 'process-exporter', 'prometheus'];
-          if (console_log) { console.log(wall_service_stop_cmd); }
-          cockpit.spawn(wall_service_stop_cmd, { host: ccvm_ip })
-          .then(function (data) {
-            var wall_service_stop_result = JSON.parse(data);
-            if(wall_service_stop_result.code=="200") { //정상
-              //=========== 2-1. 모니터링 대상 IP 설정 ===========
-              setWallProgressStep("span-wall-progress-step1",2);
-              setWallProgressStep("span-wall-progress-step2",1);
+        var wall_service_stop_result = JSON.parse(data);
+        if(wall_service_stop_result.code=="200") { //정상
+          //=========== 2-1. 모니터링 대상 IP 설정 ===========
+          setWallProgressStep("span-wall-progress-step1",2);
+          setWallProgressStep("span-wall-progress-step2",1);
 
-              var prometheus_config_cmd = ['python3', pythonPath + 'config_wall.py', 'config','--ccvm', ccvm_ip];
-              prometheus_config_cmd.push('--cube');
+          var prometheus_config_cmd = ['python3', pythonPath + 'config_wall.py', 'config','--ccvm', ccvm_ip];
+          prometheus_config_cmd.push('--cube');
+          for(var i = 1 ; i <= host_count ; i ++ ){
+            var cubehost_ip = $('#form-input-wall-monitoring-cubehost'+i+'-ip').val();
+            prometheus_config_cmd.push(cubehost_ip);
+          }
+          if (os_type == "ablestack-hci" || os_type == "ablestack-hci-filesystem"){
+            prometheus_config_cmd.push('--scvm');
+            for(var i = 1 ; i <= host_count ; i ++ ){
+              var scvm_ip = $('#form-input-wall-monitoring-scvm'+i+'-ip').val();
+              prometheus_config_cmd.push(scvm_ip);
+            }
+          }
+          if (console_log) { console.log(prometheus_config_cmd); }
+          cockpit.spawn(prometheus_config_cmd, { host: ccvm_ip })
+          .then(function (data) {
+            var prometheus_config_result = JSON.parse(data);
+            if(prometheus_config_result.code=="200") { //정상
+              //=========== 2-2. netdive 구성 ===========
+              var netdive_config_cmd = ['python3', pythonPath + 'config_netdive.py', 'config', '--ccvm', ccvm_ip];
+              netdive_config_cmd.push('--cube');
               for(var i = 1 ; i <= host_count ; i ++ ){
                 var cubehost_ip = $('#form-input-wall-monitoring-cubehost'+i+'-ip').val();
-                prometheus_config_cmd.push(cubehost_ip);
+                netdive_config_cmd.push(cubehost_ip);
               }
-              if (os_type == "ablestack-hci" || os_type == "ablestack-hci-filesystem"){
-                prometheus_config_cmd.push('--scvm');
-                for(var i = 1 ; i <= host_count ; i ++ ){
-                  var scvm_ip = $('#form-input-wall-monitoring-scvm'+i+'-ip').val();
-                  prometheus_config_cmd.push(scvm_ip);
-                }
-              }
-              if (console_log) { console.log(prometheus_config_cmd); }
-              cockpit.spawn(prometheus_config_cmd, { host: ccvm_ip })
+
+              if (console_log) { console.log(netdive_config_cmd); }
+              cockpit.spawn(netdive_config_cmd, { host: ccvm_ip })
               .then(function (data) {
-                var prometheus_config_result = JSON.parse(data);
-                if(prometheus_config_result.code=="200") { //정상
-                  //=========== 2-2. Wall Monitoring 구성 서비스 실행 ===========
+                var netdive_config_result = JSON.parse(data);
+                if(netdive_config_result.code=="200") { //정상
+                  //=========== 2-3. Wall Monitoring 구성 서비스 실행 ===========
                   var wall_service_start_cmd = ['python3', pythonPath + 'start_services.py', 'start', '--service', 'blackbox-exporter', 'node-exporter', 'grafana-server', 'process-exporter', 'prometheus', 'netdive-analyzer'];
                   if (console_log) { console.log(wall_service_start_cmd); }
                   cockpit.spawn(wall_service_start_cmd, { host: ccvm_ip })
@@ -506,30 +506,30 @@ function resetWallMonitoringWizard() {
                   });
                 } else {
                   setWallProgressFail(2);
-                  alert(prometheus_config_result.val);
+                  alert(netdive_config_result.val);
                 }
               })
               .catch(function (data) {
                 setWallProgressFail(2);
-                alert("Prometheus.yml 파일 구성 실패 : " + data);
+                alert("netdive 구성 실패 : "+data);
               });
             } else {
-              setWallProgressFail(1);
-              alert(wall_service_stop_result.val);
+              setWallProgressFail(2);
+              alert(prometheus_config_result.val);
             }
           })
           .catch(function (data) {
-            setWallProgressFail(1);
-            alert("Wall Monitoring 서비스 중지 실패 : " + data);
+            setWallProgressFail(2);
+            alert("Prometheus.yml 파일 구성 실패 : " + data);
           });
         } else {
           setWallProgressFail(1);
-          alert(netdive_config_result.val);
+          alert(wall_service_stop_result.val);
         }
       })
       .catch(function (data) {
         setWallProgressFail(1);
-        alert("netdive 구성 실패 : "+data);
+        alert("Wall Monitoring 서비스 중지 실패 : " + data);
       });
     } else {
       setWallProgressFail(1);

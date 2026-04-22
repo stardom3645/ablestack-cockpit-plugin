@@ -16,6 +16,16 @@ from subprocess import check_output
 from ablestack import *
 
 json_file_path = pluginpath+"/tools/properties/cluster.json"
+
+CLOUD_CENTER_SCHEME = "https"
+CLOUD_CENTER_PORT = "443"
+WALL_CENTER_SCHEME = "https"
+WALL_CENTER_PORT = "19400"
+GLUE_DASHBOARD_SCHEME = "https"
+GLUE_DASHBOARD_PORT = "19200"
+SCVM_CENTER_SCHEME = "https"
+SCVM_CENTER_PORT = "9090"
+
 # 함수명 : createArgumentParser
 # 주요 기능 : 입력된 argument를 파싱하여 dictionary 처럼 사용하게 만들어 주는 parser 생성
 def createArgumentParser():
@@ -48,12 +58,14 @@ os_type = json_data["clusterConfig"]["type"]
 def cloudCenter(action, H=False):
 
     ip = socket.gethostbyname('ccvm-mngt')
+    value = f"{CLOUD_CENTER_SCHEME}://{ip}"
+    if CLOUD_CENTER_PORT != "443":
+        value = f"{value}:{CLOUD_CENTER_PORT}"
 
     if action == 'cloudCenter':
         try:
             # 클라우드센터
-            value = "http://"+ip+":8080"
-            request = requests.get(value)
+            request = requests.get(value, verify=False, timeout=3)
 
         except:
              # http 접속되지않는 경우
@@ -70,11 +82,11 @@ def cloudCenter(action, H=False):
 def wallCenter(action, H=False):
 
     ip = socket.gethostbyname('ccvm-mngt')
+    value = f"{WALL_CENTER_SCHEME}://{ip}:{WALL_CENTER_PORT}/login"
 
     if action == 'wallCenter':
         try:
             # 모니터링센터
-            value = "https://"+ip+":19400/login"
             request = requests.get(value, verify=False, timeout=3)
 
         except:
@@ -83,7 +95,7 @@ def wallCenter(action, H=False):
 
     else:
         # 클라우드센터 가상머신
-        value = 'https://'+ip+':19400/login'
+        value = f"{WALL_CENTER_SCHEME}://{ip}:{WALL_CENTER_PORT}/login"
 
     if H:
         return json.dumps(json.loads(createReturn(code=200, val=value, retname=action)), indent=4)
@@ -105,7 +117,7 @@ def storageCenter(action, H=False):
                 if "active_name" in mgr_json and mgr_json['active_name'] is not None:
                     mgr_name = mgr_json['active_name'].split('.')
                     ip = socket.gethostbyname(mgr_name[0]+'-mngt')
-                    value = 'https://'+ip+':8443'
+                    value = f"{GLUE_DASHBOARD_SCHEME}://{ip}:{GLUE_DASHBOARD_PORT}"
                 else:
                 # ceph 명령어는 정상적으로 전송되지만 ceph mgr module이 활성화되지 않은 경우
                     return createReturn(code=500, val="ceph mgr module이 활성화되지 않았습니다. <br>mgr 상태를 확인하십시오.")
@@ -123,7 +135,7 @@ def storageCenter(action, H=False):
             value = 'https://'+ip
         else:
             ip = socket.gethostbyname('scvm-mngt')
-            value = 'https://'+ip+':9090'
+            value = f"{SCVM_CENTER_SCHEME}://{ip}:{SCVM_CENTER_PORT}"
 
     if H:
         return json.dumps(json.loads(createReturn(code=200, val=value, retname=action)), indent=4)

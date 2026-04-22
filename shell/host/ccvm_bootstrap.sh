@@ -105,7 +105,7 @@ fi
 # Cube(Cockpit) 포트는 템플릿에서 19100으로 미리 맞추기로 했으므로
 # 여기서는 포트 변경을 하지 않습니다.
 
-BOOTSTRAP_DIR="/usr/share/ablestack/bootstrap"
+BOOTSTRAP_DIR="/usr/share/cockpit/ablestack/python/deploy_https"
 CUBE_HTTPS_SCRIPT="$BOOTSTRAP_DIR/deploy_cockpit_https_all.py"
 chmod 755 "$BOOTSTRAP_DIR"
 
@@ -130,7 +130,6 @@ fi
 
 ################# Post bootstrap step
 # Cube(Cockpit) HTTPS 인증서는 별도 후속 단계로 적용합니다.
-# 템플릿 단계에서 Cockpit 포트(19100), socket override, firewall, SELinux 반영을 끝낸 뒤
 # 부트스트랩 완료 후 deploy_cockpit_https_all.py 를 명시적으로 실행합니다.
 
 echo "Cube(Cockpit) HTTPS deployment is intentionally not executed during ccvm bootstrap." | tee -a "$LOGFILE"
