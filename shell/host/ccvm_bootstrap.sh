@@ -143,6 +143,9 @@ fi
 
 systemctl enable mold.service
 
+# Mold 심볼릭 링크 설정
+bash /usr/share/cockpit/ablestack/shell/host/mold-alias-links.sh
+
 # UEFI 설정 파일 생성
 # echo -e "guest.nvram.template.secure=/usr/share/edk2/ovmf/OVMF_VARS.secboot.fd
 # guest.nvram.template.legacy=/usr/share/edk2/ovmf/OVMF_VARS.fd
