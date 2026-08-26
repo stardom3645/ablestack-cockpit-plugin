@@ -447,6 +447,17 @@ def ccvmGen(sn_nic:str, sn_ip:str, sn_prefix: int, sn_gw:str, sn_dns:str):
 
     with open(f'{tmpdir}/user-data', 'rt') as f:
         yam2 = yaml.safe_load(f)
+        with open(f'{pluginpath}/shell/host/security_patch.sh', 'rt') as security_patch_file:
+            security_patch = security_patch_file.read()
+        yam2['write_files'].append(
+            {
+                'encoding': 'base64',
+                'content': base64.encodebytes(security_patch.encode()),
+                'owner': 'root:root',
+                'path': '/usr/local/sbin/security_patch.sh',
+                'permissions': '0755'
+            }
+        )
         with open(f'{pluginpath}/shell/host/ccvm_bootstrap.sh', 'rt') as bootstrapfile:
             bootstrap = bootstrapfile.read()
         yam2['write_files'].append(
@@ -542,6 +553,18 @@ def scvmGen(pn_nic=None, pn_ip=None, pn_prefix=24, cn_nic=None, cn_ip=None, cn_p
                     'permissions': '0777'
                 }
             )
+        with open(f'{pluginpath}/shell/host/security_patch.sh', 'rt') as security_patch_file:
+            security_patch = security_patch_file.read()
+            yam2['write_files'].append(
+                {
+                    'encoding': 'base64',
+                    'content': base64.encodebytes(security_patch.encode()),
+                    'owner': 'root:root',
+                    'path': '/usr/local/sbin/security_patch.sh',
+                    'permissions': '0755'
+                }
+            )
+    # if maste
     elif os_type == "powerflex":
         with open(f'{pluginpath}/shell/host/scvm_pf_bootstrap.sh', 'rt') as bootstrapfile:
             bootstrap = bootstrapfile.read()

@@ -272,12 +272,13 @@ def configure_stonith_devices(stonith_info, list_ips):
                 f'pcs stonith create {device_name} fence_ipmilan delay={delay} '
                 f'ip={ip} ipport={ipport} lanplus=1 method=onoff '
                 f'username={username} password="{password}" '
-                f'pcmk_host_list={storage_ip} pcmk_off_action=off pcmk_reboot_action=off debug_file=/var/log/stonith.log'
+                f'pcmk_host_list={storage_ip} pcmk_off_action=off pcmk_reboot_action=reboot debug_file=/var/log/stonith.log'
             )
             run_command(command_create, ignore_errors=True)
             command_constraint = (f'pcs constraint location {device_name} avoids {storage_ip}')
             run_command(command_constraint, ignore_errors=True)
         run_command("pcs property set stonith-enabled=true", ignore_errors=True)
+        run_command("pcs property set stonith-action=reboot", ignore_errors=True)
         run_command("pcs resource create glue-dlm --group glue-locking ocf:pacemaker:controld op monitor interval=45s on-fail=fence", ignore_errors=True)
         run_command("pcs resource create glue-lvmlockd --group glue-locking ocf:heartbeat:lvmlockd op monitor interval=45s on-fail=fence", ignore_errors=True)
         run_command("pcs resource clone glue-locking interleave=true", ignore_errors=True)
@@ -645,14 +646,14 @@ def check_stonith(control):
         elif control == "disable":
             hosts = run_command("pcs stonith status | awk '{print $2}'").split()
             for host in hosts:
-                run_command(f"pcs stonith disable {host}")
+                run_command(f"pcs stonith disable {host} --force")
             ret = createReturn(code=200, val="Stonith Disable Pcs Cluster Success")
             return print(json.dumps(json.loads(ret), indent=4))
 
         elif control == "security-disable":
             hosts = run_command("pcs stonith status | awk '{print $2}'").split()
             for host in hosts:
-                run_command(f"pcs stonith disable {host}")
+                run_command(f"pcs stonith disable {host} --force")
             run_command("pcs property set maintenance-mode=true")
             ret = createReturn(code=200, val="Stonith Security Pcs Cluster Success")
             return print(json.dumps(json.loads(ret), indent=4))
