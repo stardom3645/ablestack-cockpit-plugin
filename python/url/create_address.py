@@ -15,7 +15,10 @@ import argparse
 from subprocess import check_output
 from ablestack import *
 
-json_file_path = pluginpath+"/tools/properties/cluster.json"
+json_file_paths = [
+    "/etc/cluster.json",
+    pluginpath+"/tools/properties/cluster.json",
+]
 
 CLOUD_CENTER_SCHEME = "https"
 CLOUD_CENTER_PORT = "443"
@@ -41,14 +44,14 @@ def createArgumentParser():
     return tmp_parser
 
 def openClusterJson():
-    try:
-        with open(json_file_path, 'r') as json_file:
-            ret = json.load(json_file)
-    except Exception as e:
-        ret = createReturn(code=500, val='cluster.json read error')
+    for json_file_path in json_file_paths:
+        try:
+            with open(json_file_path, 'r') as json_file:
+                return json.load(json_file)
+        except Exception:
+            continue
 
-
-    return ret
+    return createReturn(code=500, val='cluster.json read error')
 
 json_data = openClusterJson()
 os_type = json_data["clusterConfig"]["type"]

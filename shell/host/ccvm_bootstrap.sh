@@ -131,7 +131,6 @@ fi
 # 여기서는 포트 변경을 하지 않습니다.
 
 BOOTSTRAP_DIR="/usr/share/cockpit/ablestack/python/deploy_https"
-CUBE_HTTPS_SCRIPT="$BOOTSTRAP_DIR/deploy_cockpit_https_all.py"
 chmod 755 "$BOOTSTRAP_DIR"
 
 run_python_or_exit "$BOOTSTRAP_DIR/init_site_root_ca.py"
@@ -166,17 +165,6 @@ if [ "${os_type}" = "ablestack-hci" ]; then
   run_python_or_exit "$BOOTSTRAP_DIR/deploy_glue_https.py" --os-type "${os_type}"
 else
   echo "Glue deploy skipped for os_type=${os_type}" | tee -a "$LOGFILE"
-fi
-
-################# Post bootstrap step
-# Cube(Cockpit) HTTPS 인증서는 별도 후속 단계로 적용합니다.
-# 부트스트랩 완료 후 deploy_cockpit_https_all.py 를 명시적으로 실행합니다.
-
-echo "Cube(Cockpit) HTTPS deployment is intentionally not executed during ccvm bootstrap." | tee -a "$LOGFILE"
-if [ -f "$CUBE_HTTPS_SCRIPT" ]; then
-  echo "Next step: run python3 $CUBE_HTTPS_SCRIPT" | tee -a "$LOGFILE"
-else
-  echo "Next step: deploy Cube(Cockpit) HTTPS separately after bootstrap (expected script: $CUBE_HTTPS_SCRIPT)" | tee -a "$LOGFILE"
 fi
 
 ################# Mold service

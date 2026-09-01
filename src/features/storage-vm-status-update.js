@@ -9,6 +9,35 @@ $('#button-close1, #button-close2').on('click', function(){
   $('#div-modal-storage-vm-status-update').hide();
 });
 
+function reconnectCockpitHttps() {
+  var targetUrl = window.location.href;
+
+  try {
+    var url = new URL(window.location.href);
+    url.protocol = "https:";
+    url.port = "19100";
+    targetUrl = url.toString();
+  } catch (error) {
+    targetUrl = "https://" + window.location.hostname + ":19100";
+  }
+
+  if (targetUrl == window.location.href) {
+    location.reload();
+    return;
+  }
+
+  window.location.replace(targetUrl);
+}
+
+function showCockpitHttpsFailed(error) {
+  $('#div-modal-spinner').hide();
+  $("#modal-status-alert-title").html("Cube Cockpit HTTPS 적용 예약 실패");
+  $("#modal-status-alert-body").html("클라우드센터 구성은 완료되었지만 Cube Cockpit HTTPS/19100 후속 적용 작업 예약에 실패했습니다.<br/>ccvm에서 /var/log/cloud_install.log 를 확인해주세요.");
+  $('#div-modal-status-alert').show();
+  createLoggerInfo("schedule_cockpit_https_deploy.sh Error");
+  console.log("schedule_cockpit_https_deploy.sh Error : " + error);
+}
+
 // 실행 버튼 클릭 이벤트
 $('#button-storage-vm-status-update').on('click', function(){
   $('#dropdown-menu-storage-vm-status').toggle();
@@ -98,19 +127,23 @@ $('#button-storage-vm-status-update').on('click', function(){
         cockpit.spawn(["sh", pluginpath+"/shell/host/bootstrap_run.sh","ccvm", license_type])
             .then(function(data){
                 console.log(data);
-                $('#div-modal-spinner-header-txt').text('Cube Cockpit HTTPS 인증서를 적용하고 있습니다.');
-                cockpit.spawn(["python3", "/usr/share/cockpit/ablestack/python/deploy_https/deploy_cockpit_https_all.py"], { host: "ccvm" })
-                    .then(function(httpsData){
-                        console.log(httpsData);
-                        location.reload();
+                $('#div-modal-spinner-header-txt').text('Cube Cockpit HTTPS/19100 전환 작업을 예약하고 있습니다.');
+                cockpit.spawn(["sh", pluginpath+"/shell/host/schedule_cockpit_https_deploy.sh", "10"], { host: "ccvm" })
+                    .then(function(scheduleData){
+                        console.log(scheduleData);
+                        var retVal = JSON.parse(scheduleData);
+
+                        if(retVal.code == 200){
+                            $('#div-modal-spinner-header-txt').text('Cube Cockpit HTTPS/19100 전환 작업이 예약되었습니다.');
+                            setTimeout(function(){
+                                reconnectCockpitHttps();
+                            }, 15000);
+                        }else{
+                            showCockpitHttpsFailed(scheduleData);
+                        }
                     })
-                    .catch(function(httpsError){
-                        $('#div-modal-spinner').hide();
-                        $("#modal-status-alert-title").html("Cube Cockpit HTTPS 적용");
-                        $("#modal-status-alert-body").html("클라우드센터 구성은 완료되었지만 Cube Cockpit HTTPS 인증서 적용에 실패했습니다.<br/>ccvm에서 deploy_cockpit_https_all.py 실행 로그를 확인해주세요.");
-                        $('#div-modal-status-alert').show();
-                        createLoggerInfo("deploy_cockpit_https_all.py Error");
-                        console.log("deploy_cockpit_https_all.py Error : " + httpsError);
+                    .catch(function(scheduleError){
+                        showCockpitHttpsFailed(scheduleError);
                     });
             })
             .catch(function(data){

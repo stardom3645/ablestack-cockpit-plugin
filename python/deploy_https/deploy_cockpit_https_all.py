@@ -13,7 +13,7 @@ from typing import Dict, List, Set
 
 
 PLUGIN_PATH = Path("/usr/share/cockpit/ablestack")
-CLUSTER_JSON_PATH = PLUGIN_PATH / "tools/properties/cluster.json"
+CLUSTER_JSON_PATH = Path("/etc/cluster.json")
 MANIFEST_JSON_PATH = PLUGIN_PATH / "manifest.json"
 MANIFEST_BACKUP_PATH = PLUGIN_PATH / "manifest.json.host-backup"
 ETC_HOSTS_PATH = Path("/etc/hosts")
