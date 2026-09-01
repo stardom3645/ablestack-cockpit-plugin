@@ -13,7 +13,7 @@ python3 python/url/create_address.py storageCenterVm
 ```json
 {
   "code": 200,
-  "val": "https://10.10.0.102:9090",
+  "val": "https://10.10.0.102:19100",
   "name": "storageCenterVm",
   "type": "str"
 }

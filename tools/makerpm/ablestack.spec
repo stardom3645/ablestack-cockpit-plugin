@@ -30,6 +30,7 @@ mkdir -p $RPM_BUILD_ROOT/usr/share/cockpit/ablestack
 
 cp -a {README.md,node_modules,images,main.html,manifest.json,sample,shell,src,tools,python,index.html,index.js,main-glue.html,main-glue-no-permission.html} \
     $RPM_BUILD_ROOT/usr/share/cockpit/ablestack
+find $RPM_BUILD_ROOT/usr/share/cockpit/ablestack \( -name ".DS_Store" -o -name "__pycache__" -o -name "*.pyc" \) -exec rm -rf {} +
 
 %post
 /usr/share/cockpit/ablestack/tools/makerpm/ablestack.sh &
@@ -44,4 +45,3 @@ rm -rf $RPM_BUILD_ROOT
 %changelog
 * Tue Dec 10 2025 ABLESTACK <ablecloud@ablecloud.io> - %{version}-%{release}
 - Auto build with custom version/release
-

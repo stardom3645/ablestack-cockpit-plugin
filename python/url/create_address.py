@@ -24,7 +24,7 @@ WALL_CENTER_PORT = "19400"
 GLUE_DASHBOARD_SCHEME = "https"
 GLUE_DASHBOARD_PORT = "19200"
 SCVM_CENTER_SCHEME = "https"
-SCVM_CENTER_PORT = "9090"
+SCVM_CENTER_PORT = "19100"
 
 # 함수명 : createArgumentParser
 # 주요 기능 : 입력된 argument를 파싱하여 dictionary 처럼 사용하게 만들어 주는 parser 생성

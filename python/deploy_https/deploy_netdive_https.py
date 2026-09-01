@@ -15,7 +15,8 @@ Netdive TLS 인증서 배포 스크립트입니다.
 - systemd 서비스 파일은 수정하지 않습니다.
 - daemon-reload 는 하지 않습니다.
 - 서비스 restart 는 하지 않습니다.
-- restart 는 config_netdive.py 에서 수행합니다.
+- netdive-analyzer.service 의 listen 포트가 19500인지 검증만 수행합니다.
+- 서비스 restart 는 config_netdive.py 에서 수행합니다.
 """
 
 import argparse
@@ -30,6 +31,12 @@ ROOT_CA_KEY = "/usr/share/ablestack/pki/rootCA/rootCA.key"
 ROOT_CA_CRT = "/usr/share/ablestack/pki/rootCA/rootCA.crt"
 
 TLS_DIR = "/usr/share/ablestack/ablestack-netdive/tls"
+NETDIVE_HTTPS_PORT = "19500"
+NETDIVE_ANALYZER_SERVICE_PATHS = [
+    "/etc/systemd/system/netdive-analyzer.service",
+    "/usr/lib/systemd/system/netdive-analyzer.service",
+    "/lib/systemd/system/netdive-analyzer.service",
+]
 
 CERT_DAYS = "7300"
 
@@ -72,7 +79,15 @@ def ensure_tls_dir():
     print(">> TLS directory ready:", TLS_DIR)
 
 
-def create_openssl_conf(name, san_dns_list):
+def append_unique(items, value):
+    """
+    빈 값과 중복을 제외하고 목록에 추가합니다.
+    """
+    if value and value not in items:
+        items.append(value)
+
+
+def create_openssl_conf(name, san_dns_list, san_ip_list):
     """
     openssl 설정 파일 생성
     """
@@ -83,7 +98,10 @@ def create_openssl_conf(name, san_dns_list):
         alt_name_lines.append(f"DNS.{dns_index} = {san_dns}")
         dns_index += 1
 
-    alt_name_lines.append("IP.1 = 127.0.0.1")
+    ip_index = 1
+    for san_ip in san_ip_list:
+        alt_name_lines.append(f"IP.{ip_index} = {san_ip}")
+        ip_index += 1
 
     conf = f"""
 [req]
@@ -113,7 +131,7 @@ extendedKeyUsage = serverAuth, clientAuth
     return conf_path
 
 
-def generate_cert(name, san_dns_list):
+def generate_cert(name, san_dns_list, san_ip_list):
     """
     서비스 인증서 생성
     """
@@ -121,7 +139,7 @@ def generate_cert(name, san_dns_list):
     csr_path = f"{TLS_DIR}/{name}.csr"
     crt_path = f"{TLS_DIR}/{name}.crt"
 
-    conf_path = create_openssl_conf(name, san_dns_list)
+    conf_path = create_openssl_conf(name, san_dns_list, san_ip_list)
 
     run(
         f"openssl req -new -nodes -newkey rsa:2048 "
@@ -166,6 +184,32 @@ def deploy_cube_tls(cube_ip, agent_key_path, agent_crt_path):
     run(f"scp {TLS_DIR}/rootCA.crt root@{cube_ip}:{TLS_DIR}/rootCA.crt")
 
 
+def validate_netdive_analyzer_port():
+    """
+    템플릿에 선반영된 netdive-analyzer listen 포트를 검증합니다.
+    포트 변경은 이 스크립트에서 수행하지 않습니다.
+    """
+    service_path = None
+    for candidate in NETDIVE_ANALYZER_SERVICE_PATHS:
+        if os.path.isfile(candidate):
+            service_path = candidate
+            break
+
+    if not service_path:
+        raise RuntimeError("netdive-analyzer.service file not found")
+
+    with open(service_path, "r", encoding="utf-8", errors="ignore") as service_file:
+        content = service_file.read()
+
+    expected_listen = f":{NETDIVE_HTTPS_PORT}"
+    if expected_listen not in content:
+        raise RuntimeError(
+            f"netdive-analyzer.service listen port is not {NETDIVE_HTTPS_PORT}: {service_path}"
+        )
+
+    print(f">> Netdive analyzer listen port verified: {service_path} -> {NETDIVE_HTTPS_PORT}")
+
+
 def main():
     args = parseArgs()
 
@@ -181,18 +225,31 @@ def main():
 
     # Netdive 런타임 경로에 rootCA 복사
     copy_root_ca_to_tls_dir()
+    validate_netdive_analyzer_port()
+
+    ccvm_ips = []
+    for ccvm_ip in args.ccvm or []:
+        append_unique(ccvm_ips, ccvm_ip)
+    append_unique(ccvm_ips, "127.0.0.1")
+
+    cube_ips = []
+    for cube_ip in args.cube:
+        append_unique(cube_ips, cube_ip)
+    append_unique(cube_ips, "127.0.0.1")
 
     # Analyzer 인증서 생성
     analyzer_key_path, analyzer_crt_path = generate_cert(
         "analyzer",
-        ["ccvm", "localhost"]
+        ["ccvm", "ccvm-mngt", "localhost"],
+        ccvm_ips
     )
     print(">> Analyzer cert created:", analyzer_key_path, analyzer_crt_path)
 
     # Agent 인증서 생성
     agent_key_path, agent_crt_path = generate_cert(
         "agent",
-        ["agent", "localhost"]
+        ["agent", "localhost"],
+        cube_ips
     )
     print(">> Agent cert created:", agent_key_path, agent_crt_path)
 

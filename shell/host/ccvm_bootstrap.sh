@@ -15,6 +15,7 @@ DATABASE_PASSWD="Ablecloud1!"
 
 os_type=$(cat /etc/cluster.json | grep '"type"' | awk -F'"' '{print $4}')
 hosts=$(grep -v mngt /etc/hosts | grep -v scvm | grep -v pn | grep -v localhost | awk '{print $1}')
+ccvm_mngt_ip=$(getent hosts ccvm-mngt | awk '{print $1; exit}')
 
 log_and_run() {
   "$@" 2>&1 | tee -a "$LOGFILE"
@@ -144,7 +145,22 @@ run_python_or_exit "$BOOTSTRAP_DIR/init_site_root_ca.py"
 
 run_python_or_exit "$BOOTSTRAP_DIR/deploy_mold_https.py"
 run_python_or_exit "$BOOTSTRAP_DIR/deploy_wall_https.py"
-run_python_or_exit "$BOOTSTRAP_DIR/deploy_netdive_https.py"
+
+cube_args=()
+for host in $hosts; do
+  cube_args+=("$host")
+done
+
+if [ ${#cube_args[@]} -eq 0 ]; then
+  echo "Cube host list is empty. deploy_netdive_https.py requires --cube." | tee -a "$LOGFILE"
+  exit 1
+fi
+
+if [ -n "$ccvm_mngt_ip" ]; then
+  run_python_or_exit "$BOOTSTRAP_DIR/deploy_netdive_https.py" --ccvm "$ccvm_mngt_ip" --cube "${cube_args[@]}"
+else
+  run_python_or_exit "$BOOTSTRAP_DIR/deploy_netdive_https.py" --cube "${cube_args[@]}"
+fi
 
 if [ "${os_type}" = "ablestack-hci" ]; then
   run_python_or_exit "$BOOTSTRAP_DIR/deploy_glue_https.py" --os-type "${os_type}"

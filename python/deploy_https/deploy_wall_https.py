@@ -8,7 +8,7 @@ Wall HTTPS 자동 배포 스크립트입니다.
 1. rootCA.key / rootCA.crt 는 ccvm 템플릿에 포함되어 있습니다.
 2. 사이트 구축 후 ccvm 에서 이 스크립트를 실행합니다.
 3. 이 스크립트는 Wall 서비스 인증서를 생성하고 설치합니다.
-4. SAN 은 고정값(ccvm, localhost, 127.0.0.1)만 사용합니다.
+4. SAN 은 ccvm/ccvm-mngt, 실제 관리 IP, /etc/hosts alias 를 포함합니다.
 5. Wall 은 https://ccvm:19400 으로 서비스됩니다.
 
 주의
@@ -24,7 +24,7 @@ import socket
 import subprocess
 import sys
 from pathlib import Path
-from typing import List, Tuple
+from typing import List, Optional, Set, Tuple
 
 
 # ----------------------------------------------------------------------
@@ -49,9 +49,6 @@ WALL_DOMAIN = "ccvm"
 WALL_ROOT_URL = "https://ccvm:19400"
 
 WALL_CERT_COMMON_NAME = "ccvm"
-WALL_CERT_SAN_DNS = ["ccvm", "localhost"]
-WALL_CERT_SAN_IP = ["127.0.0.1"]
-
 # 20년
 WALL_CERT_DAYS = 7300
 
@@ -146,6 +143,96 @@ def ensure_current_node_is_ccvm() -> None:
     print(f"[INFO] 현재 hostname 확인 완료: {current_hostname}")
 
 
+def resolve_hostname_ip(hostname: str) -> Optional[str]:
+    """
+    hostname 이 해석되면 IP 를 반환합니다.
+    """
+    try:
+        return socket.gethostbyname(hostname)
+    except Exception:
+        return None
+
+
+def get_primary_ip() -> Optional[str]:
+    """
+    현재 ccvm 의 대표 IP 를 반환합니다.
+    """
+    try:
+        result = subprocess.run(
+            [
+                "bash",
+                "-lc",
+                "ip route get 1.1.1.1 | awk '/src/ {for (i = 1; i <= NF; i++) if ($i == \"src\") {print $(i + 1); exit}}'",
+            ],
+            check=True,
+            text=True,
+            capture_output=True,
+        )
+        candidate = result.stdout.strip()
+        if candidate:
+            socket.inet_aton(candidate)
+            return candidate
+    except Exception:
+        pass
+
+    try:
+        result = subprocess.run(
+            ["bash", "-lc", "hostname -I | awk '{print $1}'"],
+            check=True,
+            text=True,
+            capture_output=True,
+        )
+        candidate = result.stdout.strip()
+        if candidate:
+            socket.inet_aton(candidate)
+            return candidate
+    except Exception:
+        pass
+
+    return None
+
+
+def get_fqdn() -> str:
+    """
+    FQDN 을 확인합니다.
+    """
+    return socket.getfqdn().strip().lower()
+
+
+def collect_hosts_aliases_for_ips(target_ips: Set[str]) -> Set[str]:
+    """
+    /etc/hosts 에서 대상 IP에 연결된 alias 를 수집합니다.
+    """
+    aliases: Set[str] = set()
+    hosts_path = Path("/etc/hosts")
+
+    if not hosts_path.is_file():
+        return aliases
+
+    for raw_line in hosts_path.read_text(encoding="utf-8", errors="ignore").splitlines():
+        line = raw_line.split("#", 1)[0].strip()
+        if not line:
+            continue
+
+        tokens = line.split()
+        if len(tokens) < 2:
+            continue
+
+        ip = tokens[0]
+        if ip in target_ips:
+            aliases.update(alias.strip().lower() for alias in tokens[1:] if alias.strip())
+
+    return aliases
+
+
+def append_unique(items: List[str], value: Optional[str]) -> None:
+    """
+    빈 값과 중복을 제외하고 목록에 추가합니다.
+    """
+    if value and value not in items:
+        items.append(value)
+
+
 # ----------------------------------------------------------------------
 # Wall 인증서 생성
 # ----------------------------------------------------------------------
@@ -202,10 +289,28 @@ def generate_wall_certificate() -> None:
 
     ensure_dir(WALL_TLS_DIR)
 
+    san_ip: List[str] = []
+    append_unique(san_ip, "127.0.0.1")
+    append_unique(san_ip, get_primary_ip())
+    append_unique(san_ip, resolve_hostname_ip("ccvm-mngt"))
+
+    discovered_aliases = collect_hosts_aliases_for_ips(set(san_ip))
+
+    san_dns: List[str] = []
+    for dns_name in [
+        "ccvm",
+        "ccvm-mngt",
+        "localhost",
+        get_current_hostname(),
+        get_fqdn(),
+        *sorted(discovered_aliases),
+    ]:
+        append_unique(san_dns, dns_name)
+
     config_text = build_wall_openssl_config(
         common_name=WALL_CERT_COMMON_NAME,
-        san_dns=WALL_CERT_SAN_DNS,
-        san_ip=WALL_CERT_SAN_IP
+        san_dns=san_dns,
+        san_ip=san_ip
     )
     write_text_file(WALL_CERT_CONFIG_FILE, config_text)
 
@@ -250,6 +355,8 @@ def generate_wall_certificate() -> None:
     os.chmod(WALL_CA_CERT_COPY_FILE, 0o644)
 
     print("[INFO] Wall 인증서 생성 완료")
+    print(f"[INFO] SAN DNS: {san_dns}")
+    print(f"[INFO] SAN IP : {san_ip}")
     print(f"[INFO] wall.key   : {WALL_KEY_FILE}")
     print(f"[INFO] wall.crt   : {WALL_CERT_FILE}")
     print(f"[INFO] rootCA.crt : {WALL_CA_CERT_COPY_FILE}")

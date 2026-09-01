@@ -116,9 +116,9 @@ NEW_USER_EMAIL="admin@localhost"    # SSO 로그인 계정 이메일
 NEW_USER_PASSWORD="admin"           # SSO 로그인 계정 비밀번호
 
 # 클라이언트 설정(MOLD)
-CLIENT_ID_MOLD="http://$HOST_IP:8080"
-ROOT_URL_MOLD="http://$HOST_IP:8080/"
-REDIRECT_URLS_MOLD="http://$HOST_IP:8080/*"
+CLIENT_ID_MOLD="https://$HOST_IP"
+ROOT_URL_MOLD="https://$HOST_IP/"
+REDIRECT_URLS_MOLD="https://$HOST_IP/*"
 
 # 클라이언트 설정(GLUE)
 SCVM_HOSTS=$(grep -E "scvm[0-9]+-mngt" /etc/hosts)  # 전체 scvm
@@ -131,9 +131,9 @@ KEYSTORE_ALIAS="saml-encryption"
 KEYSTORE_PASS="changeit"
 
 # 클라이언트 설정(WALL)
-CLIENT_ID_WALL="http://$HOST_IP:3000"
-ROOT_URL_WALL="http://$HOST_IP:3000"
-REDIRECT_URIS_WALL="[\"http://$HOST_IP:3000/login*\", \"http://$HOST_IP:3000/login/generic_oauth\"]"
+CLIENT_ID_WALL="https://$HOST_IP:19400"
+ROOT_URL_WALL="https://$HOST_IP:19400"
+REDIRECT_URIS_WALL="[\"https://$HOST_IP:19400/login*\", \"https://$HOST_IP:19400/login/generic_oauth\"]"
 # CLIENT_ROLE_WALL="grafana-admin"
 
 # WALL 설정
@@ -426,10 +426,10 @@ echo "$SCVM_HOSTS" | while read -r LINE; do
   SCVM_HOST_IP=$(echo "$LINE" | awk '{print $1}')
   SCVM_HOST_NAME=$(echo "$LINE" | awk '{print $2}')
 
-  CLIENT_ID_GLUE="https://$SCVM_HOST_IP:8443/auth/saml2/metadata"
+  CLIENT_ID_GLUE="https://$SCVM_HOST_IP:19200/auth/saml2/metadata"
   CLIENT_ID_GLUE_2="glue"
-  ROOT_URL_GLUE="https://$SCVM_HOST_IP:8443"
-  REDIRECT_URLS_GLUE="https://$SCVM_HOST_IP:8443/*"
+  ROOT_URL_GLUE="https://$SCVM_HOST_IP:19200"
+  REDIRECT_URLS_GLUE="https://$SCVM_HOST_IP:19200/*"
 
   echo "[INFO] GLUE 클라이언트 '${SCVM_HOST_IP}, ${SCVM_HOST_NAME}' 생성 중..."
 
@@ -718,7 +718,7 @@ in_auth {
   }
 
   if ($0 ~ /^signout_redirect_url[[:space:]]*=/) {
-    print "signout_redirect_url = " HOST_IP ":3000/login?disableAutoLogin=true"
+    print "signout_redirect_url = https://" HOST_IP ":19400/login?disableAutoLogin=true"
 
     if (!printed_signout_url) {
       print "signout_url = " KC_URL "/realms/" REALM_NAME "/protocol/openid-connect/logout"

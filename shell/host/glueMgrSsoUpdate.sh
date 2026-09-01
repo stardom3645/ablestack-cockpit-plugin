@@ -24,7 +24,7 @@ echo "$SCVM_HOSTS" | while read -r LINE; do
   SCVM_HOST_IP=$(echo "$LINE" | awk '{print $1}')
   SCVM_HOST_NAME=$(echo "$LINE" | awk '{print $2}')
 
-  ROOT_URL_GLUE="https://$SCVM_HOST_IP:8443"
+  ROOT_URL_GLUE="https://$SCVM_HOST_IP:19200"
 
 # 원격 서버($SCVM_HOST_NAME)에서 MGR 컨테이너 검색
 ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "$SCVM_HOST_NAME" \

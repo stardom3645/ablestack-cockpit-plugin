@@ -48,6 +48,7 @@ mkdir -p "${NAME}-${VER}"
 
 # 플러그인 소스 복사 (파일/디렉터리 구조는 환경에 맞게 조정 가능)
 cp -a "$BUILD_PATH"/{README.md,node_modules,images,main.html,manifest.json,sample,shell,src,tools,python,index.html,index.js,main-glue.html,main-glue-no-permission.html} "${NAME}-${VER}/"
+find "${NAME}-${VER}" \( -name ".DS_Store" -o -name "__pycache__" -o -name "*.pyc" \) -exec rm -rf {} +
 
 # gzip 압축 tarball 생성 → ablecube-<VER>.tar.gz
 tar -czf "${NAME}-${VER}.tar.gz" "${NAME}-${VER}"
@@ -69,4 +70,3 @@ echo
 echo "빌드 완료!"
 echo "결과 RPM 위치 예:"
 echo "  $BUILD_PATH/rpmbuild/RPMS/x86_64/${NAME}-${VER}-${REL}.x86_64.rpm"
-

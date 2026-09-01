@@ -33,7 +33,7 @@ import time
 import urllib.error
 import urllib.request
 from pathlib import Path
-from typing import List, Optional
+from typing import List, Optional, Set
 
 
 # ----------------------------------------------------------------------
@@ -228,6 +228,50 @@ def get_primary_ip() -> str:
     raise RuntimeError("ccvm 대표 IP 를 확인할 수 없습니다.")
 
 
+def resolve_hostname_ip(hostname: str) -> Optional[str]:
+    """
+    hostname 이 해석되면 IP 를 반환합니다.
+    """
+    try:
+        return socket.gethostbyname(hostname)
+    except Exception:
+        return None
+
+
+def collect_hosts_aliases_for_ips(target_ips: Set[str]) -> Set[str]:
+    """
+    /etc/hosts 에서 대상 IP에 연결된 alias 를 수집합니다.
+    """
+    aliases: Set[str] = set()
+    hosts_path = Path("/etc/hosts")
+
+    if not hosts_path.is_file():
+        return aliases
+
+    for raw_line in hosts_path.read_text(encoding="utf-8", errors="ignore").splitlines():
+        line = raw_line.split("#", 1)[0].strip()
+        if not line:
+            continue
+
+        tokens = line.split()
+        if len(tokens) < 2:
+            continue
+
+        ip = tokens[0]
+        if ip in target_ips:
+            aliases.update(alias.strip().lower() for alias in tokens[1:] if alias.strip())
+
+    return aliases
+
+
+def append_unique(items: List[str], value: Optional[str]) -> None:
+    """
+    빈 값과 중복을 제외하고 목록에 추가합니다.
+    """
+    if value and value not in items:
+        items.append(value)
+
+
 def get_fqdn() -> str:
     """
     FQDN 을 확인합니다.
@@ -341,8 +385,26 @@ def generate_mold_certificate(primary_ip: str) -> None:
 
     ensure_dir(MOLD_TLS_DIR)
 
-    san_dns = ["ccvm", "localhost"]
-    san_ip = ["127.0.0.1", primary_ip]
+    ccvm_mngt_ip = resolve_hostname_ip("ccvm-mngt")
+
+    san_ip: List[str] = []
+    append_unique(san_ip, "127.0.0.1")
+    append_unique(san_ip, primary_ip)
+    append_unique(san_ip, ccvm_mngt_ip)
+
+    target_ips = set(san_ip)
+    discovered_aliases = collect_hosts_aliases_for_ips(target_ips)
+
+    san_dns: List[str] = []
+    for dns_name in [
+        "ccvm",
+        "ccvm-mngt",
+        "localhost",
+        get_current_hostname(),
+        get_fqdn(),
+        *sorted(discovered_aliases),
+    ]:
+        append_unique(san_dns, dns_name)
 
     config_text = build_mold_openssl_config(
         common_name="ccvm",

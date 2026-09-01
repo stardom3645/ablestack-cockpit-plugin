@@ -352,7 +352,7 @@ $(document).on('click', '#card-action-cloud-vm-change', function () {
 
 $('#card-action-cloud-vm-connect').on('click', function () {
   // 클라우드센터VM 연결
-  window.open('http://' + ccvm_instance.ip + ":9090");
+  window.open('https://' + ccvm_instance.ip + ":19100");
 });
 
 $('#button-open-modal-wizard-storage-vm').on('click', function () {
