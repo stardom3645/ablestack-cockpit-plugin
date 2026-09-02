@@ -140,7 +140,7 @@ run_python_or_exit "$BOOTSTRAP_DIR/init_site_root_ca.py"
 # 1) Mold
 # 2) Wall
 # 3) Netdive
-# 4) Glue (ablestack-hci 일 때만)
+# 4) Glue (ablestack-hci, ablestack-hci-filesystem 일 때만)
 
 run_python_or_exit "$BOOTSTRAP_DIR/deploy_mold_https.py"
 run_python_or_exit "$BOOTSTRAP_DIR/deploy_wall_https.py"
@@ -161,7 +161,7 @@ else
   run_python_or_exit "$BOOTSTRAP_DIR/deploy_netdive_https.py" --cube "${cube_args[@]}"
 fi
 
-if [ "${os_type}" = "ablestack-hci" ]; then
+if [ "${os_type}" = "ablestack-hci" ] || [ "${os_type}" = "ablestack-hci-filesystem" ]; then
   run_python_or_exit "$BOOTSTRAP_DIR/deploy_glue_https.py" --os-type "${os_type}"
 else
   echo "Glue deploy skipped for os_type=${os_type}" | tee -a "$LOGFILE"

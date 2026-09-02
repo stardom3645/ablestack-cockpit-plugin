@@ -5,7 +5,7 @@
 deploy_glue_https.py
 
 역할
-- ablestack-hci 타입에서만 Glue HTTPS 관련 배포를 수행합니다.
+- ablestack-hci, ablestack-hci-filesystem 타입에서만 Glue HTTPS 관련 배포를 수행합니다.
 - 모든 SCVM(scvm1-mngt, scvm2-mngt, scvm3-mngt)에 인증서를 배포합니다.
 - 모든 SCVM의 trust store 를 갱신합니다.
 - 모든 SCVM의 glue-api.service 를 재시작합니다.
@@ -478,7 +478,7 @@ ceph config get mgr mgr/dashboard/ssl_server_port || true
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Deploy Glue HTTPS settings to SCVM nodes")
 
-    parser.add_argument("--os-type", default="", help="ABLESTACK os_type. Glue는 ablestack-hci 에서만 사용합니다.")
+    parser.add_argument("--os-type", default="", help="ABLESTACK os_type. Glue는 HCI 계열에서만 사용합니다.")
     parser.add_argument("--root-ca-cert", default=DEFAULT_ROOT_CA_CERT, help="Root CA certificate path")
     parser.add_argument("--root-ca-key", default=DEFAULT_ROOT_CA_KEY, help="Root CA private key path")
     parser.add_argument("--ssh-user", default=DEFAULT_SSH_USER, help="Remote SSH user")
@@ -502,8 +502,8 @@ def parse_args() -> argparse.Namespace:
 def main() -> None:
     args = parse_args()
 
-    # Glue는 ablestack-hci 에서만 사용합니다.
-    if args.os_type and args.os_type != "ablestack-hci":
+    # Glue는 HCI 계열에서만 사용합니다.
+    if args.os_type and args.os_type not in ("ablestack-hci", "ablestack-hci-filesystem"):
         log(f"os_type={args.os_type} 이므로 Glue 배포를 건너뜁니다.")
         return
 
