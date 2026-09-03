@@ -773,6 +773,71 @@ html.pf-v6-theme-dark #div-modal-disk-image-create .pf-v6-c-form-control {
 .ablestack-spinner .pf-v6-c-spinner {
   display: block;
 }
+
+.ablestack-modal-spinner.ablestack-modal-spinner-cockpit {
+  width: min(560px, calc(100vw - 48px));
+}
+
+.ablestack-modal-spinner-cockpit .pf-v6-c-modal-box__header {
+  padding-bottom: 12px;
+}
+
+.ablestack-cockpit-https-content {
+  text-align: left;
+}
+
+.ablestack-cockpit-https-description {
+  margin-top: 0;
+  margin-bottom: 18px;
+  line-height: 1.6;
+}
+
+.ablestack-cockpit-https-content .pf-v6-c-alert {
+  border: 2px solid #6a3ff2;
+  border-radius: 14px;
+  background: #fdfbff;
+  padding: 18px 20px;
+}
+
+.ablestack-cockpit-https-content .pf-v6-c-alert__title {
+  margin-bottom: 8px;
+  color: #1f1977;
+}
+
+.ablestack-cockpit-https-content .pf-v6-c-alert__description {
+  color: #3d3a5f;
+}
+
+.ablestack-cockpit-https-action {
+  display: flex;
+  justify-content: center;
+  margin-top: 22px;
+  margin-bottom: 34px;
+}
+
+.ablestack-cockpit-https-action .pf-v6-c-button {
+  min-width: 250px;
+  color: #fff;
+  text-decoration: none;
+}
+
+.ablestack-cockpit-https-action .pf-v6-c-button:hover,
+.ablestack-cockpit-https-action .pf-v6-c-button:focus {
+  color: #fff;
+  text-decoration: none;
+}
+
+.ablestack-modal-spinner-cockpit .ablestack-spinner-wrap {
+  margin-bottom: 8px;
+}
+
+.ablestack-modal-spinner-cockpit #div-modal-spinner-footer-txt {
+  margin-bottom: 24px;
+  text-align: center;
+  color: #4d5358;
+  font-size: 14px;
+}
+
 .ablestack-page .pf-v6-c-alert {
   --pf-v6-c-alert--BoxShadow: none;
   box-shadow: none;

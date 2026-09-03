@@ -24,6 +24,55 @@ function getCockpitHttpsUrl() {
   return targetUrl;
 }
 
+function escapeHtml(value) {
+  return String(value).replace(/[&<>"']/g, function(match) {
+    return {
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#39;'
+    }[match];
+  });
+}
+
+function clearSpinnerBody() {
+  $('#div-modal-spinner-body-txt').html('');
+  $('#div-modal-spinner-footer-txt').html('');
+  $('#div-modal-spinner .ablestack-modal-spinner').removeClass('ablestack-modal-spinner-cockpit');
+}
+
+function setCockpitHttpsSpinnerMessage(title, description, statusText, linkText) {
+  var targetUrl = getCockpitHttpsUrl();
+  var safeTargetUrl = escapeHtml(targetUrl);
+  var safeDescription = escapeHtml(description);
+  var safeStatusText = escapeHtml(statusText);
+  var safeLinkText = escapeHtml(linkText);
+
+  $('#div-modal-spinner .ablestack-modal-spinner').addClass('ablestack-modal-spinner-cockpit');
+  $('#div-modal-spinner-header-txt').text(title);
+  $('#div-modal-spinner-body-txt').html(
+    '<div class="pf-v6-c-content ablestack-cockpit-https-content">' +
+      '<p class="ablestack-cockpit-https-description">' + safeDescription + '</p>' +
+      '<div class="pf-v6-c-alert pf-m-info pf-m-inline" aria-label="Cockpit HTTPS 전환 안내">' +
+        '<div class="pf-v6-c-alert__icon">' +
+          '<i class="fas fa-fw fa-info-circle" aria-hidden="true"></i>' +
+        '</div>' +
+        '<p class="pf-v6-c-alert__title pf-m-truncate">' +
+          '<strong><span class="pf-v6-screen-reader">Info alert:</span>' + safeStatusText + '</strong>' +
+        '</p>' +
+        '<div class="pf-v6-c-alert__description">' +
+          '<p>전환 중에는 현재 Cockpit 연결이 일시적으로 끊길 수 있습니다.</p>' +
+        '</div>' +
+      '</div>' +
+      '<div class="ablestack-cockpit-https-action">' +
+        '<a class="pf-v6-c-button pf-m-primary" id="link-cockpit-https-reconnect" href="' + safeTargetUrl + '" target="_self">' + safeLinkText + '</a>' +
+      '</div>' +
+    '</div>'
+  );
+  $('#div-modal-spinner-footer-txt').html('적용 상태를 확인하는 중입니다...');
+}
+
 function reconnectCockpitHttps() {
   var targetUrl = getCockpitHttpsUrl();
 
@@ -35,27 +84,31 @@ function reconnectCockpitHttps() {
   window.location.replace(targetUrl);
 }
 
+$(document).on('click', '#link-cockpit-https-reconnect', function(event) {
+  event.preventDefault();
+  reconnectCockpitHttps();
+});
+
 function waitForCockpitHttpsAndReconnect() {
   var targetUrl = getCockpitHttpsUrl();
   var maxAttempts = 20;
   var intervalMs = 3000;
   var attempts = 0;
-  var linkHtml = '<a href="' + targetUrl + '" target="_self">Cockpit 19100 포트로 접속</a>';
-
   function updateWaitingMessage() {
-    $('#div-modal-spinner-header-txt').html(
-      '전체 Cockpit HTTPS/19100 전환 작업이 진행 중입니다.<br/>' +
-      'Cockpit 접속 가능 여부를 확인하고 있으며, 준비되면 자동 이동합니다.<br/>' +
-      '다른 작업을 실행하지 말고 기다려 주세요.<br/>' +
-      linkHtml
+    setCockpitHttpsSpinnerMessage(
+      'Cockpit HTTPS/19100 전환 중',
+      '전체 Cockpit HTTPS 인증서와 19100 포트 전환 작업을 확인하고 있습니다. 준비되면 자동으로 이동합니다.',
+      '다른 작업을 실행하지 말고 잠시 기다려 주세요.',
+      'Cockpit 19100 포트로 직접 접속'
     );
   }
 
   function updateManualMessage() {
-    $('#div-modal-spinner-header-txt').html(
-      'Cockpit HTTPS/19100 전환 작업이 백그라운드에서 진행 중이거나 완료 확인이 지연되고 있습니다.<br/>' +
-      '자동 이동되지 않으면 아래 링크로 직접 접속해 주세요.<br/>' +
-      linkHtml
+    setCockpitHttpsSpinnerMessage(
+      'Cockpit HTTPS/19100 확인 지연',
+      '후속 전환 작업이 백그라운드에서 진행 중이거나 접속 가능 여부 확인이 지연되고 있습니다.',
+      '자동 이동되지 않으면 아래 링크로 직접 접속해 주세요.',
+      'Cockpit 19100 포트로 접속'
     );
   }
 
@@ -97,6 +150,7 @@ $('#button-storage-vm-status-update').on('click', function(){
   $('#dropdown-menu-storage-vm-status').toggle();
   $('#div-modal-storage-vm-status-update').hide();
   $('#div-modal-spinner-header-txt').text('스토리지센터 가상머신 상태 변경중입니다.');
+  clearSpinnerBody();
   $('#div-modal-spinner').show();
   createLoggerInfo("button-storage-vm-status-update click");
 
@@ -164,6 +218,7 @@ $('#button-storage-vm-status-update').on('click', function(){
         });
     }else if(cmd == "bootstrap"){//SCC bootstrap실행 버튼 클릭시
         $('#div-modal-spinner-header-txt').text('스토리지센터를 구성하고 있습니다.');
+        clearSpinnerBody();
         // /root/bootstrap.sh 파일을 실행함.
         cockpit.spawn(["sh", pluginpath+"/shell/host/bootstrap_run.sh","scvm"])
         .then(function(data){
@@ -176,12 +231,18 @@ $('#button-storage-vm-status-update').on('click', function(){
         });
     }else if(cmd == "bootstrap_ccvm"){//CCC bootstrap실행 버튼 클릭시
         $('#div-modal-spinner-header-txt').text('클라우드센터를 구성하고 있습니다.');
+        clearSpinnerBody();
         // /root/bootstrap.sh 파일을 실행함.
         var license_type = sessionStorage.getItem("license_type");
         cockpit.spawn(["sh", pluginpath+"/shell/host/bootstrap_run.sh","ccvm", license_type])
             .then(function(data){
                 console.log(data);
-                $('#div-modal-spinner-header-txt').html('클라우드센터 구성이 완료되었습니다.<br/>이제 전체 Cockpit HTTPS/19100 전환 작업을 시작합니다.<br/>잠시 후 Cockpit 연결이 끊기고 19100 포트로 자동 재접속됩니다.');
+                setCockpitHttpsSpinnerMessage(
+                  '클라우드센터 구성 완료',
+                  '이제 전체 Cockpit HTTPS 인증서와 19100 포트 전환 작업을 예약합니다.',
+                  '후속 작업이 시작되면 접속 가능 여부를 확인한 뒤 자동으로 이동합니다.',
+                  'Cockpit 19100 포트로 접속'
+                );
                 cockpit.spawn(["sh", pluginpath+"/shell/host/schedule_cockpit_https_deploy.sh", "10"], { host: "ccvm" })
                     .then(function(scheduleData){
                         console.log(scheduleData);
