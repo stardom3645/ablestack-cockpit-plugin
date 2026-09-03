@@ -42,7 +42,7 @@
                     <button style="display:none;font-size: 0.83rem;" class="pf-v6-c-button pf-m-primary"
                         id="button-config-file-download" aria-disabled="false" type="button" data-ouia-safe="true">설정파일
                         다운로드</button>
-                    <button class="pf-v6-c-button pf-m-link" type="button" id="button-open-modal-license-register">라이센스 관리</button>
+                    <button class="pf-v6-c-button pf-m-link" type="button" id="button-open-modal-license-register">라이선스 관리</button>
                     <button style="display: none; "class="pf-v6-c-button pf-m-link" type="button" id="button-open-modal-security-update">보안 업데이트</button>
                     <button style="display: none;" class="pf-v6-c-button pf-m-link" type="button"
                         id="button-open-modal-security-evidence">보안 점검 증적</button>
@@ -156,14 +156,6 @@
                                                         </span>
                                                         <div id="gfs-lock-text" class="ablestack-gfs-status-detail">N/A</div>
                                                     </div>
-                                                </dd>
-                                            </div>
-                                            <div class="pf-v6-c-description-list__group">
-                                                <dt class="pf-v6-c-description-list__term">
-                                                    <span class="pf-v6-c-description-list__text">&nbsp;</span>
-                                                </dt>
-                                                <dd class="pf-v6-c-description-list__description">
-                                                    <div class="pf-v6-c-description-list__text">&nbsp;</div>
                                                 </dd>
                                             </div>
                                             <div class="pf-v6-c-description-list__group">
@@ -464,10 +456,10 @@
                                 <div class="pf-v6-c-divider" role="separator"></div>
                                 <div id="gfs-integration-low-info" class="pf-v6-c-card__footer ablestack-status-text ablestack-status-danger">GFS 통합이 구성되지 않았습니다.</div>
                             </div>
-                            <!-- 클라우드센터 클러스터 상태 카드 영역 끝 -->
+                            <!-- 인프라 클러스터 상태 카드 영역 끝 -->
                         </div>
                         <div class="pf-v6-l-grid__item pf-m-6-col" id="div-card-cloud-cluster-status">
-                            <!-- 클라우드센터 클러스터 상태 카드 영역 시작-->
+                            <!-- 인프라 클러스터 상태 카드 영역 시작-->
                             <div class="pf-v6-c-card pf-m-hoverable pf-m-compact" id="card-cloud-cluster-status" style="overflow: visible;">
                                 <div class="pf-v6-c-card__header">
                                     <div class="pf-v6-c-card__header-main">
@@ -475,7 +467,7 @@
                                             style="font-size: var(--pf-v6-global--icon--FontSize--lg);padding-right: 15px"
                                             aria-hidden="true"></i>
                                     </div>
-                                    <div class="pf-v6-c-card__title ablestack-card-title-status" id="card-storage-cluster-status-title">클라우드센터 클러스터 상태
+                                    <div class="pf-v6-c-card__title ablestack-card-title-status" id="card-storage-cluster-status-title">인프라 클러스터 상태
                                     </div>
                                     <div class="pf-v6-c-card__actions">
                                         <div class="ablestack-menu-dropdown">
@@ -563,7 +555,7 @@
                                                     </div>
                                                 </dd>
                                             </div>
-                                            <div class="pf-v6-c-description-list__group">
+                                            <div id="cccs-resource-status-group" class="pf-v6-c-description-list__group">
                                                 <dt class="pf-v6-c-description-list__term">
                                                     <span class="pf-v6-c-description-list__text">리소스 상태</span>
                                                 </dt>
@@ -572,24 +564,25 @@
                                                         N/A</div>
                                                 </dd>
                                             </div>
-                                            <div class="pf-v6-c-description-list__group">
+                                            <div id="cccs-execution-node-group" class="pf-v6-c-description-list__group">
                                                 <dt class="pf-v6-c-description-list__term">
-                                                    <span class="pf-v6-c-description-list__text">VM실행노드</span>
+                                                    <span id="cccs-execution-node-title" class="pf-v6-c-description-list__text">VM실행노드</span>
                                                 </dt>
                                                 <dd class="pf-v6-c-description-list__description">
                                                     <div id="cccs-execution-node" class="pf-v6-c-description-list__text">
                                                         N/A</div>
                                                 </dd>
                                             </div>
-                                            <div class="pf-v6-c-description-list__group">
+                                            <div id="cccs-current-dc-group" class="pf-v6-c-description-list__group" style="display: none;">
                                                 <dt class="pf-v6-c-description-list__term">
-                                                    <span class="pf-v6-c-description-list__text">&nbsp;</span>
+                                                    <span class="pf-v6-c-description-list__text">현재 DC</span>
                                                 </dt>
                                                 <dd class="pf-v6-c-description-list__description">
-                                                    <div class="pf-v6-c-description-list__text">&nbsp;</div>
+                                                    <div id="cccs-current-dc" class="pf-v6-c-description-list__text">
+                                                        N/A</div>
                                                 </dd>
                                             </div>
-                                            <div class="pf-v6-c-description-list__group">
+                                            <div id="cccs-empty-row-1" class="pf-v6-c-description-list__group">
                                                 <dt class="pf-v6-c-description-list__term">
                                                     <span class="pf-v6-c-description-list__text">&nbsp;</span>
                                                 </dt>
@@ -603,7 +596,7 @@
                                 <div class="pf-v6-c-divider" role="separator"></div>
                                 <div id="cccs-low-info" class="pf-v6-c-card__footer ablestack-status-text ablestack-status-danger">클라우드센터 클러스터가 구성되지 않았습니다.</div>
                             </div>
-                            <!-- 클라우드센터 클러스터 상태 카드 영역 끝 -->
+                            <!-- 인프라 클러스터 상태 카드 영역 끝 -->
                         </div>
                         <div class="pf-v6-l-grid__item pf-m-6-col" id="div-card-storage-vm-status">
                             <!-- 스토리지센터VM 상태 카드 영역 시작-->
@@ -2303,7 +2296,7 @@
 <!-- 해당 페이지에 필요한 javascript 파일 추가 영역 끝 -->
 
 <!-- 모달 영역 끝 부분에 추가 -->
-<!-- 라이센스 관리 : Modal 영역 시작 -->
+<!-- 라이선스 관리 : Modal 영역 시작 -->
 <div id="div-modal-license-register" class="pf-v6-c-backdrop" style="display:none">
     <div class="pf-v6-l-bullseye">
         <div class="pf-v6-c-modal-box pf-m-sm" role="dialog" aria-modal="true" aria-label="License Registration">
@@ -2312,14 +2305,14 @@
                 <i class="fas fa-times" aria-hidden="true"></i>
             </button>
             <header class="pf-v6-c-modal-box__header">
-                <h1 class="pf-v6-c-modal-box__title"><span class="pf-v6-c-modal-box__title-text">라이센스 관리</span></h1>
+                <h1 class="pf-v6-c-modal-box__title"><span class="pf-v6-c-modal-box__title-text">라이선스 관리</span></h1>
             </header>
             <div class="pf-v6-c-modal-box__body">
                 <form novalidate class="pf-v6-c-form pf-m-horizontal">
                     <div class="pf-v6-c-form__group">
                         <div class="pf-v6-c-form__group-label">
                             <label class="pf-v6-c-form__label" for="input-license-file">
-                                <span class="pf-v6-c-form__label-text">라이센스 파일</span>
+                                <span class="pf-v6-c-form__label-text">라이선스 파일</span>
                                 <span class="pf-v6-c-form__label-required" aria-hidden="true">&#42;</span>
                             </label>
                         </div>
@@ -2329,7 +2322,7 @@
                     </div>
                 </form>
                 <div id="div-license-description" class="pf-v6-c-content" style="margin-top:20px">
-                    <p><i class="fas fa-info-circle"></i> 라이센스 파일을 선택해주세요.</p>
+                    <p><i class="fas fa-info-circle"></i> 라이선스 파일을 선택해주세요.</p>
                 </div>
             </div>
             <footer class="pf-v6-c-modal-box__footer">
@@ -2341,7 +2334,7 @@
         </div>
     </div>
 </div>
-<!-- 라이센스 관리 : Modal 영역 끝 -->
+<!-- 라이선스 관리 : Modal 영역 끝 -->
 
 <!-- ABLESTACK Version 업데이트 : Modal 영역 시작 -->
 <div id="div-modal-system-update" class="pf-v6-c-backdrop" style="display:none">
