@@ -389,7 +389,7 @@ function resetWallMonitoringWizard() {
     host_ping_test_cmd.push(cubehost_ip);
   }
 
-  if (os_type == "ablebstack-hci"){
+  if (os_type == "ablestack-hci"){
     for(var i = 1 ; i <= host_count ; i ++ ){
       var scvm_ip = $('#form-input-wall-monitoring-scvm'+i+'-ip').val();
       host_ping_test_cmd.push(scvm_ip);
